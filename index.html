@@ -64,16 +64,15 @@
         body {
             font-family: "Ubuntu", "Helvetica neue", Helvetica, Arial,
                 sans-serif;
-            background: var(--front-body);
+            background: var(--back-body);
+            /* Changed to back-body to see contrast */
             color: var(--text-col);
             font-size: 1.4em;
             cursor:
                 var(--curs-img) 1 1,
                 auto;
             overflow-x: hidden;
-            /* Prevent horizontal scrollbar on body */
             margin: 0;
-            /* Reset body margin */
         }
 
         .title {
@@ -85,11 +84,8 @@
             position: absolute;
             position: sticky;
             top: 0;
-            /* Stick to the top */
             z-index: 100;
-            /* Ensure it's above other content */
             background-color: var(--front-body);
-            /* Ensure background for stickiness */
         }
 
         .titledomain {
@@ -100,18 +96,23 @@
             scroll-behavior: smooth;
 
             /*** sections ***/
-            /* height: 94%; Removed fixed height */
-            overflow-y: scroll;
-            overflow-x: hidden;
-            scroll-snap-type: y mandatory;
-            padding-top: 60px;
-            /* Add padding to avoid content underlapping sticky title, adjust 60px as needed */
-            /* height: auto;  Keep height auto, but no min-height for now */
-            /* min-height: 100vh; Removed min-height for now */
-            position: relative;
-            /* Added relative positioning */
-            z-index: 1;
-            /* Ensure container is above potential body background */
+            overflow-y: visible;
+            /* Changed to visible for debugging */
+            overflow-x: visible;
+            /* Changed to visible for debugging */
+            scroll-snap-type: none;
+            /* Disabled scroll snap for debugging */
+            padding-top: 0px;
+            /* Removed padding temporarily */
+            height: auto;
+            min-height: auto;
+            /* Removed min-height temporarily */
+            position: static;
+            /* Changed to static for debugging */
+            z-index: auto;
+            /* Reset z-index for debugging */
+            border: 2px solid red;
+            /* Added border for debugging */
         }
 
         section {
@@ -143,15 +144,12 @@
             font-family: "Ubuntu", "Helvetica neue", Helvetica, Arial,
                 sans-serif;
             margin-right: 5px;
-            /* Add some spacing between horizontal menu items */
             margin-bottom: 5px;
-            /* Add some spacing below horizontal menu items if they wrap */
         }
 
         li a {
             color: var(--sect-col) !important;
             padding: 4px 10px 5px 10px !important;
-            /* Slightly increased horizontal padding */
             text-decoration: none;
             border-radius: 6px;
             border: 0px solid var(--sect-col);
@@ -159,7 +157,6 @@
                 var(--curs-hov) 1 30,
                 auto;
             display: inline-block;
-            /* Ensure anchor is inline-block for horizontal layout */
         }
 
         li a:hover,
@@ -219,16 +216,12 @@
         li {
             margin: 0 0;
             width: auto;
-            /* Let JavaScript control width for MENU if needed, or CSS for horizontal */
             height: auto;
-            /* Adjust height for horizontal layout if needed */
             clear: none;
-            /* Remove clear for horizontal layout */
         }
 
         li a {
             text-decoration: none;
-            /*display: block; /* Changed to inline-block or let default be for horizontal */
             padding: 0px;
         }
 
@@ -348,11 +341,9 @@
         @media only screen and (max-device-width: 1024px) {
             li {
                 width: auto;
-                /* Reset width for horizontal menu */
                 font-size: 1.1em;
                 padding: 0px 0px !important;
                 display: inline-block;
-                /* Ensure horizontal layout */
             }
 
             li a {
@@ -374,29 +365,21 @@
                 color: transparent;
             }
 
-            /* ADD THESE LINES TO SHOW MENU ON TABLETS */
             section#MENU {
                 display: block !important;
                 height: auto !important;
-                /* Ensure section takes up space */
             }
 
             section#MENU ul.group {
                 white-space: nowrap;
-                /* Prevent wrapping of menu items */
                 overflow-x: auto;
-                /* Enable horizontal scroll if items overflow */
                 overflow-y: hidden;
-                /* Hide vertical scroll */
                 padding-bottom: 10px;
-                /* Add some padding for scrollbar space if needed */
             }
 
             section#MENU ul.group li {
                 display: inline-block;
-                /* Ensure horizontal layout */
                 vertical-align: top;
-                /* Align items to the top */
             }
         }
 
@@ -411,11 +394,9 @@
 
             li {
                 width: auto;
-                /* Reset width for horizontal menu */
                 font-size: 1.4em;
                 padding: 0px 0px !important;
                 display: inline-block;
-                /* Ensure horizontal layout */
             }
 
             li a {
@@ -439,29 +420,21 @@
                 width: 30px !important;
             }
 
-            /* ADD THESE LINES TO SHOW MENU ON IPHONE LANDSCAPE */
             section#MENU {
                 display: block !important;
                 height: auto !important;
-                /* Ensure section takes up space */
             }
 
             section#MENU ul.group {
                 white-space: nowrap;
-                /* Prevent wrapping of menu items */
                 overflow-x: auto;
-                /* Enable horizontal scroll if items overflow */
                 overflow-y: hidden;
-                /* Hide vertical scroll */
                 padding-bottom: 10px;
-                /* Add some padding for scrollbar space if needed */
             }
 
             section#MENU ul.group li {
                 display: inline-block;
-                /* Ensure horizontal layout */
                 vertical-align: top;
-                /* Align items to the top */
             }
         }
 
@@ -476,11 +449,9 @@
 
             li {
                 width: auto;
-                /* Reset width for horizontal menu */
                 font-size: 2.5em;
                 padding: 24px 24px 30px 24px;
                 display: inline-block;
-                /* Ensure horizontal layout */
             }
 
             li a {
@@ -580,13 +551,6 @@
         <a class="secname" href="#mdf" target="_self" title="section 14">
             mdf
         </a>
-
-        <!--
-	<label class="switch">
-	  <input type="checkbox" checked>
-	  <span></span>
-	</label>
-	-->
     </h3>
 
     <article class="container" id="container">
@@ -1242,7 +1206,6 @@
 
                 <li>
                     <a href="https://cm-terminreservierung.de/markdorf?calendarId=92">Markdorf Service
-
                     </a>
                 </li>
                 <li>
@@ -1274,8 +1237,6 @@
                 item.style.width = maxWidth + 'px';
             });
         });
-
-
     </script>
 </body>
 
