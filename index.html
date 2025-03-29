@@ -574,7 +574,7 @@
                 <h3 class="name" style="color: cyan">
                     <a href="#MENU" target="_self">MENU</a>
                 </h3>
-                <ul class="group" class="title-fullsize">
+                <ul class="group" class="title-fullsize" id="menu-list">
                     <li>
                         <a tabindex="0" href="#srv" target="_self">SRV
                         </a>
@@ -1235,6 +1235,27 @@
             </section>
         </article>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuList = document.getElementById('menu-list');
+            if (!menuList) return; // Exit if menu list is not found
+
+            const menuItems = menuList.querySelectorAll('li');
+            let maxWidth = 0;
+
+            menuItems.forEach(item => {
+                const itemWidth = item.offsetWidth;
+                if (itemWidth > maxWidth) {
+                    maxWidth = itemWidth;
+                }
+            });
+
+            menuItems.forEach(item => {
+                item.style.width = maxWidth + 'px';
+            });
+        });
+    </script>
 </body>
 
 </html>
