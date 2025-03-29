@@ -242,7 +242,7 @@
                 padding-left: 46px;
             }
 
-            .group {
+            /* .group {
                 color: var(--sect-col) !important;
                 width: 100%;
                 max-width: 1250px;
@@ -252,7 +252,7 @@
                 color: var(--title-col);
                 border-bottom-width: 1px !important;
                 background: none;
-            }
+            } */
 
             section:hover,
             section:hover .name,
@@ -264,7 +264,7 @@
                     auto;
             }
 
-            .group .links {
+            /* .group {
                 width: auto;
                 padding-top: 0px;
                 margin-top: 16px;
@@ -275,19 +275,19 @@
                 font-weight: normal;
                 color: var(--sect-col);
                 align: center;
-            }
+            } */
 
-            .group .links .row {
+            /* .group .row {
                 width: auto;
                 margin: 0 auto;
             }
 
-            .group .links .row .cell {
+            .group .row .cell {
                 width: 191px;
                 float: left;
-            }
+            } */
 
-            .group .links .row .cell a {
+            /* .group .row .cell a {
                 color: var(--sect-col);
                 padding: 0px 0px 0px 0px;
                 text-decoration: none;
@@ -297,15 +297,15 @@
                     var(--curs-hov) 1 12,
                     auto;
                 overflow: hidden;
-            }
+            } */
 
             li a {
                 color: var(--title-col);
             }
-
-            .group .links .row .cell a:active {
+/* 
+            .row .cell a:active {
                 background-color: red;
-            }
+            } */
 
             #container {
                 clear: both;
@@ -321,6 +321,14 @@
                 cursor: s-resize !important;
                 display: block;
             }
+
+            .title {
+                /* display: none !important; */
+            }
+
+            .title-fullsize {
+                display: none !important;
+            } 
 
             /*
 ################################################
@@ -352,6 +360,10 @@
                     border-radius: 10px;
                 }
 
+                section {
+                    height: 50% !important;
+                }
+
                 a.secname {
                     font-size: smaller;
                     cursor: none !important;
@@ -359,6 +371,10 @@
                     padding: 6px 2px 6px 4px !important;
                     min-width: 48px;
                 }
+
+                .title_fullsize {
+                    display: none !important;
+                } 
             }
 
             /*   iPhone iPhone iPhone   HOR  HOR  HOR  */
@@ -393,9 +409,24 @@
                 }
 
                 .title {
-                    display: none;
+                    display: none !important;
                 }
+
+                .title_fullsize {
+                    display: block;
+                    width: 800px !important;
+                    height: 400px !important;
+                } 
+
+                .title_fullsize li a {
+                    width: 130px !important;
+                    height: 80px !important;
+                    color: var(--back-hov) !important;
+                    background-color: var(--text-col) !important;
+                    display: block;
+                } 
             }
+            
 
             /*   iPhone iPhone iPhone   VERT   VERT  */
             @media only screen and (min-device-width: 375px) and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: portrait) {
@@ -422,13 +453,27 @@
                     height: auto;
                 }
 
-                .group {
+                /* .group {
                     line-height: 2.8em;
-                }
+                } */
 
                 .title {
-                    display: none;
+                    display: none !important;
                 }
+
+                .title_fullsize {
+                    display: block;
+                    width: 800px !important;
+                    height: 400px !important;
+                } 
+
+                .title_fullsize li a {
+                    width: 130px !important;
+                    height: 80px !important;
+                    color: var(--back-hov) !important;
+                    background-color: var(--text-col) !important;
+                    display: block;
+                } 
             }
         </style>
     </head>
@@ -501,11 +546,7 @@
                 </a>
 
                 <span class="secnum">7</span>
-                <a
-                    class="secname"
-                    href="#hiir"
-                    target="_self"
-                    title="section 7">
+                <a class="secname" href="#hiir" target="_self" title="section 7">
                     hiir
                 </a>
 
@@ -572,6 +613,74 @@
             </h3>
 
             <article class="container">
+                
+                
+                <section>
+                    <h3 id="MENU" class="name" style="color: cyan">
+                        <a href="#MENU" target="_self">MENU</a>
+                    </h3>
+                    <ul class="group" class="title_fullsize">
+                        <li>
+                            <a tabindex="0" href="#srv" target="_self">SRV
+                            </a>
+                        </li>
+                        <li>
+                            <a tabindex="0" href="#tec" target="_self">TEC
+                            </a>
+                        </li>
+                        <li>
+                            <a tabindex="0" href="#riid" target="_self">RIID
+                            </a>
+                        </li>
+                        <li>
+                            <a tabindex="0" href="#wrk" target="_self">WRK
+                            </a>
+                        </li>
+                        <li>
+                            <a tabindex="0" href="#mee" target="_self">MEE
+                            </a>
+                        </li>
+                        <li>
+                            <a tabindex="0" href="#see" target="_self">SEE
+                            </a>
+                        </li>
+                        <li>
+                            <a tabindex="0" href="#hiir" target="_self">HIIR
+                            </a>
+                        </li>
+                        <li>
+                            <a tabindex="0" href="#bsy" target="_self">BSY
+                            </a>
+                        </li>
+                        <li>
+                            <a tabindex="0" href="#dis" target="_self">DIS
+                            </a>
+                        </li>
+                        <li>
+                            <a tabindex="0" href="#art" target="_self">ART
+                            </a>
+                        </li>
+                        <li>
+                            <a tabindex="0" href="#eat" target="_self">EAT
+                            </a>
+                        </li>
+                        <li>
+                            <a tabindex="0" href="#shp" target="_self">SHP
+                            </a>
+                        </li>
+                        <li>
+                            <a tabindex="0" href="#pol" target="_self">POL
+                            </a>
+                        </li>
+                        <li>
+                            <a tabindex="0" href="#mdf" target="_self">MDF
+                            </a>
+                        </li>
+                    </ul>
+                </section>
+
+
+
                 <section>
                     <h3 id="srv" class="name" style="color: cyan">
                         <a href="#srv" target="_self">srv</a>
@@ -590,7 +699,7 @@
                             <a tabindex="0" href="http://ucloud.fritz.box:8010">[+] paperless</a>
                         </li>
                         <li>
-                            <a tabindex="0" href="http://ucloud.fritz.box:5380/admin">[+] unh0le
+                            <a tabindex="0" href="http://ucloud.fritz.box:5380/admin">[++] unh0le
                             </a>
                         </li><li>
                             <a tabindex="0" href="https://customercontrolpanel.de">CCP</a>
