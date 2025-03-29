@@ -1,3 +1,5 @@
+--- START OF FILE index.html ---
+
 <!DOCTYPE html>
 <html>
 
@@ -360,6 +362,19 @@
                 padding: 6px 2px 6px 4px !important;
                 min-width: 48px;
             }
+
+            .title-fullsize {
+                display: none !important;
+                visibility: hidden !important;
+                color: transparent;
+            }
+
+            /* ADD THESE LINES TO SHOW MENU ON TABLETS */
+            section#MENU {
+                display: block !important;
+                height: auto !important;
+                /* Ensure section takes up space */
+            }
         }
 
         /*   iPhone iPhone iPhone   HOR  HOR  HOR  */
@@ -396,6 +411,17 @@
             .title {
                 display: none;
             }
+
+            .title-fullsize li {
+                width: 30px !important;
+            }
+
+            /* ADD THESE LINES TO SHOW MENU ON IPHONE LANDSCAPE */
+            section#MENU {
+                display: block !important;
+                height: auto !important;
+                /* Ensure section takes up space */
+            }
         }
 
         /*   iPhone iPhone iPhone   VERT   VERT  */
@@ -430,6 +456,18 @@
             .title {
                 display: none;
             }
+
+            /* ADD THESE LINES TO SHOW MENU ON IPHONE PORTRAIT */
+            section#MENU {
+                display: block !important;
+                height: auto !important;
+                /* Ensure section takes up space */
+            }
+        }
+
+        /* Hide the MENU section by default for desktop */
+        section#MENU {
+            display: none;
         }
     </style>
 </head>
@@ -534,11 +572,11 @@
 
         <article class="container">
 
-            <section>
-                <h3 id="MENU" class="name" style="color: cyan">
+            <section id="MENU">
+                <h3 class="name" style="color: cyan">
                     <a href="#MENU" target="_self">MENU</a>
                 </h3>
-                <ul class="group" class="title_fullsize">
+                <ul class="group" class="title-fullsize">
                     <li>
                         <a tabindex="0" href="#srv" target="_self">SRV
                         </a>
@@ -648,7 +686,7 @@
                     <li><a href="http://www.golem.de/ticker">golem</a>
                     </li>
                     <li>
-                        <a href="http://www.heise.de/mac-and-i/newsticker">Mac &amp; i</a>
+                        <a href="http://www.heise.de/mac-and-i/newsticker">Mac & i</a>
                     </li>
                     <li>
                         <a href="https://www.heise.de/newsticker">heise</a>
@@ -677,7 +715,7 @@
                         <a href="http://www.macrumors.com/">Macrumors</a>
                     </li>
                     <li>
-                        <a href="http://www.appleworld.today">&nbsp;world.today</a>
+                        <a href="http://www.appleworld.today"> world.today</a>
                     </li>
                     <li>
                         <a href="http://www.macstories.net">Macstories</a>
@@ -733,7 +771,7 @@
                         <a href="https://www.freitag.de/kultur/medien">der Freitag</a>
                     </li>
                     <li>
-                        <a href="http://www.nw.de/nachrichten/computer_internet">NeueWestf&auml;lische</a>
+                        <a href="http://www.nw.de/nachrichten/computer_internet">NeueWestfälische</a>
                     </li>
                     <li>
                         <a href="https://www.tagesspiegel.de/medien/digitale-welt/">Tagesspiegel</a>
@@ -763,13 +801,13 @@
                         <a href="https://www.fr-online.de/digital/">FR</a>
                     </li>
                     <li>
-                        <a href="https://www.sueddeutsche.de/computer/">S&uuml;ddeutsche</a>
+                        <a href="https://www.sueddeutsche.de/computer/">Süddeutsche</a>
                     </li>
                     <li>
                         <a href="https://krautreporter.de/">Krautreporter</a>
                     </li>
                     <li>
-                        <a href="https://krautreporter.de/zusammenhaenge">Zusammenh&auml;nge</a>
+                        <a href="https://krautreporter.de/zusammenhaenge">Zusammenhänge</a>
                     </li>
                     <li>
                         <a href="https://www.nzz.ch/mehr/digital/">NZZ</a>
@@ -786,7 +824,7 @@
                     <li><a href="https://99u.adobe.com/">99u</a></li>
                     <!-- <li>.</li> -->
                     <li>
-                        <a href="https://www.heise.de/select/mac-and-i">Mac &amp; i lesen</a>
+                        <a href="https://www.heise.de/select/mac-and-i">Mac & i lesen</a>
                     </li>
                     <li>
                         <a href="https://www.heise.de/select/ct">c´t lesen</a>
@@ -930,7 +968,7 @@
                 <ul class="group">
                     <li>
                         <a
-                            href="https://srv.deutschlandradio.de/themes/dradio/script/aod/index.html?audioMode=4&audioID=3&state=">&#9658;
+                            href="https://srv.deutschlandradio.de/themes/dradio/script/aod/index.html?audioMode=4&audioID=3&state=">►
                             DLF Live</a>
                     </li>
                     <li><a href="http://dradiowissen.de">DLF Nova</a></li>
@@ -951,7 +989,7 @@
                     <li><a href="http://msmr.co">msmr</a></li>
                     <li><a href="http://1hou.se">1hou.se</a></li>
                     <li>
-                        <a href="http://my-glasses.net">my&bull;glasses</a>
+                        <a href="http://my-glasses.net">my•glasses</a>
                     </li>
                     <li><a href="http://www.macpad.eu">macpad</a></li>
                     <li>
@@ -1042,7 +1080,7 @@
                     </li>
                     <li>
                         <a href="https://www.restaurant-buergerstuben.de">
-                            B&uuml;rgerstuben
+                            Bürgerstuben
                         </a>
                     </li>
                     <li>
