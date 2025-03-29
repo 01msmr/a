@@ -99,6 +99,9 @@
         .container {
             scroll-behavior: smooth;
 
+            position: relative; /* Added relative positioning */
+            z-index: 1; /* Ensure container is above potential body background */
+
             /*** sections ***/
             /* height: 94%; Removed fixed height */
             overflow-y: scroll;
@@ -108,7 +111,7 @@
             /* Add padding to avoid content underlapping sticky title, adjust 60px as needed */
             height: auto;
             /* Ensure container height adjusts to content */
-            min-height: 100vh;
+            /* min-height: 100vh; Removed min-height for now */
             /* Ensure container is at least viewport height */
         }
 
