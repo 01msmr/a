@@ -65,10 +65,8 @@
             font-family: "Ubuntu", "Helvetica neue", Helvetica, Arial,
                 sans-serif;
             background-color: var(--front-body);
-            /* Consistent background color */
             color: var(--text-col);
             font-size: 1.4em;
-            /* Restoring original font size */
             cursor:
                 var(--curs-img) 1 1,
                 auto;
@@ -87,7 +85,6 @@
             top: 0;
             z-index: 100;
             background-color: var(--front-body);
-            /* Consistent background color */
         }
 
         .titledomain {
@@ -107,6 +104,13 @@
             z-index: 1;
         }
 
+        section,
+        section .group {
+            color: var(--text-col);
+            font-size: 1.15em;
+            /* Restoring font-size from user feedback */
+        }
+
         section {
             scroll-snap-align: start;
             height: auto;
@@ -117,10 +121,6 @@
             margin-bottom: 83vh;
         }
 
-        section,
-        section .group {
-            color: var(--text-col);
-        }
 
         section:hover a,
         section:hover .group {
