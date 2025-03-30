@@ -64,7 +64,8 @@
         body {
             font-family: "Ubuntu", "Helvetica neue", Helvetica, Arial,
                 sans-serif;
-            background: var(--front-body);
+            background-color: var(--back-body);
+            /* Corrected to background-color */
             color: var(--text-col);
             font-size: 1.4em;
             cursor:
@@ -99,9 +100,9 @@
             overflow-x: hidden;
             scroll-snap-type: y mandatory;
             padding-top: 60px;
-            /* Add padding to avoid content underlapping sticky title, adjust 60px as needed */
-            height: auto;
-            min-height: 100vh;
+            height: 94%;
+            /* Re-added height: 94% for scroll container */
+            /* min-height: 100vh; Removed min-height - height: 94% is managing viewport height */
             position: relative;
             z-index: 1;
         }
@@ -137,6 +138,13 @@
             margin-right: 5px;
             margin-bottom: 5px;
         }
+
+        section ul.group li {
+            /* Targeting li in sections (excluding MENU) */
+            min-width: 190px;
+            /* Re-applying min-width to section li elements */
+        }
+
 
         li a {
             color: var(--sect-col) !important;
