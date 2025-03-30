@@ -44,13 +44,32 @@
             }
         }
 
-        /* Base Styles (No changes from previous version) */
+        /*
+################################################
+################################################
+################################################
+################################################
+################################################
+
+
+
+
+################################################
+################################################
+################################################
+################################################
+################################################
+ */
+
         body {
-            font-family: "Ubuntu", "Helvetica neue", Helvetica, Arial, sans-serif;
+            font-family: "Ubuntu", "Helvetica neue", Helvetica, Arial,
+                sans-serif;
             background-color: var(--front-body);
             color: var(--text-col);
             font-size: 1.4em;
-            cursor: var(--curs-img) 1 1, auto;
+            cursor:
+                var(--curs-img) 1 1,
+                auto;
             overflow-x: hidden;
             margin: 0;
         }
@@ -61,6 +80,7 @@
             padding: 0px 18px;
             border: 1px solid var(--text-col);
             border-radius: 24px;
+            position: absolute;
             position: sticky;
             top: 0px;
             z-index: 100;
@@ -73,10 +93,12 @@
 
         .container {
             scroll-behavior: smooth;
+
+            /*** sections ***/
             overflow-y: scroll;
             overflow-x: hidden;
             scroll-snap-type: y mandatory;
-            padding-top: 60px;
+            padding-top: 0px;
             height: 94%;
             position: relative;
             z-index: 1;
@@ -98,6 +120,7 @@
             margin-bottom: 83vh;
         }
 
+
         section:hover a,
         section:hover .group {
             color: var(--sect-col) !important;
@@ -109,36 +132,23 @@
             list-style-type: none;
             color: var(--back-body);
             min-width: 190px;
-            font-family: "Ubuntu", "Helvetica neue", Helvetica, Arial, sans-serif;
+            font-family: "Ubuntu", "Helvetica neue", Helvetica, Arial,
+                sans-serif;
             margin-right: 5px;
             margin-bottom: 5px;
         }
 
-        section ul.group {
-            display: flex;
-            flex-wrap: wrap;
-        }
-
         section ul.group li {
-            width: 48% !important;
-            /* Default width for mobile portrait (2 columns) */
-            min-width: auto !important;
+            /* More specific selector for content section li */
+            width: 190px !important;
+            min-width: 190px !important;
             box-sizing: border-box;
             padding: 0 !important;
-            margin-right: 2%;
-            margin-bottom: 10px;
+            /* Reset padding for li */
         }
-
-        section ul.group li:nth-child(odd) {
-            margin-right: 2%;
-        }
-
-        section ul.group li:nth-child(even) {
-            margin-right: 0;
-        }
-
 
         section#MENU ul.group li {
+            /* Reverted MENU li min-width to auto */
             min-width: auto !important;
             width: auto !important;
         }
@@ -150,452 +160,1070 @@
             text-decoration: none;
             border-radius: 6px;
             border: 0px solid var(--sect-col);
-            cursor: var(--curs-hov) 1 30, auto;
+            cursor:
+                var(--curs-hov) 1 30,
+                auto;
+            display: block;
+            /* Changed to display: block; for full li click area */
+        }
+
+        li a:hover,
+        a.secname:hover {
+            color: var(--text-hov) !important;
+            background-color: var(--back-hov) !important;
+        }
+
+        section a,
+        a:visited {
+            color: var(--text-col) !important;
+        }
+
+        .secnum {
+            font-size: small;
+            display: none;
+        }
+
+        a.secname {
+            font-size: smaller;
+            text-decoration: none;
+            padding: 8px 4px 8px 6px !important;
+            min-width: 36px;
+            display: inline-block;
+            margin-right: -8px !important;
+            overflow: visible !important;
+            border-left: 1px solid var(--sect-col);
+        }
+
+        .secname:first-child {
+            border-left-width: 20px !important;
+        }
+
+        .secname:last-child {
+            border-right: 1px solid var(--sect-col);
+        }
+
+        a.secname:hover {
+            background-color: var(--sect-col) !important;
+            /* padding: 1px; */
+        }
+
+        html {
+            cursor:
+                var(--curs-img) 1 1,
+                auto;
+            font-family: "ubuntu condensed", "helvetica neue", helvetica,
+                arial, sans-serif;
+        }
+
+
+        .bottomspace {
+            height: 0px;
+            clear: both;
+        }
+
+        li {
+            margin: 0 0;
+            width: auto;
+            height: auto;
+            clear: none;
+        }
+
+        li a {
+            text-decoration: none;
+            padding: 0px;
+        }
+
+        .name {
+            color: var(--text-col) !important;
+            width: 100%;
+            padding-top: 10px;
+            margin-bottom: 0px;
+            font-family: "helvetica neue", helvetica, arial, sans-serif;
+            font-size: 32px;
+            text-transform: uppercase !important;
+            border-bottom: 1px solid var(--text-col);
+            padding-bottom: 8px;
+            background: none;
+
+            padding-left: 46px;
+        }
+
+        .group {
+            color: var(--sect-col) !important;
+            width: 100%;
+            max-width: 1250px;
+            margin-top: 12px;
+            margin-bottom: 0px;
+            font-family: "helvetica neue", helvetica, arial, sans-serif;
+            color: var(--title-col);
+            border-bottom-width: 1px !important;
+            background: none;
+        }
+
+        section:hover,
+        section:hover .name,
+        section:hover .group {
+            color: var(--title-col) !important;
+            border-color: var(--title-col);
+            cursor:
+                var(--curs-img) 1 1,
+                auto;
+        }
+
+        .group .links {
+            width: auto;
+            padding-top: 0px;
+            margin-top: 16px;
+            font-family: "ubuntu condensed", "helvetica neue", helvetica,
+                arial, sans-serif;
+            font-size: 23px;
+            line-height: 36px;
+            font-weight: normal;
+            color: var(--sect-col);
+            align: center;
+        }
+
+        .group .links .row {
+            width: auto;
+            margin: 0 auto;
+        }
+
+        .group .links .row .cell {
+            width: 191px;
+            float: left;
+        }
+
+        .group .links .row .cell a {
+            color: var(--sect-col);
+            padding: 0px 0px 0px 0px;
+            text-decoration: none;
+            border-radius: 6px;
+            border: 0px solid var(--back-body);
+            cursor:
+                var(--curs-hov) 1 12,
+                auto;
+            overflow: hidden;
+        }
+
+        li a {
+            color: var(--title-col);
+        }
+
+        .group .links .row .cell a:active {
+            background-color: red;
+        }
+
+        #container {
+            clear: both;
+            color: var(--title-col);
+            font-family: "helvetica neue", helvetica, arial, sans-serif;
+            font-size: 13pt;
+            margin: auto;
+            /* position: fixed; */
+        }
+
+        section h3 a {
+            text-decoration: none !important;
+            cursor: s-resize !important;
             display: block;
         }
 
-        /* Media Queries (Updated for 2/4 column grid and sticky MENU) */
+        /*
+################################################
+################################################
+################################################
+################################################
+################################################
+################################################
+################################################
+################################################
+################################################
+################################################
+################################################
+################################################
+################################################
+################################################
+ */
+
+        /*   iPad iPad iPad   */
         @media only screen and (max-device-width: 1024px) {
-            /* iPad styles (no changes unless you want specific iPad grid) */
+            li {
+                width: auto;
+                font-size: 1.1em;
+                padding: 0px 0px !important;
+                display: inline-block;
+            }
+
+            li a {
+                padding: 6px 10px !important;
+                border-radius: 10px;
+            }
+
+            a.secname {
+                font-size: smaller;
+                cursor: none !important;
+                text-decoration: none;
+                padding: 6px 2px 6px 4px !important;
+                min-width: 48px;
+            }
+
+            .title-fullsize {
+                display: none !important;
+                visibility: hidden !important;
+                color: transparent;
+            }
+
+            section#MENU {
+                display: block !important;
+                height: auto !important;
+            }
+
+            section#MENU ul.group {
+                white-space: nowrap;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding-bottom: 10px;
+            }
+
+            section#MENU ul.group li {
+                display: inline-block;
+                vertical-align: top;
+            }
         }
 
+        /*   iPhone iPhone iPhone   HOR  HOR  HOR  */
         @media only screen and (min-device-width: 350px) and (max-device-width: 812px) and (orientation: landscape) {
-            section ul.group li {
-                width: 23.5% !important;
-                /* 4 columns in landscape */
+            .name {
+                padding-top: 8px;
+                margin-bottom: 0px;
+                font-size: 24px;
+                padding-bottom: 4px;
             }
 
-            section ul.group li:nth-child(odd),
-            section ul.group li:nth-child(even) {
-                margin-right: 2%;
-                /* Reset margins */
+            li {
+                width: auto;
+                font-size: 1.4em;
+                padding: 0px 0px !important;
+                display: inline-block;
             }
 
-            section ul.group li:nth-child(4n) {
-                margin-right: 0;
-                /* No margin every 4th item */
+            li a {
+                border-radius: 12px;
+                padding: 2px 4px !important;
+            }
+
+            section {
+                height: 100% !important;
+            }
+
+            .group {
+                line-height: 1.7em;
+            }
+
+            .title {
+                display: none;
+            }
+
+            .title-fullsize li {
+                width: 30px !important;
             }
 
             section#MENU {
-                position: sticky !important;
-                top: 0;
-                background-color: var(--front-body);
-                z-index: 99;
+                display: block !important;
+                height: auto !important;
+            }
+
+            section#MENU ul.group {
+                white-space: nowrap;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding-bottom: 10px;
+            }
+
+            section#MENU ul.group li {
+                display: inline-block;
+                vertical-align: top;
             }
         }
 
+        /*   iPhone iPhone iPhone   VERT   VERT  */
         @media only screen and (min-device-width: 375px) and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: portrait) {
-            section ul.group li {
-                width: 48% !important;
-                /* 2 columns in portrait */
+            .name {
+                padding-top: 12px;
+                margin-bottom: 0px;
+                font-size: 72px;
+                padding-bottom: 6px;
             }
 
-            section ul.group li:nth-child(odd),
-            section ul.group li:nth-child(even) {
-                margin-right: 2%;
-                /* Reset margins */
+            li {
+                width: auto;
+                font-size: 2.5em;
+                padding: 24px 24px 30px 24px;
+                display: inline-block;
             }
 
-            section ul.group li:nth-child(even) {
-                margin-right: 0;
-                /* No margin every even item (2nd column) */
+            li a {
+                border-radius: 12px;
+                padding: 2px 0px;
             }
 
-            section#MENU {
-                position: sticky !important;
-                top: 0;
-                background-color: var(--front-body);
-                z-index: 99;
+            section {
+                height: auto;
+            }
+
+            .group {
+                line-height: 2.8em;
+            }
+
+            .title {
+                display: none;
             }
         }
 
+        /* Hide the MENU section by default for desktop */
         section#MENU {
             display: none;
-            /* Hide MENU on desktop */
         }
     </style>
 </head>
 
 <body>
-    <div class="seite">
-        <h3 class="title">
-            a.<span class="titledomain">msmr.co</span>
-            <span class="secnum">sections</span>
+    <h3 class="title">
+        a.<span class="titledomain">msmr.co</span>
+        <span class="secnum">sections</span>
 
-            <span class="secnum">1</span>
-            <a class="secname" href="#srv" onclick="document.getElementById('srv').focus();" target="_self"
-                title="section 1">
-                srv
-            </a>
+        <span class="secnum">1</span>
+        <a class="secname" href="#srv" onclick="document.getElementById('srv').focus();" target="_self"
+            title="section 1">
+            srv
+        </a>
 
-            <span class="secnum">1</span>
-            <a class="secname" href="#tec" onclick="document.getElementById('tec').focus();" target="_self"
-                title="section 2">
-                tec
-            </a>
+        <span class="secnum">1</span>
+        <a class="secname" href="#tec" onclick="document.getElementById('tec').focus();" target="_self"
+            title="section 2">
+            tec
+        </a>
 
-            <span class="secnum">3</span>
-            <a class="secname" href="#riid" target="_self" title="section 3">riid
-            </a>
+        <span class="secnum">3</span>
+        <a class="secname" href="#riid" target="_self" title="section 3">riid
+        </a>
 
-            <span class="secnum">4</span>
-            <a class="secname" href="#wrk" target="_self" title="section 4">wrk
-            </a>
+        <span class="secnum">4</span>
+        <a class="secname" href="#wrk" target="_self" title="section 4">wrk
+        </a>
 
-            <span class="secnum">5</span>
-            <a class="secname" href="#mee" target="_self" title="section 5">
-                mee
-            </a>
+        <span class="secnum">5</span>
+        <a class="secname" href="#mee" target="_self" title="section 5">
+            mee
+        </a>
 
-            <span class="secnum">6</span>
-            <a class="secname" href="#see" target="_self" title="section 6">
-                see
-            </a>
+        <span class="secnum">6</span>
+        <a class="secname" href="#see" target="_self" title="section 6">
+            see
+        </a>
 
-            <span class="secnum">7</span>
-            <a class="secname" href="#hiir" target="_self" title="section 7">
-                hiir
-            </a>
+        <span class="secnum">7</span>
+        <a class="secname" href="#hiir" target="_self" title="section 7">
+            hiir
+        </a>
 
-            <span class="secnum">8</span><a class="secname" href="#bsy" target="_self" title="section 8">bsy</a>
+        <span class="secnum">8</span><a class="secname" href="#bsy" target="_self" title="section 8">bsy</a>
 
-            <span class="secnum">9</span>
-            <a class="secname" href="#dis" target="_self" title="section 9">
-                dis
-            </a>
+        <span class="secnum">9</span>
+        <a class="secname" href="#dis" target="_self" title="section 9">
+            dis
+        </a>
 
-            <span class="secnum">10</span>
-            <a class="secname" href="#art" target="_self" title="section 10">
-                art
-            </a>
+        <span class="secnum">10</span>
+        <a class="secname" href="#art" target="_self" title="section 10">
+            art
+        </a>
 
-            <span class="secnum">11</span>
-            <a class="secname" href="#eat" target="_self" title="section 11">
-                eat
-            </a>
+        <span class="secnum">11</span>
+        <a class="secname" href="#eat" target="_self" title="section 11">
+            eat
+        </a>
 
-            <span class="secnum">12</span>
-            <a class="secname" href="#shp" target="_self" title="section 12">
-                shp
-            </a>
+        <span class="secnum">12</span>
+        <a class="secname" href="#shp" target="_self" title="section 12">
+            shp
+        </a>
 
-            <span class="secnum">13</span>
-            <a class="secname" href="#pol" target="_self" title="section 13">
-                pol
-            </a>
+        <span class="secnum">13</span>
+        <a class="secname" href="#pol" target="_self" title="section 13">
+            pol
+        </a>
 
-            <span class="secnum">14</span>
-            <a class="secname" href="#mdf" target="_self" title="section 14">
-                mdf
-            </a>
-        </h3>
+        <span class="secnum">14</span>
+        <a class="secname" href="#mdf" target="_self" title="section 14">
+            mdf
+        </a>
+    </h3>
 
-        <article class="container" id="container">
+    <article class="container" id="container">
 
-            <section id="MENU">
-                <h3 class="name" style="color: cyan">
-                    <a href="#MENU" target="_self">MENU</a>
-                </h3>
-                <ul class="group" class="title-fullsize" id="menu-list">
-                    <li><a tabindex="0" href="#srv" target="_self">SRV</a></li>
-                    <li><a tabindex="0" href="#tec" target="_self">TEC</a></li>
-                    <li><a tabindex="0" href="#riid" target="_self">RIID</a></li>
-                    <li><a tabindex="0" href="#wrk" target="_self">WRK</a></li>
-                    <li><a tabindex="0" href="#mee" target="_self">MEE</a></li>
-                    <li><a tabindex="0" href="#see" target="_self">SEE</a></li>
-                    <li><a tabindex="0" href="#hiir" target="_self">HIIR</a></li>
-                    <li><a tabindex="0" href="#bsy" target="_self">BSY</a></li>
-                    <li><a tabindex="0" href="#dis" target="_self">DIS</a></li>
-                    <li><a tabindex="0" href="#art" target="_self">ART</a></li>
-                    <li><a tabindex="0" href="#eat" target="_self">EAT</a></li>
-                    <li><a tabindex="0" href="#shp" target="_self">SHP</a></li>
-                    <li><a tabindex="0" href="#pol" target="_self">POL</a></li>
-                    <li><a tabindex="0" href="#mdf" target="_self">MDF</a></li>
-                </ul>
-            </section>
+        <section id="MENU">
+            <h3 class="name" style="color: cyan">
+                <a href="#MENU" target="_self">MENU</a>
+            </h3>
+            <ul class="group" class="title-fullsize" id="menu-list">
+                <li>
+                    <a tabindex="0" href="#srv" target="_self">SRV
+                    </a>
+                </li>
+                <li>
+                    <a tabindex="0" href="#tec" target="_self">TEC
+                    </a>
+                </li>
+                <li>
+                    <a tabindex="0" href="#riid" target="_self">RIID
+                    </a>
+                </li>
+                <li>
+                    <a tabindex="0" href="#wrk" target="_self">WRK
+                    </a>
+                </li>
+                <li>
+                    <a tabindex="0" href="#mee" target="_self">MEE
+                    </a>
+                </li>
+                <li>
+                    <a tabindex="0" href="#see" target="_self">SEE
+                    </a>
+                </li>
+                <li>
+                    <a tabindex="0" href="#hiir" target="_self">HIIR
+                    </a>
+                </li>
+                <li>
+                    <a tabindex="0" href="#bsy" target="_self">BSY
+                    </a>
+                </li>
+                <li>
+                    <a tabindex="0" href="#dis" target="_self">DIS
+                    </a>
+                </li>
+                <li>
+                    <a tabindex="0" href="#art" target="_self">ART
+                    </a>
+                </li>
+                <li>
+                    <a tabindex="0" href="#eat" target="_self">EAT
+                    </a>
+                </li>
+                <li>
+                    <a tabindex="0" href="#shp" target="_self">SHP
+                    </a>
+                </li>
+                <li>
+                    <a tabindex="0" href="#pol" target="_self">POL
+                    </a>
+                </li>
+                <li>
+                    <a tabindex="0" href="#mdf" target="_self">MDF
+                    </a>
+                </li>
+            </ul>
+        </section>
 
-            <section id="srv">
-                <h3 class="name" style="color: cyan">
-                    <a href="#srv" target="_self">srv</a>
-                </h3>
-                <ul class="group">
-                    <li><a tabindex="0" href="http://10.0.10.1">[+] FB 6690</a></li>
-                    <li><a tabindex="0" href="https://cd.msmr.co">[+] cd.msmr.co</a></li>
-                    <li><a tabindex="0" href="https://pass.msmr.co">[++] pass.msmr.co</a></li>
-                    <li><a tabindex="0" href="http://ucloud.fritz.box:8010">[+] paperless</a></li>
-                    <li><a tabindex="0" href="http://ucloud.fritz.box:5380/admin">[+] unh0le </a></li>
-                    <li><a tabindex="0" href="https://customercontrolpanel.de">CCP</a></li>
-                    <li><a tabindex="0" href="http://pro.msmr.co">pro.msmr.co</a></li>
-                    <li><a tabindex="0" href="http://l.msmr.co">l.msmr.co</a></li>
-                    <li><a tabindex="0" href="https://pinboard.in/u:msmr">pinboard</a></li>
-                    <li><a tabindex="0" href="http://www.google.com/cse/home?cx=018347161240475232406:csbmxz219bw">ind.
-                            des. machine</a></li>
-                </ul>
-            </section>
+        <section id="srv">
+            <h3 class="name" style="color: cyan">
+                <a href="#srv" target="_self">srv</a>
+            </h3>
+            <ul class="group">
+                <li>
+                    <a tabindex="0" href="http://10.0.10.1">[+] FB 6690</a>
+                </li>
+                <li>
+                    <a tabindex="0" href="https://cd.msmr.co">[+] cd.msmr.co</a>
+                </li>
+                <li>
+                    <a tabindex="0" href="https://pass.msmr.co">[++] pass.msmr.co</a>
+                </li>
+                <li>
+                    <a tabindex="0" href="http://ucloud.fritz.box:8010">[+] paperless</a>
+                </li>
+                <li>
+                    <a tabindex="0" href="http://ucloud.fritz.box:5380/admin">[+] unh0le
+                    </a>
+                </li>
+                <li>
+                    <a tabindex="0" href="https://customercontrolpanel.de">CCP</a>
+                </li>
+                <li>
+                    <a tabindex="0" href="http://pro.msmr.co">pro.msmr.co</a>
+                </li>
+                <li>
+                    <a tabindex="0" href="http://l.msmr.co">l.msmr.co</a>
+                </li>
+                <li>
+                    <a tabindex="0" href="https://pinboard.in/u:msmr">pinboard</a>
+                </li>
+                <!--<li><a tabindex="0" href="http://u.msmr.co/index.php/hauptseite">uPedia</a></li>-->
+                <!--<li><a tabindex="0" href="http://m.msmr.co/o/">uMedia</a></li>-->
+                <li>
+                    <a tabindex="0" href="http://www.google.com/cse/home?cx=018347161240475232406:csbmxz219bw">ind.
+                        des. machine</a>
+                </li>
+            </ul>
+        </section>
 
-            <section id="tec">
-                <h3 class="name" style="color: cyan">
-                    <a href="#tec" target="_self">tec</a>
-                </h3>
-                <ul class="group">
-                    <li><a href="http://www.golem.de/ticker">golem</a></li>
-                    <li><a href="http://www.heise.de/mac-and-i/newsticker">Mac & i</a></li>
-                    <li><a href="https://www.heise.de/newsticker">heise</a></li>
-                    <li><a href="http://www.appleinsider.com">Appleinsider</a></li>
-                    <li><a href="http://www.apfeltalk.de/magazin">Apfeltalk</a></li>
-                    <li><a href="http://macmost.com">mac most</a></li>
-                    <li><a href="http://www.appgefahren.de">appgefahren</a></li>
-                    <li><a href="http://www.theverge.com/tech">The Verge</a></li>
-                    <li><a href="http://www.heise.de/tr">Technol. Review</a></li>
-                    <li><a href="http://arstechnica.com/gadgets">ars technica</a></li>
-                    <li><a href="http://www.macrumors.com/">Macrumors</a></li>
-                    <li><a href="http://www.appleworld.today"> world.today</a></li>
-                    <li><a href="http://www.macstories.net">Macstories</a></li>
-                    <li><a href="http://www.macnotes.de/news">Macnotes</a></li>
-                    <li><a href="http://recode.net">re/code</a></li>
-                    <li><a href="http://www.readwrite.com">readwrite</a></li>
-                    <li><a href="http://www.mashable.com">mashable</a></li>
-                    <li><a href="http://thenextweb.com">the next web</a></li>
-                    <li><a href="http://www.gizmodo.com">Gizmodo</a></li>
-                    <li><a href="http://www.smashingmagazine.com">Smashingmag</a></li>
-                    <li><a href="http://www.businessinsider.com/sai">Silicon A. Insider</a></li>
-                    <li><a href="https://techniktagebuch.tumblr.com">techniktagebuch</a></li>
-                    <li><a href="http://www.computerwoche.de/p/technologie,3461">Computerwoche</a></li>
-                    <li><a href="http://www.geek.com">geek</a></li>
-                    <li><a href="http://www.lifehacker.com">lifehacker</a></li>
-                    <li><a href="https://techcrunch.com">TECHCRUNCH</a></li>
-                </ul>
-            </section>
+        <section id="tec">
+            <h3 class="name" style="color: cyan">
+                <a href="#tec" target="_self">tec</a>
+            </h3>
+            <ul class="group">
+                <li><a href="http://www.golem.de/ticker">golem</a>
+                </li>
+                <li>
+                    <a href="http://www.heise.de/mac-and-i/newsticker">Mac & i</a>
+                </li>
+                <li>
+                    <a href="https://www.heise.de/newsticker">heise</a>
+                </li>
+                <li>
+                    <a href="http://www.appleinsider.com">Appleinsider</a>
+                </li>
+                <li>
+                    <a href="http://www.apfeltalk.de/magazin">Apfeltalk</a>
+                </li>
+                <li><a href="http://macmost.com">mac most</a>
+                </li>
+                <li>
+                    <a href="http://www.appgefahren.de">appgefahren</a>
+                </li>
+                <li>
+                    <a href="http://www.theverge.com/tech">The Verge</a>
+                </li>
+                <li>
+                    <a href="http://www.heise.de/tr">Technol. Review</a>
+                </li>
+                <li>
+                    <a href="http://arstechnica.com/gadgets">ars technica</a>
+                </li>
+                <li>
+                    <a href="http://www.macrumors.com/">Macrumors</a>
+                </li>
+                <li>
+                    <a href="http://www.appleworld.today"> world.today</a>
+                </li>
+                <li>
+                    <a href="http://www.macstories.net">Macstories</a>
+                </li>
+                <li>
+                    <a href="http://www.macnotes.de/news">Macnotes</a>
+                </li>
+                <li><a href="http://recode.net">re/code</a></li>
+                <li>
+                    <a href="http://www.readwrite.com">readwrite</a>
+                </li>
+                <li><a href="http://www.mashable.com">mashable</a></li>
+                <li>
+                    <a href="http://thenextweb.com">the next web</a>
+                </li>
+                <li><a href="http://www.gizmodo.com">Gizmodo</a></li>
+                <li>
+                    <a href="http://www.smashingmagazine.com">Smashingmag</a>
+                </li>
+                <li>
+                    <a href="http://www.businessinsider.com/sai">Silicon A. Insider</a>
+                </li>
+                <li>
+                    <a href="https://techniktagebuch.tumblr.com">techniktagebuch</a>
+                </li>
+                <li>
+                    <a href="http://www.computerwoche.de/p/technologie,3461">Computerwoche</a>
+                </li>
+                <li><a href="http://www.geek.com">geek</a>
+                </li>
+                <li>
+                    <a href="http://www.lifehacker.com">lifehacker</a>
+                </li>
+                <li><a href="https://techcrunch.com">TECHCRUNCH</a></li>
+            </ul>
+        </section>
 
-            <section id="riid">
-                <h3 class="name" style="color: SandyBrown">
-                    <a href="#riid" target="_self">riid</a>
-                </h3>
-                <ul class="group">
-                    <li><a href="https://www.spiegel.de/netzwelt/">Spiegel ONLINE</a></li>
-                    <li><a href="https://www.spiegel.de/schlagzeilen/">S Headlines</a></li>
-                    <li><a href="https://www.zeit.de/digital">Zeit Online</a></li>
-                    <li><a href="https://www.freitag.de/kultur/medien">der Freitag</a></li>
-                    <li><a href="http://www.nw.de/nachrichten/computer_internet">NeueWestfälische</a></li>
-                    <li><a href="https://www.tagesspiegel.de/medien/digitale-welt/">Tagesspiegel</a></li>
-                    <li><a href="https://taz.de/!p4631/">tageszeitung</a></li>
-                    <li><a href="https://www.derstandard.at/web">Der Standard</a></li>
-                    <li><a href="https://www.theguardian.com/uk/technology">the guardian</a></li>
-                    <li><a
-                            href="http://news.google.com/news?ned=:epkh8bm9e2if2mhabqjkddhavb6qb7yoym6ayoqamakxqcxlapgldzhgzhsj_pyxsjdew_j6icfqpxn1hssavlmqyg">G
-                            News</a></li>
-                    <li><a href="https://time.com/tech/">TIME</a></li>
-                    <li><a href="https://www.faz.net/aktuell/technik-motor/">FAZ</a></li>
-                    <li><a href="https://www.nytimes.com/pages/technology">New York Times</a></li>
-                    <li><a href="https://www.fr-online.de/digital/">FR</a></li>
-                    <li><a href="https://www.sueddeutsche.de/computer/">Süddeutsche</a></li>
-                    <li><a href="https://krautreporter.de/">Krautreporter</a></li>
-                    <li><a href="https://krautreporter.de/zusammenhaenge">Zusammenhänge</a></li>
-                    <li><a href="https://www.nzz.ch/mehr/digital/">NZZ</a></li>
-                    <li><a href="https://www.brandeins.de">brand eins</a></li>
-                    <li><a href="https://www.wired.com">W|R€D</a></li>
-                    <li><a href="https://www.domusweb.it/en">DOMUS</a></li>
-                    <li><a href="https://www.designboom.com">designboom</a></li>
-                    <li><a href="https://www.vice.com/en_us">VICE</a></li>
-                    <li><a href="https://99u.adobe.com/">99u</a></li>
-                    <li><a href="https://www.heise.de/select/mac-and-i">Mac & i lesen</a></li>
-                    <li><a href="https://www.heise.de/select/ct">c´t lesen</a></li>
-                </ul>
-            </section>
+        <section id="riid">
+            <h3 class="name" style="color: SandyBrown">
+                <a href="#riid" target="_self">riid</a>
+            </h3>
+            <ul class="group">
+                <li>
+                    <a href="https://www.spiegel.de/netzwelt/">Spiegel ONLINE</a>
+                </li>
+                <li>
+                    <a href="https://www.spiegel.de/schlagzeilen/">S Headlines</a>
+                </li>
+                <li>
+                    <a href="https://www.zeit.de/digital">Zeit Online</a>
+                </li>
+                <li>
+                    <a href="https://www.freitag.de/kultur/medien">der Freitag</a>
+                </li>
+                <li>
+                    <a href="http://www.nw.de/nachrichten/computer_internet">NeueWestfälische</a>
+                </li>
+                <li>
+                    <a href="https://www.tagesspiegel.de/medien/digitale-welt/">Tagesspiegel</a>
+                </li>
+                <li>
+                    <a href="https://taz.de/!p4631/">tageszeitung</a>
+                </li>
+                <li>
+                    <a href="https://www.derstandard.at/web">Der Standard</a>
+                </li>
+                <li>
+                    <a href="https://www.theguardian.com/uk/technology">the guardian</a>
+                </li>
+                <li>
+                    <a
+                        href="http://news.google.com/news?ned=:epkh8bm9e2if2mhabqjkddhavb6qb7yoym6ayoqamakxqcxlapgldzhgzhsj_pyxsjdew_j6icfqpxn1hssavlmqyg">G
+                        News</a>
+                </li>
+                <li><a href="https://time.com/tech/">TIME</a></li>
+                <li>
+                    <a href="https://www.faz.net/aktuell/technik-motor/">FAZ</a>
+                </li>
+                <li>
+                    <a href="https://www.nytimes.com/pages/technology">New York Times</a>
+                </li>
+                <li>
+                    <a href="https://www.fr-online.de/digital/">FR</a>
+                </li>
+                <li>
+                    <a href="https://www.sueddeutsche.de/computer/">Süddeutsche</a>
+                </li>
+                <li>
+                    <a href="https://krautreporter.de/">Krautreporter</a>
+                </li>
+                <li>
+                    <a href="https://krautreporter.de/zusammenhaenge">Zusammenhänge</a>
+                </li>
+                <li>
+                    <a href="https://www.nzz.ch/mehr/digital/">NZZ</a>
+                </li>
+                <li>
+                    <a href="https://www.brandeins.de">brand eins</a>
+                </li>
+                <li><a href="https://www.wired.com">W|R€D</a></li>
+                <li><a href="https://www.domusweb.it/en">DOMUS</a></li>
+                <li>
+                    <a href="https://www.designboom.com">designboom</a>
+                </li>
+                <li><a href="https://www.vice.com/en_us">VICE</a></li>
+                <li><a href="https://99u.adobe.com/">99u</a></li>
+                <!-- <li>.</li> -->
+                <li>
+                    <a href="https://www.heise.de/select/mac-and-i">Mac & i lesen</a>
+                </li>
+                <li>
+                    <a href="https://www.heise.de/select/ct">c´t lesen</a>
+                </li>
+            </ul>
+        </section>
 
-            <section id="wrk">
-                <h3 class="name" style="color: cyan">
-                    <a href="#wrk" target="_self">wrk</a>
-                </h3>
-                <ul class="group">
-                    <li><a href="https://knoblauch.eu"> KNOBLAUCH </a></li>
-                    <li><a href="https://cloud.knoblauch.eu"> KK Cloud </a></li>
-                    <li><a href="https://ctx.knoblauch.eu"> KK Citrix </a></li>
-                    <li><a href="https://remote.knoblauch.eu"> KK Remote </a></li>
-                    <li><a href="https://app.raindrop.io/my/0"> Raindrop [522] </a></li>
-                    <li><a href="https://buyersguide.macrumors.com"> Buyers Guide </a></li>
-                    <li><a href="https://knoblauch.de.beekeeper.io">KK Beekeeper </a></li>
-                    <li><a href="https://fast.com"> Fast </a></li>
-                    <li><a href="https://msmr.speedtestcustom.com"> Speedtest </a></li>
-                    <li><a href="https://breitbandmessung.de/test"> breitbandmessung </a></li>
-                </ul>
-            </section>
+        <section id="wrk">
+            <h3 class="name" style="color: cyan">
+                <a href="#wrk" target="_self">wrk</a>
+            </h3>
+            <ul class="group">
+                <li>
+                    <a href="https://knoblauch.eu">
+                        KNOBLAUCH
+                    </a>
+                </li>
+                <li>
+                    <a href="https://cloud.knoblauch.eu">
+                        KK Cloud
+                    </a>
+                </li>
+                <li>
+                    <a href="https://ctx.knoblauch.eu">
+                        KK Citrix
+                    </a>
+                </li>
+                <li>
+                    <a href="https://remote.knoblauch.eu">
+                        KK Remote
+                    </a>
+                </li>
+                <li>
+                    <a href="https://app.raindrop.io/my/0">
+                        Raindrop [522]
+                    </a>
+                </li>
+                <li>
+                    <a href="https://buyersguide.macrumors.com">
+                        Buyers Guide
+                    </a>
+                </li>
+                <li>
+                    <a href="https://knoblauch.de.beekeeper.io">KK Beekeeper
+                    </a>
+                </li>
+                <li>
+                    <a href="https://fast.com">
+                        Fast
+                    </a>
+                </li>
+                <li>
+                    <a href="https://msmr.speedtestcustom.com">
+                        Speedtest
+                    </a>
+                </li>
+                <li>
+                    <a href="https://breitbandmessung.de/test">
+                        breitbandmessung
+                    </a>
+                </li>
+            </ul>
+        </section>
 
-            <section id="mee">
-                <h3 class="name" style="color: cyan">
-                    <a href="#mee" target="_self">mee</a>
-                </h3>
-                <ul class="group">
-                    <li><a href="http://www.x.com/maasmeier">… X …</a></li>
-                    <li><a href="http://www.facebook.com/maasmeier">facebook</a></li>
-                    <li><a href="http://www.instagram.com/msmr">Instagram</a></li>
-                    <li><a href="http://www.threads.net/msmr">Threads</a></li>
-                    <li><a href="https://cloud.feedly.com">feedly</a></li>
-                    <li><a href="https://kunde.comdirect.de">comdirect</a></li>
-                    <li><a href="https://webmail.msmr.co">netcup Mail</a></li>
-                    <li><a href="https://mail.google.com/mail">Gmail</a></li>
-                    <li><a href="http://drive.google.com">G drive</a></li>
-                </ul>
-            </section>
+        <section id="mee">
+            <h3 class="name" style="color: cyan">
+                <a href="#mee" target="_self">mee</a>
+            </h3>
+            <ul class="group">
+                <li><a href="http://www.x.com/maasmeier">… X …</a></li>
+                <li>
+                    <a href="http://www.facebook.com/maasmeier">facebook</a>
+                </li>
+                <li>
+                    <a href="http://www.instagram.com/msmr">Instagram</a>
+                </li>
+                <li>
+                    <a href="http://www.threads.net/msmr">Threads</a>
+                </li>
+                <!-- <li><a href="http://getpocket.com/a/queue/">pocket</a></li> -->
+                <!-- <li><a href="http://www.flickr.com/photos/limasign/sets">flickr</a></li>-->
+                <li>
+                    <a href="https://cloud.feedly.com">feedly</a>
+                </li>
+                <li>
+                    <a href="https://kunde.comdirect.de">comdirect</a>
+                </li>
+                <li>
+                    <a href="https://webmail.msmr.co">netcup Mail</a>
+                </li>
+                <li>
+                    <a href="https://mail.google.com/mail">Gmail</a>
+                </li>
+                <li><a href="http://drive.google.com">G drive</a></li>
+            </ul>
+        </section>
 
-            <section id="see">
-                <h3 class="name" style="color: cyan">
-                    <a href="#see" target="_self">see</a>
-                </h3>
-                <ul class="group">
-                    <li><a href="https://web2.magentatv.de">Magenta TV</a></li>
-                    <li><a href="https://mediathek.daserste.de">ARD</a></li>
-                    <li><a href="https://www.zdf.de/zdfmediathek/">ZDF</a></li>
-                    <li><a href="https://www.arte.tv/guide/de/plus7/">arte</a></li>
-                    <li><a href="https://www.3sat.de/mediathek/">3sat</a></li>
-                    <li><a href="https://wdr.de/mediathek">WDR</a></li>
-                    <li><a href="https://www.br.de/mediathek/video">BR</a></li>
-                    <li><a href="https://tv.apple.com/de"> tv</a></li>
-                    <li><a href="https://www.amazon.de/amazonprime"> prime video</a></li>
-                    <li><a href="https://mubi.com/films/showing">MUBI</a></li>
-                    <li><a href="https://www.mediasteak.com">MediaSteak</a></li>
-                    <li><a href="https://www.save.tv/stv/m/obj/tvprogctr/tvprogrammfilm.cfm">save.tv</a></li>
-                </ul>
-            </section>
+        <section id="see">
+            <h3 class="name" style="color: cyan">
+                <a href="#see" target="_self">see</a>
+            </h3>
+            <ul class="group">
+                <li>
+                    <a href="https://web2.magentatv.de">Magenta TV</a>
+                </li>
+                <li><a href="https://mediathek.daserste.de">ARD</a></li>
+                <li>
+                    <a href="https://www.zdf.de/zdfmediathek/">ZDF</a>
+                </li>
+                <li>
+                    <a href="https://www.arte.tv/guide/de/plus7/">arte</a>
+                </li>
+                <li>
+                    <a href="https://www.3sat.de/mediathek/">3sat</a>
+                </li>
+                <li><a href="https://wdr.de/mediathek">WDR</a></li>
+                <li>
+                    <a href="https://www.br.de/mediathek/video">BR</a>
+                </li>
+                <li><a href="https://tv.apple.com/de"> tv</a></li>
+                <li>
+                    <a href="https://www.amazon.de/amazonprime">
+                        prime video</a>
+                </li>
+                <li>
+                    <a href="https://mubi.com/films/showing">MUBI</a>
+                </li>
+                <li>
+                    <a href="https://www.mediasteak.com">MediaSteak</a>
+                </li>
+                <li>
+                    <a href="https://www.save.tv/stv/m/obj/tvprogctr/tvprogrammfilm.cfm">save.tv</a>
+                </li>
+            </ul>
+        </section>
 
-            <section id="hiir">
-                <h3 class="name" style="color: cyan">
-                    <a href="#hiir" target="_self">hiir</a>
-                </h3>
-                <ul class="group">
-                    <li><a
-                            href="https://srv.deutschlandradio.de/themes/dradio/script/aod/index.html?audioMode=4&audioID=3&state=">►
-                            DLF Live</a></li>
-                    <li><a href="http://dradiowissen.de">DLF Nova</a></li>
-                    <li><a href="http://www.deutschlandradiokultur.de">DLF Kultur</a></li>
-                    <li><a href="http://www.deutschlandfunk.de/">Deutschlandfunk</a></li>
-                </ul>
-            </section>
+        <section id="hiir">
+            <h3 class="name" style="color: cyan">
+                <a href="#hiir" target="_self">hiir</a>
+            </h3>
+            <ul class="group">
+                <li>
+                    <a
+                        href="https://srv.deutschlandradio.de/themes/dradio/script/aod/index.html?audioMode=4&audioID=3&state=">►
+                        DLF Live</a>
+                </li>
+                <li><a href="http://dradiowissen.de">DLF Nova</a></li>
+                <li>
+                    <a href="http://www.deutschlandradiokultur.de">DLF Kultur</a>
+                </li>
+                <li>
+                    <a href="http://www.deutschlandfunk.de/">Deutschlandfunk</a>
+                </li>
+            </ul>
+        </section>
 
-            <section id="bsy">
-                <h3 class="name" style="color: cyan">
-                    <a href="#bsy" target="_self">bsy</a>
-                </h3>
-                <ul class="group">
-                    <li><a href="http://msmr.co">msmr</a></li>
-                    <li><a href="http://1hou.se">1hou.se</a></li>
-                    <li><a href="http://my-glasses.net">my•glasses</a></li>
-                    <li><a href="http://www.macpad.eu">macpad</a></li>
-                    <li><a href="https://aha.atelier522.com/index.php?title=admin:Hauptseite#admin-Seiten">Aha!</a></li>
-                    <li><a href="https://aha.atelier522.com/index.php?title=Hauptseite">Ha!</a></li>
-                </ul>
-            </section>
+        <section id="bsy">
+            <h3 class="name" style="color: cyan">
+                <a href="#bsy" target="_self">bsy</a>
+            </h3>
+            <ul class="group">
+                <li><a href="http://msmr.co">msmr</a></li>
+                <li><a href="http://1hou.se">1hou.se</a></li>
+                <li>
+                    <a href="http://my-glasses.net">my•glasses</a>
+                </li>
+                <li><a href="http://www.macpad.eu">macpad</a></li>
+                <li>
+                    <a href="https://aha.atelier522.com/index.php?title=admin:Hauptseite#admin-Seiten">Aha!</a>
+                </li>
+                <li>
+                    <a href="https://aha.atelier522.com/index.php?title=Hauptseite">Ha!</a>
+                </li>
+            </ul>
+        </section>
 
-            <section id="dis">
-                <h3 class="name" style="color: cyan">
-                    <a href="#dis" target="_self">dis</a>
-                </h3>
-                <ul class="group">
-                    <li><a href="https://discourse.mcneel.com/category/rhino/rhino-for-mac/5">Rhino Mac</a></li>
-                    <li><a href="https://discuss.binaryage.com/c/totalfinder">totalfinder</a></li>
-                    <li><a href="https://community.krautreporter.de">KR Community</a></li>
-                    <li><a href="https://docs.mcneel.com/rhino/mac/help/de-de/index.htm"> Rhino Mac — ? </a></li>
-                    <li><a href="https://docs.mcneel.com/rhino/5/help/de-de/index.htm">Rhino Win — ?</a></li>
-                    <li><a href="https://forum.jungundnaiv.de">Jung und naiv</a></li>
-                    <li><a href="https://mdialog.mensa.de/"> MDialog </a></li>
-                    <li><a href="https://forum.openwrt.org/t/openwrt-one-celebrating-20-years-of-openwrt/183684/">
-                            OpenWrt One </a>
-                    </li>
-                </ul>
-            </section>
+        <section id="dis">
+            <h3 class="name" style="color: cyan">
+                <a href="#dis" target="_self">dis</a>
+            </h3>
+            <ul class="group">
+                <li>
+                    <a href="https://discourse.mcneel.com/category/rhino/rhino-for-mac/5">Rhino Mac</a>
+                </li>
+                <li>
+                    <a href="https://discuss.binaryage.com/c/totalfinder">totalfinder</a>
+                </li>
+                <li>
+                    <a href="https://community.krautreporter.de">KR Community</a>
+                </li>
+                <li>
+                    <a href="https://docs.mcneel.com/rhino/mac/help/de-de/index.htm">
+                        Rhino Mac — ?
+                    </a>
+                </li>
+                <li>
+                    <a href="https://docs.mcneel.com/rhino/5/help/de-de/index.htm">Rhino Win — ?</a>
+                </li>
+                <li>
+                    <a href="https://forum.jungundnaiv.de">Jung und naiv</a>
+                </li>
+                <li>
+                    <a href="https://mdialog.mensa.de/">
+                        MDialog
+                    </a>
+                </li>
+                <li>
+                    <a href="https://forum.openwrt.org/t/openwrt-one-celebrating-20-years-of-openwrt/183684/">
+                        OpenWrt One
+                    </a>
+                </li>
+            </ul>
+        </section>
 
-            <section id="art">
-                <h3 class="name" style="color: cyan">
-                    <a href="#art" target="_self">art</a>
-                </h3>
-                <ul class="group">
-                    <li><a href="https://artsy.net">artsy</a></li>
-                    <li><a href="https://www.googleartproject.com/de"> G Art Project</a></li>
-                    <li><a href="https://www.theonlymagicleftisart.com">(*) the only magic</a></li>
-                    <li><a href="https://curatorsintl.org">blu</a></li>
-                    <li><a href="https://twinery.org/2">twine 2.0</a></li>
-                </ul>
-            </section>
+        <section id="art">
+            <h3 class="name" style="color: cyan">
+                <a href="#art" target="_self">art</a>
+            </h3>
+            <ul class="group">
+                <li><a href="https://artsy.net">artsy</a>
+                </li>
+                <li>
+                    <a href="https://www.googleartproject.com/de">
+                        G Art Project</a>
+                </li>
+                <li>
+                    <a href="https://www.theonlymagicleftisart.com">(*) the only magic</a>
+                </li>
+                <li>
+                    <a href="https://curatorsintl.org">blu</a>
+                </li>
+                <li>
+                    <a href="https://twinery.org/2">twine 2.0</a>
+                </li>
+            </ul>
+        </section>
 
-            <section id="eat">
-                <h3 class="name" style="color: cyan">
-                    <a href="#eat" target="_self">eat</a>
-                </h3>
-                <ul class="group">
-                    <li><a href="https://gehrenberg.de/speisekarte/"> Wirtshaus </a></li>
-                    <li><a href="https://www.gehrenberg-bodensee.de/gastro/restauration-lichtblick/"> Lichtblick </a>
-                    </li>
-                    <li><a href="https://www.restaurant-buergerstuben.de"> Bürgerstuben </a></li>
-                    <li><a
-                            href="https://www.mcdonalds.com/de/de-de/restaurant-suche.html/l/markdorf/planckstrasse-2/1560">
-                            McD Markdorf
-                        </a></li>
-                    <li><a href="https://gessler1862.de/de/articles/cafe-und-bar"> Gessler 1862 </a></li>
-                    <li><a href="https://pizzerialamm.de/Speisen-Getraenke"> Pizzeria Lamm </a></li>
-                    <li><a href="http://172.23.29.110"> [TBX] • OrderBox </a></li>
-                    <li><a href="https://www.lieferando.de/speisekarte/otto-lilienthal-burgergill-steakhouse">
-                            Otto Lilienthal
-                        </a></li>
-                    <li><a href="https://shop.riggs-burger.de/friedrichshafen"> Riggs Burger</a></li>
-                    <li><a href="https://shop.riggs-burger.de/friedrichshafen"> Riggs Burger</a></li>
-                    <li><a href="https://schwabenexpress.store/friedrichshafen">Schwab-Express</a></li>
-                    <li><a href="https://www.pastaburgerameckmarkdorf.de"> Pasta & Burger a.E. </a></li>
-                    <li><a href="https://kitchen.toolbox-bodensee.de"> [TBX] • Str/chliste </a></li>
-                </ul>
-            </section>
+        <section id="eat">
+            <h3 class="name" style="color: cyan">
+                <a href="#eat" target="_self">eat</a>
+            </h3>
+            <ul class="group">
+                <li>
+                    <a href="https://gehrenberg.de/speisekarte/">
+                        Wirtshaus
+                        <!-- am Gehrenberg -->
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.gehrenberg-bodensee.de/gastro/restauration-lichtblick/">
+                        Lichtblick
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.restaurant-buergerstuben.de">
+                        Bürgerstuben
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.mcdonalds.com/de/de-de/restaurant-suche.html/l/markdorf/planckstrasse-2/1560">
+                        McD Markdorf
+                    </a>
+                </li>
+                <li>
+                    <a href="https://gessler1862.de/de/articles/cafe-und-bar">
+                        Gessler 1862
+                    </a>
+                </li>
+                <!-- <li><a href="http://www.goa-markdorf.de/mittagstisch">Goa</a></li> -->
+                <li>
+                    <a href="https://pizzerialamm.de/Speisen-Getraenke">
+                        Pizzeria Lamm
+                    </a>
+                </li>
+                <li>
+                    <a href="http://172.23.29.110">
+                        [TBX] • OrderBox
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.lieferando.de/speisekarte/otto-lilienthal-burgergill-steakhouse">
+                        Otto Lilienthal
+                    </a>
+                </li>
+                <li>
+                    <a href="https://shop.riggs-burger.de/friedrichshafen">
+                        Riggs Burger</a>
+                </li>
+                <li>
+                    <a href="https://shop.riggs-burger.de/friedrichshafen">
+                        Riggs Burger</a>
+                </li>
+                <li>
+                    <a href="https://schwabenexpress.store/friedrichshafen">Schwab-Express</a>
+                </li>
+                <li>
+                    <a href="https://www.pastaburgerameckmarkdorf.de">
+                        Pasta & Burger a.E.
+                    </a>
+                </li>
+                <li>
+                    <a href="https://kitchen.toolbox-bodensee.de">
+                        [TBX] • Str/chliste
+                    </a>
+                </li>
+                <!-- <li><a href="https://see-bör.se/#!/user/active">tb://see-bör.se</a></li> -->
+            </ul>
+        </section>
 
-            <section id="shp">
-                <h3 class="name" style="color: cyan">
-                    <a href="#shp" target="_self">shp</a>
-                </h3>
-                <ul class="group">
-                    <li><a href="http://preisvergleich.golem.de">preisvgl.golem.de</a></li>
-                    <li><a href="https://www.amazon.de">amazon</a></li>
-                    <li><a href="https://www.bueromarkt-ag.de">Böttcher AG</a></li>
-                    <li><a href="https://www.mindfactory.de">Mindfactory</a></li>
-                    <li><a href="https://www.reichelt.de">reichelt.de</a></li>
-                    <li><a href="https://www.connox.de">connox.de</a></li>
-                    <li><a href="https://www.wir-machen-druck.de">WirMachenDruck </a></li>
-                    <li><a href="https://www.flyeralarm.de">flyeralarm</a></li>
-                </ul>
-            </section>
+        <section id="shp">
+            <h3 class="name" style="color: cyan">
+                <a href="#shp" target="_self">shp</a>
+            </h3>
+            <ul class="group">
+                <li>
+                    <a href="http://preisvergleich.golem.de">preisvgl.golem.de</a>
+                </li>
+                <li>
+                    <a href="https://www.amazon.de">amazon</a>
+                </li>
+                <li>
+                    <a href="https://www.bueromarkt-ag.de">Böttcher AG</a>
+                </li>
+                <li>
+                    <a href="https://www.mindfactory.de">Mindfactory</a>
+                </li>
+                <li>
+                    <a href="https://www.reichelt.de">reichelt.de</a>
+                </li>
+                <li>
+                    <a href="https://www.connox.de">connox.de</a>
+                </li>
+                <li>
+                    <a href="https://www.wir-machen-druck.de">WirMachenDruck
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.flyeralarm.de">flyeralarm</a>
+                </li>
+            </ul>
+        </section>
 
-            <section id="pol">
-                <h3 class="name" style="color: cyan">
-                    <a href="#pol" target="_self">pol</a>
-                </h3>
-                <ul class="group">
-                    <li><a href="https://spd.de">SPD.de</a></li>
-                    <li><a href="https://spd-markdorf.de">SPD Markdorf</a></li>
-                    <li><a href="https://spd-markdorf.de/wp-admin">…/edit </a></li>
-                    <li><a href="https://organize.spd.de">SPD.organize</a></li>
-                    <li><a href="https://meinportal.spd.de/MeinPortal2/">SPD.meinportal </a></li>
-                    <li><a href="https://mailer.spd.de">SPD.mailer</a></li>
-                    <li><a href="https://shop.spd.de/mein-spd-shop/de/shop/parteiarbeit/">Parteiarbeit </a></li>
-                    <li><a href="https://kampagne.spd.de/schnellfinder">🤓 Schnellfinder</a></li>
-                    <li><a
-                            href="https://shop.spd.de/mein-spd-shop/de/shop/gestaltungsportal/ba-wue/">Gestaltungsportal</a>
-                    </li>
-                    <li><a href="https://www.adfc.de">adfc</a></li>
-                    <li><a href="https://www.vcd.org">VCD</a></li>
-                </ul>
-            </section>
+        <section id="pol">
+            <h3 class="name" style="color: cyan">
+                <a href="#pol" target="_self">pol</a>
+            </h3>
+            <ul class="group">
+                <!-- <li><a href="http://www.piratenpartei.de">piraten de</a></li>
+    <li><a href="http://bpt.piratenpartei.de">BPT 2010</a></li>
+    <li><a href="http://wiki.piratenpartei.de/hauptseite">Wiki</a></li>
+    <li><a href="http://piratenpartei-bw.de">Piraten BW</a></li>
+    <li><a href="http://ppeu.net">Piraten EU</a></li>
+    -->
+                <li><a href="https://spd.de">SPD.de</a></li>
+                <li>
+                    <a href="https://spd-markdorf.de">SPD Markdorf</a>
+                </li>
+                <li>
+                    <a href="https://spd-markdorf.de/wp-admin">…/edit
+                    </a>
+                </li>
+                <li>
+                    <a href="https://organize.spd.de">SPD.organize</a>
+                </li>
+                <li>
+                    <a href="https://meinportal.spd.de/MeinPortal2/">SPD.meinportal
+                    </a>
+                </li>
+                <li>
+                    <a href="https://mailer.spd.de">SPD.mailer</a>
+                </li>
+                <li>
+                    <a href="https://shop.spd.de/mein-spd-shop/de/shop/parteiarbeit/">Parteiarbeit
+                    </a>
+                </li>
+                <li>
+                    <a href="https://kampagne.spd.de/schnellfinder">🤓 Schnellfinder</a>
+                </li>
+                <li>
+                    <a href="https://shop.spd.de/mein-spd-shop/de/shop/gestaltungsportal/ba-wue/">Gestaltungsportal</a>
+                </li>
+                <li>
+                    <a href="https://www.adfc.de">adfc</a>
+                </li>
+                <li>
+                    <a href="https://www.vcd.org">VCD</a>
+                </li>
+            </ul>
+        </section>
 
-            <section id="mdf">
-                <h3 class="name" style="color: cyan">
-                    <a href="#mdf" target="_self">mdf</a>
-                </h3>
-                <ul class="group">
+        <section id="mdf">
+            <h3 class="name" style="color: cyan">
+                <a href="#mdf" target="_self">mdf</a>
+            </h3>
+            <ul class="group">
 
-                    <li><a href="https://cm-terminreservierung.de/markdorf?calendarId=92">Markdorf Service
-                        </a></li>
-                    <li><a
-                            href="https://www.markdorf.de/stadt-buerger/kommunalpolitik-verwaltung/gremien/stadtraete-markdorf">Gemeinderat
-                        </a></li>
-                </ul>
-            </section>
-        </article>
-    </div>
+                <li>
+                    <a href="https://cm-terminreservierung.de/markdorf?calendarId=92">Markdorf Service
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://www.markdorf.de/stadt-buerger/kommunalpolitik-verwaltung/gremien/stadtraete-markdorf">Gemeinderat
+                    </a>
+                </li>
+            </ul>
+        </section>
+    </article>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
