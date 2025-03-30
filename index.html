@@ -83,7 +83,6 @@
             position: absolute;
             position: sticky;
             top: 0px;
-            /* Corrected to 0px from 0 */
             z-index: 100;
             background-color: var(--front-body);
         }
@@ -99,7 +98,7 @@
             overflow-y: scroll;
             overflow-x: hidden;
             scroll-snap-type: y mandatory;
-            padding-top: 60px;
+            padding-top: 0px;
             height: 94%;
             position: relative;
             z-index: 1;
@@ -108,7 +107,7 @@
         section,
         section .group {
             color: var(--text-col);
-            font-size: 1.15em;
+            font-size: 1.11em;
         }
 
         section {
@@ -142,18 +141,16 @@
         section ul.group li {
             /* More specific selector for content section li */
             width: 190px !important;
-            /* Changed to width from min-width for fixed width */
             min-width: 190px !important;
-            /* Added min-width as well for robustness */
             box-sizing: border-box;
-            /* To include padding/border in width */
+            padding: 0 !important;
+            /* Reset padding for li */
         }
 
         section#MENU ul.group li {
             /* Reverted MENU li min-width to auto */
             min-width: auto !important;
             width: auto !important;
-            /* Also reset width for MENU li */
         }
 
 
@@ -166,7 +163,8 @@
             cursor:
                 var(--curs-hov) 1 30,
                 auto;
-            display: inline-block;
+            display: block;
+            /* Changed to display: block; for full li click area */
         }
 
         li a:hover,
