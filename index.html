@@ -107,7 +107,7 @@
         section,
         section .group {
             color: var(--text-col);
-            font-size: 1.13em;
+            font-size: 1.12em;
         }
 
         section {
@@ -413,6 +413,28 @@
                 margin-right: 0;
                 /* Remove right margin for even items to align to the right edge */
             }
+
+            /* Content sections mobile styles */
+            section:not(#MENU) ul.group {
+                /* Target all sections except MENU */
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            section:not(#MENU) ul.group li {
+                width: calc(50% - 10px);
+                /* Two items per line in portrait */
+                margin-right: 10px;
+                margin-bottom: 5px;
+                display: block;
+                /* override inline-block for width to work */
+                box-sizing: border-box;
+            }
+
+            section:not(#MENU) ul.group li:nth-child(2n) {
+                margin-right: 0;
+                /* Remove right margin for every second item */
+            }
         }
 
         /*   iPhone iPhone iPhone   HOR  HOR  HOR  */
@@ -492,6 +514,28 @@
                 margin-right: 0;
                 /* Remove right margin for every 4th item to align to the right edge */
             }
+
+            /* Content sections mobile styles landscape */
+            section:not(#MENU) ul.group {
+                /* Target all sections except MENU */
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            section:not(#MENU) ul.group li {
+                width: calc(25% - 10px);
+                /* Four items per line in landscape */
+                margin-right: 10px;
+                margin-bottom: 5px;
+                display: block;
+                /* override inline-block for width to work */
+                box-sizing: border-box;
+            }
+
+            section:not(#MENU) ul.group li:nth-child(4n) {
+                margin-right: 0;
+                /* Remove right margin for every fourth item */
+            }
         }
 
         /*   iPhone iPhone iPhone   VERT   VERT  */
@@ -566,6 +610,28 @@
             section#MENU ul.group li:nth-child(2n) {
                 margin-right: 0;
                 /* Remove right margin for even items to align to the right edge */
+            }
+
+            /* Content sections mobile styles portrait */
+            section:not(#MENU) ul.group {
+                /* Target all sections except MENU */
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            section:not(#MENU) ul.group li {
+                width: calc(50% - 10px);
+                /* Two items per line in portrait */
+                margin-right: 10px;
+                margin-bottom: 5px;
+                display: block;
+                /* override inline-block for width to work */
+                box-sizing: border-box;
+            }
+
+            section:not(#MENU) ul.group li:nth-child(2n) {
+                margin-right: 0;
+                /* Remove right margin for every second item */
             }
         }
 
