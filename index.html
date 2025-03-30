@@ -84,7 +84,8 @@
             position: absolute;
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1 !important;
+            /* Reduced z-index for debugging */
             background-color: var(--front-body);
         }
 
@@ -107,13 +108,27 @@
             height: auto;
             min-height: auto;
             /* Removed min-height temporarily */
-            position: static;
-            /* Changed to static for debugging */
+            position: static !important;
+            /* Ensure static positioning for debugging */
             z-index: auto;
             /* Reset z-index for debugging */
             border: 2px solid red;
             /* Added border for debugging */
+            clip-path: none !important;
+            /* Reset clip-path if any - debugging */
+            -webkit-clip-path: none !important;
+            /* Reset clip-path if any - debugging */
         }
+
+        .container,
+        .container section,
+        .container section * {
+            color: black !important;
+            /* Force black text for debugging */
+            background-color: white !important;
+            /* Force white background for debugging */
+        }
+
 
         section {
             scroll-snap-align: start;
@@ -128,11 +143,13 @@
         section,
         section .group {
             color: var(--text-col);
+            /* Might be overridden by debugging CSS */
         }
 
         section:hover a,
         section:hover .group {
             color: var(--sect-col) !important;
+            /* Might be overridden by debugging CSS */
         }
 
         li,
@@ -149,6 +166,7 @@
 
         li a {
             color: var(--sect-col) !important;
+            /* Might be overridden by debugging CSS */
             padding: 4px 10px 5px 10px !important;
             text-decoration: none;
             border-radius: 6px;
@@ -168,6 +186,7 @@
         section a,
         a:visited {
             color: var(--text-col) !important;
+            /* Might be overridden by debugging CSS */
         }
 
         .secnum {
