@@ -82,7 +82,8 @@
             border-radius: 24px;
             position: absolute;
             position: sticky;
-            top: 0;
+            top: 0px;
+            /* Corrected to 0px from 0 */
             z-index: 100;
             background-color: var(--front-body);
         }
@@ -108,7 +109,6 @@
         section .group {
             color: var(--text-col);
             font-size: 1.15em;
-            /* Restoring font-size from user feedback */
         }
 
         section {
@@ -141,13 +141,19 @@
 
         section ul.group li {
             /* More specific selector for content section li */
+            width: 190px !important;
+            /* Changed to width from min-width for fixed width */
             min-width: 190px !important;
-            /* Increased specificity and !important */
+            /* Added min-width as well for robustness */
+            box-sizing: border-box;
+            /* To include padding/border in width */
         }
 
         section#MENU ul.group li {
             /* Reverted MENU li min-width to auto */
             min-width: auto !important;
+            width: auto !important;
+            /* Also reset width for MENU li */
         }
 
 
