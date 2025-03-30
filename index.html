@@ -64,8 +64,7 @@
         body {
             font-family: "Ubuntu", "Helvetica neue", Helvetica, Arial,
                 sans-serif;
-            background: var(--back-body);
-            /* Changed to back-body to see contrast */
+            background: var(--front-body);
             color: var(--text-col);
             font-size: 1.4em;
             cursor:
@@ -84,8 +83,7 @@
             position: absolute;
             position: sticky;
             top: 0;
-            z-index: 1 !important;
-            /* Reduced z-index for debugging */
+            z-index: 100;
             background-color: var(--front-body);
         }
 
@@ -97,38 +95,16 @@
             scroll-behavior: smooth;
 
             /*** sections ***/
-            overflow-y: visible;
-            /* Changed to visible for debugging */
-            overflow-x: visible;
-            /* Changed to visible for debugging */
-            scroll-snap-type: none;
-            /* Disabled scroll snap for debugging */
-            padding-top: 0px;
-            /* Removed padding temporarily */
+            overflow-y: scroll;
+            overflow-x: hidden;
+            scroll-snap-type: y mandatory;
+            padding-top: 60px;
+            /* Add padding to avoid content underlapping sticky title, adjust 60px as needed */
             height: auto;
-            min-height: auto;
-            /* Removed min-height temporarily */
-            position: static !important;
-            /* Ensure static positioning for debugging */
-            z-index: auto;
-            /* Reset z-index for debugging */
-            border: 2px solid red;
-            /* Added border for debugging */
-            clip-path: none !important;
-            /* Reset clip-path if any - debugging */
-            -webkit-clip-path: none !important;
-            /* Reset clip-path if any - debugging */
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
         }
-
-        .container,
-        .container section,
-        .container section * {
-            color: black !important;
-            /* Force black text for debugging */
-            background-color: white !important;
-            /* Force white background for debugging */
-        }
-
 
         section {
             scroll-snap-align: start;
@@ -143,13 +119,11 @@
         section,
         section .group {
             color: var(--text-col);
-            /* Might be overridden by debugging CSS */
         }
 
         section:hover a,
         section:hover .group {
             color: var(--sect-col) !important;
-            /* Might be overridden by debugging CSS */
         }
 
         li,
@@ -166,7 +140,6 @@
 
         li a {
             color: var(--sect-col) !important;
-            /* Might be overridden by debugging CSS */
             padding: 4px 10px 5px 10px !important;
             text-decoration: none;
             border-radius: 6px;
@@ -186,7 +159,6 @@
         section a,
         a:visited {
             color: var(--text-col) !important;
-            /* Might be overridden by debugging CSS */
         }
 
         .secnum {
@@ -497,7 +469,6 @@
         }
     </style>
 </head>
-
 
 <body>
     <h3 class="title">
