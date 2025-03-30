@@ -107,7 +107,7 @@
         section,
         section .group {
             color: var(--text-col);
-            font-size: 1.15em;
+            font-size: 1.12em;
         }
 
         section {
@@ -376,18 +376,42 @@
             section#MENU {
                 display: block !important;
                 height: auto !important;
+                position: sticky;
+                /* Make MENU section sticky */
+                top: 45px;
+                /* Adjust top position as needed, considering the title height */
+                z-index: 99;
+                background-color: var(--front-body);
+                /* Ensure background color for sticky section */
             }
 
             section#MENU ul.group {
-                white-space: nowrap;
+                white-space: normal;
+                /* Allow wrapping for mobile menu */
                 overflow-x: auto;
                 overflow-y: hidden;
                 padding-bottom: 10px;
+                display: flex;
+                /* Enable Flexbox for mobile menu items */
+                flex-wrap: wrap;
+                /* Allow items to wrap to the next line */
             }
 
             section#MENU ul.group li {
-                display: inline-block;
+                display: block;
+                /* Ensure list items are block for width control */
                 vertical-align: top;
+                width: calc(50% - 10px);
+                /* Two items per line, adjust 10px for spacing if needed */
+                box-sizing: border-box;
+                margin-right: 10px;
+                /* Add spacing between items */
+                margin-bottom: 5px;
+            }
+
+            section#MENU ul.group li:nth-child(2n) {
+                margin-right: 0;
+                /* Remove right margin for even items to align to the right edge */
             }
         }
 
@@ -431,18 +455,42 @@
             section#MENU {
                 display: block !important;
                 height: auto !important;
+                position: sticky;
+                /* Make MENU section sticky */
+                top: 0px;
+                /* Adjust top position as needed */
+                z-index: 99;
+                background-color: var(--front-body);
+                /* Ensure background color for sticky section */
             }
 
             section#MENU ul.group {
-                white-space: nowrap;
+                white-space: normal;
+                /* Allow wrapping for mobile menu */
                 overflow-x: auto;
                 overflow-y: hidden;
                 padding-bottom: 10px;
+                display: flex;
+                /* Enable Flexbox for mobile menu items */
+                flex-wrap: wrap;
+                /* Allow items to wrap to the next line */
             }
 
             section#MENU ul.group li {
-                display: inline-block;
+                display: block;
+                /* Ensure list items are block for width control */
                 vertical-align: top;
+                width: calc(25% - 10px);
+                /* Four items per line, adjust 10px for spacing if needed */
+                box-sizing: border-box;
+                margin-right: 10px;
+                /* Add spacing between items */
+                margin-bottom: 5px;
+            }
+
+            section#MENU ul.group li:nth-child(4n) {
+                margin-right: 0;
+                /* Remove right margin for every 4th item to align to the right edge */
             }
         }
 
@@ -477,6 +525,47 @@
 
             .title {
                 display: none;
+            }
+
+            section#MENU {
+                display: block !important;
+                height: auto !important;
+                position: sticky;
+                /* Make MENU section sticky */
+                top: 0px;
+                /* Adjust top position as needed */
+                z-index: 99;
+                background-color: var(--front-body);
+                /* Ensure background color for sticky section */
+            }
+
+            section#MENU ul.group {
+                white-space: normal;
+                /* Allow wrapping for mobile menu */
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding-bottom: 10px;
+                display: flex;
+                /* Enable Flexbox for mobile menu items */
+                flex-wrap: wrap;
+                /* Allow items to wrap to the next line */
+            }
+
+            section#MENU ul.group li {
+                display: block;
+                /* Ensure list items are block for width control */
+                vertical-align: top;
+                width: calc(50% - 10px);
+                /* Two items per line, adjust 10px for spacing if needed */
+                box-sizing: border-box;
+                margin-right: 10px;
+                /* Add spacing between items */
+                margin-bottom: 5px;
+            }
+
+            section#MENU ul.group li:nth-child(2n) {
+                margin-right: 0;
+                /* Remove right margin for even items to align to the right edge */
             }
         }
 
