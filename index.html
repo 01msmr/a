@@ -74,6 +74,24 @@
             margin: 0;
         }
 
+        div.seite {
+            width: 100vw;
+            height: 100vh;
+            overflow-x: hidden;
+            margin: 0px;
+            border-radius: 20px;
+            background-color: var(--front-body);
+            /* position: fixed !important; */
+
+            -ms-overflow-style: none; /* for Internet Explorer, Edge */
+            scrollbar-width: none; /* for Firefox */
+            overflow-y: scroll;
+        }
+
+        div.seite::-webkit-scrollbar {
+            display: none; /* for Chrome, Safari, and Opera */
+        }
+
         .title {
             color: var(--title-col);
             margin: 0;
@@ -81,7 +99,7 @@
             border: 1px solid var(--text-col);
             border-radius: 24px;
             position: absolute;
-            position: sticky;
+            position: fixed;
             top: 0px;
             z-index: 100;
             background-color: var(--front-body);
@@ -92,15 +110,17 @@
         }
 
         .container {
-            scroll-behavior: smooth !important;
+            scroll-behavior: smooth;
 
             /*** sections ***/
             overflow-y: scroll;
             overflow-x: hidden;
-            scroll-snap-type: y mandatory !important;
+            width: 100vw;
+            scroll-snap-type: y mandatory;
             padding-top: 0px;
             height: 94%;
-            position: relative;
+            position: absolute;
+            top: 38px;
             z-index: 1;
         }
 
@@ -635,81 +655,86 @@
 </head>
 
 <body>
-    <h3 class="title">
-        a.<span class="titledomain">msmr.co</span>
-        <span class="secnum">sections</span>
 
-        <span class="secnum">1</span>
-        <a class="secname" href="#srv" onclick="document.getElementById('srv').focus();" target="_self"
-            title="section 1">
-            srv
-        </a>
-
-        <span class="secnum">1</span>
-        <a class="secname" href="#tec" onclick="document.getElementById('tec').focus();" target="_self"
-            title="section 2">
-            tec
-        </a>
-
-        <span class="secnum">3</span>
-        <a class="secname" href="#riid" target="_self" title="section 3">riid
-        </a>
-
-        <span class="secnum">4</span>
-        <a class="secname" href="#wrk" target="_self" title="section 4">wrk
-        </a>
-
-        <span class="secnum">5</span>
-        <a class="secname" href="#mee" target="_self" title="section 5">
-            mee
-        </a>
-
-        <span class="secnum">6</span>
-        <a class="secname" href="#see" target="_self" title="section 6">
-            see
-        </a>
-
-        <span class="secnum">7</span>
-        <a class="secname" href="#hiir" target="_self" title="section 7">
-            hiir
-        </a>
-
-        <span class="secnum">8</span><a class="secname" href="#bsy" target="_self" title="section 8">bsy</a>
-
-        <span class="secnum">9</span>
-        <a class="secname" href="#dis" target="_self" title="section 9">
-            dis
-        </a>
-
-        <span class="secnum">10</span>
-        <a class="secname" href="#art" target="_self" title="section 10">
-            art
-        </a>
-
-        <span class="secnum">11</span>
-        <a class="secname" href="#eat" target="_self" title="section 11">
-            eat
-        </a>
-
-        <span class="secnum">12</span>
-        <a class="secname" href="#shp" target="_self" title="section 12">
-            shp
-        </a>
-
-        <span class="secnum">13</span>
-        <a class="secname" href="#pol" target="_self" title="section 13">
-            pol
-        </a>
-
-        <span class="secnum">14</span>
-        <a class="secname" href="#mdf" target="_self" title="section 14">
-            mdf
-        </a>
-    </h3>
+    <div class="seite">
 
     <article class="container" id="container">
+        <h3 class="title">
+            abc.<span class="titledomain">msmr.co</span>
+            <span class="secnum">sections</span>
+        
+            <span class="secnum">1</span>
+            <a class="secname" href="#srv" target="_self" title="section 1">
+                srv
+            </a>
+        
+            <span class="secnum">1</span>
+            <a class="secname" href="#tec" target="_self" title="section 2">
+                tec
+            </a>
+        
+            <span class="secnum">3</span>
+            <a class="secname" href="#riid" target="_self" title="section 3">
+                riid
+            </a>
+        
+            <span class="secnum">4</span>
+            <a class="secname" href="#wrk" target="_self" title="section 4">
+                wrk
+            </a>
+        
+            <span class="secnum">5</span>
+            <a class="secname" href="#mee" target="_self" title="section 5">
+                mee
+            </a>
+        
+            <span class="secnum">6</span>
+            <a class="secname" href="#see" target="_self" title="section 6">
+                see
+            </a>
+        
+            <span class="secnum">7</span>
+            <a class="secname" href="#hiir" target="_self" title="section 7">
+                hiir
+            </a>
+        
+            <span class="secnum">8</span>
+            <a class="secname" href="#bsy" target="_self" title="section 8">
+                bsy
+            </a>
+        
+            <span class="secnum">9</span>
+            <a class="secname" href="#dis" target="_self" title="section 9">
+                dis
+            </a>
+        
+            <span class="secnum">10</span>
+            <a class="secname" href="#art" target="_self" title="section 10">
+                art
+            </a>
+        
+            <span class="secnum">11</span>
+            <a class="secname" href="#eat" target="_self" title="section 11">
+                eat
+            </a>
+        
+            <span class="secnum">12</span>
+            <a class="secname" href="#shp" target="_self" title="section 12">
+                shp
+            </a>
+        
+            <span class="secnum">13</span>
+            <a class="secname" href="#pol" target="_self" title="section 13">
+                pol
+            </a>
+        
+            <span class="secnum">14</span>
+            <a class="secname" href="#mdf" target="_self" title="section 14">
+                mdf
+            </a>
+        </h3>
 
-        <section id="MENU">
+        <!-- <section id="MENU">
             <h3 class="name" style="color: cyan">
                 <a href="#MENU" target="_self">MENU</a>
             </h3>
@@ -771,7 +796,7 @@
                     </a>
                 </li>
             </ul>
-        </section>
+        </section> -->
 
         <section id="srv">
             <h3 class="name" style="color: cyan">
@@ -1370,6 +1395,7 @@
             </ul>
         </section>
     </article>
+    </div>
 
 
     <script>
