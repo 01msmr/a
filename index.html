@@ -366,7 +366,7 @@
  */
 
         /*   iPad iPad iPad   */
-        @media only screen and (min-device-width: 375px) and (max-device-width: 1024px) {
+        /* @media only screen and (min-device-width: 375px) and (max-device-width: 1024px) {
             li {
                 width: auto;
                 font-size: 1.1em;
@@ -389,7 +389,6 @@
                 cursor: none !important;
                 text-decoration: none;
                 padding: 6px 2px 6px 4px !important;
-                /* min-width: 48px; */
             }
 
             .title-fullsize {
@@ -406,45 +405,34 @@
                 display: block !important;
                 height: auto !important;
                 position: sticky;
-                /* Make MENU section sticky */
                 top: 45px;
-                /* Adjust top position as needed, considering the title height */
                 z-index: 99;
                 background-color: var(--front-body);
-                /* Ensure background color for sticky section */
             }
 
             section#MENU ul.group {
                 white-space: normal;
-                /* Allow wrapping for mobile menu */
                 overflow-x: auto;
                 overflow-y: hidden;
                 padding-bottom: 10px;
                 display: flex;
-                /* Enable Flexbox for mobile menu items */
                 flex-wrap: wrap;
-                /* Allow items to wrap to the next line */
             }
 
             section#MENU ul.group li {
                 display: block;
-                /* Ensure list items are block for width control */
                 vertical-align: top;
                 width: calc(25% - 10px);
-                min-width: 190px !important; /* RESTORE fixed min-width for mobile BY-ULI */
-                /* Four (!!!) items per line, adjust 10px for spacing if needed */
+                min-width: 190px !important; 
                 box-sizing: border-box;
                 margin-right: 10px;
-                /* Add spacing between items */
                 margin-bottom: 5px;
             }
 
             section#MENU ul.group li:nth-child(2n) {
                 margin-right: 0;
-                /* Remove right margin for even items to align to the right edge */
             }
 
-            /* Content sections mobile layout - iPad and similar */
             section ul.group {
                 display: flex;
                 flex-wrap: wrap;
@@ -452,7 +440,6 @@
 
             section ul.group li {
                 width: calc(50% - 10px);
-                /* Two columns */
                 box-sizing: border-box;
                 margin-right: 10px;
                 margin-bottom: 5px;
@@ -461,7 +448,7 @@
             section ul.group li:nth-child(2n) {
                 margin-right: 0;
             }
-        }
+        } */
 
 
         /*
