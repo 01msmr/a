@@ -430,8 +430,9 @@
                 display: block;
                 /* Ensure list items are block for width control */
                 vertical-align: top;
-                width: calc(50% - 10px);
-                /* Two items per line, adjust 10px for spacing if needed */
+                width: calc(25vw - 10px);
+                min-width: 190px !important; /* RESTORE fixed min-width for mobile BY-ULI */
+                /* Four (!!!) items per line, adjust 10px for spacing if needed */
                 box-sizing: border-box;
                 margin-right: 10px;
                 /* Add spacing between items */
@@ -463,8 +464,14 @@
         }
 
 
-
-
+        /*
+################################################
+################################################
+################################################
+################################################
+################################################
+################################################
+ */
 
 
         /*   iPhone iPhone iPhone   HOR  HOR  HOR  */
@@ -541,8 +548,8 @@
                 display: block;
                 /* Ensure list items are block for width control */
                 vertical-align: top;
-                width: calc(25% - 10px);
-                /* Four items per line, adjust 10px for spacing if needed */
+                width: calc(50vw - 10px);
+                /* Two (!!!) items per line, adjust 10px for spacing if needed */
                 min-width: 190px !important; /* RESTORE fixed min-width for mobile BY-ULI */
                 box-sizing: border-box;
                 margin-right: 10px;
@@ -574,6 +581,14 @@
                 margin-right: 0;
             }
         }
+
+
+        /*
+################################################
+################################################
+################################################
+################################################
+ */
 
         /*   iPhone iPhone iPhone   VERT   VERT  */
         @media only screen and (min-device-width: 375px) and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: portrait) {
