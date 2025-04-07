@@ -366,7 +366,7 @@
  */
 
         /*   iPad iPad iPad   */
-        @media only screen and (max-device-width: 1024px) {
+        @media only screen and (min-device-width: 375px) and (max-device-width: 1024px) {
             li {
                 width: auto;
                 font-size: 1.1em;
@@ -445,12 +445,12 @@
             }
 
             /* Content sections mobile layout - iPad and similar */
-            section:not(#MENU) ul.group {
+            section ul.group {
                 display: flex;
                 flex-wrap: wrap;
             }
 
-            section:not(#MENU) ul.group li {
+            section ul.group li {
                 width: calc(50% - 10px);
                 /* Two columns */
                 box-sizing: border-box;
@@ -458,7 +458,7 @@
                 margin-bottom: 5px;
             }
 
-            section:not(#MENU) ul.group li:nth-child(2n) {
+            section ul.group li:nth-child(2n) {
                 margin-right: 0;
             }
         }
@@ -475,7 +475,7 @@
 
 
         /*   iPhone iPhone iPhone   HOR  HOR  HOR  */
-        @media only screen and (min-device-width: 350px) and (max-device-width: 812px) and (orientation: landscape) {
+        @media only screen and (min-device-width: 390px) and (max-device-width: 830px) and (orientation: landscape) {
             .name {
                 padding-top: 8px;
                 margin-bottom: 0px;
@@ -544,11 +544,17 @@
                 /* Allow items to wrap to the next line */
             }
 
-            section#MENU ul.group li {
+            /* Content sections mobile layout - iPhone HOR */
+            section ul.group {
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            section ul.group li {
                 display: block;
                 /* Ensure list items are block for width control */
                 vertical-align: top;
-                width: calc(50% - 10px);
+                width: calc(25% - 10px);
                 /* Two (!!!) items per line, adjust 10px for spacing if needed */
                 min-width: 190px !important; /* RESTORE fixed min-width for mobile BY-ULI */
                 box-sizing: border-box;
@@ -561,25 +567,6 @@
                 margin-right: 0;
                 /* Remove right margin for every 4th item to align to the right edge */
             }
-
-            /* Content sections mobile layout - iPhone HOR */
-            section:not(#MENU) ul.group {
-                display: flex;
-                flex-wrap: wrap;
-            }
-
-            section:not(#MENU) ul.group li {
-                width: calc(25% - 10px);
-                min-width: 190px; /* RESTORE fixed min-width for mobile BY-ULI */
-                /* Four columns */
-                box-sizing: border-box;
-                margin-right: 10px;
-                margin-bottom: 5px;
-            }
-
-            section:not(#MENU) ul.group li:nth-child(4n) {
-                margin-right: 0;
-            }
         }
 
 
@@ -591,7 +578,7 @@
  */
 
         /*   iPhone iPhone iPhone   VERT   VERT  */
-        @media only screen and (min-device-width: 375px) and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: portrait) {
+        @media only screen and (min-device-width: 390px) and (max-device-width: 830px) and (orientation: portrait) /* and (-webkit-min-device-pixel-ratio: 3) */ {
             .name {
                 padding-top: 12px;
                 margin-bottom: 0px;
@@ -651,11 +638,22 @@
                 /* Allow items to wrap to the next line */
             }
 
-            section#MENU ul.group li {
+            section ul.group li:nth-child(2n) {
+                margin-right: 0;
+                /* Remove right margin for even items to align to the right edge */
+            }
+
+            /* Content sections mobile layout - iPhone VERT */
+            section ul.group {
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            section ul.group li {
                 display: block;
                 /* Ensure list items are block for width control */
                 vertical-align: top;
-                width: calc(50vw - 10px);
+                max-width: 400px; /*calc(50%vw - 10px); */
                 min-width: 190px; /* RESTORE fixed min-width for mobile BY-ULI */
                 /* Two items per line, adjust 10px for spacing if needed */
                 box-sizing: border-box;
@@ -664,28 +662,9 @@
                 margin-bottom: 5px;
             }
 
-            section#MENU ul.group li:nth-child(2n) {
+            section ul.group li:nth-child(2n) {
                 margin-right: 0;
                 /* Remove right margin for even items to align to the right edge */
-            }
-
-            /* Content sections mobile layout - iPhone VERT */
-            section:not(#MENU) ul.group {
-                display: flex;
-                flex-wrap: wrap;
-            }
-
-            section:not(#MENU) ul.group li {
-                width: calc(50% - 10px);
-                min-width: 190px !important; /* RESTORE fixed min-width for mobile BY-ULI */
-                /* Two columns */
-                box-sizing: border-box;
-                margin-right: 10px;
-                margin-bottom: 5px;
-            }
-
-            section:not(#MENU) ul.group li:nth-child(2n) {
-                margin-right: 0;
             }
         }
 
@@ -1440,7 +1419,7 @@
     </div>
 
 
-    <script>
+    <!-- <script>
         document.addEventListener('DOMContentLoaded', function () {
             const menuList = document.getElementById('menu-list');
             if (!menuList) return;
@@ -1459,7 +1438,7 @@
                 item.style.width = maxWidth + 'px';
             });
         });
-    </script>
+    </script> -->
 </body>
 
 </html>
