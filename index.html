@@ -115,7 +115,7 @@
         section:hover .group {
             color: var(--sect-col) !important;
         }
-
+        
         li,
         .secname {
             display: inline-block;
@@ -320,8 +320,22 @@
         section h3 a {
             text-decoration: none !important;
             cursor: s-resize !important;
-            display: block;
+            display: inline-block;
+            width: 80%        
         }
+
+
+        span.navnext a {
+            /* background-color: red !important; */
+            color: var(--front-body-col) !important;
+            display: inline-block;
+            width: 32px !important;
+            /* height: 36px; */
+            position: relative;
+            right: +80px;
+        }
+
+        
 
         /*
 ################################################
@@ -458,80 +472,80 @@
             <span class="secnum">sections</span>
         
             <span class="secnum">1</span>
-            <a class="secname" href="#srv" target="_self" title="section 1">
+            <a class="secname" href="#sec1" target="_self" title="section 1">
                 srv
             </a>
         
-            <span class="secnum">1</span>
-            <a class="secname" href="#tec" target="_self" title="section 2">
+            <span class="secnum">2</span>
+            <a class="secname" href="#sec2" target="_self" title="section 2">
                 tec
             </a>
         
             <span class="secnum">3</span>
-            <a class="secname" href="#riid" target="_self" title="section 3">
+            <a class="secname" href="#sec3" target="_self" title="section 3">
                 riid
             </a>
         
             <span class="secnum">4</span>
-            <a class="secname" href="#wrk" target="_self" title="section 4">
+            <a class="secname" href="#sec4" target="_self" title="section 4">
                 wrk
             </a>
         
             <span class="secnum">5</span>
-            <a class="secname" href="#mee" target="_self" title="section 5">
+            <a class="secname" href="#sec5" target="_self" title="section 5">
                 mee
             </a>
         
             <span class="secnum">6</span>
-            <a class="secname" href="#see" target="_self" title="section 6">
+            <a class="secname" href="#sec6" target="_self" title="section 6">
                 see
             </a>
         
             <span class="secnum">7</span>
-            <a class="secname" href="#hiir" target="_self" title="section 7">
+            <a class="secname" href="#sec7" target="_self" title="section 7">
                 hiir
             </a>
         
             <span class="secnum">8</span>
-            <a class="secname" href="#bsy" target="_self" title="section 8">
+            <a class="secname" href="#sec8" target="_self" title="section 8">
                 bsy
             </a>
         
             <span class="secnum">9</span>
-            <a class="secname" href="#dis" target="_self" title="section 9">
+            <a class="secname" href="#sec9" target="_self" title="section 9">
                 dis
             </a>
         
             <span class="secnum">10</span>
-            <a class="secname" href="#art" target="_self" title="section 10">
+            <a class="secname" href="#sec10" target="_self" title="section 10">
                 art
             </a>
         
             <span class="secnum">11</span>
-            <a class="secname" href="#eat" target="_self" title="section 11">
+            <a class="secname" href="#sec11" target="_self" title="section 11">
                 eat
             </a>
         
             <span class="secnum">12</span>
-            <a class="secname" href="#shp" target="_self" title="section 12">
+            <a class="secname" href="#sec12" target="_self" title="section 12">
                 shp
             </a>
         
             <span class="secnum">13</span>
-            <a class="secname" href="#pol" target="_self" title="section 13">
+            <a class="secname" href="#sec13" target="_self" title="section 13">
                 pol
             </a>
         
             <span class="secnum">14</span>
-            <a class="secname" href="#mdf" target="_self" title="section 14">
+            <a class="secname" href="#sec14" target="_self" title="section 14">
                 mdf
             </a>
         </h3>
 
         <article class="container">
-            <section id="srv">
+            <section id="sec1">
                 <h3 class="name" style="color: cyan">
-                    <a href="#srv" target="_self">srv</a>
+                    <a href="#sec1" target="_self">srv</a><span class="navnext"><a href=#sec1 target="_self">-</a><a href=#sec2 target="_self">+</a></span>
                 </h3>
                 <ul class="group">
                     <li>
@@ -571,9 +585,9 @@
                 </ul>
             </section>
             
-            <section id="tec">
+            <section id="sec2">
                 <h3 class="name" style="color: cyan">
-                    <a href="#tec" target="_self">tec</a>
+                    <a href="#sec3" target="_self">tec</a><span class="navnext"><a href=#sec1 target="_self">-</a><a href=#sec3 target="_self">+</a></span>
                 </h3>
                 <ul class="group">
                     <li><a href="http://www.golem.de/ticker">golem</a>
@@ -646,9 +660,9 @@
                 </ul>
             </section>
             
-            <section id="riid">
+            <section id="sec3">
                 <h3 class="name" style="color: SandyBrown">
-                    <a href="#riid" target="_self">riid</a>
+                    <a href="#sec4" target="_self">riid</a><span class="navnext"><a href=#sec2 target="_self">-</a><a href=#sec4 target="_self">+</a></span>
                 </h3>
                 <ul class="group">
                     <li>
@@ -725,9 +739,9 @@
                 </ul>
             </section>
             
-            <section id="wrk">
+            <section id="sec4">
                 <h3 class="name" style="color: cyan">
-                    <a href="#wrk" target="_self">wrk</a>
+                    <a href="#sec5" target="_self">wrk</a><span class="navnext"><a href=#sec3 target="_self">-</a><a href=#sec5 target="_self">+</a></span>
                 </h3>
                 <ul class="group">
                     <li>
@@ -782,9 +796,9 @@
                 </ul>
             </section>
             
-            <section id="mee">
+            <section id="sec5">
                 <h3 class="name" style="color: cyan">
-                    <a href="#mee" target="_self">mee</a>
+                    <a href="#sec6" target="_self">mee</a><span class="navnext"><a href=#sec4 target="_self">-</a><a href=#sec6 target="_self">+</a></span>
                 </h3>
                 <ul class="group">
                     <li><a href="http://www.x.com/maasmeier">… X …</a></li>
@@ -815,9 +829,9 @@
                 </ul>
             </section>
             
-            <section id="see">
+            <section id="sec6">
                 <h3 class="name" style="color: cyan">
-                    <a href="#see" target="_self">see</a>
+                    <a href="#sec7" target="_self">see</a><span class="navnext"><a href=#sec5 target="_self">-</a><a href=#sec7 target="_self">+</a></span>
                 </h3>
                 <ul class="group">
                     <li>
@@ -854,9 +868,9 @@
                 </ul>
             </section>
             
-            <section id="hiir">
+            <section id="sec7">
                 <h3 class="name" style="color: cyan">
-                    <a href="#hiir" target="_self">hiir</a>
+                    <a href="#sec8" target="_self">hiir</a><span class="navnext"><a href=#sec6 target="_self">-</a><a href=#sec8 target="_self">+</a></span>
                 </h3>
                 <ul class="group">
                     <li>
@@ -873,9 +887,9 @@
                 </ul>
             </section>
             
-            <section id="bsy">
+            <section id="sec8">
                 <h3 class="name" style="color: cyan">
-                    <a href="#bsy" target="_self">bsy</a>
+                    <a href="#sec9" target="_self">bsy</a><span class="navnext"><a href=#sec7 target="_self">-</a><a href=#sec9 target="_self">+</a></span>
                 </h3>
                 <ul class="group">
                     <li><a href="http://msmr.co">msmr</a></li>
@@ -893,9 +907,9 @@
                 </ul>
             </section>
             
-            <section id="dis">
+            <section id="sec9">
                 <h3 class="name" style="color: cyan">
-                    <a href="#dis" target="_self">dis</a>
+                    <a href="#sec10" target="_self">dis</a><span class="navnext"><a href=#sec8 target="_self">-</a><a href=#sec10 target="_self">+</a></span>
                 </h3>
                 <ul class="group">
                     <li>
@@ -931,9 +945,9 @@
                 </ul>
             </section>
             
-            <section id="art">
+            <section id="sec10">
                 <h3 class="name" style="color: cyan">
-                    <a href="#art" target="_self">art</a>
+                    <a href="#sec11" target="_self">art</a><span class="navnext"><a href=#sec9 target="_self">-</a><a href=#sec11 target="_self">+</a></span>
                 </h3>
                 <ul class="group">
                     <li><a href="https://artsy.net">artsy</a>
@@ -954,9 +968,9 @@
                 </ul>
             </section>
             
-            <section id="eat">
+            <section id="sec11">
                 <h3 class="name" style="color: cyan">
-                    <a href="#eat" target="_self">eat</a>
+                    <a href="#sec12" target="_self">eat</a><span class="navnext"><a href=#sec10 target="_self">-</a><a href=#sec12 target="_self">+</a></span>
                 </h3>
                 <ul class="group">
                     <li>
@@ -1026,9 +1040,9 @@
                 </ul>
             </section>
             
-            <section id="shp">
+            <section id="sec12">
                 <h3 class="name" style="color: cyan">
-                    <a href="#shp" target="_self">shp</a>
+                    <a href="#sec13" target="_self">shp</a><span class="navnext"><a href=#sec11 target="_self">-</a><a href=#sec13 target="_self">+</a></span>
                 </h3>
                 <ul class="group">
                     <li>
@@ -1059,9 +1073,9 @@
                 </ul>
             </section>
             
-            <section id="pol">
+            <section id="sec13">
                 <h3 class="name" style="color: cyan">
-                    <a href="#pol" target="_self">pol</a>
+                    <a href="#sec14" target="_self">pol</a><span class="navnext"><a href=#sec12 target="_self">-</a><a href=#sec14 target="_self">+</a></span>
                 </h3>
                 <ul class="group">
                     <!-- <li><a href="http://www.piratenpartei.de">piraten de</a></li>
@@ -1107,9 +1121,9 @@
                 </ul>
             </section>
             
-            <section id="mdf">
+            <section id="sec14">
                 <h3 class="name" style="color: cyan">
-                    <a href="#mdf" target="_self">mdf</a>
+                    <a href="#sec15" target="_self">mdf</a><span class="navnext"><a href=#sec13 target="_self">-</a><a href=#sec15 target="_self">+</a></span>
                 </h3>
                 <ul class="group">
             
