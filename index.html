@@ -319,13 +319,14 @@
 
         section h3 a {
             text-decoration: none !important;
-            cursor: s-resize !important;
+            cursor: crosshair;
             display: inline-block;
             width: 80%        
         }
 
 
         a.navprev, .navnext {
+            cursor: n-resize !important;
             color: var(--front-body);
             display: inline-block;
             width: 1em !important;
@@ -335,6 +336,7 @@
 
 
         a.navnext {
+            cursor: s-resize !important;
             background-color: var(--front-body);
             color: var(--back-body)
         }
