@@ -265,6 +265,29 @@
                 auto;
         }
 
+
+
+        section h3 a.navprev, section h3 a.navnext {
+            color:var(--text-col);
+            opacity: 0.25;
+            text-align: center;
+            font-size: 1em;
+            padding: .0em 0.18em .14em 0.18em;
+            border-radius: 6px;
+        }
+
+        section:hover h3 a.navprev, section:hover h3 a.navnext {
+            color: var(--back-hov);
+            opacity: 1;
+        }
+
+        a.navprev:hover, a.navnext:hover {
+            background-color: var(--back-hov) !important;
+            color: var(--front-body) !important;
+        }
+
+
+
         .group .links {
             width: auto;
             padding-top: 0px;
