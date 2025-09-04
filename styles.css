@@ -1,0 +1,659 @@
+@media (prefers-color-scheme: light) {
+  :root {
+    --front-body: #eee;
+    --back-body: #ccc;
+    --text-col: #bbb;
+    --sect-col: #666;
+    --text-hov: #fff;
+    --back-hov: #666;
+    --title-col: #000;
+    --title-dom: #888;
+    --curs-img: url(c-point-light.png);
+    --curs-hov: url(c-line-light.png);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --front-body: #333;
+    --back-body: #000;
+    --text-col: #666;
+    --sect-col: #ccc;
+    --text-hov: #666;
+    --back-hov: #eee;
+    --title-col: #fff;
+    --title-dom: #999;
+    --curs-img: url(c-point.png);
+    --curs-hov: url(c-line.png);
+  }
+}
+
+/*
+################################################
+################################################
+################################################
+################################################
+################################################
+
+
+
+
+################################################
+################################################
+################################################
+################################################
+################################################
+ */
+
+body {
+  font-family: Ubuntu, "Helvetica neue", Helvetica, Arial,
+    sans-serif;
+  background: var(--front-body);
+  color: var(--text-col);
+  font-size: 1.4em;
+  cursor:
+    var(--curs-img) 1 1,
+    auto;
+}
+
+.title {
+  color: var(--title-col);
+  margin: 0;
+  padding: 0px 12px;
+  border: 1px solid var(--text-col);
+  border-radius: 1em;
+  position: absolute;
+  position: sticky;
+}
+
+.titledomain {
+  color: var(--title-dom);
+  display: inline-block;
+  position: relative;
+  top: 0px;
+}
+
+.container {
+  scroll-behavior: smooth;
+
+  /*** sections ***/
+  height: 94%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  scroll-snap-type: y mandatory;
+}
+
+section {
+  scroll-snap-align: start;
+  height: auto;
+  padding-bottom: 1.2em;
+}
+
+section:last-child {
+  margin-bottom: 83vh;
+}
+
+section,
+section .group {
+  color: var(--text-col);
+}
+
+section:hover a,
+section:hover .group {
+  color: var(--sect-col) !important;
+}
+
+li,
+.secname {
+  display: inline-block;
+  list-style-type: none;
+  color: var(--back-body);
+  min-width: 190px;
+  font-family: "Ubuntu", "Helvetica neue", Helvetica, Arial,
+    sans-serif;
+}
+
+li a {
+  color: var(--sect-col) !important;
+  padding: .2em 0.3em 0.2em 0.3em !important;
+  text-decoration: none;
+  border-radius: .35em;
+  cursor:
+    var(--curs-hov) 1 30,
+    auto;
+}
+
+li a:hover,
+a.secname:hover {
+  color: var(--text-hov) !important;
+  background-color: var(--back-hov) !important;
+}
+
+section a {
+  color: var(--text-col) !important;
+}
+
+.secnum {
+  font-size: small;
+  display: none;
+}
+
+a.secname {
+  font-size: smaller;
+  text-decoration: none;
+  padding: 8px 8px !important;
+  min-width: 35px;
+  display: inline-flex;
+  color: var(--sect-col) !important;
+  border-right: 1px solid var(--sect-col);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.secname:first-child {
+  border-left: 1px solid var(--sect-col);
+}
+
+.secname:last-child {
+  border-right: 1px solid var(--sect-col);
+}
+
+a.secname:hover {
+  background-color: var(--sect-col) !important;
+  /* padding: 1px; */
+}
+
+html {
+  cursor:
+    var(--curs-img) 1 1,
+    auto;
+  font-family: "ubuntu condensed", "helvetica neue", helvetica,
+    arial, sans-serif;
+}
+
+body {
+  background-color: var(--back-body);
+}
+
+div.seite {
+  width: 99%;
+  height: 99%;
+  overflow-x: hidden;
+  margin: 0px;
+  border-radius: 0.87em;
+  background-color: var(--front-body);
+  position: fixed !important;
+
+  -ms-overflow-style: none;
+  /* for Internet Explorer, Edge */
+  scrollbar-width: none;
+  /* for Firefox */
+  overflow-y: scroll;
+}
+
+div.seite::-webkit-scrollbar {
+  display: none;
+  /* for Chrome, Safari, and Opera */
+}
+
+.bottomspace {
+  height: 0px;
+  clear: both;
+}
+
+li {
+  margin: 0 0 !important;
+  width: auto;
+  height: 36px;
+  clear: both;
+}
+
+li a {
+  text-decoration: none;
+  display: block;
+  padding: 0px;
+}
+
+.name {
+  color: var(--text-col);
+  width: 100%;
+  padding-top: 0.25em;
+  padding-bottom: .2em;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  font-family: "Helvetica Neue", helvetica, arial, sans-serif;
+  font-size: 1.4em;
+  text-transform: uppercase;
+  border-bottom: .06em solid var(--text-col);
+  background: none;
+
+  padding-left: 1.4em;
+}
+
+.group {
+  color: var(--sect-col) !important;
+  width: 100%;
+  max-width: 1250px;
+  margin-top: .5em;
+  margin-bottom: 1em;
+  font-family: "helvetica neue", helvetica, arial, sans-serif;
+  color: var(--title-col);
+  border-bottom-width: 1px !important;
+  background: none;
+}
+
+section:hover,
+section:hover .name,
+section:hover .group {
+  color: var(--title-col) !important;
+  border-color: var(--title-col);
+  cursor:
+    var(--curs-img) 1 1,
+    auto;
+}
+
+
+
+section h3 a.navprev,
+section h3 a.navnext {
+  color: var(--text-col);
+  /* opacity: 0.3; */
+  opacity: 0;
+  text-align: center;
+  font-size: .83em;
+  padding: 0.0em 0.22em .22em 0.22em;
+  border-radius: 0.25em;
+}
+
+section:hover h3 a.navprev,
+section:hover h3 a.navnext {
+  color: var(--back-hov);
+  opacity: 1;
+}
+
+a.navprev:hover,
+a.navnext:hover {
+  background-color: var(--back-hov) !important;
+  color: var(--front-body) !important;
+}
+
+
+
+.group .links {
+  width: auto;
+  padding-top: 0px;
+  margin-top: 16px;
+  font-family: "ubuntu condensed", "helvetica neue", helvetica,
+    arial, sans-serif;
+  font-size: 23px;
+  line-height: 36px;
+  font-weight: normal;
+  color: var(--sect-col);
+  align: center;
+}
+
+.group .links .row {
+  width: auto;
+  margin: 0 auto;
+}
+
+.group .links .row .cell {
+  width: 191px;
+  float: left;
+}
+
+.group .links .row .cell a {
+  color: var(--sect-col);
+  padding: 0px 0px 0px 0px;
+  text-decoration: none;
+  border-radius: 6px;
+  border: 0px solid var(--back-body);
+  cursor:
+    var(--curs-hov) 1 12,
+    auto;
+  overflow: hidden;
+}
+
+li a {
+  color: var(--title-col);
+}
+
+.group .links .row .cell a:active {
+  background-color: red;
+}
+
+#container {
+  clear: both;
+  color: var(--title-col);
+  font-family: "helvetica neue", helvetica, arial, sans-serif;
+  font-size: 1em;
+  margin: auto;
+  /* position: fixed; */
+}
+
+section h3 a {
+  text-decoration: none !important;
+  cursor: crosshair;
+  display: inline-block;
+  width: 80%
+}
+
+
+a.navprev,
+.navnext {
+  cursor: n-resize !important;
+  color: var(--front-body);
+  display: inline-block;
+  width: 1em !important;
+  position: relative;
+  right: 2.2em;
+}
+
+
+a.navnext {
+  cursor: s-resize !important;
+  background-color: var(--front-body);
+  color: var(--back-body)
+}
+
+
+/*
+################################################
+################################################
+################################################
+################################################
+################################################
+################################################
+################################################
+################################################
+################################################
+################################################
+################################################
+################################################
+################################################
+################################################
+ */
+
+/* iPad iPad iPad  */
+@media only screen and (max-device-width: 1024px) {
+  li {
+    width: 24%;
+    font-size: 1.1em;
+    padding: 0px 0px !important;
+  }
+
+  li a {
+    padding: 6px 10px !important;
+    border-radius: 10px;
+  }
+
+  a.secname {
+    font-size: smaller;
+    cursor: none !important;
+    text-decoration: none;
+    padding: 6px 2px 6px 4px !important;
+    min-width: 48px;
+  }
+}
+
+/* iPhone iPhone iPhone  HOR HOR HOR */
+@media only screen and (min-device-width: 350px) and (max-device-width: 812px) and (orientation: landscape) {
+  .name {
+    padding-top: 8px;
+    margin-bottom: 0px;
+    font-size: 24px;
+    padding-bottom: 4px;
+  }
+
+  li {
+    width: 30%;
+    font-size: 1.4em;
+    /* padding: 0px 0px !important; */
+    /* width: 120px; */
+
+    padding: 8px 12px 8px 12px;
+  }
+
+  li a {
+    border-radius: 12px;
+    padding: 2px 4px !important;
+  }
+
+  section {
+    height: 100%;
+  }
+
+  .group {
+    line-height: 1.7em;
+  }
+
+  .title {
+    display: none;
+  }
+}
+
+/* iPhone iPhone iPhone  VERT  VERT */
+@media only screen and (min-device-width: 375px) and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: portrait) {
+  .name {
+    padding-top: 12px;
+    margin-bottom: 0px;
+    font-size: 72px;
+    padding-bottom: 6px;
+  }
+
+  li {
+    width: 46%;
+    font-size: 2.5em;
+
+    padding: 24px 24px 30px 24px;
+  }
+
+  li a {
+    border-radius: 12px;
+    padding: 2px 0px;
+  }
+
+  section {
+    height: 100%;
+  }
+
+  .group {
+    line-height: 2.8em;
+  }
+
+  .title {
+    display: none;
+  }
+}
+
+/* Additional modern functionality styles */
+.title {
+  color: var(--title-col);
+  margin: 0;
+  padding: 0px 18px;
+  border: 0.1em solid var(--text-col);
+  border-radius: 0.8em;
+  position: sticky;
+  /* top: 10px; */
+  z-index: 10;
+  background-color: var(--front-body);
+  display: flex;
+  line-height: 1.4em;  /* Entspricht der Höhe */
+  align-items: center;
+  /* gap: 10px; */
+  max-width: 100%;
+  overflow: hidden;
+  height: 1.4em;
+}
+
+
+.home-link,
+#section-nav-list,
+a.secname {
+  vertical-align: middle;
+  /* Zentriert alle Elemente vertikal */
+  line-height: 1.4em;
+}
+
+
+.home-link {
+  white-space: nowrap;
+  text-decoration: none;
+  color: var(--title-col) !important;
+}
+
+#section-nav-list {
+  /* margin-left: 20px; */
+  /* display: inline-block; */
+  /* border-left: 1px solid var(--sect-col); */
+  white-space: nowrap;
+  overflow: hidden;
+  flex-shrink: 1;
+  min-width: 0;
+  font-size: 0.9em; /* Entfernt Leerraum zwischen inline-block Elementen */
+}
+
+a.secname {
+  font-size: 1em;
+  text-decoration: none;
+  padding: 12px 6px;
+  /* min-width: 40px; */
+  display: inline-block;
+  color: var(--sect-col) !important;
+  border-right: 1px solid var(--sect-col);
+}
+
+a.secname:visited {
+  color: var(--sect-col) !important;
+}
+
+a.secname:hover {
+  background-color: var(--back-hov) !important;
+  color: var(--text-hov) !important;
+}
+
+.nav-hidden {
+  display: none !important;
+}
+
+.title select {
+  background-color: transparent;
+  border: 1px solid var(--text-col);
+  color: var(--title-dom);
+  border-radius: 5px;
+  font-family: inherit;
+  font-size: 0.8em;
+}
+
+.title select:focus {
+  outline: none;
+  border-color: var(--title-col);
+}
+
+.gear-btn {
+  background: transparent;
+  border: 1px solid var(--text-col);
+  color: var(--text-col);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  line-height: 26px;
+  text-align: center;
+  cursor: pointer;
+  /* transition: all 0.2s ease; */
+  padding: 0;
+  margin-left: auto;
+  margin-right: 10px;
+}
+
+.gear-btn:hover {
+  background: var(--back-hov);
+}
+
+.edit-mode .name {
+  cursor: move;
+}
+
+.edit-mode li[draggable="true"] {
+  cursor: move;
+}
+
+.edit-mode section {
+  border: 1px dashed var(--text-col);
+  margin: 5px;
+  padding: 10px;
+}
+
+.edit-mode section:hover {
+  border-color: var(--title-col);
+}
+
+.edit-mode .add-section-btn {
+  margin-left: 15px;
+}
+
+.edit-mode .delete-section-btn {
+  margin-left: 10px;
+}
+
+.edit-mode .add-section-btn,
+.edit-mode .delete-section-btn {
+  display: inline-block;
+  background: var(--back-hov);
+  color: var(--text-hov);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+  text-align: center;
+}
+
+.edit-mode .delete-link-btn {
+  cursor: pointer;
+}
+
+.edit-mode .name a {
+  display: inline-block;
+  cursor: text;
+}
+
+.edit-mode .name a[contenteditable="true"]:focus {
+  outline: 1px solid var(--sect-col);
+  border-radius: 4px;
+}
+
+.edit-mode li a {
+  cursor: text !important;
+}
+
+section.dragging,
+li.dragging {
+  border: none !important;
+  opacity: 0.4;
+  transition: none !important;
+}
+
+section.drop-target-above {
+  border-top: 24px solid red !important;
+  transition: none !important;
+}
+
+section.drop-target-below {
+  border-bottom: 24px solid red !important;
+  transition: none !important;
+}
+
+li.drop-target-above {
+  border-top: 4px solid blue !important;
+  transition: none !important;
+}
+
+li.drop-target-below {
+  border-bottom: 4px solid blue !important;
+  transition: none !important;
+}
