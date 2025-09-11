@@ -146,7 +146,7 @@ a.secname {
   min-width: 35px;
   display: inline-flex;
   color: var(--sect-col) !important;
-  border-right: 1px solid var(--sect-col);
+  border-right: 1px solid var(--text-col);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -157,7 +157,7 @@ a.secname {
 }
 
 .secname:last-child {
-  border-right: 1px solid var(--sect-col);
+  border-right: 1px solid var(--text-col);
 }
 
 a.secname:hover {
@@ -523,7 +523,7 @@ a.secname {
   /* min-width: 40px; */
   display: inline-block;
   color: var(--sect-col) !important;
-  border-right: 1px solid var(--sect-col);
+  border-right: 1px solid var(--text-col);
 }
 
 a.secname:visited {
@@ -531,12 +531,12 @@ a.secname:visited {
 }
 
 a.secname:hover {
-  background-color: var(--back-hov) !important;
-  color: var(--text-hov) !important;
+  background-color: var(--text-col) !important;
+  /* color: var(--text-hov) !important; */
 }
 
 a.secname.active {
-  background-color: var(--text-col) !important;
+  background-color: var(--back-hov) !important;
   color: var(--text-hov) !important;
   font-weight: bold;
 }
