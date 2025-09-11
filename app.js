@@ -232,6 +232,9 @@ document.addEventListener('DOMContentLoaded', () => {
       attachLinkDragDropListeners();
     }
     checkNavOverflow();
+
+    // Scroll-Observer aktivieren
+    setTimeout(() => observeActiveSections(), 100);
   };
 
   // Function to edit links
@@ -362,6 +365,8 @@ document.addEventListener('DOMContentLoaded', () => {
     );
   };
 
+  
+
   // SECTION DRAG & DROP - only between Sections
   let dragSrcSectionEl = null;
   const handleSectionDragStart = function (e) {
@@ -481,6 +486,64 @@ document.addEventListener('DOMContentLoaded', () => {
       li.addEventListener('drop', handleLinkDrop);
       li.addEventListener('dragend', handleLinkDragEnd);
     });
+  };
+
+
+
+
+
+  // Stabilere Scroll-Observer Lösung
+  const observeActiveSections = () => {
+    const sections = document.querySelectorAll('section[id]');
+    let isScrolling = false;
+    let scrollTimeout;
+
+    const updateActiveSection = () => {
+      const container = document.getElementById('container');
+      const containerRect = container.getBoundingClientRect();
+      const containerTop = containerRect.top + 50; // Kleiner Offset für bessere Erkennung
+
+      let activeSection = null;
+
+      sections.forEach(section => {
+        const rect = section.getBoundingClientRect();
+
+        // Section ist aktiv wenn ihr oberer Rand sichtbar ist und nicht zu weit unten
+        if (rect.top <= containerTop && rect.bottom > containerTop) {
+          activeSection = section;
+        }
+      });
+
+      if (activeSection) {
+        // Nur updaten wenn sich etwas geändert hat
+        const currentActive = document.querySelector('.secname.active');
+        const targetLink = document.querySelector(`.secname[href="#${activeSection.id}"]`);
+
+        if (currentActive !== targetLink) {
+          document.querySelectorAll('.secname.active').forEach(el => el.classList.remove('active'));
+          if (targetLink) {
+            targetLink.classList.add('active');
+          }
+          sectionJumper.value = `#${activeSection.id}`;
+        }
+      }
+    };
+
+    // Debounced scroll handler
+    const handleScroll = () => {
+      if (!isScrolling) {
+        isScrolling = true;
+      }
+
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        updateActiveSection();
+        isScrolling = false;
+      }, 150); // Kurze Verzögerung für scroll-snap
+    };
+
+    const container = document.getElementById('container');
+    container.addEventListener('scroll', handleScroll);
   };
 
   loadData();
