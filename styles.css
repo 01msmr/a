@@ -530,7 +530,7 @@ a.secname:visited {
   color: var(--sect-col) !important;
 }
 
-a.secname:hover {
+a.secname:visited, a.secname:hover {
   background-color: var(--text-col) !important;
   /* color: var(--text-hov) !important; */
 }
