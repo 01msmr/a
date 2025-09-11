@@ -121,6 +121,19 @@ document.addEventListener('DOMContentLoaded', () => {
       linkEl.target = '_self';
       linkEl.textContent = section.title;
       linkEl.dataset.sectionIndex = sectionIndex;
+      // Click handler für Section-Titel
+      linkEl.addEventListener('click', () => {
+        setTimeout(() => {
+          // Update active class
+          document.querySelectorAll('.secname.active').forEach(el => el.classList.remove('active'));
+          const activeNavLink = document.querySelector(`.secname[href="#${section.id}"]`);
+          if (activeNavLink) {
+            activeNavLink.classList.add('active');
+          }
+          // Update dropdown
+          sectionJumper.value = `#${section.id}`;
+        }, 100);
+      });
 
       if (editMode) {
         sectionEl.draggable = true;
