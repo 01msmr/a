@@ -195,6 +195,9 @@ document.addEventListener('DOMContentLoaded', () => {
       navLink.addEventListener('click', () => {
         setTimeout(() => {
           sectionJumper.value = `#${section.id}`;
+          // Update active class
+          document.querySelectorAll('.secname.active').forEach(el => el.classList.remove('active'));
+          navLink.classList.add('active');
         }, 100);
       });
       sectionNavList.appendChild(navLink);
@@ -314,12 +317,17 @@ document.addEventListener('DOMContentLoaded', () => {
   sectionJumper.addEventListener('change', (e) => {
     if (e.target.value === 'edit-mode') {
       toggleEditMode();
-      // Reset dropdown to original element
       setTimeout(() => {
         e.target.selectedIndex = 0;
       }, 100);
     } else if (e.target.value) {
       window.location.hash = e.target.value;
+      // Update active class for nav links
+      document.querySelectorAll('.secname.active').forEach(el => el.classList.remove('active'));
+      const activeNavLink = document.querySelector(`.secname[href="${e.target.value}"]`);
+      if (activeNavLink) {
+        activeNavLink.classList.add('active');
+      }
     }
   });
 

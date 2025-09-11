@@ -71,6 +71,7 @@ body {
   display: inline-block;
   position: relative;
   top: 0px;
+  padding-right: 0.3em;
 }
 
 .container {
@@ -163,6 +164,7 @@ a.secname:hover {
   background-color: var(--sect-col) !important;
   /* padding: 1px; */
 }
+
 
 html {
   cursor:
@@ -531,6 +533,16 @@ a.secname:visited {
 a.secname:hover {
   background-color: var(--back-hov) !important;
   color: var(--text-hov) !important;
+}
+
+a.secname.active {
+  background-color: var(--text-col) !important;
+  color: var(--text-hov) !important;
+  font-weight: bold;
+}
+
+a.secname.active:hover {
+  cursor: var(--curs-img)
 }
 
 .nav-hidden {
