@@ -1,4 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Attempt to hide the URL bar on mobile
+  if (window.innerWidth < 1024) {
+    setTimeout(() => {
+      window.scrollTo(0, 1);
+    }, 100);
+  }
+
   const container = document.getElementById('container');
   const sectionJumper = document.getElementById('section-jumper');
   const sectionNavList = document.getElementById('section-nav-list');
@@ -233,6 +240,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     checkNavOverflow();
 
+    // ** FIX: Reset scroll to top after content is rendered **
+    container.scrollTop = 0;
+
     // Scroll-Observer aktivieren
     setTimeout(() => observeActiveSections(), 100);
   };
@@ -365,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
     );
   };
 
-  
+
 
   // SECTION DRAG & DROP - only between Sections
   let dragSrcSectionEl = null;
@@ -562,72 +572,67 @@ document.addEventListener('DOMContentLoaded', () => {
 // =============================================================================
 
 /**
- * Optimiert die Höhe von Sections für mobile Geräte im Portrait-Modus
- * Entscheidet intelligant zwischen 50vh und 100vh basierend auf Inhaltsmenge
+ * A more robust algorithm that pairs up consecutive short sections.
  */
 function optimizeMobileSectionHeights() {
-  // Nur auf mobilen Geräten im Portrait-Modus ausführen
+  // Only run on mobile portrait view.
   if (window.innerWidth > 812 || window.innerHeight < window.innerWidth) {
+    // Clear any existing classes if we're not in the target view.
+    document.querySelectorAll('section.paired-section, section.full-page-section').forEach(sec => {
+      sec.classList.remove('paired-section', 'full-page-section');
+    });
     return;
   }
 
-  const sections = document.querySelectorAll('section');
+  const sections = document.querySelectorAll('#container section');
   const viewportHeight = window.innerHeight;
 
-  sections.forEach((section, index) => {
-    const nextSection = sections[index + 1];
-
-    // Zähle die Links in der Section
-    const links = section.querySelectorAll('.group ul li');
+  // Helper function to calculate the estimated height of a section.
+  const getEstimatedHeight = (section) => {
+    const links = section.querySelectorAll('.group li');
     const linkCount = links.length;
-
-    // Berechne geschätzte Höhe basierend auf Inhalt
     const nameHeight = section.querySelector('.name')?.offsetHeight || 50;
-    const estimatedContentHeight = Math.ceil(linkCount / 2) * 50 + nameHeight + 40; // 50px pro Zeile + padding
+    // Estimate height based on 2 columns of links.
+    return Math.ceil(linkCount / 2) * 40 + nameHeight + 40;
+  };
 
-    // Entscheide zwischen 50vh und 100vh
-    const halfViewport = viewportHeight * 0.5;
-    const isShortContent = estimatedContentHeight < halfViewport;
+  const sectionHeights = Array.from(sections).map(getEstimatedHeight);
 
-    // Spezialfall: Wenn nächste Section auch kurz ist und beide zusammen passen
-    if (nextSection && isShortContent) {
-      const nextLinks = nextSection.querySelectorAll('.group ul li');
-      const nextLinkCount = nextLinks.length;
-      const nextNameHeight = nextSection.querySelector('.name')?.offsetHeight || 50;
-      const nextEstimatedHeight = Math.ceil(nextLinkCount / 2) * 50 + nextNameHeight + 40;
+  let i = 0;
+  while (i < sections.length) {
+    const currentSection = sections[i];
 
-      const combinedHeight = estimatedContentHeight + nextEstimatedHeight;
+    // Clean up previous classes
+    currentSection.classList.remove('paired-section', 'full-page-section');
 
-      if (combinedHeight <= viewportHeight * 0.9) {
-        // Beide Sections passen in den Viewport
-        section.classList.add('short-section');
-        section.classList.remove('long-section');
-        section.setAttribute('data-content', 'short');
+    // Check if a pair can be formed with the next section.
+    if (i + 1 < sections.length) {
+      const nextSection = sections[i + 1];
+      nextSection.classList.remove('paired-section', 'full-page-section');
 
-        if (nextSection) {
-          nextSection.classList.add('short-section');
-          nextSection.classList.remove('long-section');
-          nextSection.setAttribute('data-content', 'short');
-        }
-      } else {
-        // Sections passen nicht beide - verwende volle Höhe
-        section.classList.add('long-section');
-        section.classList.remove('short-section');
-        section.setAttribute('data-content', 'long');
+      const combinedHeight = sectionHeights[i] + sectionHeights[i + 1];
+
+      // Condition for pairing: Both individual sections must be relatively short,
+      // and their combined height must fit comfortably within the viewport.
+      if (sectionHeights[i] < viewportHeight * 0.6 &&
+        sectionHeights[i + 1] < viewportHeight * 0.6 &&
+        combinedHeight < viewportHeight * 0.98) {
+        // Apply pairing class to both sections
+        currentSection.classList.add('paired-section');
+        nextSection.classList.add('paired-section');
+        // Advance the loop by 2 since we've processed a pair.
+        i += 2;
+        continue; // Continue to the next iteration
       }
-    } else if (isShortContent && linkCount < 8) {
-      // Kurze Section allein
-      section.classList.add('short-section');
-      section.classList.remove('long-section');
-      section.setAttribute('data-content', 'short');
-    } else {
-      // Lange Section
-      section.classList.add('long-section');
-      section.classList.remove('short-section');
-      section.setAttribute('data-content', 'long');
     }
-  });
+
+    // If no pair was formed, this section gets the full-page treatment.
+    currentSection.classList.add('full-page-section');
+    // Advance the loop by 1.
+    i += 1;
+  }
 }
+
 
 /**
  * Initialisierung der Mobile-Optimierung
@@ -646,9 +651,7 @@ function initMobileOptimization() {
     const observer = new MutationObserver((mutations) => {
       let shouldOptimize = false;
       mutations.forEach((mutation) => {
-        if (mutation.type === 'childList' &&
-          (mutation.target.classList.contains('group') ||
-            mutation.target.closest('.group'))) {
+        if (mutation.type === 'childList') {
           shouldOptimize = true;
         }
       });
@@ -658,7 +661,7 @@ function initMobileOptimization() {
       }
     });
 
-    observer.observe(document.body, {
+    observer.observe(document.getElementById('container'), {
       childList: true,
       subtree: true
     });

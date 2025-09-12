@@ -62,7 +62,6 @@ body {
   padding: 0px 12px;
   border: 1px solid var(--text-col);
   border-radius: 1em;
-  position: absolute;
   position: sticky;
 }
 
@@ -123,6 +122,7 @@ li a {
   cursor:
     var(--curs-hov) 1 30,
     auto;
+  margin: 0;
 }
 
 li a:hover,
@@ -231,7 +231,7 @@ li a {
   border-bottom: .06em solid var(--text-col);
   background: none;
 
-  padding-left: 1.4em;
+  padding-left: 0.2em;
 }
 
 .group {
@@ -283,15 +283,18 @@ a.navnext:hover {
 
 
 
+.group {
+  padding-left: 0.12em;
+}
+
 .group .links {
   width: auto;
   padding-top: 0px;
-  margin-top: 16px;
+  margin-top: 1em;
   font-family: "ubuntu condensed", "helvetica neue", helvetica,
     arial, sans-serif;
-  font-size: 23px;
-  line-height: 36px;
-  font-weight: normal;
+  font-size: 1.4em;
+  line-height: 1.7em font-weight: normal;
   color: var(--sect-col);
   align: center;
 }
@@ -367,15 +370,6 @@ a.navnext {
 ################################################
 ################################################
 ################################################
-################################################
-################################################
-################################################
-################################################
-################################################
-################################################
-################################################
-################################################
-################################################
  */
 
 /* iPad iPad iPad  */
@@ -400,269 +394,173 @@ a.navnext {
   }
 
   section {
-    /* min-height: 25vh; */
-    height: 46vh;
+    min-height: 25vh;
+    max-height: 46vh;
     /* Eine Section pro Bildschirm */
     scroll-snap-align: start;
   }
 }
 
-/* SMARTPHONE Combined Rules */
+/* SMARTPHONE Combined Rules (HOR & VERT) */
 @media only screen and (min-device-width: 350px) and (max-device-width: 812px) {
-  .title {
-    position: fixed;
-    bottom: 0;
-    top: auto;
+  div.seite {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    top: 0;
     left: 0;
-    right: 0;
-    z-index: 100;
-    background-color: var(--front-body);
-    border-top: 1px solid var(--text-col);
-    border-bottom: none;
     border-radius: 0;
-    height: 1em;
-    line-height: 1em;
-    padding: 0 0.2em;
+    /* REMOVED FLEXBOX REORDERING */
   }
 
-  section {
+  .container {
     height: 100%;
+    /* Use full height */
+    padding: 10px 10px 50px 10px;
+    /* Add padding-bottom for the fixed title bar */
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .title {
+    position: fixed;
+    /* Fix position to viewport */
+    bottom: 0;
+    /* Align to bottom */
+    left: 0;
+    /* Align to left */
+    width: 100%;
+    /* Full width */
+    z-index: 100;
+    /* Ensure it's on top */
+
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    border-top: 1px solid var(--text-col);
+    padding: 0;
+    height: auto;
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    background-color: var(--front-body);
+    /* Add background color to prevent content showing through */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .title::-webkit-scrollbar {
+    display: none;
+  }
+
+  .home-link,
+  #section-nav-list,
+  .secname,
+  #section-jumper,
+  .gear-btn {
+    flex-shrink: 0;
+    padding: 0.5em 0.8em;
   }
 
   li a {
-    border-radius: 12px;
-    padding: 4px 6px !important;
+    padding: .05em !important;
+    border-radius: .35em;
   }
 
   .group {
-    line-height: 1.0em;
+    padding-top:  0.12em;
   }
 }
 
 /* iPhone iPhone iPhone  HOR HOR HOR */
 @media only screen and (min-device-width: 350px) and (max-device-width: 812px) and (orientation: landscape) {
   .name {
-    visibility: visible;
     display: none;
-    padding-top: 0em;
-    margin-bottom: 0px;
-    font-size: 24px;
-    padding-bottom: 4px;
   }
 
   li {
     width: 30%;
     font-size: 0.9em;
     padding: 0px;
+    clear: none;
+  }
+
+  section {
+    height: 100%;
+  }
+
+  .group {
+    line-height: 1.0em;
+  }
+
+  .title {
+    display: flex;
   }
 }
 
 /* iPhone iPhone iPhone  VERT  VERT */
 @media only screen and (min-device-width: 375px) and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: portrait) {
-
-  /* Container für besseres Scroll-Snap */
-  .container {
-    scroll-behavior: smooth;
-    height: 100vh;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    scroll-snap-type: y mandatory;
-    scroll-padding-top: 2em;
-    /* Platz für sticky header */
-  }
-
-  /* Section Name - verhindert Drag unter horizontal list */
-  .name {
-    background-color: var(--front-body);
-    margin-bottom: 0;
-    padding-top: 0.1em;
-    padding-bottom: 0.1em;
-    border-bottom: 0.05em solid var(--text-col);
-
-    /* Verhindert Drag-Interferenz */
-    touch-action: none;
-    pointer-events: auto;
-  }
-
-  /* Sections - NIEMALS Inhalt abschneiden */
   section {
-    scroll-snap-align: start;
     scroll-snap-stop: always;
-    min-height: 50vh;
-    /* Mindesthöhe für sehr kurze Sections */
-    height: auto;
-    /* WICHTIG: Auto-Höhe für Inhalt */
-    padding-top: 0;
-    padding-bottom: 1em;
-    overflow: visible;
-    /* NIEMALS abschneiden */
   }
 
-  /* Kurze Sections - versuche 50vh, aber wachse wenn nötig */
-  section.short-section {
-    min-height: 50vh;
-    height: auto;
-    /* Wächst mit Inhalt */
-    overflow: visible;
+  /* DYNAMIC SECTION HEIGHTS */
+  .paired-section {
+    min-height: 49vh;
+    /* Two sections fit on one screen */
   }
 
-  /* Lange Sections - versuche 100vh, aber wachse wenn nötig */
-  section.long-section {
-    min-height: 100vh;
-    height: auto;
-    /* Wächst mit Inhalt */
-    overflow: visible;
-    /* NIEMALS abschneiden */
-  }
-
-  /* CSS-basierte Erkennung - OHNE feste Höhen */
-  section:has(.group ul li:nth-child(n+8)) {
-    min-height: 100vh;
-    /* Mindesthöhe für viele Links */
-    height: auto;
-    /* Wächst mit Inhalt */
-  }
-
-  section:not(:has(.group ul li:nth-child(8))) {
-    min-height: 50vh;
-    /* Mindesthöhe für wenige Links */
-    height: auto;
-    /* Wächst mit Inhalt */
-  }
-
-  /* Spezialfall bleibt gleich - nur min-height */
-  section.long-section+section:not(.long-section) {
-    min-height: 100vh;
-    height: auto;
-  }
-
-  /* List Items - 2 pro Zeile */
-  li {
-    width: calc(50% - 4px);
-    font-size: 0.96em;
-    padding: 8px 4px;
-    margin: 2px;
-    box-sizing: border-box;
-    display: inline-block;
-    vertical-align: top;
-    overflow: hidden;
-    height: auto;
-    /* Flexible Höhe für verschiedene Textlängen */
-    min-height: 36px;
-  }
-
-  li a {
-    display: block;
-    padding: 0.4em 0.3em;
-    line-height: 1.2;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  ul {
-    padding: 0;
-    margin: 0;
-    width: 100%;
-    line-height: 1.4;
+  .full-page-section {
+    min-height: 98vh;
+    /* A single section takes the full screen */
   }
 
   .group {
-    display: block;
-    width: 100%;
-    padding: 0;
-    text-align: left;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 !important;
   }
 
-  .group .links {
-    width: 100%;
-    padding-top: 0;
-    margin-top: 8px;
+  li {
+    width: calc(50% - 4px);
+    /* Slightly more space between items */
+    font-size: 0.9em;
+    height: auto;
+    margin: 0px;
+    padding: 0 !important;
+    clear: none;
+    min-width: 0;
   }
 
-  .group .links .row {
-    width: 100%;
-    margin: 0;
+  li a {
+    margin: 0 !important;
+    padding: 4px 6px !important;
+    /* More padding inside links */
   }
 
-  .group .links .row .cell {
-    width: calc(50% - 2px);
-    float: left;
-    margin: 1px;
-    box-sizing: border-box;
-  }
-
-  /* Navigation ausblenden */
   #section-nav-list {
     display: none !important;
     visibility: hidden;
   }
-
-  /* Verbesserte Drag-Erfahrung */
-  .edit-mode .name {
-    cursor: move;
-    touch-action: manipulation;
-    user-select: none;
-    -webkit-user-select: none;
-  }
-
-  /* Scroll-Optimierung für bessere Performance */
-  section {
-    contain: layout style paint;
-    will-change: scroll-position;
-  }
-
-  /* Fallback für Browser ohne :has() Support */
-  @supports not (selector(:has(*))) {
-    section {
-      height: auto;
-      min-height: 50vh;
-    }
-
-    /* JavaScript wird benötigt für dynamische Höhenanpassung */
-    section[data-content="short"] {
-      height: 50vh;
-    }
-
-    section[data-content="long"] {
-      height: 100vh;
-      overflow-y: auto;
-    }
-  }
 }
 
 
+/*
+################################################
+################################################
+################################################
+################################################
+################################################
+################################################
+ */
 
 
 /* Additional modern functionality styles */
-.title {
-  color: var(--title-col);
-  margin: 0;
-  padding: 0px 18px;
-  border: 0.1em solid var(--text-col);
-  border-radius: 0.8em;
-  position: sticky;
-  /* top: 10px; */
-  z-index: 10;
-  background-color: var(--front-body);
-  display: flex;
-  line-height: 1.4em;
-  /* Entspricht der Höhe */
-  align-items: center;
-  /* gap: 10px; */
-  max-width: 100%;
-  overflow: hidden;
-  height: 1.4em;
-}
-
-
 .home-link,
 #section-nav-list,
 a.secname {
   vertical-align: middle;
-  /* Zentriert alle Elemente vertikal */
   line-height: 1.4em;
 }
 
@@ -676,22 +574,17 @@ a.secname {
 }
 
 #section-nav-list {
-  /* margin-left: 20px; */
-  /* display: inline-block; */
-  /* border-left: 1px solid var(--sect-col); */
   white-space: nowrap;
   overflow: hidden;
   flex-shrink: 1;
   min-width: 0;
   font-size: 0.9em;
-  /* Entfernt Leerraum zwischen inline-block Elementen */
 }
 
 a.secname {
   font-size: 1em;
   text-decoration: none;
   padding: 12px 6px;
-  /* min-width: 40px; */
   display: inline-block;
   color: var(--sect-col) !important;
   border-right: 1px solid var(--text-col);
@@ -704,21 +597,12 @@ a.secname:visited {
 a.secname:visited,
 a.secname:hover {
   background-color: var(--text-col) !important;
-  /* color: var(--text-hov) !important; */
 }
 
 a.secname.active {
   background-color: var(--back-hov) !important;
   color: var(--text-hov) !important;
   font-weight: bold;
-}
-
-a.secname.active:hover {
-  cursor: var(--curs-img)
-}
-
-.nav-hidden {
-  display: none !important;
 }
 
 .title select {
@@ -728,11 +612,6 @@ a.secname.active:hover {
   border-radius: 5px;
   font-family: inherit;
   font-size: 0.8em;
-}
-
-.title select:focus {
-  outline: none;
-  border-color: var(--title-col);
 }
 
 .gear-btn {
@@ -746,98 +625,10 @@ a.secname.active:hover {
   line-height: 26px;
   text-align: center;
   cursor: pointer;
-  /* transition: all 0.2s ease; */
   padding: 0;
   margin-left: auto;
-  margin-right: 10px;
-}
-
-.gear-btn:hover {
-  background: var(--back-hov);
-}
-
-.edit-mode .name {
-  cursor: move;
-}
-
-.edit-mode li[draggable="true"] {
-  cursor: move;
-}
-
-.edit-mode section {
-  border: 1px dashed var(--text-col);
-  margin: 5px;
-  padding: 10px;
-}
-
-.edit-mode section:hover {
-  border-color: var(--title-col);
-}
-
-.edit-mode .add-section-btn {
-  margin-left: 15px;
-}
-
-.edit-mode .delete-section-btn {
-  margin-left: 10px;
-}
-
-.edit-mode .add-section-btn,
-.edit-mode .delete-section-btn {
-  display: inline-block;
-  background: var(--back-hov);
-  color: var(--text-hov);
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 16px;
-  width: 22px;
-  height: 22px;
-  line-height: 22px;
-  text-align: center;
-}
-
-.edit-mode .delete-link-btn {
-  cursor: pointer;
-}
-
-.edit-mode .name a {
-  display: inline-block;
-  cursor: text;
-}
-
-.edit-mode .name a[contenteditable="true"]:focus {
-  outline: 1px solid var(--sect-col);
-  border-radius: 4px;
 }
 
 .edit-mode li a {
   cursor: text !important;
-}
-
-section.dragging,
-li.dragging {
-  border: none !important;
-  opacity: 0.4;
-  transition: none !important;
-}
-
-section.drop-target-above {
-  border-top: 24px solid red !important;
-  transition: none !important;
-}
-
-section.drop-target-below {
-  border-bottom: 24px solid red !important;
-  transition: none !important;
-}
-
-li.drop-target-above {
-  border-top: 4px solid blue !important;
-  transition: none !important;
-}
-
-li.drop-target-below {
-  border-bottom: 4px solid blue !important;
-  transition: none !important;
-}
+}inline-star
