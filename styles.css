@@ -82,12 +82,13 @@ body {
   overflow-y: scroll;
   overflow-x: hidden;
   scroll-snap-type: y mandatory;
+  /* background-color: red; */
 }
 
 section {
   scroll-snap-align: start;
   height: auto;
-  padding-bottom: 1.2em;
+  /* padding-bottom: 1.2em; */
 }
 
 section:last-child {
@@ -380,29 +381,70 @@ a.navnext {
 /* iPad iPad iPad  */
 @media only screen and (max-device-width: 1024px) {
   li {
-    width: 24%;
-    font-size: 1.1em;
-    padding: 0px 0px !important;
+    width: auto;
+    /* Flexible Breite */
+    width: 1em;
+    /* Mindestbreite pro Element */
+    /* max-width: 220px; */
+    /* Maximalbreite pro Element */
+    font-size: 1.05em;
+    padding: 2px 0px !important;
+    margin: 2px;
+    display: inline-block;
+  }
+
+  .group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  section {
+    /* min-height: 25vh; */
+    height: 46vh;
+    /* Eine Section pro Bildschirm */
+    scroll-snap-align: start;
+  }
+}
+
+/* SMARTPHONE Combined Rules */
+@media only screen and (min-device-width: 350px) and (max-device-width: 812px) {
+  .title {
+    position: fixed;
+    bottom: 0;
+    top: auto;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background-color: var(--front-body);
+    border-top: 1px solid var(--text-col);
+    border-bottom: none;
+    border-radius: 0;
+    height: 1em;
+    line-height: 1em;
+    padding: 0 0.2em;
+  }
+
+  section {
+    height: 100%;
   }
 
   li a {
-    padding: 6px 10px !important;
-    border-radius: 10px;
+    border-radius: 12px;
+    padding: 4px 6px !important;
   }
 
-  a.secname {
-    font-size: smaller;
-    cursor: none !important;
-    text-decoration: none;
-    padding: 6px 2px 6px 4px !important;
-    min-width: 48px;
+  .group {
+    line-height: 1.0em;
   }
 }
 
 /* iPhone iPhone iPhone  HOR HOR HOR */
 @media only screen and (min-device-width: 350px) and (max-device-width: 812px) and (orientation: landscape) {
   .name {
-    padding-top: 8px;
+    visibility: visible;
+    display: none;
+    padding-top: 0em;
     margin-bottom: 0px;
     font-size: 24px;
     padding-bottom: 4px;
@@ -410,64 +452,189 @@ a.navnext {
 
   li {
     width: 30%;
-    font-size: 1.4em;
-    /* padding: 0px 0px !important; */
-    /* width: 120px; */
-
-    padding: 8px 12px 8px 12px;
-  }
-
-  li a {
-    border-radius: 12px;
-    padding: 2px 4px !important;
-  }
-
-  section {
-    height: 100%;
-  }
-
-  .group {
-    line-height: 1.7em;
-  }
-
-  .title {
-    display: none;
+    font-size: 0.9em;
+    padding: 0px;
   }
 }
 
 /* iPhone iPhone iPhone  VERT  VERT */
 @media only screen and (min-device-width: 375px) and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: portrait) {
-  .name {
-    padding-top: 12px;
-    margin-bottom: 0px;
-    font-size: 72px;
-    padding-bottom: 6px;
+
+  /* Container für besseres Scroll-Snap */
+  .container {
+    scroll-behavior: smooth;
+    height: 100vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    scroll-snap-type: y mandatory;
+    scroll-padding-top: 2em;
+    /* Platz für sticky header */
   }
 
-  li {
-    width: 46%;
-    font-size: 2.5em;
+  /* Section Name - verhindert Drag unter horizontal list */
+  .name {
+    background-color: var(--front-body);
+    margin-bottom: 0;
+    padding-top: 0.1em;
+    padding-bottom: 0.1em;
+    border-bottom: 0.05em solid var(--text-col);
 
-    padding: 24px 24px 30px 24px;
+    /* Verhindert Drag-Interferenz */
+    touch-action: none;
+    pointer-events: auto;
+  }
+
+  /* Sections - NIEMALS Inhalt abschneiden */
+  section {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    min-height: 50vh;
+    /* Mindesthöhe für sehr kurze Sections */
+    height: auto;
+    /* WICHTIG: Auto-Höhe für Inhalt */
+    padding-top: 0;
+    padding-bottom: 1em;
+    overflow: visible;
+    /* NIEMALS abschneiden */
+  }
+
+  /* Kurze Sections - versuche 50vh, aber wachse wenn nötig */
+  section.short-section {
+    min-height: 50vh;
+    height: auto;
+    /* Wächst mit Inhalt */
+    overflow: visible;
+  }
+
+  /* Lange Sections - versuche 100vh, aber wachse wenn nötig */
+  section.long-section {
+    min-height: 100vh;
+    height: auto;
+    /* Wächst mit Inhalt */
+    overflow: visible;
+    /* NIEMALS abschneiden */
+  }
+
+  /* CSS-basierte Erkennung - OHNE feste Höhen */
+  section:has(.group ul li:nth-child(n+8)) {
+    min-height: 100vh;
+    /* Mindesthöhe für viele Links */
+    height: auto;
+    /* Wächst mit Inhalt */
+  }
+
+  section:not(:has(.group ul li:nth-child(8))) {
+    min-height: 50vh;
+    /* Mindesthöhe für wenige Links */
+    height: auto;
+    /* Wächst mit Inhalt */
+  }
+
+  /* Spezialfall bleibt gleich - nur min-height */
+  section.long-section+section:not(.long-section) {
+    min-height: 100vh;
+    height: auto;
+  }
+
+  /* List Items - 2 pro Zeile */
+  li {
+    width: calc(50% - 4px);
+    font-size: 0.96em;
+    padding: 8px 4px;
+    margin: 2px;
+    box-sizing: border-box;
+    display: inline-block;
+    vertical-align: top;
+    overflow: hidden;
+    height: auto;
+    /* Flexible Höhe für verschiedene Textlängen */
+    min-height: 36px;
   }
 
   li a {
-    border-radius: 12px;
-    padding: 2px 0px;
+    display: block;
+    padding: 0.4em 0.3em;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  section {
-    height: 100%;
+  ul {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    line-height: 1.4;
   }
 
   .group {
-    line-height: 2.8em;
+    display: block;
+    width: 100%;
+    padding: 0;
+    text-align: left;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
   }
 
-  .title {
-    display: none;
+  .group .links {
+    width: 100%;
+    padding-top: 0;
+    margin-top: 8px;
+  }
+
+  .group .links .row {
+    width: 100%;
+    margin: 0;
+  }
+
+  .group .links .row .cell {
+    width: calc(50% - 2px);
+    float: left;
+    margin: 1px;
+    box-sizing: border-box;
+  }
+
+  /* Navigation ausblenden */
+  #section-nav-list {
+    display: none !important;
+    visibility: hidden;
+  }
+
+  /* Verbesserte Drag-Erfahrung */
+  .edit-mode .name {
+    cursor: move;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* Scroll-Optimierung für bessere Performance */
+  section {
+    contain: layout style paint;
+    will-change: scroll-position;
+  }
+
+  /* Fallback für Browser ohne :has() Support */
+  @supports not (selector(:has(*))) {
+    section {
+      height: auto;
+      min-height: 50vh;
+    }
+
+    /* JavaScript wird benötigt für dynamische Höhenanpassung */
+    section[data-content="short"] {
+      height: 50vh;
+    }
+
+    section[data-content="long"] {
+      height: 100vh;
+      overflow-y: auto;
+    }
   }
 }
+
+
+
 
 /* Additional modern functionality styles */
 .title {
@@ -481,7 +648,8 @@ a.navnext {
   z-index: 10;
   background-color: var(--front-body);
   display: flex;
-  line-height: 1.4em;  /* Entspricht der Höhe */
+  line-height: 1.4em;
+  /* Entspricht der Höhe */
   align-items: center;
   /* gap: 10px; */
   max-width: 100%;
@@ -503,6 +671,8 @@ a.secname {
   white-space: nowrap;
   text-decoration: none;
   color: var(--title-col) !important;
+  position: relative;
+  left: -0.2em;
 }
 
 #section-nav-list {
@@ -513,7 +683,8 @@ a.secname {
   overflow: hidden;
   flex-shrink: 1;
   min-width: 0;
-  font-size: 0.9em; /* Entfernt Leerraum zwischen inline-block Elementen */
+  font-size: 0.9em;
+  /* Entfernt Leerraum zwischen inline-block Elementen */
 }
 
 a.secname {
@@ -530,7 +701,8 @@ a.secname:visited {
   color: var(--sect-col) !important;
 }
 
-a.secname:visited, a.secname:hover {
+a.secname:visited,
+a.secname:hover {
   background-color: var(--text-col) !important;
   /* color: var(--text-hov) !important; */
 }

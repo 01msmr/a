@@ -548,3 +548,127 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadData();
 });
+
+
+
+
+
+
+
+
+
+// =============================================================================
+// MOBILE SECTION HEIGHT OPTIMIZATION
+// =============================================================================
+
+/**
+ * Optimiert die Höhe von Sections für mobile Geräte im Portrait-Modus
+ * Entscheidet intelligant zwischen 50vh und 100vh basierend auf Inhaltsmenge
+ */
+function optimizeMobileSectionHeights() {
+  // Nur auf mobilen Geräten im Portrait-Modus ausführen
+  if (window.innerWidth > 812 || window.innerHeight < window.innerWidth) {
+    return;
+  }
+
+  const sections = document.querySelectorAll('section');
+  const viewportHeight = window.innerHeight;
+
+  sections.forEach((section, index) => {
+    const nextSection = sections[index + 1];
+
+    // Zähle die Links in der Section
+    const links = section.querySelectorAll('.group ul li');
+    const linkCount = links.length;
+
+    // Berechne geschätzte Höhe basierend auf Inhalt
+    const nameHeight = section.querySelector('.name')?.offsetHeight || 50;
+    const estimatedContentHeight = Math.ceil(linkCount / 2) * 50 + nameHeight + 40; // 50px pro Zeile + padding
+
+    // Entscheide zwischen 50vh und 100vh
+    const halfViewport = viewportHeight * 0.5;
+    const isShortContent = estimatedContentHeight < halfViewport;
+
+    // Spezialfall: Wenn nächste Section auch kurz ist und beide zusammen passen
+    if (nextSection && isShortContent) {
+      const nextLinks = nextSection.querySelectorAll('.group ul li');
+      const nextLinkCount = nextLinks.length;
+      const nextNameHeight = nextSection.querySelector('.name')?.offsetHeight || 50;
+      const nextEstimatedHeight = Math.ceil(nextLinkCount / 2) * 50 + nextNameHeight + 40;
+
+      const combinedHeight = estimatedContentHeight + nextEstimatedHeight;
+
+      if (combinedHeight <= viewportHeight * 0.9) {
+        // Beide Sections passen in den Viewport
+        section.classList.add('short-section');
+        section.classList.remove('long-section');
+        section.setAttribute('data-content', 'short');
+
+        if (nextSection) {
+          nextSection.classList.add('short-section');
+          nextSection.classList.remove('long-section');
+          nextSection.setAttribute('data-content', 'short');
+        }
+      } else {
+        // Sections passen nicht beide - verwende volle Höhe
+        section.classList.add('long-section');
+        section.classList.remove('short-section');
+        section.setAttribute('data-content', 'long');
+      }
+    } else if (isShortContent && linkCount < 8) {
+      // Kurze Section allein
+      section.classList.add('short-section');
+      section.classList.remove('long-section');
+      section.setAttribute('data-content', 'short');
+    } else {
+      // Lange Section
+      section.classList.add('long-section');
+      section.classList.remove('short-section');
+      section.setAttribute('data-content', 'long');
+    }
+  });
+}
+
+/**
+ * Initialisierung der Mobile-Optimierung
+ */
+function initMobileOptimization() {
+  // Führe Optimierung aus beim Laden und bei Größenänderung
+  optimizeMobileSectionHeights();
+
+  window.addEventListener('resize', optimizeMobileSectionHeights);
+  window.addEventListener('orientationchange', () => {
+    setTimeout(optimizeMobileSectionHeights, 300); // Kurze Verzögerung nach Rotation
+  });
+
+  // Beobachte Änderungen am DOM für dynamische Inhalte
+  if (window.MutationObserver) {
+    const observer = new MutationObserver((mutations) => {
+      let shouldOptimize = false;
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'childList' &&
+          (mutation.target.classList.contains('group') ||
+            mutation.target.closest('.group'))) {
+          shouldOptimize = true;
+        }
+      });
+
+      if (shouldOptimize) {
+        setTimeout(optimizeMobileSectionHeights, 100);
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+}
+
+// Initialisierung - führe aus wenn DOM geladen ist
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initMobileOptimization);
+} else {
+  // DOM ist bereits geladen
+  initMobileOptimization();
+}
