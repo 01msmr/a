@@ -675,3 +675,51 @@ if (document.readyState === 'loading') {
   // DOM ist bereits geladen
   initMobileOptimization();
 }
+
+
+
+
+
+
+
+// =============================================================================
+// FAVICON light/dark mode setup
+// =============================================================================
+
+
+// Dynamisches Favicon basierend auf Dark/Light Mode
+function updateFavicon() {
+  // Bestimme aktuellen Theme-Modus
+  const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  // Entferne existierende Favicon-Links
+  const existingFavicons = document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"]');
+  existingFavicons.forEach(link => link.remove());
+
+  // Erstelle neues Favicon-Element
+  const favicon = document.createElement('link');
+  favicon.rel = 'icon';
+  favicon.type = 'image/png';
+  favicon.sizes = '32x32';
+
+  // Setze entsprechendes Favicon
+  favicon.href = isDarkMode
+    ? './favicon/favicon-dark-32x32.png'
+    : './favicon/favicon-light-32x32.png';
+
+  // Füge zum Head hinzu
+  document.head.appendChild(favicon);
+}
+
+// Initial setzen
+updateFavicon();
+
+// Bei Theme-Wechsel aktualisieren
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateFavicon);
+
+// Optional: Auch bei visibility change (manche Browser cachen beim Tab-Wechsel)
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    setTimeout(updateFavicon, 100);
+  }
+});
