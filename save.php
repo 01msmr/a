@@ -1,5 +1,5 @@
 <?php
-define('TOKEN', 'CHANGE_ME'); // ← gleiches Token wie in app.js
+define('TOKEN', 'efqw,gjnvslkenjdfarleakjgd,nbyj---bt,a<jsrengfwrsrgv'); // ← gleiches Token wie in app.js
 
 $token = $_SERVER['HTTP_X_SAVE_TOKEN'] ?? '';
 if ($token !== TOKEN) {
