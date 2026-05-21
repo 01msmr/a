@@ -39,10 +39,19 @@ body {
 .title {
     color: var(--title-col);
     margin: 0;
-    padding: 0px 12px;
+    padding: 2px 12px;
     border: 1px solid var(--text-col);
     border-radius: 1em;
     position: sticky;
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.title::-webkit-scrollbar {
+    display: none;
 }
 
 .titledomain {
