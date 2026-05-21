@@ -1,12 +1,4 @@
 <?php
-require __DIR__ . '/config.php';
-
-$token = $_SERVER['HTTP_X_SAVE_TOKEN'] ?? '';
-if ($token !== TOKEN) {
-    http_response_code(403);
-    exit('Forbidden');
-}
-
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     exit('Method Not Allowed');
@@ -18,18 +10,16 @@ if (strlen($body) < 10) {
     exit('Payload too short');
 }
 
-// Validieren: muss gültiges JSON sein
 $parsed = json_decode($body);
 if ($parsed === null) {
     http_response_code(400);
     exit('Invalid JSON');
 }
 
-$target = __DIR__ . '/links.json';
+$target = dirname(__DIR__) . '/links.json';
 
-// Backup
 if (file_exists($target)) {
-    copy($target, __DIR__ . '/links.bak.json');
+    copy($target, dirname(__DIR__) . '/links.bak.json');
 }
 
 if (file_put_contents($target, $body) === false) {

@@ -176,12 +176,9 @@ function collectData() {
 
 function save() {
     var json = JSON.stringify(collectData(), null, 2);
-    fetch('save.php', {
+    fetch('edit/save.php', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json; charset=utf-8',
-            'X-Save-Token': 'efqw,gjnvslkenjdfarleakjgd,nbyj---bt,a<jsrengfwrsrgv'
-        },
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
         body: json
     })
     .then(function (r) {

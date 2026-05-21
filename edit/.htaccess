@@ -1,0 +1,4 @@
+AuthType Basic
+AuthName "Edit"
+AuthUserFile /path/to/parent/.htpasswd
+Require valid-user
