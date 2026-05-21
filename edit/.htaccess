@@ -1,4 +1,4 @@
 AuthType Basic
 AuthName "Edit"
-AuthUserFile /path/to/parent/.htpasswd
+AuthUserFile /var/www/vhosts/hosting189417.ae8d9.netcup.net/a.msmr.co/.htpasswd
 Require valid-user
