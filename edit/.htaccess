@@ -1,4 +1,4 @@
 AuthType Basic
 AuthName "Edit"
-AuthUserFile /var/www/vhosts/hosting189417.ae8d9.netcup.net/a.msmr.co/.htpasswd
+AuthUserFile /var/www/vhosts/hosting189417.ae8d9.netcup.net/a.msmr.co/httpdocs/edit/.htpasswd
 Require valid-user

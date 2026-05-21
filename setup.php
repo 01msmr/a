@@ -1,5 +1,5 @@
 <?php
-$htpasswd = '/var/www/vhosts/hosting189417.ae8d9.netcup.net/a.msmr.co/.htpasswd';
+$htpasswd = __DIR__ . '/edit/.htpasswd';
 $msg = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
