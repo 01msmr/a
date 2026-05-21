@@ -1,3 +1,5 @@
 .DS_Store
 config.php
 .github/workflows/a.msmr.copy/
+links.json
+links.bak.json
