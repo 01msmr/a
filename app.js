@@ -60,7 +60,7 @@ function makeLi(name, url) {
 }
 
 // ── Load ──────────────────────────────────────────────────────────
-fetch('links.json?t=' + Date.now())
+fetch('links.php?t=' + Date.now())
     .then(function (r) { return r.json(); })
     .then(render)
     .catch(function (e) {

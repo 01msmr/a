@@ -16,10 +16,10 @@ if ($parsed === null) {
     exit('Invalid JSON');
 }
 
-$target = dirname(__DIR__) . '/links.json';
+$target = __DIR__ . '/links.json';
 
 if (file_exists($target)) {
-    copy($target, dirname(__DIR__) . '/links.bak.json');
+    copy($target, __DIR__ . '/links.bak.json');
 }
 
 if (file_put_contents($target, $body) === false) {

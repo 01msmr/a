@@ -1,0 +1,739 @@
+[
+  {
+    "id": "sec1",
+    "title": "srv",
+    "color": "cyan",
+    "links": [
+      {
+        "url": "http://10.0.10.1",
+        "name": "[+] FB 6690"
+      },
+      {
+        "url": "https://cd.msmr.co",
+        "name": "[+] cd.msmr.co"
+      },
+      {
+        "url": "https://pass.msmr.co",
+        "name": "[++] pass.msmr.co"
+      },
+      {
+        "url": "http://ucloud.fritz.box:8010",
+        "name": "[+] paperless"
+      },
+      {
+        "url": "http://ucloud.fritz.box:5380/admin",
+        "name": "[+] unh0le"
+      },
+      {
+        "url": "https://customercontrolpanel.de",
+        "name": "CCP"
+      },
+      {
+        "url": "http://pro.msmr.co",
+        "name": "pro.msmr.co"
+      },
+      {
+        "url": "http://l.msmr.co",
+        "name": "l.msmr.co"
+      },
+      {
+        "url": "https://pinboard.in/u:msmr",
+        "name": "pinboard"
+      },
+      {
+        "url": "http://www.google.com/cse/home?cx=018347161240475232406:csbmxz219bw",
+        "name": "ind. des. machine"
+      },
+      {
+        "url": "https://www.makerspac.es",
+        "name": "makerspac.es"
+      }
+    ]
+  },
+  {
+    "id": "sec2",
+    "title": "tec",
+    "color": "cyan",
+    "links": [
+      {
+        "url": "http://www.golem.de/ticker",
+        "name": "golem"
+      },
+      {
+        "url": "http://www.heise.de/mac-and-i/newsticker",
+        "name": "Mac & i"
+      },
+      {
+        "url": "https://www.heise.de/newsticker",
+        "name": "heise"
+      },
+      {
+        "url": "http://www.appleinsider.com",
+        "name": "Appleinsider"
+      },
+      {
+        "url": "http://www.apfeltalk.de/magazin",
+        "name": "Apfeltalk"
+      },
+      {
+        "url": "http://macmost.com",
+        "name": "mac most"
+      },
+      {
+        "url": "http://www.appgefahren.de",
+        "name": "appgefahren"
+      },
+      {
+        "url": "http://www.theverge.com/tech",
+        "name": "The Verge"
+      },
+      {
+        "url": "http://www.heise.de/tr",
+        "name": "Technol. Review"
+      },
+      {
+        "url": "http://arstechnica.com/gadgets",
+        "name": "ars technica"
+      },
+      {
+        "url": "http://www.macrumors.com/",
+        "name": "Macrumors"
+      },
+      {
+        "url": "http://www.appleworld.today",
+        "name": " world.today"
+      },
+      {
+        "url": "http://www.macstories.net",
+        "name": "Macstories"
+      },
+      {
+        "url": "http://www.macnotes.de/news",
+        "name": "Macnotes"
+      },
+      {
+        "url": "http://recode.net",
+        "name": "re/code"
+      },
+      {
+        "url": "http://www.readwrite.com",
+        "name": "readwrite"
+      },
+      {
+        "url": "http://www.mashable.com",
+        "name": "mashable"
+      },
+      {
+        "url": "http://thenextweb.com",
+        "name": "the next web"
+      },
+      {
+        "url": "http://www.gizmodo.com",
+        "name": "Gizmodo"
+      },
+      {
+        "url": "http://www.smashingmagazine.com",
+        "name": "Smashingmag"
+      },
+      {
+        "url": "http://www.businessinsider.com/sai",
+        "name": "Silicon A. Insider"
+      },
+      {
+        "url": "https://techniktagebuch.tumblr.com",
+        "name": "techniktagebuch"
+      },
+      {
+        "url": "http://www.computerwoche.de/p/technologie,3461",
+        "name": "Computerwoche"
+      },
+      {
+        "url": "http://www.geek.com",
+        "name": "geek"
+      },
+      {
+        "url": "http://www.lifehacker.com",
+        "name": "lifehacker"
+      },
+      {
+        "url": "https://techcrunch.com",
+        "name": "TECHCRUNCH"
+      }
+    ]
+  },
+  {
+    "id": "sec3",
+    "title": "riid",
+    "color": "SandyBrown",
+    "links": [
+      {
+        "url": "https://www.spiegel.de/netzwelt/",
+        "name": "Spiegel ONLINE"
+      },
+      {
+        "url": "https://www.spiegel.de/schlagzeilen/",
+        "name": "S Headlines"
+      },
+      {
+        "url": "https://www.zeit.de/digital",
+        "name": "Zeit Online"
+      },
+      {
+        "url": "https://www.freitag.de/kultur/medien",
+        "name": "der Freitag"
+      },
+      {
+        "url": "http://www.nw.de/nachrichten/computer_internet",
+        "name": "NeueWestfälische"
+      },
+      {
+        "url": "https://www.tagesspiegel.de/medien/digitale-welt/",
+        "name": "Tagesspiegel"
+      },
+      {
+        "url": "https://taz.de/!p4631/",
+        "name": "tageszeitung"
+      },
+      {
+        "url": "https://www.derstandard.at/web",
+        "name": "Der Standard"
+      },
+      {
+        "url": "https://www.theguardian.com/uk/technology",
+        "name": "the guardian"
+      },
+      {
+        "url": "http://news.google.com/news?ned=:epkh8bm9e2if2mhabqjkddhavb6qb7yoym6ayoqamakxqcxlapgldzhgzhsj_pyxsjdew_j6icfqpxn1hssavlmqyg",
+        "name": "G News"
+      },
+      {
+        "url": "https://time.com/tech/",
+        "name": "TIME"
+      },
+      {
+        "url": "https://www.faz.net/aktuell/technik-motor/",
+        "name": "FAZ"
+      },
+      {
+        "url": "https://www.nytimes.com/pages/technology",
+        "name": "New York Times"
+      },
+      {
+        "url": "https://www.fr-online.de/digital/",
+        "name": "FR"
+      },
+      {
+        "url": "https://www.sueddeutsche.de/computer/",
+        "name": "Süddeutsche"
+      },
+      {
+        "url": "https://krautreporter.de/",
+        "name": "Krautreporter"
+      },
+      {
+        "url": "https://krautreporter.de/zusammenhaenge",
+        "name": "Zusammenhänge"
+      },
+      {
+        "url": "https://www.nzz.ch/mehr/digital/",
+        "name": "NZZ"
+      },
+      {
+        "url": "https://www.brandeins.de",
+        "name": "brand eins"
+      },
+      {
+        "url": "https://www.wired.com",
+        "name": "W|R€D"
+      },
+      {
+        "url": "https://www.domusweb.it/en",
+        "name": "DOMUS"
+      },
+      {
+        "url": "https://www.designboom.com",
+        "name": "designboom"
+      },
+      {
+        "url": "https://www.vice.com/en_us",
+        "name": "VICE"
+      },
+      {
+        "url": "https://99u.adobe.com/",
+        "name": "99u"
+      },
+      {
+        "url": "https://www.heise.de/select/mac-and-i",
+        "name": "Mac & i lesen"
+      },
+      {
+        "url": "https://www.heise.de/select/ct",
+        "name": "c´t lesen"
+      }
+    ]
+  },
+  {
+    "id": "sec4",
+    "title": "tbx.li",
+    "color": "cyan",
+    "links": [
+      {
+        "url": "https://tbx.li",
+        "name": "/"
+      },
+      {
+        "url": "https://tbx.li/web",
+        "name": "/web"
+      },
+      {
+        "url": "https://tbx.li/orderbox",
+        "name": "/orderbox"
+      },
+      {
+        "url": "https://tbx.li/strichliste",
+        "name": "/strichliste"
+      },
+      {
+        "url": "https://tbx.li/gamedev",
+        "name": "/gamedev"
+      }
+    ]
+  },
+  {
+    "id": "sec5",
+    "title": "wrk",
+    "color": "cyan",
+    "links": [
+      {
+        "url": "https://knoblauch.eu",
+        "name": "KNOBLAUCH"
+      },
+      {
+        "url": "https://mail.knoblauch.eu",
+        "name": "KK Mail"
+      },
+      {
+        "url": "https://cloud.knoblauch.eu",
+        "name": "KK Cloud"
+      },
+      {
+        "url": "https://ctx.knoblauch.eu",
+        "name": "KK Citrix"
+      },
+      {
+        "url": "https://remote.knoblauch.eu",
+        "name": "KK Remote"
+      },
+      {
+        "url": "https://app.raindrop.io/my/0",
+        "name": "Raindrop [522]"
+      },
+      {
+        "url": "https://buyersguide.macrumors.com",
+        "name": "Buyers Guide"
+      },
+      {
+        "url": "https://knoblauch.de.beekeeper.io",
+        "name": "KK Beekeeper"
+      },
+      {
+        "url": "https://fast.com",
+        "name": "Fast"
+      },
+      {
+        "url": "https://msmr.speedtestcustom.com",
+        "name": "Speedtest"
+      },
+      {
+        "url": "https://breitbandmessung.de/test",
+        "name": "breitbandmessung"
+      }
+    ]
+  },
+  {
+    "id": "sec6",
+    "title": "mee",
+    "color": "cyan",
+    "links": [
+      {
+        "url": "http://www.x.com/maasmeier",
+        "name": "… X …"
+      },
+      {
+        "url": "http://www.facebook.com/maasmeier",
+        "name": "facebook"
+      },
+      {
+        "url": "http://www.instagram.com/msmr",
+        "name": "Instagram"
+      },
+      {
+        "url": "http://www.threads.net/msmr",
+        "name": "Threads"
+      },
+      {
+        "url": "https://de.scalable.capital",
+        "name": "Scalable Cap"
+      },
+      {
+        "url": "https://kunde.comdirect.de",
+        "name": "comdirect"
+      },
+      {
+        "url": "https://webmail01.netcup.net",
+        "name": "netcup Mail"
+      },
+      {
+        "url": "https://mail.google.com/mail",
+        "name": "Gmail"
+      },
+      {
+        "url": "http://drive.google.com",
+        "name": "G drive"
+      },
+      {
+        "url": "https://cloud.feedly.com",
+        "name": "feedly"
+      }
+    ]
+  },
+  {
+    "id": "sec7",
+    "title": "see",
+    "color": "cyan",
+    "links": [
+      {
+        "url": "https://web2.magentatv.de",
+        "name": "Magenta TV"
+      },
+      {
+        "url": "https://mediathek.daserste.de",
+        "name": "ARD"
+      },
+      {
+        "url": "https://www.zdf.de/zdfmediathek/",
+        "name": "ZDF"
+      },
+      {
+        "url": "https://www.arte.tv/guide/de/plus7/",
+        "name": "arte"
+      },
+      {
+        "url": "https://www.3sat.de/mediathek/",
+        "name": "3sat"
+      },
+      {
+        "url": "https://wdr.de/mediathek",
+        "name": "WDR"
+      },
+      {
+        "url": "https://www.br.de/mediathek/video",
+        "name": "BR"
+      },
+      {
+        "url": "https://tv.apple.com/de",
+        "name": "tv"
+      },
+      {
+        "url": "https://www.amazon.de/amazonprime",
+        "name": "prime video"
+      },
+      {
+        "url": "https://mubi.com/films/showing",
+        "name": "MUBI"
+      },
+      {
+        "url": "https://www.mediasteak.com",
+        "name": "MediaSteak"
+      },
+      {
+        "url": "https://www.save.tv/stv/m/obj/tvprogctr/tvprogrammfilm.cfm",
+        "name": "save.tv"
+      }
+    ]
+  },
+  {
+    "id": "sec8",
+    "title": "hiir",
+    "color": "cyan",
+    "links": [
+      {
+        "url": "https://srv.deutschlandradio.de/themes/dradio/script/aod/index.html?audioMode=4&audioID=3&state=",
+        "name": "► DLF Live"
+      },
+      {
+        "url": "http://dradiowissen.de",
+        "name": "DLF Nova"
+      },
+      {
+        "url": "http://www.deutschlandradiokultur.de",
+        "name": "DLF Kultur"
+      },
+      {
+        "url": "http://www.deutschlandfunk.de/",
+        "name": "Deutschlandfunk"
+      }
+    ]
+  },
+  {
+    "id": "sec9",
+    "title": "bsy",
+    "color": "cyan",
+    "links": [
+      {
+        "url": "http://msmr.co",
+        "name": "msmr"
+      },
+      {
+        "url": "http://1hou.se",
+        "name": "1hou.se"
+      },
+      {
+        "url": "http://my-glasses.net",
+        "name": "my•glasses"
+      },
+      {
+        "url": "http://www.macpad.eu",
+        "name": "macpad"
+      },
+      {
+        "url": "https://aha.atelier522.com/index.php?title=admin:Hauptseite#admin-Seiten",
+        "name": "Aha!"
+      },
+      {
+        "url": "https://aha.atelier522.com/index.php?title=Hauptseite",
+        "name": "Ha!"
+      }
+    ]
+  },
+  {
+    "id": "sec10",
+    "title": "dis",
+    "color": "cyan",
+    "links": [
+      {
+        "url": "https://discourse.mcneel.com/category/rhino/rhino-for-mac/5",
+        "name": "Rhino Mac"
+      },
+      {
+        "url": "https://discuss.binaryage.com/c/totalfinder",
+        "name": "totalfinder"
+      },
+      {
+        "url": "https://community.krautreporter.de",
+        "name": "KR Community"
+      },
+      {
+        "url": "https://docs.mcneel.com/rhino/mac/help/de-de/index.htm",
+        "name": "Rhino Mac — ?"
+      },
+      {
+        "url": "https://docs.mcneel.com/rhino/5/help/de-de/index.htm",
+        "name": "Rhino Win — ?"
+      },
+      {
+        "url": "https://forum.jungundnaiv.de",
+        "name": "Jung und naiv"
+      },
+      {
+        "url": "https://mdialog.mensa.de/",
+        "name": "MDialog"
+      },
+      {
+        "url": "https://forum.openwrt.org/t/openwrt-one-celebrating-20-years-of-openwrt/183684/",
+        "name": "OpenWrt One"
+      }
+    ]
+  },
+  {
+    "id": "sec11",
+    "title": "art",
+    "color": "cyan",
+    "links": [
+      {
+        "url": "https://artsy.net",
+        "name": "artsy"
+      },
+      {
+        "url": "https://www.googleartproject.com/de",
+        "name": "G Art Project"
+      },
+      {
+        "url": "https://www.theonlymagicleftisart.com",
+        "name": "(*) the only magic"
+      },
+      {
+        "url": "https://curatorsintl.org",
+        "name": "blu"
+      },
+      {
+        "url": "https://twinery.org/2",
+        "name": "twine 2.0"
+      }
+    ]
+  },
+  {
+    "id": "sec12",
+    "title": "eat",
+    "color": "cyan",
+    "links": [
+      {
+        "url": "https://gehrenberg.de/speisekarte/",
+        "name": "Wirtshaus"
+      },
+      {
+        "url": "https://www.gehrenberg-bodensee.de/gastro/restauration-lichtblick/",
+        "name": "Lichtblick"
+      },
+      {
+        "url": "https://www.restaurant-buergerstuben.de",
+        "name": "Bürgerstuben"
+      },
+      {
+        "url": "https://www.mcdonalds.com/de/de-de/restaurant-suche.html/l/markdorf/planckstrasse-2/1560",
+        "name": "McD Markdorf"
+      },
+      {
+        "url": "https://gessler1862.de/de/articles/cafe-und-bar",
+        "name": "Gessler 1862"
+      },
+      {
+        "url": "https://pizzerialamm.de/Speisen-Getraenke",
+        "name": "Pizzeria Lamm"
+      },
+      {
+        "url": "http://172.23.29.110",
+        "name": "[TBX] • OrderBox"
+      },
+      {
+        "url": "https://www.lieferando.de/speisekarte/otto-lilienthal-burgergill-steakhouse",
+        "name": "Otto Lilienthal"
+      },
+      {
+        "url": "https://shop.riggs-burger.de/friedrichshafen",
+        "name": "Riggs Burger"
+      },
+      {
+        "url": "https://pizzamarkdorf.de/de/menu/",
+        "name": "Pizza Markdorf"
+      },
+      {
+        "url": "https://schwabenexpress.store/friedrichshafen",
+        "name": "Schwab-Express"
+      },
+      {
+        "url": "https://www.pastaburgerameckmarkdorf.de",
+        "name": "Pasta & Burger a.E."
+      },
+      {
+        "url": "https://kitchen.toolbox-bodensee.de",
+        "name": "[TBX] • Str/chliste"
+      }
+    ]
+  },
+  {
+    "id": "sec13",
+    "title": "shp",
+    "color": "cyan",
+    "links": [
+      {
+        "url": "http://preisvergleich.golem.de",
+        "name": "preisvgl.golem.de"
+      },
+      {
+        "url": "https://www.amazon.de",
+        "name": "amazon"
+      },
+      {
+        "url": "https://www.bueromarkt-ag.de",
+        "name": "Böttcher AG"
+      },
+      {
+        "url": "https://www.mindfactory.de",
+        "name": "Mindfactory"
+      },
+      {
+        "url": "https://www.reichelt.de",
+        "name": "reichelt.de"
+      },
+      {
+        "url": "https://www.connox.de",
+        "name": "connox.de"
+      },
+      {
+        "url": "https://www.wir-machen-druck.de",
+        "name": "WirMachenDruck"
+      },
+      {
+        "url": "https://www.flyeralarm.de",
+        "name": "flyeralarm"
+      }
+    ]
+  },
+  {
+    "id": "sec14",
+    "title": "pol",
+    "color": "cyan",
+    "links": [
+      {
+        "url": "https://spd.de",
+        "name": "SPD.de"
+      },
+      {
+        "url": "https://spd-markdorf.de",
+        "name": "SPD Markdorf"
+      },
+      {
+        "url": "https://spd-markdorf.de/wp-admin",
+        "name": "…/edit"
+      },
+      {
+        "url": "https://organize.spd.de",
+        "name": "SPD.organize"
+      },
+      {
+        "url": "https://meinportal.spd.de/MeinPortal2/",
+        "name": "SPD.meinportal"
+      },
+      {
+        "url": "https://mailer.spd.de",
+        "name": "SPD.mailer"
+      },
+      {
+        "url": "https://shop.spd.de/mein-spd-shop/de/shop/parteiarbeit/",
+        "name": "Parteiarbeit"
+      },
+      {
+        "url": "https://kampagne.spd.de/schnellfinder",
+        "name": "🤓 Schnellfinder"
+      },
+      {
+        "url": "https://shop.spd.de/mein-spd-shop/de/shop/gestaltungsportal/ba-wue/",
+        "name": "Gestaltungsportal"
+      },
+      {
+        "url": "https://www.adfc.de",
+        "name": "adfc"
+      },
+      {
+        "url": "https://www.vcd.org",
+        "name": "VCD"
+      }
+    ]
+  },
+  {
+    "id": "sec15",
+    "title": "mdf",
+    "color": "cyan",
+    "links": [
+      {
+        "url": "https://cm-terminreservierung.de/markdorf?calendarId=92",
+        "name": "Markdorf Service"
+      },
+      {
+        "url": "https://www.markdorf.de/stadt-buerger/kommunalpolitik-verwaltung/gremien/stadtraete-markdorf",
+        "name": "Gemeinderat"
+      }
+    ]
+  }
+]
