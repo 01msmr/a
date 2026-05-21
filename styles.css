@@ -72,7 +72,7 @@ body {
 
 section {
     scroll-snap-align: start;
-    height: 100%;
+    height: auto;
 }
 
 section:last-child {
@@ -419,6 +419,10 @@ a.secname.active {
 
 /* Smartphone combined */
 @media only screen and (min-device-width: 350px) and (max-device-width: 812px) {
+    section {
+        height: 100%;
+    }
+
     div.seite {
         width: 100%;
         height: 100%;
