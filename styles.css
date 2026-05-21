@@ -539,6 +539,22 @@ a.secname.active {
 
 /* ── Edit Mode ───────────────────────────────────────────────────── */
 
+body.edit-mode .container {
+    scroll-snap-type: none;
+}
+
+body.edit-mode section {
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    scroll-snap-align: none;
+    scroll-snap-stop: unset;
+}
+
+body.edit-mode section:last-child {
+    margin-bottom: 0;
+}
+
 body.edit-mode li {
     height: auto;
     min-height: 36px;
