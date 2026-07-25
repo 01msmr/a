@@ -77,6 +77,12 @@ function render(data) {
 
     var container = document.getElementById('container');
     container.tabIndex = -1;
+    container.addEventListener('keydown', function (e) {
+        // im Edit-Mode gehören die Pfeiltasten dem Textcursor
+        if (document.body.classList.contains('edit-mode')) return;
+        if (e.key === 'ArrowDown') { e.preventDefault(); jumpBy(1); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); jumpBy(-1); }
+    });
     container.innerHTML = '';
     container.appendChild(buildSettingsPanel());
 
@@ -109,6 +115,7 @@ function render(data) {
 
     applyPrefs();
     trackActiveSection();
+    focusContent();
 }
 
 // Oberste sichtbare Section: Chip invertiert, Dropdown nachgeführt.
@@ -139,6 +146,7 @@ function trackActiveSection() {
         document.body.classList.toggle('docked',
             !!aktiv && aktiv.getBoundingClientRect().top - top <= 1);
         sel.value = active;
+        jumpTarget = null;   // Scrollen zur Ruhe gekommen
     };
 
     // erst nach Scroll-Ruhe nachziehen
@@ -152,7 +160,26 @@ function trackActiveSection() {
 // nach einem Sprung den Inhalt fokussieren, sonst laufen die Pfeiltasten ins Leere
 function focusContent() {
     var c = document.getElementById('container');
-    requestAnimationFrame(function () { c.focus({ preventScroll: true }); });
+    var setzen = function () { c.focus({ preventScroll: true }); };
+    // während des Ladens setzt der Browser den Fokus danach auf body zurück
+    if (document.readyState === 'complete') requestAnimationFrame(setzen);
+    else window.addEventListener('load', setzen, { once: true });
+}
+
+// Pfeiltasten summieren sich auf ein Ziel, statt auf die Animation zu warten
+var jumpTarget = null;
+
+function jumpBy(delta) {
+    var sections = document.querySelectorAll('#container section');
+    if (!sections.length) return;
+    var base = jumpTarget;
+    if (base === null) {
+        var aktiv = document.querySelector('#container section h3.name.active');
+        base = 0;
+        sections.forEach(function (s, i) { if (aktiv && s.contains(aktiv)) base = i; });
+    }
+    jumpTarget = Math.max(0, Math.min(sections.length - 1, base + delta));
+    sections[jumpTarget].scrollIntoView();
 }
 
 function makeLi(name, url) {
