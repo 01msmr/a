@@ -39,9 +39,11 @@ body {
 .title {
     color: var(--title-col);
     margin: 0;
-    /* Polster = Eckenradius, damit Chips in der Rundung bleiben */
+    /* Polster = Eckenradius, damit Chips in der Rundung bleiben.
+       50 = 48 Chiphöhe + 2 Rahmen */
     box-sizing: border-box;
     padding: 0 1em;
+    height: 50px;
     border: 1px solid var(--text-col);
     border-radius: 1em;
     position: sticky;
@@ -266,6 +268,7 @@ a.secname {
     flex-shrink: 1;
     min-width: 0;
     font-size: 0.9em;
+    align-self: stretch;
 }
 
 a.secname {
@@ -273,6 +276,8 @@ a.secname {
     text-decoration: none;
     padding: 12px 6px;
     display: inline-block;
+    box-sizing: border-box;
+    height: 48px;
     color: var(--sect-col) !important;
     border-right: 1px solid var(--text-col);
 }
@@ -607,20 +612,10 @@ body.nav-icons .secname .secicon {
 /* quadratischer Chip, Icon horizontal mittig — inline-block, damit es
    auf der Textlinie bleibt statt vertikal zentriert zu werden.
    Volle Innenhöhe, sonst bleibt oben und unten ein heller Spalt. */
-/* 50 = 48 Innenhöhe + 2 Rahmen, damit der Chip glatt aufgeht */
-body.nav-icons .title {
-    height: 50px;
-}
-
-body.nav-icons #section-nav-list {
-    align-self: stretch;
-}
-
+/* nur die Breite ist Icon-spezifisch — quadratisch, Icon mittig.
+   Kein flex, damit das Icon auf der Grundlinie bleibt. */
 body.nav-icons a.secname {
-    box-sizing: border-box;
     width: 48px;
-    height: 48px;
-    display: inline-block;
     text-align: center;
 }
 
