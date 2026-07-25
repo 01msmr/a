@@ -52,6 +52,20 @@ Die Passwortdatei liegt in `edit/.htpasswd`, der Pfad steht in `edit/.htaccess`.
 
 `-B` erzwingt bcrypt. Ohne `-c`, sonst wird die Datei überschrieben statt ergänzt. Die Datei darf nie ins Repo — sie steht in der `.gitignore`.
 
+## Automatischer Deploy aus GitHub
+
+Plesk zieht `main` selbst und legt die Repo-Dateien nach `httpdocs`. Die Live-Daten überstehen das: `edit/links.json`, `edit/links.bak.json` und `edit/.htpasswd` stehen in der `.gitignore`, sind also gar nicht im Repo — Plesk kopiert nur, was dort liegt, und löscht nichts Zusätzliches.
+
+`edit/.htaccess` trägt im Repo den echten Serverpfad und wird durch identischen Inhalt ersetzt.
+
+Damit Doku und Projektdateien nicht öffentlich im Webverzeichnis landen, unter **Zusätzliche Bereitstellungsaktionen** eintragen:
+
+```
+rm -rf docs LICENSE .github .gitignore
+```
+
+`edit` gehört **nicht** in diese Liste. Der GitHub-Pages-Workflow entfernt es, weil dort kein PHP läuft — auf dem echten Server ist es der Kern der Anwendung.
+
 ## Voraussetzungen
 
 - Apache 2.4 mit ausgewertetem `.htaccess`.

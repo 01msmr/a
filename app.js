@@ -105,7 +105,10 @@ function render(data) {
         var ul = document.createElement('ul');
         ul.className = 'group';
         (sec.links || []).forEach(function (link) {
-            ul.appendChild(makeLi(link.name, link.url));
+            var li = makeLi(link.name, link.url);
+            li.dataset.name0 = link.name;   // Ursprungswerte für den Vergleich
+            li.dataset.url0 = link.url;
+            ul.appendChild(li);
         });
 
         section.appendChild(h3);
@@ -346,7 +349,42 @@ function collectData() {
     return data;
 }
 
+// Vergleich gegen die beim Rendern gestempelten Ursprungswerte
+function aenderungen() {
+    var geloescht = [], geaendert = [];
+    document.querySelectorAll('ul.group li:not(.btn-add)').forEach(function (li) {
+        var a = li.querySelector('a');
+        if (!a || li.dataset.url0 === undefined) return;   // neu angelegt
+        var urlFeld = li.querySelector('.edit-url');
+        var name = a.textContent.trim();
+        var url = urlFeld ? urlFeld.textContent.trim() : a.getAttribute('href');
+
+        if (li.classList.contains('removed')) {
+            geloescht.push('· ' + li.dataset.name0 + '  ' + li.dataset.url0);
+        } else if (name !== li.dataset.name0 || url !== li.dataset.url0) {
+            geaendert.push('· ' + li.dataset.name0 + '  ' + li.dataset.url0 +
+                '\n  → ' + name + '  ' + url);
+        }
+    });
+    return { geloescht: geloescht, geaendert: geaendert };
+}
+
+function bestaetigen() {
+    var d = aenderungen();
+    if (!d.geaendert.length && !d.geloescht.length) return true;
+
+    var text = 'Änderungen übernehmen?\n';
+    if (d.geaendert.length) {
+        text += '\nGeändert (' + d.geaendert.length + '):\n' + d.geaendert.join('\n') + '\n';
+    }
+    if (d.geloescht.length) {
+        text += '\nGelöscht (' + d.geloescht.length + '):\n' + d.geloescht.join('\n') + '\n';
+    }
+    return confirm(text);
+}
+
 function save() {
+    if (!bestaetigen()) return;
     var json = JSON.stringify(collectData(), null, 2);
     fetch('edit/save.php', {
         method: 'POST',
