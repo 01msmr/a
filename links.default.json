@@ -6,48 +6,64 @@
     "color": "cyan",
     "links": [
       {
-        "url": "http://10.0.10.1",
-        "name": "[+] FB 6690"
+        "name": "[+] FB 6690",
+        "url": "http://10.0.10.1"
       },
       {
-        "url": "https://cd.msmr.co",
-        "name": "[+] cd.msmr.co"
+        "name": "[+] cd.msmr.co",
+        "url": "https://cd.msmr.co"
       },
       {
-        "url": "https://pass.msmr.co",
-        "name": "[++] pass.msmr.co"
+        "name": "[++] pass.msmr.co",
+        "url": "https://pass.msmr.co"
       },
       {
-        "url": "http://ucloud.fritz.box:8010",
-        "name": "[+] paperless"
+        "name": "[+] paperless",
+        "url": "http://ucloud.fritz.box:8010"
       },
       {
-        "url": "http://ucloud.fritz.box:5380/admin",
-        "name": "[+] unh0le"
+        "name": "[+] unh0le",
+        "url": "http://ucloud.fritz.box:5380/admin"
       },
       {
-        "url": "https://customercontrolpanel.de",
-        "name": "CCP"
+        "name": "CCP",
+        "url": "https://customercontrolpanel.de"
       },
       {
-        "url": "http://pro.msmr.co",
-        "name": "pro.msmr.co"
+        "name": "pro.msmr.co",
+        "url": "http://pro.msmr.co"
       },
       {
-        "url": "http://l.msmr.co",
-        "name": "l.msmr.co"
+        "name": "l.msmr.co",
+        "url": "http://l.msmr.co"
       },
       {
-        "url": "https://pinboard.in/u:msmr",
-        "name": "pinboard"
+        "name": "pinboard",
+        "url": "https://pinboard.in/u:msmr"
       },
       {
-        "url": "http://www.google.com/cse/home?cx=018347161240475232406:csbmxz219bw",
-        "name": "ind. des. machine"
+        "name": "ind. des. machine",
+        "url": "http://www.google.com/cse/home?cx=018347161240475232406:csbmxz219bw"
       },
       {
-        "url": "https://www.makerspac.es",
-        "name": "makerspac.es"
+        "name": "makerspac.es",
+        "url": "https://www.makerspac.es"
+      },
+      {
+        "name": "time.",
+        "url": "https://time.msmr.co"
+      },
+      {
+        "name": "inwx",
+        "url": "https://inwx.de"
+      },
+      {
+        "name": "Do Day",
+        "url": "https://do.msmr.co"
+      },
+      {
+        "name": "mangashelf.local",
+        "url": "https://mangashelf.local:8080"
       }
     ]
   },
@@ -58,108 +74,104 @@
     "color": "cyan",
     "links": [
       {
-        "url": "http://www.golem.de/ticker",
-        "name": "golem"
+        "name": "golem",
+        "url": "http://www.golem.de/ticker"
       },
       {
-        "url": "http://www.heise.de/mac-and-i/newsticker",
-        "name": "Mac & i"
+        "name": "Mac & i",
+        "url": "http://www.heise.de/mac-and-i/newsticker"
       },
       {
-        "url": "https://www.heise.de/newsticker",
-        "name": "heise"
+        "name": "heise",
+        "url": "https://www.heise.de/newsticker"
       },
       {
-        "url": "http://www.appleinsider.com",
-        "name": "Appleinsider"
+        "name": "Appleinsider",
+        "url": "http://www.appleinsider.com"
       },
       {
-        "url": "http://www.apfeltalk.de/magazin",
-        "name": "Apfeltalk"
+        "name": "Apfeltalk",
+        "url": "http://www.apfeltalk.de/magazin"
       },
       {
-        "url": "http://macmost.com",
-        "name": "mac most"
+        "name": "mac most",
+        "url": "http://macmost.com"
       },
       {
-        "url": "http://www.appgefahren.de",
-        "name": "appgefahren"
+        "name": "appgefahren",
+        "url": "http://www.appgefahren.de"
       },
       {
-        "url": "http://www.theverge.com/tech",
-        "name": "The Verge"
+        "name": "The Verge",
+        "url": "http://www.theverge.com/tech"
       },
       {
-        "url": "http://www.heise.de/tr",
-        "name": "Technol. Review"
+        "name": "Technol. Review",
+        "url": "http://www.heise.de/tr"
       },
       {
-        "url": "http://arstechnica.com/gadgets",
-        "name": "ars technica"
+        "name": "ars technica",
+        "url": "http://arstechnica.com/gadgets"
       },
       {
-        "url": "http://www.macrumors.com/",
-        "name": "Macrumors"
+        "name": "Macrumors",
+        "url": "http://www.macrumors.com/"
       },
       {
-        "url": "http://www.appleworld.today",
-        "name": " world.today"
+        "name": " world.today",
+        "url": "http://www.appleworld.today"
       },
       {
-        "url": "http://www.macstories.net",
-        "name": "Macstories"
+        "name": "Macstories",
+        "url": "http://www.macstories.net"
       },
       {
-        "url": "http://www.macnotes.de/news",
-        "name": "Macnotes"
+        "name": "Macnotes",
+        "url": "http://www.macnotes.de/news"
       },
       {
-        "url": "http://recode.net",
-        "name": "re/code"
+        "name": "re/code",
+        "url": "http://recode.net"
       },
       {
-        "url": "http://www.readwrite.com",
-        "name": "readwrite"
+        "name": "readwrite",
+        "url": "http://www.readwrite.com"
       },
       {
-        "url": "http://www.mashable.com",
-        "name": "mashable"
+        "name": "mashable",
+        "url": "http://www.mashable.com"
       },
       {
-        "url": "http://thenextweb.com",
-        "name": "the next web"
+        "name": "the next web",
+        "url": "http://thenextweb.com"
       },
       {
-        "url": "http://www.gizmodo.com",
-        "name": "Gizmodo"
+        "name": "Gizmodo",
+        "url": "http://www.gizmodo.com"
       },
       {
-        "url": "http://www.smashingmagazine.com",
-        "name": "Smashingmag"
+        "name": "Smashingmag",
+        "url": "http://www.smashingmagazine.com"
       },
       {
-        "url": "http://www.businessinsider.com/sai",
-        "name": "Silicon A. Insider"
+        "name": "Silicon A. Insider",
+        "url": "http://www.businessinsider.com/sai"
       },
       {
-        "url": "https://techniktagebuch.tumblr.com",
-        "name": "techniktagebuch"
+        "name": "techniktagebuch",
+        "url": "https://techniktagebuch.tumblr.com"
       },
       {
-        "url": "http://www.computerwoche.de/p/technologie,3461",
-        "name": "Computerwoche"
+        "name": "Computerwoche",
+        "url": "http://www.computerwoche.de/p/technologie,3461"
       },
       {
-        "url": "http://www.geek.com",
-        "name": "geek"
+        "name": "lifehacker",
+        "url": "http://www.lifehacker.com"
       },
       {
-        "url": "http://www.lifehacker.com",
-        "name": "lifehacker"
-      },
-      {
-        "url": "https://techcrunch.com",
-        "name": "TECHCRUNCH"
+        "name": "TECHCRUNCH",
+        "url": "https://techcrunch.com"
       }
     ]
   },
@@ -167,111 +179,111 @@
     "id": "sec3",
     "title": "riid",
     "icon": "fa-newspaper",
-    "color": "SandyBrown",
+    "color": "sandybrown",
     "links": [
       {
-        "url": "https://www.spiegel.de/netzwelt/",
-        "name": "Spiegel ONLINE"
+        "name": "Spiegel ONLINE",
+        "url": "https://www.spiegel.de/netzwelt/"
       },
       {
-        "url": "https://www.spiegel.de/schlagzeilen/",
-        "name": "S Headlines"
+        "name": "S Headlines",
+        "url": "https://www.spiegel.de/schlagzeilen/"
       },
       {
-        "url": "https://www.zeit.de/digital",
-        "name": "Zeit Online"
+        "name": "Zeit Online",
+        "url": "https://www.zeit.de/digital"
       },
       {
-        "url": "https://www.freitag.de/kultur/medien",
-        "name": "der Freitag"
+        "name": "der Freitag",
+        "url": "https://www.freitag.de/kultur/medien"
       },
       {
-        "url": "http://www.nw.de/nachrichten/computer_internet",
-        "name": "NeueWestfälische"
+        "name": "NeueWestfälische",
+        "url": "http://www.nw.de/nachrichten/computer_internet"
       },
       {
-        "url": "https://www.tagesspiegel.de/medien/digitale-welt/",
-        "name": "Tagesspiegel"
+        "name": "Tagesspiegel",
+        "url": "https://www.tagesspiegel.de/medien/digitale-welt/"
       },
       {
-        "url": "https://taz.de/!p4631/",
-        "name": "tageszeitung"
+        "name": "tageszeitung",
+        "url": "https://taz.de/!p4631/"
       },
       {
-        "url": "https://www.derstandard.at/web",
-        "name": "Der Standard"
+        "name": "Der Standard",
+        "url": "https://www.derstandard.at/web"
       },
       {
-        "url": "https://www.theguardian.com/uk/technology",
-        "name": "the guardian"
+        "name": "the guardian",
+        "url": "https://www.theguardian.com/uk/technology"
       },
       {
-        "url": "http://news.google.com/news?ned=:epkh8bm9e2if2mhabqjkddhavb6qb7yoym6ayoqamakxqcxlapgldzhgzhsj_pyxsjdew_j6icfqpxn1hssavlmqyg",
-        "name": "G News"
+        "name": "G News",
+        "url": "http://news.google.com/news?ned=:epkh8bm9e2if2mhabqjkddhavb6qb7yoym6ayoqamakxqcxlapgldzhgzhsj_pyxsjdew_j6icfqpxn1hssavlmqyg"
       },
       {
-        "url": "https://time.com/tech/",
-        "name": "TIME"
+        "name": "TIME",
+        "url": "https://time.com/tech/"
       },
       {
-        "url": "https://www.faz.net/aktuell/technik-motor/",
-        "name": "FAZ"
+        "name": "FAZ",
+        "url": "https://www.faz.net/aktuell/technik-motor/"
       },
       {
-        "url": "https://www.nytimes.com/pages/technology",
-        "name": "New York Times"
+        "name": "New York Times",
+        "url": "https://www.nytimes.com/pages/technology"
       },
       {
-        "url": "https://www.fr-online.de/digital/",
-        "name": "FR"
+        "name": "FR",
+        "url": "https://www.fr-online.de/digital/"
       },
       {
-        "url": "https://www.sueddeutsche.de/computer/",
-        "name": "Süddeutsche"
+        "name": "Süddeutsche",
+        "url": "https://www.sueddeutsche.de/computer/"
       },
       {
-        "url": "https://krautreporter.de/",
-        "name": "Krautreporter"
+        "name": "Krautreporter",
+        "url": "https://krautreporter.de/"
       },
       {
-        "url": "https://krautreporter.de/zusammenhaenge",
-        "name": "Zusammenhänge"
+        "name": "Zusammenhänge",
+        "url": "https://krautreporter.de/zusammenhaenge"
       },
       {
-        "url": "https://www.nzz.ch/mehr/digital/",
-        "name": "NZZ"
+        "name": "NZZ",
+        "url": "https://www.nzz.ch/mehr/digital/"
       },
       {
-        "url": "https://www.brandeins.de",
-        "name": "brand eins"
+        "name": "brand eins",
+        "url": "https://www.brandeins.de"
       },
       {
-        "url": "https://www.wired.com",
-        "name": "W|R€D"
+        "name": "W|R€D",
+        "url": "https://www.wired.com"
       },
       {
-        "url": "https://www.domusweb.it/en",
-        "name": "DOMUS"
+        "name": "DOMUS",
+        "url": "https://www.domusweb.it/en"
       },
       {
-        "url": "https://www.designboom.com",
-        "name": "designboom"
+        "name": "designboom",
+        "url": "https://www.designboom.com"
       },
       {
-        "url": "https://www.vice.com/en_us",
-        "name": "VICE"
+        "name": "VICE",
+        "url": "https://www.vice.com/en_us"
       },
       {
-        "url": "https://99u.adobe.com/",
-        "name": "99u"
+        "name": "99u",
+        "url": "https://99u.adobe.com/"
       },
       {
-        "url": "https://www.heise.de/select/mac-and-i",
-        "name": "Mac & i lesen"
+        "name": "Mac & i lesen",
+        "url": "https://www.heise.de/select/mac-and-i"
       },
       {
-        "url": "https://www.heise.de/select/ct",
-        "name": "c´t lesen"
+        "name": "c´t lesen",
+        "url": "https://www.heise.de/select/ct"
       }
     ]
   },
@@ -282,24 +294,24 @@
     "color": "cyan",
     "links": [
       {
-        "url": "https://tbx.li",
-        "name": "/"
+        "name": "/",
+        "url": "https://tbx.li"
       },
       {
-        "url": "https://tbx.li/web",
-        "name": "/web"
+        "name": "/web",
+        "url": "https://tbx.li/web"
       },
       {
-        "url": "https://tbx.li/orderbox",
-        "name": "/orderbox"
+        "name": "/orderbox",
+        "url": "https://tbx.li/orderbox"
       },
       {
-        "url": "https://tbx.li/strichliste",
-        "name": "/strichliste"
+        "name": "/strichliste",
+        "url": "https://tbx.li/strichliste"
       },
       {
-        "url": "https://tbx.li/gamedev",
-        "name": "/gamedev"
+        "name": "/gamedev",
+        "url": "https://tbx.li/gamedev"
       }
     ]
   },
@@ -310,48 +322,52 @@
     "color": "cyan",
     "links": [
       {
-        "url": "https://knoblauch.eu",
-        "name": "KNOBLAUCH"
+        "name": "KNOBLAUCH",
+        "url": "https://knoblauch.eu"
       },
       {
-        "url": "https://mail.knoblauch.eu",
-        "name": "KK Mail"
+        "name": "KK Mail",
+        "url": "https://mail.knoblauch.eu"
       },
       {
-        "url": "https://cloud.knoblauch.eu",
-        "name": "KK Cloud"
+        "name": "KK Cloud",
+        "url": "https://cloud.knoblauch.eu"
       },
       {
-        "url": "https://ctx.knoblauch.eu",
-        "name": "KK Citrix"
+        "name": "KK Citrix",
+        "url": "https://ctx.knoblauch.eu"
       },
       {
-        "url": "https://remote.knoblauch.eu",
-        "name": "KK Remote"
+        "name": "KK Remote",
+        "url": "https://remote.knoblauch.eu"
       },
       {
-        "url": "https://app.raindrop.io/my/0",
-        "name": "Raindrop [522]"
+        "name": "Raindrop [522]",
+        "url": "https://app.raindrop.io/my/0"
       },
       {
-        "url": "https://buyersguide.macrumors.com",
-        "name": "Buyers Guide"
+        "name": "Buyers Guide",
+        "url": "https://buyersguide.macrumors.com"
       },
       {
-        "url": "https://knoblauch.de.beekeeper.io",
-        "name": "KK Beekeeper"
+        "name": "KK Beekeeper",
+        "url": "https://knoblauch.de.beekeeper.io"
       },
       {
-        "url": "https://fast.com",
-        "name": "Fast"
+        "name": "Fast",
+        "url": "https://fast.com"
       },
       {
-        "url": "https://msmr.speedtestcustom.com",
-        "name": "Speedtest"
+        "name": "Speedtest",
+        "url": "https://msmr.speedtestcustom.com"
       },
       {
-        "url": "https://breitbandmessung.de/test",
-        "name": "breitbandmessung"
+        "name": "breitbandmessung",
+        "url": "https://breitbandmessung.de/test"
+      },
+      {
+        "name": "KNBLCH Wissen",
+        "url": "http://46.224.90.178"
       }
     ]
   },
@@ -362,44 +378,44 @@
     "color": "cyan",
     "links": [
       {
-        "url": "http://www.x.com/maasmeier",
-        "name": "… X …"
+        "name": "… X …",
+        "url": "http://www.x.com/maasmeier"
       },
       {
-        "url": "http://www.facebook.com/maasmeier",
-        "name": "facebook"
+        "name": "facebook",
+        "url": "http://www.facebook.com/maasmeier"
       },
       {
-        "url": "http://www.instagram.com/msmr",
-        "name": "Instagram"
+        "name": "Instagram",
+        "url": "http://www.instagram.com/msmr"
       },
       {
-        "url": "http://www.threads.net/msmr",
-        "name": "Threads"
+        "name": "Threads",
+        "url": "http://www.threads.net/msmr"
       },
       {
-        "url": "https://de.scalable.capital",
-        "name": "Scalable Cap"
+        "name": "Scalable Cap",
+        "url": "https://de.scalable.capital"
       },
       {
-        "url": "https://kunde.comdirect.de",
-        "name": "comdirect"
+        "name": "comdirect",
+        "url": "https://kunde.comdirect.de"
       },
       {
-        "url": "https://webmail01.netcup.net",
-        "name": "netcup Mail"
+        "name": "netcup Mail",
+        "url": "https://webmail01.netcup.net"
       },
       {
-        "url": "https://mail.google.com/mail",
-        "name": "Gmail"
+        "name": "Gmail",
+        "url": "https://mail.google.com/mail"
       },
       {
-        "url": "http://drive.google.com",
-        "name": "G drive"
+        "name": "G drive",
+        "url": "http://drive.google.com"
       },
       {
-        "url": "https://cloud.feedly.com",
-        "name": "feedly"
+        "name": "feedly",
+        "url": "https://cloud.feedly.com"
       }
     ]
   },
@@ -410,52 +426,52 @@
     "color": "cyan",
     "links": [
       {
-        "url": "https://web2.magentatv.de",
-        "name": "Magenta TV"
+        "name": "Magenta TV",
+        "url": "https://web2.magentatv.de"
       },
       {
-        "url": "https://mediathek.daserste.de",
-        "name": "ARD"
+        "name": "ARD",
+        "url": "https://mediathek.daserste.de"
       },
       {
-        "url": "https://www.zdf.de/zdfmediathek/",
-        "name": "ZDF"
+        "name": "ZDF",
+        "url": "https://www.zdf.de/zdfmediathek/"
       },
       {
-        "url": "https://www.arte.tv/guide/de/plus7/",
-        "name": "arte"
+        "name": "arte",
+        "url": "https://www.arte.tv/guide/de/plus7/"
       },
       {
-        "url": "https://www.3sat.de/mediathek/",
-        "name": "3sat"
+        "name": "3sat",
+        "url": "https://www.3sat.de/mediathek/"
       },
       {
-        "url": "https://wdr.de/mediathek",
-        "name": "WDR"
+        "name": "WDR",
+        "url": "https://wdr.de/mediathek"
       },
       {
-        "url": "https://www.br.de/mediathek/video",
-        "name": "BR"
+        "name": "BR",
+        "url": "https://www.br.de/mediathek/video"
       },
       {
-        "url": "https://tv.apple.com/de",
-        "name": "tv"
+        "name": "tv",
+        "url": "https://tv.apple.com/de"
       },
       {
-        "url": "https://www.amazon.de/amazonprime",
-        "name": "prime video"
+        "name": "prime video",
+        "url": "https://www.amazon.de/amazonprime"
       },
       {
-        "url": "https://mubi.com/films/showing",
-        "name": "MUBI"
+        "name": "MUBI",
+        "url": "https://mubi.com/films/showing"
       },
       {
-        "url": "https://www.mediasteak.com",
-        "name": "MediaSteak"
+        "name": "MediaSteak",
+        "url": "https://www.mediasteak.com"
       },
       {
-        "url": "https://www.save.tv/stv/m/obj/tvprogctr/tvprogrammfilm.cfm",
-        "name": "save.tv"
+        "name": "save.tv",
+        "url": "https://www.save.tv/stv/m/obj/tvprogctr/tvprogrammfilm.cfm"
       }
     ]
   },
@@ -466,20 +482,20 @@
     "color": "cyan",
     "links": [
       {
-        "url": "https://srv.deutschlandradio.de/themes/dradio/script/aod/index.html?audioMode=4&audioID=3&state=",
-        "name": "► DLF Live"
+        "name": "► DLF Live",
+        "url": "https://srv.deutschlandradio.de/themes/dradio/script/aod/index.html?audioMode=4&audioID=3&state="
       },
       {
-        "url": "http://dradiowissen.de",
-        "name": "DLF Nova"
+        "name": "DLF Nova",
+        "url": "http://dradiowissen.de"
       },
       {
-        "url": "http://www.deutschlandradiokultur.de",
-        "name": "DLF Kultur"
+        "name": "DLF Kultur",
+        "url": "http://www.deutschlandradiokultur.de"
       },
       {
-        "url": "http://www.deutschlandfunk.de/",
-        "name": "Deutschlandfunk"
+        "name": "Deutschlandfunk",
+        "url": "http://www.deutschlandfunk.de/"
       }
     ]
   },
@@ -490,28 +506,28 @@
     "color": "cyan",
     "links": [
       {
-        "url": "http://msmr.co",
-        "name": "msmr"
+        "name": "msmr",
+        "url": "http://msmr.co"
       },
       {
-        "url": "http://1hou.se",
-        "name": "1hou.se"
+        "name": "1hou.se",
+        "url": "http://1hou.se"
       },
       {
-        "url": "http://my-glasses.net",
-        "name": "my•glasses"
+        "name": "my•glasses",
+        "url": "http://my-glasses.net"
       },
       {
-        "url": "http://www.macpad.eu",
-        "name": "macpad"
+        "name": "macpad",
+        "url": "http://www.macpad.eu"
       },
       {
-        "url": "https://aha.atelier522.com/index.php?title=admin:Hauptseite#admin-Seiten",
-        "name": "Aha!"
+        "name": "Aha!",
+        "url": "https://aha.atelier522.com/index.php?title=admin:Hauptseite#admin-Seiten"
       },
       {
-        "url": "https://aha.atelier522.com/index.php?title=Hauptseite",
-        "name": "Ha!"
+        "name": "Ha!",
+        "url": "https://aha.atelier522.com/index.php?title=Hauptseite"
       }
     ]
   },
@@ -522,36 +538,36 @@
     "color": "cyan",
     "links": [
       {
-        "url": "https://discourse.mcneel.com/category/rhino/rhino-for-mac/5",
-        "name": "Rhino Mac"
+        "name": "Rhino Mac",
+        "url": "https://discourse.mcneel.com/category/rhino/rhino-for-mac/5"
       },
       {
-        "url": "https://discuss.binaryage.com/c/totalfinder",
-        "name": "totalfinder"
+        "name": "totalfinder",
+        "url": "https://discuss.binaryage.com/c/totalfinder"
       },
       {
-        "url": "https://community.krautreporter.de",
-        "name": "KR Community"
+        "name": "KR Community",
+        "url": "https://community.krautreporter.de"
       },
       {
-        "url": "https://docs.mcneel.com/rhino/mac/help/de-de/index.htm",
-        "name": "Rhino Mac — ?"
+        "name": "Rhino Mac — ?",
+        "url": "https://docs.mcneel.com/rhino/mac/help/de-de/index.htm"
       },
       {
-        "url": "https://docs.mcneel.com/rhino/5/help/de-de/index.htm",
-        "name": "Rhino Win — ?"
+        "name": "Rhino Win — ?",
+        "url": "https://docs.mcneel.com/rhino/5/help/de-de/index.htm"
       },
       {
-        "url": "https://forum.jungundnaiv.de",
-        "name": "Jung und naiv"
+        "name": "Jung und naiv",
+        "url": "https://forum.jungundnaiv.de"
       },
       {
-        "url": "https://mdialog.mensa.de/",
-        "name": "MDialog"
+        "name": "MDialog",
+        "url": "https://mdialog.mensa.de/"
       },
       {
-        "url": "https://forum.openwrt.org/t/openwrt-one-celebrating-20-years-of-openwrt/183684/",
-        "name": "OpenWrt One"
+        "name": "OpenWrt One",
+        "url": "https://forum.openwrt.org/t/openwrt-one-celebrating-20-years-of-openwrt/183684/"
       }
     ]
   },
@@ -562,24 +578,24 @@
     "color": "cyan",
     "links": [
       {
-        "url": "https://artsy.net",
-        "name": "artsy"
+        "name": "artsy",
+        "url": "https://artsy.net"
       },
       {
-        "url": "https://www.googleartproject.com/de",
-        "name": "G Art Project"
+        "name": "G Art Project",
+        "url": "https://www.googleartproject.com/de"
       },
       {
-        "url": "https://www.theonlymagicleftisart.com",
-        "name": "(*) the only magic"
+        "name": "(*) the only magic",
+        "url": "https://www.theonlymagicleftisart.com"
       },
       {
-        "url": "https://curatorsintl.org",
-        "name": "blu"
+        "name": "blu",
+        "url": "https://curatorsintl.org"
       },
       {
-        "url": "https://twinery.org/2",
-        "name": "twine 2.0"
+        "name": "twine 2.0",
+        "url": "https://twinery.org/2"
       }
     ]
   },
@@ -590,56 +606,56 @@
     "color": "cyan",
     "links": [
       {
-        "url": "https://gehrenberg.de/speisekarte/",
-        "name": "Wirtshaus"
+        "name": "Wirtshaus",
+        "url": "https://gehrenberg.de/speisekarte/"
       },
       {
-        "url": "https://www.gehrenberg-bodensee.de/gastro/restauration-lichtblick/",
-        "name": "Lichtblick"
+        "name": "Lichtblick",
+        "url": "https://www.gehrenberg-bodensee.de/gastro/restauration-lichtblick/"
       },
       {
-        "url": "https://www.restaurant-buergerstuben.de",
-        "name": "Bürgerstuben"
+        "name": "Bürgerstuben",
+        "url": "https://www.restaurant-buergerstuben.de"
       },
       {
-        "url": "https://www.mcdonalds.com/de/de-de/restaurant-suche.html/l/markdorf/planckstrasse-2/1560",
-        "name": "McD Markdorf"
+        "name": "McD Markdorf",
+        "url": "https://www.mcdonalds.com/de/de-de/restaurant-suche.html/l/markdorf/planckstrasse-2/1560"
       },
       {
-        "url": "https://gessler1862.de/de/articles/cafe-und-bar",
-        "name": "Gessler 1862"
+        "name": "Gessler 1862",
+        "url": "https://gessler1862.de/de/articles/cafe-und-bar"
       },
       {
-        "url": "https://pizzerialamm.de/Speisen-Getraenke",
-        "name": "Pizzeria Lamm"
+        "name": "Pizzeria Lamm",
+        "url": "https://pizzerialamm.de/Speisen-Getraenke"
       },
       {
-        "url": "http://172.23.29.110",
-        "name": "[TBX] • OrderBox"
+        "name": "[TBX] • OrderBox",
+        "url": "http://172.23.31.51"
       },
       {
-        "url": "https://www.lieferando.de/speisekarte/otto-lilienthal-burgergill-steakhouse",
-        "name": "Otto Lilienthal"
+        "name": "Otto Lilienthal",
+        "url": "https://www.lieferando.de/speisekarte/otto-lilienthal-burgergill-steakhouse"
       },
       {
-        "url": "https://shop.riggs-burger.de/friedrichshafen",
-        "name": "Riggs Burger"
+        "name": "Riggs Burger",
+        "url": "https://shop.riggs-burger.de/friedrichshafen"
       },
       {
-        "url": "https://pizzamarkdorf.de/de/menu/",
-        "name": "Pizza Markdorf"
+        "name": "Pizza Markdorf",
+        "url": "https://pizzamarkdorf.de/de/menu/"
       },
       {
-        "url": "https://schwabenexpress.store/friedrichshafen",
-        "name": "Schwab-Express"
+        "name": "Schwab-Express",
+        "url": "https://schwabenexpress.store/friedrichshafen"
       },
       {
-        "url": "https://www.pastaburgerameckmarkdorf.de",
-        "name": "Pasta & Burger a.E."
+        "name": "Pasta & Burger a.E.",
+        "url": "https://www.pastaburgerameckmarkdorf.de"
       },
       {
-        "url": "https://kitchen.toolbox-bodensee.de",
-        "name": "[TBX] • Str/chliste"
+        "name": "[TBX] • Str/chliste",
+        "url": "https://kitchen.toolbox-bodensee.de"
       }
     ]
   },
@@ -650,36 +666,36 @@
     "color": "cyan",
     "links": [
       {
-        "url": "http://preisvergleich.golem.de",
-        "name": "preisvgl.golem.de"
+        "name": "preisvgl.golem.de",
+        "url": "http://preisvergleich.golem.de"
       },
       {
-        "url": "https://www.amazon.de",
-        "name": "amazon"
+        "name": "amazon",
+        "url": "https://www.amazon.de"
       },
       {
-        "url": "https://www.bueromarkt-ag.de",
-        "name": "Böttcher AG"
+        "name": "Böttcher AG",
+        "url": "https://www.bueromarkt-ag.de"
       },
       {
-        "url": "https://www.mindfactory.de",
-        "name": "Mindfactory"
+        "name": "Mindfactory",
+        "url": "https://www.mindfactory.de"
       },
       {
-        "url": "https://www.reichelt.de",
-        "name": "reichelt.de"
+        "name": "reichelt.de",
+        "url": "https://www.reichelt.de"
       },
       {
-        "url": "https://www.connox.de",
-        "name": "connox.de"
+        "name": "connox.de",
+        "url": "https://www.connox.de"
       },
       {
-        "url": "https://www.wir-machen-druck.de",
-        "name": "WirMachenDruck"
+        "name": "WirMachenDruck",
+        "url": "https://www.wir-machen-druck.de"
       },
       {
-        "url": "https://www.flyeralarm.de",
-        "name": "flyeralarm"
+        "name": "flyeralarm",
+        "url": "https://www.flyeralarm.de"
       }
     ]
   },
@@ -690,48 +706,48 @@
     "color": "cyan",
     "links": [
       {
-        "url": "https://spd.de",
-        "name": "SPD.de"
+        "name": "SPD.de",
+        "url": "https://spd.de"
       },
       {
-        "url": "https://spd-markdorf.de",
-        "name": "SPD Markdorf"
+        "name": "SPD Markdorf",
+        "url": "https://spd-markdorf.de"
       },
       {
-        "url": "https://spd-markdorf.de/wp-admin",
-        "name": "…/edit"
+        "name": "…/edit",
+        "url": "https://spd-markdorf.de/wp-admin"
       },
       {
-        "url": "https://organize.spd.de",
-        "name": "SPD.organize"
+        "name": "SPD.organize",
+        "url": "https://organize.spd.de"
       },
       {
-        "url": "https://meinportal.spd.de/MeinPortal2/",
-        "name": "SPD.meinportal"
+        "name": "SPD.meinportal",
+        "url": "https://meinportal.spd.de/MeinPortal2/"
       },
       {
-        "url": "https://mailer.spd.de",
-        "name": "SPD.mailer"
+        "name": "SPD.mailer",
+        "url": "https://mailer.spd.de"
       },
       {
-        "url": "https://shop.spd.de/mein-spd-shop/de/shop/parteiarbeit/",
-        "name": "Parteiarbeit"
+        "name": "Parteiarbeit",
+        "url": "https://shop.spd.de/mein-spd-shop/de/shop/parteiarbeit/"
       },
       {
-        "url": "https://kampagne.spd.de/schnellfinder",
-        "name": "🤓 Schnellfinder"
+        "name": "🤓 Schnellfinder",
+        "url": "https://kampagne.spd.de/schnellfinder"
       },
       {
-        "url": "https://shop.spd.de/mein-spd-shop/de/shop/gestaltungsportal/ba-wue/",
-        "name": "Gestaltungsportal"
+        "name": "Gestaltungsportal",
+        "url": "https://shop.spd.de/mein-spd-shop/de/shop/gestaltungsportal/ba-wue/"
       },
       {
-        "url": "https://www.adfc.de",
-        "name": "adfc"
+        "name": "adfc",
+        "url": "https://www.adfc.de"
       },
       {
-        "url": "https://www.vcd.org",
-        "name": "VCD"
+        "name": "VCD",
+        "url": "https://www.vcd.org"
       }
     ]
   },
@@ -742,12 +758,12 @@
     "color": "cyan",
     "links": [
       {
-        "url": "https://cm-terminreservierung.de/markdorf?calendarId=92",
-        "name": "Markdorf Service"
+        "name": "Markdorf Service",
+        "url": "https://cm-terminreservierung.de/markdorf?calendarId=92"
       },
       {
-        "url": "https://www.markdorf.de/stadt-buerger/kommunalpolitik-verwaltung/gremien/stadtraete-markdorf",
-        "name": "Gemeinderat"
+        "name": "Gemeinderat",
+        "url": "https://www.markdorf.de/stadt-buerger/kommunalpolitik-verwaltung/gremien/stadtraete-markdorf"
       }
     ]
   }
