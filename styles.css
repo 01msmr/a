@@ -83,14 +83,12 @@ section:last-child {
     margin-bottom: 83vh;
 }
 
-section,
-section .group {
+section {
     color: var(--text-col);
 }
 
-section:hover a,
-section:hover .group {
-    color: var(--sect-col) !important;
+section:hover a {
+    color: var(--sect-col);
 }
 
 li,
@@ -103,35 +101,39 @@ li,
 }
 
 li a {
-    color: var(--sect-col) !important;
-    padding: .2em 0.3em 0.2em 0.3em !important;
+    display: block;
+    padding: .2em 0.3em;
+    margin: 0;
     text-decoration: none;
     border-radius: .35em;
     cursor: var(--curs-hov) 1 30, auto;
-    margin: 0;
 }
 
-li a:hover,
-a.secname:hover {
-    color: var(--text-hov) !important;
-    background-color: var(--back-hov) !important;
+/* nach section:hover a, damit die eigene Kachel gewinnt */
+li a:hover {
+    color: var(--text-hov);
+    background-color: var(--back-hov);
 }
 
 section a {
-    color: var(--text-col) !important;
+    color: var(--text-col);
 }
 
 a.secname {
-    font-size: smaller;
-    text-decoration: none;
-    padding: 8px 8px !important;
+    display: inline-block;
+    box-sizing: border-box;
+    height: 48px;
+    padding: 8px;
+    font-size: 1em;
     min-width: 35px;
-    display: inline-flex;
-    color: var(--sect-col) !important;
+    color: var(--sect-col);
+    text-decoration: none;
     border-right: 1px solid var(--text-col);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    vertical-align: middle;
+    line-height: 1.4em;
 }
 
 .secname:first-child {
@@ -140,10 +142,6 @@ a.secname {
 
 .secname:last-child {
     border-right: 1px solid var(--text-col);
-}
-
-a.secname:hover {
-    background-color: var(--sect-col) !important;
 }
 
 html {
@@ -162,7 +160,7 @@ div.seite {
     margin: 0px;
     border-radius: 0.87em;
     background-color: var(--front-body);
-    position: fixed !important;
+    position: fixed;
     -ms-overflow-style: none;
     scrollbar-width: none;
     overflow-y: scroll;
@@ -173,16 +171,11 @@ div.seite::-webkit-scrollbar {
 }
 
 li {
-    margin: 0 0 !important;
+    /* !important trägt: die iPad-Regel weiter unten setzt margin: 2px */
+    margin: 0 !important;
     width: auto;
     height: 36px;
     clear: both;
-}
-
-li a {
-    text-decoration: none;
-    display: block;
-    padding: 0px;
 }
 
 .name {
@@ -202,31 +195,23 @@ li a {
 }
 
 .group {
-    color: var(--sect-col) !important;
     width: 100%;
     max-width: 1250px;
     margin-top: .5em;
     margin-bottom: 1em;
+    padding-left: 0.12em;
     font-family: "helvetica neue", helvetica, arial, sans-serif;
-    color: var(--title-col);
-    border-bottom-width: 1px !important;
+    color: var(--sect-col);
+    border-bottom-width: 1px;
     background: none;
 }
 
 section:hover,
 section:hover .name,
 section:hover .group {
-    color: var(--title-col) !important;
+    color: var(--title-col);
     border-color: var(--title-col);
     cursor: var(--curs-img) 1 1, auto;
-}
-
-.group {
-    padding-left: 0.12em;
-}
-
-li a {
-    color: var(--title-col);
 }
 
 #container:focus {
@@ -242,24 +227,18 @@ li a {
 }
 
 section h3 a {
-    text-decoration: none !important;
+    text-decoration: none;
     cursor: crosshair;
     display: inline-block;
     width: 80%;
 }
 
-/* Additional modern functionality styles */
-.home-link,
-#section-nav-list,
-a.secname {
-    vertical-align: middle;
-    line-height: 1.4em;
-}
-
 .home-link {
     white-space: nowrap;
     text-decoration: none;
-    color: var(--title-col) !important;
+    color: var(--title-col);
+    vertical-align: middle;
+    line-height: 1.4em;
 }
 
 #section-nav-list {
@@ -271,41 +250,25 @@ a.secname {
     align-self: stretch;
 }
 
-a.secname {
-    font-size: 1em;
-    text-decoration: none;
-    padding: 12px 6px;
-    display: inline-block;
-    box-sizing: border-box;
-    height: 48px;
-    color: var(--sect-col) !important;
-    border-right: 1px solid var(--text-col);
-}
-
 a.secname:visited {
-    color: var(--sect-col) !important;
-}
-
-a.secname:visited,
-a.secname:hover {
-    background-color: var(--text-col) !important;
+    color: var(--sect-col);
 }
 
 /* aktive Section: Vorder- und Hintergrund getauscht */
 a.secname.active {
-    background-color: var(--sect-col) !important;
-    color: var(--front-body) !important;
+    background-color: var(--sect-col);
+    color: var(--front-body);
 }
 
 /* Hover: Passiv-Farbe als Hintergrund, Schrift unverändert.
    :not(.active) — der Aktiv-Zustand bleibt beim Hovern erhalten. */
 a.secname:not(.active):hover,
 section .name:not(.active):hover {
-    background-color: var(--text-col) !important;
+    background-color: var(--text-col);
 }
 
 a.secname:not(.active):hover {
-    color: var(--sect-col) !important;
+    color: var(--sect-col);
 }
 
 /* kein heller Spalt zwischen Leiste und angedocktem Header */
@@ -327,7 +290,7 @@ section .name.active {
 
 .name.active,
 .name.active a {
-    color: var(--front-body) !important;
+    color: var(--front-body);
 }
 
 .title select {
@@ -494,9 +457,9 @@ body.edit-mode .container {
 }
 
 body.edit-mode section {
-    height: auto !important;
-    max-height: none !important;
-    min-height: 0 !important;
+    height: auto;
+    max-height: none;
+    min-height: 0;
     scroll-snap-align: none;
     scroll-snap-stop: unset;
 }
@@ -511,12 +474,12 @@ body.edit-mode li {
 }
 
 body.edit-mode li a[contenteditable] {
-    cursor: text !important;
+    cursor: text;
     outline: none;
 }
 
 body.edit-mode li a[contenteditable]:focus {
-    background: rgba(128, 128, 128, 0.15) !important;
+    background: rgba(128, 128, 128, 0.15);
     border-radius: 4px;
 }
 
@@ -534,7 +497,7 @@ body.edit-mode .edit-url {
     text-overflow: ellipsis;
     max-width: 180px;
     outline: none;
-    cursor: text !important;
+    cursor: text;
 }
 
 body.edit-mode .edit-url:focus {
@@ -552,7 +515,7 @@ body.edit-mode .btn-del {
     padding: 2px;
     border-radius: 3px;
     color: #c00;
-    cursor: pointer !important;
+    cursor: pointer;
     font-size: 22px;
     vertical-align: middle;
     line-height: 1;
@@ -581,16 +544,16 @@ body.edit-mode li.removed .btn-del:hover {
 }
 
 .btn-add {
-    display: none !important;
+    display: none;
 }
 
 body.edit-mode li.btn-add {
-    display: inline-block !important;
+    display: inline-block;
     height: 28px;
     line-height: 28px;
     margin: 4px 0 0 6px;
     color: #080;
-    cursor: pointer !important;
+    cursor: pointer;
     font-size: 18px;
     user-select: none;
     min-width: 0;
@@ -616,10 +579,9 @@ body.nav-icons .secname .secicon {
 body.nav-icons a.secname {
     width: 48px;
     text-align: center;
-    /* seitliches Polster bringt beim zentrierten Icon nichts und würde
-       das größere Icon abschneiden; !important schlägt a.secname oben */
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+    /* kein seitliches Polster — sonst wird das größere Icon beschnitten */
+    padding-left: 0;
+    padding-right: 0;
 }
 
 body.nav-icons .secname .secshort {
