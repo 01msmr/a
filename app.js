@@ -55,6 +55,7 @@ function render(data) {
         short.className = 'secshort';
         short.textContent = sec.title;
         a.appendChild(short);
+        a.addEventListener('click', focusContent);
         nav.appendChild(a);
 
         var opt = document.createElement('option');
@@ -71,9 +72,11 @@ function render(data) {
         }
         var el = document.querySelector(sel.value);
         if (el) el.scrollIntoView();
+        focusContent();
     });
 
     var container = document.getElementById('container');
+    container.tabIndex = -1;
     container.innerHTML = '';
     container.appendChild(buildSettingsPanel());
 
@@ -144,6 +147,12 @@ function trackActiveSection() {
         timer = setTimeout(syncActive, 75);
     });
     syncActive();
+}
+
+// nach einem Sprung den Inhalt fokussieren, sonst laufen die Pfeiltasten ins Leere
+function focusContent() {
+    var c = document.getElementById('container');
+    requestAnimationFrame(function () { c.focus({ preventScroll: true }); });
 }
 
 function makeLi(name, url) {

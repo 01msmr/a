@@ -227,6 +227,10 @@ li a {
     color: var(--title-col);
 }
 
+#container:focus {
+    outline: none;
+}
+
 #container {
     clear: both;
     color: var(--title-col);
