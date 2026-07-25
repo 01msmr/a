@@ -1,3 +1,6 @@
 .DS_Store
 config.php
 .htpasswd
+.github/workflows/a.msmr.copy/
+links.json
+links.bak.json

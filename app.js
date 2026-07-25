@@ -191,7 +191,7 @@ function buildSettingsPanel() {
 }
 
 // ── Load ──────────────────────────────────────────────────────────
-fetch('links.json?t=' + Date.now())
+fetch('links.php?t=' + Date.now())
     .then(function (r) { return r.json(); })
     .then(render)
     .catch(function (e) {
@@ -314,10 +314,7 @@ function save() {
     var json = JSON.stringify(collectData(), null, 2);
     fetch('edit/save.php', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json; charset=utf-8',
-            'X-Save-Token': 'efqw,gjnvslkenjdfarleakjgd,nbyj---bt,a<jsrengfwrsrgv'
-        },
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
         body: json
     })
     .then(function (r) {

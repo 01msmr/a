@@ -45,6 +45,15 @@ body {
     border: 1px solid var(--text-col);
     border-radius: 1em;
     position: sticky;
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.title::-webkit-scrollbar {
+    display: none;
 }
 
 .titledomain {
@@ -346,6 +355,10 @@ section .name.active {
 
 /* Smartphone combined */
 @media only screen and (min-device-width: 350px) and (max-device-width: 812px) {
+    section {
+        height: 100%;
+    }
+
     div.seite {
         width: 100%;
         height: 100%;
@@ -466,6 +479,22 @@ section .name.active {
 }
 
 /* ── Edit Mode ───────────────────────────────────────────────────── */
+
+body.edit-mode .container {
+    scroll-snap-type: none;
+}
+
+body.edit-mode section {
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    scroll-snap-align: none;
+    scroll-snap-stop: unset;
+}
+
+body.edit-mode section:last-child {
+    margin-bottom: 0;
+}
 
 body.edit-mode li {
     height: auto;

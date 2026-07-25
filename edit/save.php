@@ -1,12 +1,4 @@
 <?php
-require __DIR__ . '/config.php';
-
-$token = $_SERVER['HTTP_X_SAVE_TOKEN'] ?? '';
-if ($token !== TOKEN) {
-    http_response_code(403);
-    exit('Forbidden');
-}
-
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     exit('Method Not Allowed');
@@ -18,20 +10,17 @@ if (strlen($body) < 10) {
     exit('Payload too short');
 }
 
-// Validieren: muss gültiges JSON sein
 $parsed = json_decode($body);
 if ($parsed === null) {
     http_response_code(400);
     exit('Invalid JSON');
 }
 
-// liegt eine Ebene höher, im Webverzeichnis
-$root = dirname(__DIR__);
-$target = $root . '/links.json';
+// Datenbank und Backup bleiben im geschützten Verzeichnis
+$target = __DIR__ . '/links.json';
 
-// Backup
 if (file_exists($target)) {
-    copy($target, $root . '/links.bak.json');
+    copy($target, __DIR__ . '/links.bak.json');
 }
 
 if (file_put_contents($target, $body) === false) {

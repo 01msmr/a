@@ -1,75 +1,56 @@
-# Schreibzugriff absichern (Basic-Auth vor /edit/)
-
-Ziel: Das Verzeichnis `/edit/` ist nur nach Anmeldung erreichbar. Die Seite selbst bleibt öffentlich.
+# Aufbau und Schreibschutz
 
 ```
 a.msmr.co/
-├── index.html      öffentlich
-├── app.js          öffentlich
-├── links.json      öffentlich
-└── edit/           ← geschützt
+├── index.html   app.js   styles.css     öffentlich
+├── links.php                            öffentlich, liefert die Liste aus
+├── links.default.json                   Saat, nur beim allerersten Aufruf
+└── edit/                                Basic-Auth, komplett dicht
     ├── .htaccess
-    ├── save.php
-    └── config.php
+    ├── .htpasswd
+    ├── links.json                       die Datenbank
+    ├── links.bak.json                   Backup der letzten Fassung
+    └── save.php
 ```
 
-`save.php` schreibt eine Ebene höher nach `links.json` und legt das Backup daneben. `config.php` mit dem Token liegt im geschützten Verzeichnis und ist damit doppelt abgeschirmt.
+## Wie die Daten fließen
 
-Die Passwortdatei gehört **nicht** ins Repo — `.htpasswd` steht in `.gitignore`.
+`app.js` lädt die Liste über `links.php`. Das Skript liest `edit/links.json` und gibt sie als JSON aus. Existiert die Datei noch nicht, legt es sie aus `links.default.json` an.
 
-## Weg A — netcup-Panel (empfohlen)
+Gespeichert wird über `edit/save.php`, das in dasselbe geschützte Verzeichnis schreibt und vorher eine Sicherung nach `links.bak.json` legt.
 
-Im Webhosting-Controlpanel den **Verzeichnisschutz** für `/edit/` einrichten. Das Panel legt `.htaccess` und Passwortdatei selbst an, mit korrektem Pfad und gehashtem Passwort.
+Der Vorteil dieser Aufteilung: Die Datenbank liegt hinter der Anmeldung und ist von außen nicht abrufbar, die Auslieferung nach außen erledigt ein öffentliches Skript. `links.json` und `links.bak.json` stehen deshalb in der `.gitignore` — die echten Daten leben auf dem Server, nicht im Repo.
 
-Die mitgelieferte `edit/.htaccess` dann **nicht** hochladen, sonst überschreibt sie die des Panels.
+## Was den Schreibzugriff schützt
 
-Vorteil: keine Pfadsuche, keine Kommandozeile. Deshalb liegt `save.php` überhaupt in einem eigenen Verzeichnis — Verzeichnisschutz greift immer auf Ordner, nie auf einzelne Dateien.
-
-## Weg B — von Hand
-
-**1. Absoluten Pfad ermitteln.** Einmalig `pfad.php` ins Webverzeichnis legen:
-
-```php
-<?php echo __DIR__;
-```
-
-Aufrufen, Pfad notieren, **Datei löschen**. Ergibt sie etwa `/var/www/vhosts/msmr.co/a.msmr.co`, gehört die Passwortdatei nach `/var/www/vhosts/msmr.co` — außerhalb des Webverzeichnisses.
-
-**2. Passwortdatei erzeugen.** Auf dem Mac:
-
-```
-/usr/sbin/htpasswd -B -c ~/.htpasswd DEINBENUTZERNAME
-```
-
-`-B` erzwingt bcrypt, `-c` legt neu an. Das Passwort wird interaktiv abgefragt und landet nicht in der Shell-History. Datei ins Elternverzeichnis hochladen.
-
-**3. Pfad eintragen.** In `edit/.htaccess` die Zeile `AuthUserFile /PFAD/ZUM/ELTERNVERZEICHNIS/.htpasswd` durch den echten Pfad ersetzen, dann hochladen.
-
-## Prüfen
-
-`https://a.msmr.co/edit/` im Browser aufrufen:
-
-- **Anmeldedialog erscheint** → Schutz greift.
-- **Kein Dialog, Verzeichnis wird angezeigt** → `.htaccess` wird nicht ausgewertet oder der Pfad stimmt nicht.
-- **500er** → fast immer ein falscher Pfad in `AuthUserFile`.
-
-Nach der Anmeldung `https://a.msmr.co/edit/save.php` aufrufen: Es muss `Method Not Allowed` erscheinen. Die Meldung kommt aus `save.php` selbst, weil ein GET ankam — sie beweist, dass die Anmeldung durch ist.
-
-Danach die Startseite laden und einmal speichern.
-
-## Wichtig zum Ablauf
-
-`fetch()` löst **keinen** Anmeldedialog aus. Ein 401 kommt in der Seite nur als Fehlermeldung an. Deshalb gilt pro Browser einmal: `/edit/` direkt aufrufen und anmelden. Danach hängt der Browser die Zugangsdaten automatisch an alle weiteren Anfragen derselben Realm an, auch an die von `app.js`.
-
-Erscheint beim Speichern „Nicht angemeldet", ist genau das die Ursache.
-
-## Was das schützt — und was nicht
-
-Geschützt ist das Schreiben. Apache lehnt unangemeldete Anfragen ab, bevor PHP startet; `save.php` wird gar nicht erst ausgeführt.
+Ausschließlich die Basic-Auth vor `/edit/`. Apache lehnt unangemeldete Anfragen ab, bevor PHP startet — `save.php` wird gar nicht erst ausgeführt. Einen Token gibt es nicht mehr; er wäre in einer öffentlichen JavaScript-Datei ohnehin wirkungslos gewesen.
 
 Nicht geschützt ist der Edit-Mode im Browser: Wer will, schaltet ihn über die Konsole frei. Das verändert nur die Anzeige im eigenen Browser, gespeichert wird ohne Anmeldung nichts.
 
-Der Token-Vergleich in `save.php` bleibt als zweite Ebene bestehen. Dass derselbe Token in `app.js` steht, ist damit nicht mehr kritisch — ohne Anmeldung erreicht niemand das Skript.
+## Einmalige Anmeldung pro Browser
+
+`fetch()` löst **keinen** Anmeldedialog aus. Ein 401 kommt in der Seite nur als Fehlermeldung an.
+
+Deshalb einmal pro Browser `https://a.msmr.co/edit/` direkt aufrufen und anmelden. Danach hängt der Browser die Zugangsdaten automatisch an alle weiteren Anfragen derselben Realm an, auch an die von `app.js`.
+
+Erscheint beim Speichern „Nicht angemeldet — /edit/ einmal direkt im Browser aufrufen", ist genau das die Ursache.
+
+## Prüfen
+
+- `https://a.msmr.co/edit/` → Anmeldedialog. Kommt keiner, wird die `.htaccess` nicht ausgewertet.
+- Nach der Anmeldung `https://a.msmr.co/edit/save.php` → `Method Not Allowed`. Die Meldung kommt aus `save.php` selbst und beweist, dass die Anmeldung durch ist.
+- `https://a.msmr.co/edit/links.json` → muss den Anmeldedialog zeigen, nicht die Daten.
+- `https://a.msmr.co/links.php` → muss die Liste als JSON liefern, ohne Anmeldung.
+
+## Passwort ändern
+
+Die Passwortdatei liegt in `edit/.htpasswd`, der Pfad steht in `edit/.htaccess`. Neues Passwort auf dem Mac erzeugen und hochladen:
+
+```
+/usr/sbin/htpasswd -B ~/.htpasswd DEINBENUTZERNAME
+```
+
+`-B` erzwingt bcrypt. Ohne `-c`, sonst wird die Datei überschrieben statt ergänzt. Die Datei darf nie ins Repo — sie steht in der `.gitignore`.
 
 ## Voraussetzungen
 
