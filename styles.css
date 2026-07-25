@@ -605,6 +605,7 @@ body.edit-mode li.btn-add {
 
 body.nav-icons .secname .secicon {
     display: inline-block;
+    font-size: 25px;
 }
 
 /* quadratischer Chip, Icon horizontal mittig — inline-block, damit es
@@ -615,6 +616,10 @@ body.nav-icons .secname .secicon {
 body.nav-icons a.secname {
     width: 48px;
     text-align: center;
+    /* seitliches Polster bringt beim zentrierten Icon nichts und würde
+       das größere Icon abschneiden; !important schlägt a.secname oben */
+    padding-left: 0 !important;
+    padding-right: 0 !important;
 }
 
 body.nav-icons .secname .secshort {
