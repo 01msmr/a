@@ -171,8 +171,7 @@ div.seite::-webkit-scrollbar {
 }
 
 li {
-    /* !important trägt: die iPad-Regel weiter unten setzt margin: 2px */
-    margin: 0 !important;
+    margin: 0;
     width: auto;
     height: 36px;
     clear: both;
@@ -307,7 +306,7 @@ section .name.active {
     li {
         width: 1em;
         font-size: 1.05em;
-        padding: 2px 0px !important;
+        padding: 2px 0px;
         margin: 2px;
         display: inline-block;
     }
@@ -382,7 +381,7 @@ section .name.active {
     }
 
     li a {
-        padding: .05em !important;
+        padding: .05em;
         border-radius: .35em;
     }
 
@@ -426,6 +425,7 @@ section .name.active {
     .group {
         display: flex;
         flex-wrap: wrap;
+        /* trägt: schlägt margin-inline: auto der zentrierten Darstellung */
         margin: 0 !important;
     }
 
@@ -434,18 +434,18 @@ section .name.active {
         font-size: 0.9em;
         height: auto;
         margin: 0px;
-        padding: 0 !important;
+        padding: 0;
         clear: none;
         min-width: 0;
     }
 
     li a {
-        margin: 0 !important;
-        padding: 4px 6px !important;
+        margin: 0;
+        padding: 4px 6px;
     }
 
     #section-nav-list {
-        display: none !important;
+        display: none;
         visibility: hidden;
     }
 }
