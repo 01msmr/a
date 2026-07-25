@@ -1,18 +1,60 @@
-// ── Render ────────────────────────────────────────────────────────
-function render(data) {
-    window._data = data;
+// ── Ansichts-Einstellungen ────────────────────────────────────────
+var PREF_DEFAULTS = { navMode: 'short', align: 'left' };
 
+function getPref(name) {
+    try { return localStorage.getItem('a.' + name) || PREF_DEFAULTS[name]; }
+    catch (e) { return PREF_DEFAULTS[name]; }
+}
+
+function setPref(name, value) {
+    try { localStorage.setItem('a.' + name, value); } catch (e) { }
+    applyPrefs();
+}
+
+function applyPrefs() {
+    document.body.classList.toggle('nav-icons', getPref('navMode') === 'icons');
+    document.body.classList.toggle('align-center', getPref('align') === 'center');
+    document.querySelectorAll('.pref-toggle').forEach(function (input) {
+        input.checked = getPref(input.dataset.pref) === input.dataset.on;
+    });
+}
+
+applyPrefs();
+
+// ── Render ────────────────────────────────────────────────────────
+var EDIT_OPTION = '__edit';
+var syncActive = function () { };
+
+function makeIcon(icon) {
+    var i = document.createElement('i');
+    i.className = 'fa-solid ' + (icon || 'fa-hashtag') + ' secicon';
+    i.setAttribute('aria-hidden', 'true');
+    return i;
+}
+
+function render(data) {
     var nav = document.getElementById('section-nav-list');
     var sel = document.getElementById('section-jumper');
     nav.innerHTML = '';
     sel.innerHTML = '';
+
+    // an erster Stelle; löst beim Laden nichts aus (change nur bei Auswahl)
+    var editOpt = document.createElement('option');
+    editOpt.value = EDIT_OPTION;
+    editOpt.textContent = 'edit';
+    sel.appendChild(editOpt);
 
     data.forEach(function (sec) {
         var a = document.createElement('a');
         a.className = 'secname';
         a.href = '#' + sec.id;
         a.target = '_self';
-        a.textContent = sec.title;
+        a.title = sec.title;
+        a.appendChild(makeIcon(sec.icon));
+        var short = document.createElement('span');
+        short.className = 'secshort';
+        short.textContent = sec.title;
+        a.appendChild(short);
         nav.appendChild(a);
 
         var opt = document.createElement('option');
@@ -22,20 +64,34 @@ function render(data) {
     });
 
     sel.addEventListener('change', function () {
+        if (sel.value === EDIT_OPTION) {
+            enterEditMode();
+            syncActive();
+            return;
+        }
         var el = document.querySelector(sel.value);
         if (el) el.scrollIntoView();
     });
 
     var container = document.getElementById('container');
     container.innerHTML = '';
+    container.appendChild(buildSettingsPanel());
+
     data.forEach(function (sec) {
         var section = document.createElement('section');
 
         var h3 = document.createElement('h3');
         h3.id = sec.id;
         h3.className = 'name';
-        h3.style.color = sec.color || 'cyan';
-        h3.innerHTML = '<a href="#' + sec.id + '" target="_self">' + sec.title + '</a>';
+        h3.dataset.color = sec.color || 'cyan';
+        h3.dataset.icon = sec.icon || '';
+
+        var titleLink = document.createElement('a');
+        titleLink.href = '#' + sec.id;
+        titleLink.target = '_self';
+        titleLink.appendChild(makeIcon(sec.icon));
+        titleLink.appendChild(document.createTextNode(sec.title));
+        h3.appendChild(titleLink);
 
         var ul = document.createElement('ul');
         ul.className = 'group';
@@ -47,6 +103,47 @@ function render(data) {
         section.appendChild(ul);
         container.appendChild(section);
     });
+
+    applyPrefs();
+    trackActiveSection();
+}
+
+// Oberste sichtbare Section: Chip invertiert, Dropdown nachgeführt.
+function trackActiveSection() {
+    var container = document.getElementById('container');
+    var sel = document.getElementById('section-jumper');
+    var chips = document.querySelectorAll('.secname');
+    var timer = null;
+
+    syncActive = function () {
+        var top = container.getBoundingClientRect().top;
+        var headings = document.querySelectorAll('section h3.name');
+        var active = chips.length ? chips[0].hash : '';
+        var aktiv = null;
+        headings.forEach(function (h3) {
+            if (h3.getBoundingClientRect().top - top <= 8) {
+                active = '#' + h3.id;
+                aktiv = h3;
+            }
+        });
+        chips.forEach(function (chip) {
+            chip.classList.toggle('active', chip.hash === active);
+        });
+        headings.forEach(function (h3) {
+            h3.classList.toggle('active', '#' + h3.id === active);
+        });
+        // angedockter Header → Rahmen der Leiste mitfärben, kein heller Spalt
+        document.body.classList.toggle('docked',
+            !!aktiv && aktiv.getBoundingClientRect().top - top <= 1);
+        sel.value = active;
+    };
+
+    // erst nach Scroll-Ruhe nachziehen
+    container.addEventListener('scroll', function () {
+        clearTimeout(timer);
+        timer = setTimeout(syncActive, 75);
+    });
+    syncActive();
 }
 
 function makeLi(name, url) {
@@ -59,6 +156,40 @@ function makeLi(name, url) {
     return li;
 }
 
+// ── Einstellungs-Panel (nur im Edit Mode sichtbar) ─────────────────
+function switchRow(pref, on, off, label) {
+    return '<div class="settings-row">' +
+        '<span class="settings-label">' + label + '</span>' +
+        '<label class="switch">' +
+        '<input type="checkbox" class="pref-toggle" data-pref="' + pref +
+        '" data-on="' + on + '" data-off="' + off + '">' +
+        '<span class="switch-track"></span>' +
+        '</label>' +
+        '</div>';
+}
+
+function buildSettingsPanel() {
+    var panel = document.createElement('div');
+    panel.className = 'settings-panel';
+    panel.innerHTML =
+        '<h3 class="name"><i class="fa-solid fa-gear secicon" aria-hidden="true"></i>Einstellungen</h3>' +
+        switchRow('navMode', 'icons', 'short', 'Navigation mit Icons') +
+        switchRow('align', 'left', 'center', 'Seite linksbündig') +
+        '<div class="settings-row settings-actions">' +
+        '<button class="settings-cancel">Abbrechen</button>' +
+        '<button class="settings-save">Speichern</button>' +
+        '</div>';
+
+    panel.querySelectorAll('.pref-toggle').forEach(function (input) {
+        input.addEventListener('change', function () {
+            setPref(input.dataset.pref, input.checked ? input.dataset.on : input.dataset.off);
+        });
+    });
+    panel.querySelector('.settings-cancel').addEventListener('click', cancelEdit);
+    panel.querySelector('.settings-save').addEventListener('click', save);
+    return panel;
+}
+
 // ── Load ──────────────────────────────────────────────────────────
 fetch('links.json?t=' + Date.now())
     .then(function (r) { return r.json(); })
@@ -68,11 +199,7 @@ fetch('links.json?t=' + Date.now())
             '<p style="color:red;padding:20px">links.json Ladefehler: ' + e + '</p>';
     });
 
-// ── Edit Bar ──────────────────────────────────────────────────────
-var editBar = document.createElement('div');
-editBar.id = 'edit-bar';
-editBar.innerHTML = '<button id="btn-cancel">Abbrechen</button><button id="btn-save">Speichern</button>';
-document.body.appendChild(editBar);
+// ── Edit Mode ─────────────────────────────────────────────────────
 
 // Doppelklick auf Titel-Bereich → Edit Mode
 document.querySelector('.title').addEventListener('dblclick', function (e) {
@@ -80,15 +207,30 @@ document.querySelector('.title').addEventListener('dblclick', function (e) {
     enterEditMode();
 });
 
-document.getElementById('btn-cancel').addEventListener('click', function () { location.reload(); });
-document.getElementById('btn-save').addEventListener('click', save);
-
-// ── Edit Mode ─────────────────────────────────────────────────────
 function preventEnter(e) { if (e.key === 'Enter') e.preventDefault(); }
+
+function cancelEdit() { location.reload(); }
+
+// Löschen ist bis zum Speichern umkehrbar
+function makeDelButton(li) {
+    var del = document.createElement('span');
+    del.className = 'btn-del';
+    del.textContent = '×';
+    del.title = 'Löschen';
+    del.addEventListener('click', function () {
+        var removed = li.classList.toggle('removed');
+        del.textContent = removed ? '↺' : '×';
+        del.title = removed ? 'Wiederherstellen' : 'Löschen';
+    });
+    return del;
+}
 
 function enterEditMode() {
     document.body.classList.add('edit-mode');
-    document.getElementById('edit-bar').classList.add('visible');
+
+    // erst im nächsten Frame, sonst rastert scroll-snap zurück
+    var panel = document.querySelector('.settings-panel');
+    if (panel) requestAnimationFrame(function () { panel.scrollIntoView(); });
 
     document.querySelectorAll('ul.group li:not(.btn-add)').forEach(function (li) {
         var a = li.querySelector('a');
@@ -104,12 +246,7 @@ function enterEditMode() {
         urlField.addEventListener('keydown', preventEnter);
         li.appendChild(urlField);
 
-        var del = document.createElement('span');
-        del.className = 'btn-del';
-        del.textContent = '×';
-        del.title = 'Löschen';
-        del.addEventListener('click', function () { li.remove(); });
-        li.appendChild(del);
+        li.appendChild(makeDelButton(li));
     });
 
     document.querySelectorAll('ul.group').forEach(function (ul) {
@@ -135,13 +272,8 @@ function addLink(ul, addBtn) {
     urlField.textContent = 'https://';
     urlField.addEventListener('keydown', preventEnter);
 
-    var del = document.createElement('span');
-    del.className = 'btn-del';
-    del.textContent = '×';
-    del.addEventListener('click', function () { li.remove(); });
-
     li.appendChild(urlField);
-    li.appendChild(del);
+    li.appendChild(makeDelButton(li));
     ul.insertBefore(li, addBtn);
     a.focus();
 }
@@ -155,7 +287,7 @@ function collectData() {
         if (!h3 || !ul) return;
 
         var links = [];
-        ul.querySelectorAll('li:not(.btn-add)').forEach(function (li) {
+        ul.querySelectorAll('li:not(.btn-add):not(.removed)').forEach(function (li) {
             var a = li.querySelector('a');
             var urlField = li.querySelector('.edit-url');
             if (!a) return;
@@ -164,12 +296,16 @@ function collectData() {
             if (name && url) links.push({ name: name, url: url });
         });
 
-        if (links.length) data.push({
+        if (!links.length) return;
+
+        var sec = {
             id: h3.id,
-            title: (h3.querySelector('a') || {}).textContent || h3.id,
-            color: h3.style.color || 'cyan',
-            links: links
-        });
+            title: (h3.querySelector('a') || {}).textContent || h3.id
+        };
+        if (h3.dataset.icon) sec.icon = h3.dataset.icon;
+        sec.color = h3.dataset.color || 'cyan';
+        sec.links = links;
+        data.push(sec);
     });
     return data;
 }

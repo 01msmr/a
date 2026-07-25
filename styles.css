@@ -39,7 +39,9 @@ body {
 .title {
     color: var(--title-col);
     margin: 0;
-    padding: 0px 12px;
+    /* Polster = Eckenradius, damit Chips in der Rundung bleiben */
+    box-sizing: border-box;
+    padding: 0 1em;
     border: 1px solid var(--text-col);
     border-radius: 1em;
     position: sticky;
@@ -108,11 +110,6 @@ section a {
     color: var(--text-col) !important;
 }
 
-.secnum {
-    font-size: small;
-    display: none;
-}
-
 a.secname {
     font-size: smaller;
     text-decoration: none;
@@ -164,11 +161,6 @@ div.seite::-webkit-scrollbar {
     display: none;
 }
 
-.bottomspace {
-    height: 0px;
-    clear: both;
-}
-
 li {
     margin: 0 0 !important;
     width: auto;
@@ -184,6 +176,7 @@ li a {
 
 .name {
     color: var(--text-col);
+    box-sizing: border-box;
     width: 100%;
     padding-top: 0.25em;
     padding-bottom: .2em;
@@ -217,69 +210,12 @@ section:hover .group {
     cursor: var(--curs-img) 1 1, auto;
 }
 
-section h3 a.navprev,
-section h3 a.navnext {
-    color: var(--text-col);
-    opacity: 0;
-    text-align: center;
-    font-size: .83em;
-    padding: 0.0em 0.22em .22em 0.22em;
-    border-radius: 0.25em;
-}
-
-section:hover h3 a.navprev,
-section:hover h3 a.navnext {
-    color: var(--back-hov);
-    opacity: 1;
-}
-
-a.navprev:hover,
-a.navnext:hover {
-    background-color: var(--back-hov) !important;
-    color: var(--front-body) !important;
-}
-
 .group {
     padding-left: 0.12em;
 }
 
-.group .links {
-    width: auto;
-    padding-top: 0px;
-    margin-top: 1em;
-    font-family: "ubuntu condensed", "helvetica neue", helvetica, arial, sans-serif;
-    font-size: 1.4em;
-    line-height: 1.7em;
-    font-weight: normal;
-    color: var(--sect-col);
-}
-
-.group .links .row {
-    width: auto;
-    margin: 0 auto;
-}
-
-.group .links .row .cell {
-    width: 191px;
-    float: left;
-}
-
-.group .links .row .cell a {
-    color: var(--sect-col);
-    padding: 0;
-    text-decoration: none;
-    border-radius: 6px;
-    border: 0px solid var(--back-body);
-    cursor: var(--curs-hov) 1 12, auto;
-    overflow: hidden;
-}
-
 li a {
     color: var(--title-col);
-}
-
-.group .links .row .cell a:active {
-    background-color: red;
 }
 
 #container {
@@ -297,22 +233,6 @@ section h3 a {
     width: 80%;
 }
 
-a.navprev,
-.navnext {
-    cursor: n-resize !important;
-    color: var(--front-body);
-    display: inline-block;
-    width: 1em !important;
-    position: relative;
-    right: 2.2em;
-}
-
-a.navnext {
-    cursor: s-resize !important;
-    background-color: var(--front-body);
-    color: var(--back-body);
-}
-
 /* Additional modern functionality styles */
 .home-link,
 #section-nav-list,
@@ -325,8 +245,6 @@ a.secname {
     white-space: nowrap;
     text-decoration: none;
     color: var(--title-col) !important;
-    position: relative;
-    left: -0.2em;
 }
 
 #section-nav-list {
@@ -355,10 +273,43 @@ a.secname:hover {
     background-color: var(--text-col) !important;
 }
 
+/* aktive Section: Vorder- und Hintergrund getauscht */
 a.secname.active {
-    background-color: var(--back-hov) !important;
-    color: var(--text-hov) !important;
-    font-weight: bold;
+    background-color: var(--sect-col) !important;
+    color: var(--front-body) !important;
+}
+
+/* Hover: Passiv-Farbe als Hintergrund, Schrift unverändert.
+   :not(.active) — der Aktiv-Zustand bleibt beim Hovern erhalten. */
+a.secname:not(.active):hover,
+section .name:not(.active):hover {
+    background-color: var(--text-col) !important;
+}
+
+a.secname:not(.active):hover {
+    color: var(--sect-col) !important;
+}
+
+/* kein heller Spalt zwischen Leiste und angedocktem Header */
+body.docked .title {
+    border-bottom-color: var(--sect-col);
+}
+
+/* Trennstrich weg, sobald das Band eine Fläche hat.
+   section davor, sonst sticht section:hover .name die Regel. */
+section .name.active,
+section .name:not(.active):hover {
+    border-bottom-color: transparent;
+}
+
+/* nur der aktive Header wird invertiert */
+section .name.active {
+    background-color: var(--sect-col);
+}
+
+.name.active,
+.name.active a {
+    color: var(--front-body) !important;
 }
 
 .title select {
@@ -368,21 +319,6 @@ a.secname.active {
     border-radius: 5px;
     font-family: inherit;
     font-size: 0.8em;
-}
-
-.gear-btn {
-    background: transparent;
-    border: 1px solid var(--text-col);
-    color: var(--text-col);
-    border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    font-size: 16px;
-    line-height: 26px;
-    text-align: center;
-    cursor: pointer;
-    padding: 0;
-    margin-left: auto;
 }
 
 /* iPad */
@@ -441,6 +377,7 @@ a.secname.active {
         height: auto;
         display: flex;
         align-items: center;
+        flex-wrap: nowrap;
         overflow-x: auto;
         background-color: var(--front-body);
         -ms-overflow-style: none;
@@ -454,8 +391,7 @@ a.secname.active {
     .home-link,
     #section-nav-list,
     .secname,
-    #section-jumper,
-    .gear-btn {
+    #section-jumper {
         flex-shrink: 0;
         padding: 0.5em 0.8em;
     }
@@ -500,14 +436,6 @@ a.secname.active {
 @media only screen and (min-device-width: 375px) and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: portrait) {
     section {
         scroll-snap-stop: always;
-    }
-
-    .paired-section {
-        min-height: 49vh;
-    }
-
-    .full-page-section {
-        min-height: 98vh;
     }
 
     .group {
@@ -583,12 +511,35 @@ body.edit-mode .edit-url:focus {
 body.edit-mode .btn-del {
     display: inline-block;
     margin-left: 4px;
+    padding: 2px;
+    border-radius: 3px;
     color: #c00;
     cursor: pointer !important;
-    font-size: 14px;
+    font-size: 22px;
     vertical-align: middle;
     line-height: 1;
     user-select: none;
+}
+
+body.edit-mode .btn-del:hover {
+    background-color: #c00;
+    color: #fff;
+}
+
+/* vorgemerkt zum Löschen — bis zum Speichern umkehrbar */
+body.edit-mode li.removed a,
+body.edit-mode li.removed .edit-url {
+    text-decoration: line-through;
+    opacity: .45;
+}
+
+body.edit-mode li.removed .btn-del {
+    color: var(--sect-col);
+}
+
+body.edit-mode li.removed .btn-del:hover {
+    background-color: var(--sect-col);
+    color: var(--front-body);
 }
 
 .btn-add {
@@ -607,20 +558,165 @@ body.edit-mode li.btn-add {
     min-width: 0;
 }
 
-#edit-bar {
+/* ── Section-Icons ───────────────────────────────────────────────── */
+
+/* Nav-Chips: Icon oder Kürzel, nie beides */
+.secname .secicon {
     display: none;
-    position: fixed;
-    bottom: 16px;
-    right: 20px;
-    z-index: 9999;
-    gap: 8px;
+    width: 1.3em;
+    text-align: center;
 }
 
-#edit-bar.visible {
+body.nav-icons .secname .secicon {
+    display: inline-block;
+}
+
+body.nav-icons .secname .secshort {
+    display: none;
+}
+
+/* Section-Header: immer Icon + Titel */
+.name .secicon {
+    display: inline-block;
+    width: 1.3em;
+    margin-right: .3em;
+    font-size: .85em;
+    text-align: center;
+}
+
+/* ── Seitenausrichtung ───────────────────────────────────────────── */
+
+/* ── Titelzeile ──────────────────────────────────────────────────── */
+
+/* Dropdown hinter den Chips, bricht bei Platzmangel um */
+.title {
     display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    column-gap: 6px;
 }
 
-#edit-bar button {
+/* Zentriert wird der Inhalt, nicht #container — der kappt Breiteres
+   mit overflow-x: hidden und würde die Trennlinie abschneiden. */
+body.align-center .title {
+    max-width: 1250px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+body.align-center .name {
+    padding-left: max(0.2em, (100% - 1250px) / 2);
+    padding-right: max(0px, (100% - 1250px) / 2);
+}
+
+body.align-center .group,
+body.align-center .settings-row {
+    max-width: 1250px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ── Einstellungs-Panel ──────────────────────────────────────────── */
+
+.settings-panel {
+    display: none;
+}
+
+body.edit-mode .settings-panel {
+    display: block;
+    margin-bottom: 1.6em;
+}
+
+/* sonst rastet der Container das Panel wieder aus dem Bild */
+body.edit-mode #container {
+    scroll-snap-type: none;
+}
+
+.settings-panel .name {
+    color: var(--sect-col);
+}
+
+.settings-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 10px 0;
+    /* bündig mit dem Linktext; ohne font-size, damit em wie in .group zählt */
+    width: 100%;
+    max-width: 1250px;
+    padding-left: 0.36em;
+    box-sizing: border-box;
+}
+
+.settings-label {
+    min-width: 13em;
+    color: var(--sect-col);
+    font-size: 14px;
+}
+
+/* iOS-Schalter */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 26px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.switch input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.switch-track {
+    position: absolute;
+    inset: 0;
+    border-radius: 13px;
+    background: var(--text-col);
+    pointer-events: none;
+    transition: background-color .2s ease;
+}
+
+.switch-track::before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--front-body);
+    transition: transform .2s ease;
+}
+
+.switch input:checked+.switch-track {
+    background: var(--sect-col);
+}
+
+.switch input:checked+.switch-track::before {
+    transform: translateX(18px);
+}
+
+.switch input:focus-visible+.switch-track {
+    outline: 2px solid var(--sect-col);
+    outline-offset: 2px;
+}
+
+.settings-actions {
+    justify-content: flex-start;
+    gap: 8px;
+    margin-top: 1.2em;
+}
+
+.settings-cancel,
+.settings-save {
     padding: 6px 16px;
     border: 1px solid var(--sect-col);
     border-radius: 20px;
@@ -631,14 +727,7 @@ body.edit-mode li.btn-add {
     cursor: pointer;
 }
 
-#edit-bar #btn-save {
+.settings-save {
     background: var(--sect-col);
     color: var(--front-body);
-}
-
-/* on mobile: edit-bar sits above the fixed title bar */
-@media only screen and (min-device-width: 350px) and (max-device-width: 812px) {
-    #edit-bar {
-        bottom: 60px;
-    }
 }

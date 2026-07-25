@@ -2,6 +2,7 @@
   {
     "id": "sec1",
     "title": "srv",
+    "icon": "fa-server",
     "color": "cyan",
     "links": [
       {
@@ -53,6 +54,7 @@
   {
     "id": "sec2",
     "title": "tec",
+    "icon": "fa-microchip",
     "color": "cyan",
     "links": [
       {
@@ -164,6 +166,7 @@
   {
     "id": "sec3",
     "title": "riid",
+    "icon": "fa-newspaper",
     "color": "SandyBrown",
     "links": [
       {
@@ -275,6 +278,7 @@
   {
     "id": "sec4",
     "title": "tbx.li",
+    "icon": "fa-toolbox",
     "color": "cyan",
     "links": [
       {
@@ -302,6 +306,7 @@
   {
     "id": "sec5",
     "title": "wrk",
+    "icon": "fa-briefcase",
     "color": "cyan",
     "links": [
       {
@@ -353,6 +358,7 @@
   {
     "id": "sec6",
     "title": "mee",
+    "icon": "fa-user",
     "color": "cyan",
     "links": [
       {
@@ -400,6 +406,7 @@
   {
     "id": "sec7",
     "title": "see",
+    "icon": "fa-tv",
     "color": "cyan",
     "links": [
       {
@@ -455,6 +462,7 @@
   {
     "id": "sec8",
     "title": "hiir",
+    "icon": "fa-radio",
     "color": "cyan",
     "links": [
       {
@@ -478,6 +486,7 @@
   {
     "id": "sec9",
     "title": "bsy",
+    "icon": "fa-lightbulb",
     "color": "cyan",
     "links": [
       {
@@ -509,6 +518,7 @@
   {
     "id": "sec10",
     "title": "dis",
+    "icon": "fa-comments",
     "color": "cyan",
     "links": [
       {
@@ -548,6 +558,7 @@
   {
     "id": "sec11",
     "title": "art",
+    "icon": "fa-palette",
     "color": "cyan",
     "links": [
       {
@@ -575,6 +586,7 @@
   {
     "id": "sec12",
     "title": "eat",
+    "icon": "fa-utensils",
     "color": "cyan",
     "links": [
       {
@@ -634,6 +646,7 @@
   {
     "id": "sec13",
     "title": "shp",
+    "icon": "fa-cart-shopping",
     "color": "cyan",
     "links": [
       {
@@ -673,6 +686,7 @@
   {
     "id": "sec14",
     "title": "pol",
+    "icon": "fa-landmark",
     "color": "cyan",
     "links": [
       {
@@ -724,6 +738,7 @@
   {
     "id": "sec15",
     "title": "mdf",
+    "icon": "fa-location-dot",
     "color": "cyan",
     "links": [
       {
