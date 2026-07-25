@@ -312,7 +312,7 @@ function collectData() {
 
 function save() {
     var json = JSON.stringify(collectData(), null, 2);
-    fetch('save.php', {
+    fetch('edit/save.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json; charset=utf-8',
@@ -321,6 +321,9 @@ function save() {
         body: json
     })
     .then(function (r) {
+        if (r.status === 401) {
+            throw new Error('Nicht angemeldet — /edit/ einmal direkt im Browser aufrufen und anmelden.');
+        }
         if (!r.ok) throw new Error('HTTP ' + r.status);
         document.querySelector('.titledomain').textContent = '✓';
         setTimeout(function () { location.reload(); }, 800);

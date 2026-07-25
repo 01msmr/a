@@ -1,0 +1,7 @@
+# Schreibzugriff absichern. Gilt für das gesamte Verzeichnis,
+# die Seite selbst bleibt öffentlich.
+AuthType Basic
+AuthName "a.msmr.co"
+# absoluten Pfad eintragen, siehe docs/htaccess-setup.md
+AuthUserFile /PFAD/ZUM/ELTERNVERZEICHNIS/.htpasswd
+Require valid-user

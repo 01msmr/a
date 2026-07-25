@@ -25,11 +25,13 @@ if ($parsed === null) {
     exit('Invalid JSON');
 }
 
-$target = __DIR__ . '/links.json';
+// liegt eine Ebene höher, im Webverzeichnis
+$root = dirname(__DIR__);
+$target = $root . '/links.json';
 
 // Backup
 if (file_exists($target)) {
-    copy($target, __DIR__ . '/links.bak.json');
+    copy($target, $root . '/links.bak.json');
 }
 
 if (file_put_contents($target, $body) === false) {
