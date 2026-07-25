@@ -604,6 +604,15 @@ body.nav-icons .secname .secicon {
     display: inline-block;
 }
 
+/* quadratischer Chip, Icon horizontal mittig — inline-block, damit es
+   auf der Textlinie bleibt statt vertikal zentriert zu werden */
+body.nav-icons a.secname {
+    box-sizing: border-box;
+    aspect-ratio: 1;
+    display: inline-block;
+    text-align: center;
+}
+
 body.nav-icons .secname .secshort {
     display: none;
 }
