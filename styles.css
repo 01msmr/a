@@ -601,8 +601,6 @@ body.edit-mode li.btn-add {
 /* Nav-Chips: Icon oder Kürzel, nie beides */
 .secname .secicon {
     display: none;
-    width: 1.3em;
-    text-align: center;
 }
 
 body.nav-icons .secname .secicon {
