@@ -351,10 +351,11 @@ function collectData() {
 
 // Vergleich gegen die beim Rendern gestempelten Ursprungswerte
 function aenderungen() {
-    var geloescht = [], geaendert = [];
+    var geloescht = [], geaendert = [], neu = 0;
     document.querySelectorAll('ul.group li:not(.btn-add)').forEach(function (li) {
         var a = li.querySelector('a');
-        if (!a || li.dataset.url0 === undefined) return;   // neu angelegt
+        if (!a) return;
+        if (li.dataset.url0 === undefined) { neu++; return; }
         var urlFeld = li.querySelector('.edit-url');
         var name = a.textContent.trim();
         var url = urlFeld ? urlFeld.textContent.trim() : a.getAttribute('href');
@@ -366,12 +367,17 @@ function aenderungen() {
                 '\n  → ' + name + '  ' + url);
         }
     });
-    return { geloescht: geloescht, geaendert: geaendert };
+    return { geloescht: geloescht, geaendert: geaendert, neu: neu };
 }
 
 function bestaetigen() {
     var d = aenderungen();
-    if (!d.geaendert.length && !d.geloescht.length) return true;
+
+    if (!d.geaendert.length && !d.geloescht.length) {
+        // nichts verändert → gar nicht erst schreiben
+        if (!d.neu) { alert('Keine Änderungen — nichts zu speichern.'); return false; }
+        return true;   // nur neue Einträge, nichts zu überschreiben
+    }
 
     var text = 'Änderungen übernehmen?\n';
     if (d.geaendert.length) {
