@@ -605,9 +605,15 @@ body.nav-icons .secname .secicon {
 }
 
 /* quadratischer Chip, Icon horizontal mittig — inline-block, damit es
-   auf der Textlinie bleibt statt vertikal zentriert zu werden */
+   auf der Textlinie bleibt statt vertikal zentriert zu werden.
+   Volle Innenhöhe, sonst bleibt oben und unten ein heller Spalt. */
+body.nav-icons #section-nav-list {
+    align-self: stretch;
+}
+
 body.nav-icons a.secname {
     box-sizing: border-box;
+    height: 100%;
     aspect-ratio: 1;
     display: inline-block;
     text-align: center;
