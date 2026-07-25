@@ -6,8 +6,11 @@ function getPref(name) {
     catch (e) { return PREF_DEFAULTS[name]; }
 }
 
+var prefsGeaendert = false;
+
 function setPref(name, value) {
     try { localStorage.setItem('a.' + name, value); } catch (e) { }
+    prefsGeaendert = true;
     applyPrefs();
 }
 
@@ -374,9 +377,12 @@ function bestaetigen() {
     var d = aenderungen();
 
     if (!d.geaendert.length && !d.geloescht.length) {
-        // nichts verändert → gar nicht erst schreiben
-        if (!d.neu) { alert('Keine Änderungen — nichts zu speichern.'); return false; }
-        return true;   // nur neue Einträge, nichts zu überschreiben
+        // nichts zu überschreiben — neue Einträge und Einstellungen zählen mit
+        if (!d.neu && !prefsGeaendert) {
+            alert('Keine Änderungen — nichts zu speichern.');
+            return false;
+        }
+        return true;
     }
 
     var text = 'Änderungen übernehmen?\n';
