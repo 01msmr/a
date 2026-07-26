@@ -53,6 +53,8 @@ body {
     box-sizing: border-box;
     padding: 0 1em;
     height: 50px;
+    /* dieselbe Spalte wie .group, sonst ragt das Dropdown darüber hinaus */
+    max-width: 1250px;
     /* als Flex-Element sonst zusammengedrückt */
     flex-shrink: 0;
     border: 1px solid var(--text-col);
@@ -279,10 +281,13 @@ section h3 a {
     line-height: 1.4em;
 }
 
+/* behält seine Inhaltsbreite; der Leerraum landet rechts davon */
 #section-nav-list {
+    display: flex;
+    flex: 0 1 auto;
+    margin-right: auto;
     white-space: nowrap;
     overflow: hidden;
-    flex-shrink: 1;
     min-width: 0;
     font-size: 0.9em;
     align-self: stretch;
@@ -733,6 +738,8 @@ body.nav-icons .secname .secshort {
 /* Zentriert wird der Inhalt, nicht #container */
 body.align-center .title {
     max-width: 1250px;
+    /* als Flex-Element verhindern auto-Margen sonst das Strecken */
+    width: 100%;
     margin-left: auto;
     margin-right: auto;
 }
