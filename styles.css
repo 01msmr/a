@@ -36,19 +36,33 @@ body {
     cursor: var(--curs-img) 1 1, auto;
 }
 
+/* kein Gummiband auf Dokumentebene */
+html,
+body {
+    overscroll-behavior: none;
+    height: 100%;
+    margin: 0;
+    /* div.seite ist fixiert und scrollt selbst */
+    overflow: hidden;
+}
+
 .title {
     color: var(--title-col);
     margin: 0;
-    /* Polster = Eckenradius, damit Chips in der Rundung bleiben.
-       50 = 48 Chiphöhe + 2 Rahmen */
+    /* Polster = Eckenradius, damit Chips in der Rundung bleiben */
     box-sizing: border-box;
     padding: 0 1em;
     height: 50px;
+    /* als Flex-Element sonst zusammengedrückt */
+    flex-shrink: 0;
     border: 1px solid var(--text-col);
     border-radius: 1em;
     position: sticky;
     display: flex;
     align-items: center;
+    /* Dropdown hinter den Chips, bricht bei Platzmangel um */
+    flex-wrap: wrap;
+    column-gap: 6px;
     overflow-x: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -66,11 +80,15 @@ body {
     padding-right: 0.3em;
 }
 
+/* nimmt den Rest unter der Titelleiste, statt ihn mit 94% zu schätzen */
 .container {
     scroll-behavior: smooth;
-    height: 94%;
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-y: scroll;
     overflow-x: hidden;
+    /* der Überzug bleibt hier und wandert nicht nach außen */
+    overscroll-behavior: contain;
     scroll-snap-type: y mandatory;
 }
 
@@ -87,7 +105,8 @@ section {
     color: var(--text-col);
 }
 
-section:hover a {
+/* kontrastreich bei Hover, Fokus oder als oberste Section */
+section:is(:hover, :focus, :focus-within, .aktuell) a {
     color: var(--sect-col);
 }
 
@@ -100,6 +119,7 @@ li,
     font-family: "Ubuntu", "Helvetica neue", Helvetica, Arial, sans-serif;
 }
 
+/* lange Namen werden gekürzt statt umgebrochen */
 li a {
     display: block;
     padding: .2em 0.3em;
@@ -107,6 +127,9 @@ li a {
     text-decoration: none;
     border-radius: .35em;
     cursor: var(--curs-hov) 1 30, auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* nach section:hover a, damit die eigene Kachel gewinnt */
@@ -156,6 +179,10 @@ body {
 div.seite {
     width: 99%;
     height: 99%;
+    /* Spalte: Leiste oben, Container füllt den Rest genau aus */
+    display: flex;
+    flex-direction: column;
+    overscroll-behavior: none;
     overflow-x: hidden;
     margin: 0px;
     border-radius: 0.87em;
@@ -170,10 +197,12 @@ div.seite::-webkit-scrollbar {
     display: none;
 }
 
+/* overflow: hidden garantiert die exakt gleiche Kachelgröße */
 li {
     margin: 0;
     width: auto;
     height: 36px;
+    overflow: hidden;
     clear: both;
 }
 
@@ -205,15 +234,16 @@ li {
     background: none;
 }
 
-section:hover,
-section:hover .name,
-section:hover .group {
+section:is(:hover, :focus, :focus-within, .aktuell),
+section:is(:hover, :focus, :focus-within, .aktuell) .name,
+section:is(:hover, :focus, :focus-within, .aktuell) .group {
     color: var(--title-col);
     border-color: var(--title-col);
     cursor: var(--curs-img) 1 1, auto;
 }
 
-#container:focus {
+#container:focus,
+#container section:focus {
     outline: none;
 }
 
@@ -222,14 +252,20 @@ section:hover .group {
     color: var(--title-col);
     font-family: "helvetica neue", helvetica, arial, sans-serif;
     font-size: 1em;
-    margin: auto;
+    margin: 0;
+}
+
+/* Der Link füllt die Restbreite neben dem Icon */
+.name {
+    display: flex;
+    align-items: baseline;
 }
 
 section h3 a {
     text-decoration: none;
     cursor: crosshair;
-    display: inline-block;
-    width: 80%;
+    flex: 1 1 auto;
+    min-width: 0;
 }
 
 .home-link {
@@ -259,8 +295,7 @@ a.secname.active {
     color: var(--front-body);
 }
 
-/* Hover: Passiv-Farbe als Hintergrund, Schrift unverändert.
-   :not(.active) — der Aktiv-Zustand bleibt beim Hovern erhalten. */
+/* Hover: Passiv-Farbe als Hintergrund, Schrift unverändert */
 a.secname:not(.active):hover,
 section .name:not(.active):hover {
     background-color: var(--text-col);
@@ -275,8 +310,7 @@ body.docked .title {
     border-bottom-color: var(--sect-col);
 }
 
-/* Trennstrich weg, sobald das Band eine Fläche hat.
-   section davor, sonst sticht section:hover .name die Regel. */
+/* Trennstrich weg, sobald das Band eine Fläche hat */
 section .name.active,
 section .name:not(.active):hover {
     border-bottom-color: transparent;
@@ -292,6 +326,31 @@ section .name.active {
     color: var(--front-body);
 }
 
+/* Sprungtasten nur am Telefon */
+.stepper {
+    display: none;
+}
+
+/* ── Nicht erreichbare Links ─────────────────────────────────────── */
+
+/* Rot als Schrift im Ruhezustand, als Fläche im Aktivzustand */
+li.tot a {
+    color: #c00;
+}
+
+li.tot a:hover {
+    background-color: #c00;
+    color: var(--front-body);
+}
+
+section:is(:hover, :focus, :focus-within, .aktuell) li.tot a {
+    color: #c00;
+}
+
+section:is(:hover, :focus, :focus-within, .aktuell) li.tot a:hover {
+    color: var(--front-body);
+}
+
 .title select {
     background-color: transparent;
     border: 1px solid var(--text-col);
@@ -303,31 +362,58 @@ section .name.active {
 
 /* iPad */
 @media only screen and (max-device-width: 1024px) {
+
+    /* Rastereinheit: ein Viertel der Inhaltshöhe */
+    :root {
+        --raster: 4;
+    }
+
+    /* 54px auf 35px. Bringt keine zusätzliche Kachelreihe */
+    .name {
+        font-size: 0.9em;
+    }
     li {
-        width: 1em;
-        font-size: 1.05em;
+        width: auto;
+        min-width: 0;
+        font-size: 0.95em;
         padding: 2px 0px;
-        margin: 2px;
-        display: inline-block;
+        margin: 0;
     }
 
+    /* Spaltenzahl folgt der Breite: hoch vier, quer sechs */
     .group {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        gap: 0;
     }
 
+    /* Genau vier Sections pro Bildschirm, nie eine angeschnittene fünfte */
     section {
-        min-height: 25vh;
-        max-height: 46vh;
+        min-height: 25%;
         scroll-snap-align: start;
     }
 }
 
 /* Smartphone combined */
 @media only screen and (min-device-width: 350px) and (max-device-width: 812px) {
+
+    /* Rastereinheit: ein halber Bildschirm */
+    :root {
+        --raster: 2;
+    }
+
+    .name {
+        font-size: 0.9em;
+    }
+
+    /* wie am iPad nur "a." — in der schmalen Leiste zählt jeder Pixel */
+    .titledomain {
+        display: none;
+    }
+
+    /* Boden, keine Decke — sonst überläuft langer Inhalt die nächste Section */
     section {
-        height: 100%;
+        min-height: 50%;
     }
 
     div.seite {
@@ -372,12 +458,44 @@ section .name.active {
         display: none;
     }
 
+    /* nur seitlich polstern, sonst wird die Leiste zu hoch */
     .home-link,
     #section-nav-list,
     .secname,
-    #section-jumper {
+    #section-jumper,
+    .stepper {
         flex-shrink: 0;
-        padding: 0.5em 0.8em;
+        padding: 0 0.8em;
+    }
+
+    /* niedriger: der 48px-Chip gab bisher die Leistenhöhe vor */
+    a.secname,
+    #section-jumper,
+    .stepper {
+        height: 38px;
+    }
+
+    /* reicht mit viewport-fit=cover bis an den Bildschirmrand */
+    .title {
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    /* je eine eigene Umrandung */
+    .stepper {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        min-width: 38px;
+        padding: 0 0.5em;
+        margin-left: 5px;
+        /* gefüllt: Fläche in Rahmenfarbe, Chevron in Flächenfarbe */
+        background-color: var(--text-col);
+        color: var(--front-body);
+        text-decoration: none;
+        border: 1px solid var(--text-col);
+        border-radius: 6px;
+        font-size: 0.9em;
     }
 
     li a {
@@ -404,7 +522,7 @@ section .name.active {
     }
 
     section {
-        height: 100%;
+        min-height: 50%;
     }
 
     .group {
@@ -429,10 +547,10 @@ section .name.active {
         margin: 0 !important;
     }
 
+    /* ohne height: auto bleiben die Kacheln gleich hoch */
     li {
         width: calc(50% - 4px);
         font-size: 0.9em;
-        height: auto;
         margin: 0px;
         padding: 0;
         clear: none;
@@ -471,11 +589,17 @@ body.edit-mode section:last-child {
 body.edit-mode li {
     height: auto;
     min-height: 36px;
+    /* die URL-Zeile darf beim Bearbeiten aus der Kachel ragen */
+    overflow: visible;
 }
 
+/* ungekürzt, sonst lässt sich ein langer Name nicht bearbeiten */
 body.edit-mode li a[contenteditable] {
     cursor: text;
     outline: none;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
 }
 
 body.edit-mode li a[contenteditable]:focus {
@@ -571,11 +695,7 @@ body.nav-icons .secname .secicon {
     font-size: 25px;
 }
 
-/* quadratischer Chip, Icon horizontal mittig — inline-block, damit es
-   auf der Textlinie bleibt statt vertikal zentriert zu werden.
-   Volle Innenhöhe, sonst bleibt oben und unten ein heller Spalt. */
-/* nur die Breite ist Icon-spezifisch — quadratisch, Icon mittig.
-   Kein flex, damit das Icon auf der Grundlinie bleibt. */
+/* quadratischer Chip, Icon horizontal mittig */
 body.nav-icons a.secname {
     width: 48px;
     text-align: center;
@@ -591,9 +711,13 @@ body.nav-icons .secname .secshort {
 /* Section-Header: immer Icon + Titel */
 .name .secicon {
     display: inline-block;
+    flex: 0 0 auto;
     width: 1.3em;
     margin-right: .3em;
-    font-size: .85em;
+    font-size: .7em;
+    /* im Flex-Container wirkt vertical-align nicht mehr */
+    position: relative;
+    top: -.14em;
     text-align: center;
 }
 
@@ -601,16 +725,9 @@ body.nav-icons .secname .secshort {
 
 /* ── Titelzeile ──────────────────────────────────────────────────── */
 
-/* Dropdown hinter den Chips, bricht bei Platzmangel um */
-.title {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    column-gap: 6px;
-}
+/* display, flex-wrap und column-gap stehen jetzt in der .title-Regel ganz oben */
 
-/* Zentriert wird der Inhalt, nicht #container — der kappt Breiteres
-   mit overflow-x: hidden und würde die Trennlinie abschneiden. */
+/* Zentriert wird der Inhalt, nicht #container */
 body.align-center .title {
     max-width: 1250px;
     margin-left: auto;
@@ -743,4 +860,39 @@ body.edit-mode #container {
 .settings-save {
     background: var(--sect-col);
     color: var(--front-body);
+}
+
+/* ── iPad: alle 15 Chips in eine Reihe ───────────────────────────── */
+
+/* muss nach body.nav-icons a.secname stehen — gleiche Spezifität */
+@media only screen and (min-device-width: 813px) and (max-device-width: 1024px) {
+
+    /* "a.msmr.co" → "a." — spart 107px, die die Chips brauchen */
+    .titledomain {
+        display: none;
+    }
+
+    .title {
+        padding: 0 0.4em;
+    }
+
+    a.secname {
+        padding-left: 4px;
+        padding-right: 4px;
+        font-size: 0.75em;
+    }
+
+    /* Icon bleibt 25px, nur die Tippfläche schrumpft */
+    body.nav-icons a.secname {
+        width: 40px;
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+/* quer ist Platz für die volle Adresse */
+@media only screen and (min-device-width: 813px) and (max-device-width: 1024px) and (orientation: landscape) {
+    .titledomain {
+        display: inline-block;
+    }
 }

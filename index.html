@@ -3,7 +3,9 @@
 
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- viewport-fit=cover: sonst endet die Seite über dem Home-Indikator
+         und die untere Leiste kann den Platz dort nicht nutzen -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="color-scheme" content="light dark" />
     <title>a.msmr.co</title>
     <base target="_blank" />
@@ -33,6 +35,13 @@
             <!-- autocomplete=off: sonst stellt Chrome beim Reload die alte
                  Auswahl wieder her und löst damit erneut den Edit-Mode aus -->
             <select id="section-jumper" autocomplete="off"></select>
+            <!-- nur am Telefon sichtbar, siehe styles.css -->
+            <a href="#" id="step-prev" class="stepper" target="_self" aria-label="vorige Section">
+                <i class="fa-solid fa-chevron-up" aria-hidden="true"></i>
+            </a>
+            <a href="#" id="step-next" class="stepper" target="_self" aria-label="nächste Section">
+                <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+            </a>
         </h3>
         <article id="container" class="container"></article>
     </div>

@@ -58,7 +58,8 @@ function render(data) {
         short.className = 'secshort';
         short.textContent = sec.title;
         a.appendChild(short);
-        a.addEventListener('click', focusContent);
+        // gewickelt, damit nicht das Event als Fokusziel ankommt
+        a.addEventListener('click', function () { focusContent(); });
         nav.appendChild(a);
 
         var opt = document.createElement('option');
@@ -75,7 +76,9 @@ function render(data) {
         }
         var el = document.querySelector(sel.value);
         if (el) el.scrollIntoView();
-        focusContent();
+        // iOS gibt den Fokus nach dem Schließen der Auswahlliste an das select zurück
+        sel.blur();
+        focusContent(el && el.closest('section'));
     });
 
     var container = document.getElementById('container');
@@ -91,6 +94,7 @@ function render(data) {
 
     data.forEach(function (sec) {
         var section = document.createElement('section');
+        section.tabIndex = -1;   // fokussierbar, aber nicht in der Tab-Reihenfolge
 
         var h3 = document.createElement('h3');
         h3.id = sec.id;
@@ -108,7 +112,7 @@ function render(data) {
         var ul = document.createElement('ul');
         ul.className = 'group';
         (sec.links || []).forEach(function (link) {
-            var li = makeLi(link.name, link.url);
+            var li = makeLi(link.name, link.url, link.tot);
             li.dataset.name0 = link.name;   // Ursprungswerte für den Vergleich
             li.dataset.url0 = link.url;
             ul.appendChild(li);
@@ -121,6 +125,7 @@ function render(data) {
 
     applyPrefs();
     trackActiveSection();
+    raster();
     focusContent();
 }
 
@@ -146,7 +151,10 @@ function trackActiveSection() {
             chip.classList.toggle('active', chip.hash === active);
         });
         headings.forEach(function (h3) {
-            h3.classList.toggle('active', '#' + h3.id === active);
+            var passt = '#' + h3.id === active;
+            h3.classList.toggle('active', passt);
+            // Section markieren — greift auch beim Scrollen von Hand
+            h3.closest('section').classList.toggle('aktuell', passt);
         });
         // angedockter Header → Rahmen der Leiste mitfärben, kein heller Spalt
         document.body.classList.toggle('docked',
@@ -163,19 +171,118 @@ function trackActiveSection() {
     syncActive();
 }
 
+// Sections belegen ein ganzes Vielfaches eines Viertels der Inhaltshöhe
+var rasterBasis = 0;
+
+function raster(nurBeiAenderung) {
+    var container = document.getElementById('container');
+    if (!container) return;
+    var sections = container.querySelectorAll('section');
+
+    var an = parseInt(getComputedStyle(document.documentElement)
+        .getPropertyValue('--raster'), 10);
+
+    // kein Raster (Desktop) oder Edit-Mode: gesetzte Höhen lösen und raus
+    if (!an || document.body.classList.contains('edit-mode')) {
+        sections.forEach(function (s) { s.style.minHeight = ''; });
+        rasterBasis = 0;
+        return;
+    }
+
+    // Freiraum unten muss genau der Leistenhöhe entsprechen
+    var leiste = document.querySelector('.title');
+    if (leiste && getComputedStyle(leiste).position === 'fixed') {
+        container.style.paddingBottom =
+            Math.ceil(leiste.getBoundingClientRect().height) + 'px';
+    } else {
+        container.style.paddingBottom = '';
+    }
+
+    var cs = getComputedStyle(container);
+    var innen = container.clientHeight
+        - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    if (!(innen > 0)) return;
+
+    // Schwelle gegen Safaris Leistenanimation, die resize im 17-ms-Takt feuert
+    if (nurBeiAenderung && Math.abs(innen - rasterBasis) < 8) return;
+    rasterBasis = innen;
+
+    // die Section, die gerade oben steht, nach dem Umbau wieder dorthin
+    var obenKante = container.getBoundingClientRect().top;
+    var oben = null;
+    sections.forEach(function (s) {
+        if (!oben && s.getBoundingClientRect().bottom - obenKante > 1) oben = s;
+    });
+
+    var viertel = innen / an;
+    sections.forEach(function (s) { s.style.minHeight = ''; });
+
+    // erst alles messen, dann alles setzen
+    var plaetze = [];
+    sections.forEach(function (s) {
+        // 1px Toleranz, sonst rundet eine exakt passende Section auf zwei auf
+        plaetze.push(Math.max(1, Math.ceil((s.getBoundingClientRect().height - 1) / viertel)));
+    });
+    sections.forEach(function (s, i) {
+        s.style.minHeight = (plaetze[i] * viertel) + 'px';
+    });
+
+    if (oben) {
+        var glatt = container.style.scrollBehavior;
+        container.style.scrollBehavior = 'auto';
+        container.scrollTop += oben.getBoundingClientRect().top - obenKante;
+        container.style.scrollBehavior = glatt;
+    }
+}
+
+// erst nach Ruhe neu rastern, nicht bei jedem Zwischenschritt
+var rasterTimer = null;
+
+window.addEventListener('resize', function () {
+    clearTimeout(rasterTimer);
+    rasterTimer = setTimeout(function () { raster(true); }, 250);
+});
+
+// Icon-Schrift vom CDN ändert nach dem Laden die Kopfhöhe
+if (document.fonts) document.fonts.ready.then(function () { raster(); });
+
 // nach einem Sprung den Inhalt fokussieren, sonst laufen die Pfeiltasten ins Leere
-function focusContent() {
+function focusContent(sec) {
     var c = document.getElementById('container');
-    var setzen = function () { c.focus({ preventScroll: true }); };
-    // während des Ladens setzt der Browser den Fokus danach auf body zurück
+
+    // Ziel ist die angesprungene Section
+    var fest = sec && sec.nodeType === 1 ? sec : null;
+
+    // Ziel bei jedem Versuch neu bestimmen — beim Klick ist der Hash noch alt
+    var setzen = function () {
+        var ziel = fest;
+        if (!ziel && location.hash.length > 1) {
+            var el = document.getElementById(location.hash.slice(1));
+            ziel = el && el.closest('section');
+        }
+        // sofort mitziehen, sonst leuchten bis zur Scroll-Ruhe zwei Bereiche
+        if (ziel) {
+            document.querySelectorAll('#container section.aktuell')
+                .forEach(function (s) { s.classList.remove('aktuell'); });
+            ziel.classList.add('aktuell');
+        }
+        (ziel || c).focus({ preventScroll: true });
+    };
+
+    // dreifach, weil jeder Zeitpunkt für sich unzuverlässig ist
+    setzen();
     if (document.readyState === 'complete') requestAnimationFrame(setzen);
     else window.addEventListener('load', setzen, { once: true });
+    setTimeout(setzen, 250);
 }
+
+// hashchange feuert nach der Sprungmarke — dort sitzt der Fokus zuverlässig
+window.addEventListener('hashchange', function () { focusContent(); });
 
 // Pfeiltasten summieren sich auf ein Ziel, statt auf die Animation zu warten
 var jumpTarget = null;
 
-function jumpBy(delta) {
+function jumpBy(delta, umlaufen) {
     var sections = document.querySelectorAll('#container section');
     if (!sections.length) return;
     var base = jumpTarget;
@@ -184,12 +291,27 @@ function jumpBy(delta) {
         base = 0;
         sections.forEach(function (s, i) { if (aktiv && s.contains(aktiv)) base = i; });
     }
-    jumpTarget = Math.max(0, Math.min(sections.length - 1, base + delta));
+    var ziel = base + delta;
+    jumpTarget = umlaufen
+        // von der letzten zur ersten und zurück
+        ? (ziel % sections.length + sections.length) % sections.length
+        : Math.max(0, Math.min(sections.length - 1, ziel));
     sections[jumpTarget].scrollIntoView();
+    focusContent(sections[jumpTarget]);
 }
 
-function makeLi(name, url) {
+// Sprungtasten der unteren Leiste
+['step-prev', 'step-next'].forEach(function (id, i) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('click', function (e) {
+        e.preventDefault();
+        jumpBy(i ? 1 : -1, true);
+    });
+});
+
+function makeLi(name, url, tot) {
     var li = document.createElement('li');
+    if (tot) li.classList.add('tot');   // beim letzten Test nicht erreichbar
     var a = document.createElement('a');
     a.tabIndex = 0;
     a.href = url;
@@ -269,6 +391,7 @@ function makeDelButton(li) {
 
 function enterEditMode() {
     document.body.classList.add('edit-mode');
+    raster();   // gesetzte Rasterhöhen lösen, sonst schlagen sie die Edit-Regeln
 
     // erst im nächsten Frame, sonst rastert scroll-snap zurück
     var panel = document.querySelector('.settings-panel');
@@ -335,7 +458,11 @@ function collectData() {
             if (!a) return;
             var name = a.textContent.trim();
             var url = urlField ? urlField.textContent.trim() : a.getAttribute('href');
-            if (name && url) links.push({ name: name, url: url });
+            if (!name || !url) return;
+            var eintrag = { name: name, url: url };
+            // Tot-Markierung mitschreiben; eine geänderte URL hebt sie auf
+            if (li.classList.contains('tot') && url === li.dataset.url0) eintrag.tot = true;
+            links.push(eintrag);
         });
 
         if (!links.length) return;

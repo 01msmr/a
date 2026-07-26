@@ -203,7 +203,8 @@
       },
       {
         "name": "Tagesspiegel",
-        "url": "https://www.tagesspiegel.de/medien/digitale-welt/"
+        "url": "https://www.tagesspiegel.de/medien/digitale-welt/",
+        "tot": true
       },
       {
         "name": "tageszeitung",
@@ -251,7 +252,8 @@
       },
       {
         "name": "NZZ",
-        "url": "https://www.nzz.ch/mehr/digital/"
+        "url": "https://www.nzz.ch/mehr/digital/",
+        "tot": true
       },
       {
         "name": "brand eins",
@@ -435,7 +437,8 @@
       },
       {
         "name": "ZDF",
-        "url": "https://www.zdf.de/zdfmediathek/"
+        "url": "https://www.zdf.de/zdfmediathek/",
+        "tot": true
       },
       {
         "name": "arte",
@@ -443,7 +446,8 @@
       },
       {
         "name": "3sat",
-        "url": "https://www.3sat.de/mediathek/"
+        "url": "https://www.3sat.de/mediathek/",
+        "tot": true
       },
       {
         "name": "WDR",
@@ -463,7 +467,8 @@
       },
       {
         "name": "MUBI",
-        "url": "https://mubi.com/films/showing"
+        "url": "https://mubi.com/films/showing",
+        "tot": true
       },
       {
         "name": "MediaSteak",
@@ -483,7 +488,8 @@
     "links": [
       {
         "name": "► DLF Live",
-        "url": "https://srv.deutschlandradio.de/themes/dradio/script/aod/index.html?audioMode=4&audioID=3&state="
+        "url": "https://srv.deutschlandradio.de/themes/dradio/script/aod/index.html?audioMode=4&audioID=3&state=",
+        "tot": true
       },
       {
         "name": "DLF Nova",
@@ -523,11 +529,13 @@
       },
       {
         "name": "Aha!",
-        "url": "https://aha.atelier522.com/index.php?title=admin:Hauptseite#admin-Seiten"
+        "url": "https://aha.atelier522.com/index.php?title=admin:Hauptseite#admin-Seiten",
+        "tot": true
       },
       {
         "name": "Ha!",
-        "url": "https://aha.atelier522.com/index.php?title=Hauptseite"
+        "url": "https://aha.atelier522.com/index.php?title=Hauptseite",
+        "tot": true
       }
     ]
   },
@@ -547,7 +555,8 @@
       },
       {
         "name": "KR Community",
-        "url": "https://community.krautreporter.de"
+        "url": "https://community.krautreporter.de",
+        "tot": true
       },
       {
         "name": "Rhino Mac — ?",
@@ -647,11 +656,13 @@
       },
       {
         "name": "Schwab-Express",
-        "url": "https://schwabenexpress.store/friedrichshafen"
+        "url": "https://schwabenexpress.store/friedrichshafen",
+        "tot": true
       },
       {
         "name": "Pasta & Burger a.E.",
-        "url": "https://www.pastaburgerameckmarkdorf.de"
+        "url": "https://www.pastaburgerameckmarkdorf.de",
+        "tot": true
       },
       {
         "name": "[TBX] • Str/chliste",
@@ -731,7 +742,8 @@
       },
       {
         "name": "Parteiarbeit",
-        "url": "https://shop.spd.de/mein-spd-shop/de/shop/parteiarbeit/"
+        "url": "https://shop.spd.de/mein-spd-shop/de/shop/parteiarbeit/",
+        "tot": true
       },
       {
         "name": "🤓 Schnellfinder",
@@ -739,7 +751,8 @@
       },
       {
         "name": "Gestaltungsportal",
-        "url": "https://shop.spd.de/mein-spd-shop/de/shop/gestaltungsportal/ba-wue/"
+        "url": "https://shop.spd.de/mein-spd-shop/de/shop/gestaltungsportal/ba-wue/",
+        "tot": true
       },
       {
         "name": "adfc",
