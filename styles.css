@@ -97,8 +97,11 @@ section {
     height: auto;
 }
 
-section:last-child {
-    margin-bottom: 83vh;
+/* Leerraum als Element — eine Marge zählt nicht zum scrollbaren Bereich */
+#container::after {
+    content: "";
+    display: block;
+    height: 100%;
 }
 
 section {
@@ -582,8 +585,8 @@ body.edit-mode section {
     scroll-snap-stop: unset;
 }
 
-body.edit-mode section:last-child {
-    margin-bottom: 0;
+body.edit-mode #container::after {
+    height: 0;
 }
 
 body.edit-mode li {
