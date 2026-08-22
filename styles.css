@@ -53,8 +53,8 @@ body {
     box-sizing: border-box;
     padding: 0 1em;
     height: 50px;
-    /* dieselbe Spalte wie .group, sonst ragt das Dropdown darüber hinaus */
-    max-width: 1250px;
+    /* Inhalt endet auf der Kachelkante: 1250 Spalte + 1em Polster + Rahmen */
+    max-width: calc(1250px + 1em + 4px);
     /* als Flex-Element sonst zusammengedrückt */
     flex-shrink: 0;
     border: 1px solid var(--text-col);
