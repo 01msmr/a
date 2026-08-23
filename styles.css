@@ -675,6 +675,48 @@ body.edit-mode li.removed .btn-del:hover {
     color: var(--front-body);
 }
 
+.btn-move {
+    display: none;
+}
+
+body.edit-mode .btn-move {
+    display: inline-block;
+    width: 20px;
+    text-align: center;
+    color: var(--sect-col);
+    opacity: .55;
+    cursor: grab;
+    font-size: 15px;
+    line-height: 1;
+    user-select: none;
+}
+
+body.edit-mode .btn-move:hover {
+    opacity: 1;
+}
+
+/* leicht durchscheinende Fläche unter der gepackten Kachel — sie ist das
+   Zugbild, sonst schweben Name und URL als nackter Text überm Inhalt */
+body.edit-mode li.gepackt {
+    background: color-mix(in srgb, var(--front-body) 92%, transparent);
+    border-radius: 6px;
+}
+
+/* die Kachel an der Zielstelle: kräftig markiert, hier landet das Loslassen */
+body.edit-mode li.dragging {
+    outline: 2px solid var(--sect-col);
+    outline-offset: -2px;
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--sect-col) 22%, var(--front-body));
+}
+
+/* Zeiger außerhalb der eigenen Liste: Loslassen würde den Zug verwerfen */
+body.edit-mode li.dragging.abbruch {
+    opacity: .25;
+    outline: 2px dashed #c00;
+    background: none;
+}
+
 .btn-add {
     display: none;
 }
@@ -689,6 +731,106 @@ body.edit-mode li.btn-add {
     font-size: 18px;
     user-select: none;
     min-width: 0;
+}
+
+/* Desktop-Bearbeitung: Anfasser, Name und × in eine Zeile, URL darunter über
+   die ganze Kachel. inline-grid, damit die Spaltenbildung erhalten bleibt —
+   sie ist beim Sortieren gerade das, worauf man schaut. */
+@media only screen and (min-device-width: 1025px) {
+    body.edit-mode li:not(.btn-add) {
+        display: inline-grid;
+        vertical-align: top;
+        /* breiter Griff innerhalb der festen 190px — die Zeilen bleiben */
+        grid-template-columns: 39px minmax(0, 1fr) 20px;
+        align-items: center;
+        /* feste Lesebreite — sonst richtet sich die Kachel nach dem URL-Text
+           und die Zeilenbildung entspricht nicht mehr der Leseansicht */
+        width: 190px;
+        min-height: 52px;
+        padding: 2px 0;
+        box-sizing: border-box;
+        /* Lücke, sonst klebt das × am Anfasser der Nachbarkachel */
+        margin-right: 8px;
+    }
+
+    /* volle Kachelhöhe als Griffleiste — ein 15px-Pünktchen verfehlt man.
+       Statt des ⠿-Zeichens zwei Punktspalten über die ganze Höhe */
+    body.edit-mode li .btn-move {
+        grid-area: 1 / 1 / 3 / 2;
+        align-self: stretch;
+        width: auto;
+        display: block;
+        font-size: 0;
+        border-radius: 4px;
+        padding: 5px 6px;
+        box-sizing: border-box;
+        /* zwei Spalten größerer Punkte mit Luft dazwischen */
+        background-image: radial-gradient(circle, var(--sect-col) 1.7px, transparent 2.1px);
+        /* Inhalt 27 × 42px → 3 Spalten × 5 Reihen */
+        background-size: 9px 8.4px;
+        /* round: der Rapport wird eingepasst, kein Punkt wird angeschnitten */
+        background-repeat: round;
+        background-clip: content-box;
+        background-origin: content-box;
+    }
+
+    body.edit-mode li .btn-move:hover {
+        background-color: rgba(128, 128, 128, 0.15);
+    }
+
+    body.edit-mode li a[contenteditable] {
+        grid-area: 1 / 2 / 2 / 3;
+        /* in der festen Breite gekürzt; zum Bearbeiten wächst er beim Fokus */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    body.edit-mode li a[contenteditable]:focus,
+    body.edit-mode li .edit-url:focus {
+        width: max-content;
+        max-width: 60vw;
+        overflow: visible;
+        position: relative;
+        z-index: 2;
+        background: var(--front-body);
+    }
+
+    body.edit-mode li .btn-del {
+        grid-area: 1 / 3 / 2 / 4;
+        margin-left: 0;
+        justify-self: center;
+    }
+
+    /* beginnt bündig mit dem Namen, sonst bleiben von der Adresse 150px übrig */
+    body.edit-mode li .edit-url {
+        grid-area: 2 / 2 / 3 / 4;
+        max-width: none;
+        font-size: 12px;
+        padding-left: 4px;
+    }
+
+    /* gleich groß wie eine Kachel, das + mittig — kein Zielen auf 28px nötig */
+    body.edit-mode li.btn-add {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        vertical-align: top;
+        width: 190px;
+        height: auto;
+        /* Kachelhöhe = Namenszeile + URL-Zeile, nicht deren min-height */
+        min-height: 56px;
+        line-height: normal;
+        margin: 0 8px 0 0;
+        padding: 2px 0;
+        box-sizing: border-box;
+        font-size: 22px;
+        border-radius: .35em;
+    }
+
+    body.edit-mode li.btn-add:hover {
+        background-color: rgba(128, 128, 128, 0.15);
+    }
 }
 
 /* ── Section-Icons ───────────────────────────────────────────────── */
@@ -855,8 +997,23 @@ body.edit-mode #container {
     margin-top: 1.2em;
 }
 
+/* ohne Schreibrecht: nur die Einstellungen, dafür der Weg zur Anmeldung */
+.settings-login {
+    display: none;
+    text-decoration: none;
+}
+
+body.edit-readonly .settings-login {
+    display: inline-block;
+}
+
+body.edit-readonly .settings-save {
+    display: none;
+}
+
 .settings-cancel,
-.settings-save {
+.settings-save,
+.settings-login {
     padding: 6px 16px;
     border: 1px solid var(--sect-col);
     border-radius: 20px;

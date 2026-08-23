@@ -111,10 +111,11 @@ function render(data) {
 
         var ul = document.createElement('ul');
         ul.className = 'group';
-        (sec.links || []).forEach(function (link) {
+        (sec.links || []).forEach(function (link, i) {
             var li = makeLi(link.name, link.url, link.tot);
             li.dataset.name0 = link.name;   // Ursprungswerte für den Vergleich
             li.dataset.url0 = link.url;
+            li.dataset.pos0 = i;
             ul.appendChild(li);
         });
 
@@ -342,6 +343,8 @@ function buildSettingsPanel() {
         '<div class="settings-row settings-actions">' +
         '<button class="settings-cancel">Abbrechen</button>' +
         '<button class="settings-save">Speichern</button>' +
+        // nur ohne Schreibrecht sichtbar; öffnet den geschützten Ordner zur Anmeldung
+        '<a class="settings-login" href="edit/">Anmelden zum Bearbeiten</a>' +
         '</div>';
 
     panel.querySelectorAll('.pref-toggle').forEach(function (input) {
@@ -389,6 +392,13 @@ function makeDelButton(li) {
     return del;
 }
 
+// GET beantwortet save.php mit 405, ohne etwas anzufassen; 401 kommt vom Server davor
+function darfSpeichern() {
+    return fetch('edit/save.php')
+        .then(function (r) { return r.status !== 401; })
+        .catch(function () { return false; });   // im Zweifel nichts freigeben
+}
+
 function enterEditMode() {
     document.body.classList.add('edit-mode');
     raster();   // gesetzte Rasterhöhen lösen, sonst schlagen sie die Edit-Regeln
@@ -397,24 +407,23 @@ function enterEditMode() {
     var panel = document.querySelector('.settings-panel');
     if (panel) requestAnimationFrame(function () { panel.scrollIntoView(); });
 
+    // Die Links erst freigeben, wenn der Server das Speichern auch annimmt.
+    // Ohne Anmeldung bleiben die Einstellungen — die liegen ohnehin lokal.
+    darfSpeichern().then(function (darf) {
+        document.body.classList.toggle('edit-readonly', !darf);
+        var abbrechen = document.querySelector('.settings-cancel');
+        if (abbrechen) abbrechen.textContent = darf ? 'Abbrechen' : 'Fertig';
+        if (darf) linksFreigeben();
+    });
+}
+
+function linksFreigeben() {
     document.querySelectorAll('ul.group li:not(.btn-add)').forEach(function (li) {
-        var a = li.querySelector('a');
-        if (!a || li.querySelector('.edit-url')) return;
-
-        a.contentEditable = 'true';
-        a.addEventListener('keydown', preventEnter);
-
-        var urlField = document.createElement('span');
-        urlField.className = 'edit-url';
-        urlField.contentEditable = 'true';
-        urlField.textContent = a.getAttribute('href');
-        urlField.addEventListener('keydown', preventEnter);
-        li.appendChild(urlField);
-
-        li.appendChild(makeDelButton(li));
+        if (li.querySelector('a') && !li.querySelector('.edit-url')) felderAnlegen(li);
     });
 
     document.querySelectorAll('ul.group').forEach(function (ul) {
+        if (ziehbar()) sortierbar(ul);
         if (ul.querySelector('.btn-add')) return;
         var add = document.createElement('li');
         add.className = 'btn-add';
@@ -425,8 +434,8 @@ function enterEditMode() {
     });
 }
 
-function addLink(ul, addBtn) {
-    var li = makeLi('Neuer Link', 'https://');
+// Name und URL bearbeitbar machen, Anfasser und Löschknopf anhängen
+function felderAnlegen(li) {
     var a = li.querySelector('a');
     a.contentEditable = 'true';
     a.addEventListener('keydown', preventEnter);
@@ -434,13 +443,113 @@ function addLink(ul, addBtn) {
     var urlField = document.createElement('span');
     urlField.className = 'edit-url';
     urlField.contentEditable = 'true';
-    urlField.textContent = 'https://';
+    urlField.textContent = a.getAttribute('href');
     urlField.addEventListener('keydown', preventEnter);
-
     li.appendChild(urlField);
+
     li.appendChild(makeDelButton(li));
+    if (ziehbar()) li.insertBefore(makeMoveHandle(li), a);
+}
+
+function addLink(ul, addBtn) {
+    var li = makeLi('Neuer Link', 'https://');
+    felderAnlegen(li);
     ul.insertBefore(li, addBtn);
-    a.focus();
+    li.querySelector('a').focus();
+}
+
+// ── Sortieren ─────────────────────────────────────────────────────
+
+// Ziehen braucht eine Maus; am Finger bliebe der Anfasser wirkungslos
+function ziehbar() { return matchMedia('(pointer: fine)').matches; }
+
+var gezogen = null;      // Kachel, die gerade zieht
+var vorbereitet = null;  // Kachel, deren Anfasser gedrückt ist
+var startPlatz = null;   // Nachbar beim Zugbeginn, für die Rückkehr beim Abbruch
+
+// ein Klick ohne Zug muss die Kachel wieder festsetzen
+document.addEventListener('mouseup', function () {
+    if (vorbereitet) {
+        vorbereitet.draggable = false;
+        vorbereitet.classList.remove('gepackt');
+        vorbereitet = null;
+    }
+});
+
+// außerhalb der eigenen Liste: Linie weg, Kachel kehrt an den Start zurück
+// und zeigt den Abbruch — was man sieht, ist immer das Ergebnis des Loslassens
+document.addEventListener('dragover', function (e) {
+    if (!gezogen) return;
+    var drin = gezogen.parentNode.contains(e.target);
+    gezogen.classList.toggle('abbruch', !drin);
+    if (!drin && gezogen.nextSibling !== startPlatz) {
+        gezogen.parentNode.insertBefore(gezogen, startPlatz);
+    }
+});
+
+// draggable erst beim Griff setzen, sonst zieht jede Textauswahl die Kachel mit
+function makeMoveHandle(li) {
+    var griff = document.createElement('span');
+    griff.className = 'btn-move';
+    griff.textContent = '⠿';
+    griff.title = 'Verschieben';
+    griff.addEventListener('mousedown', function () {
+        li.draggable = true;
+        // jetzt schon, denn das Zugbild ist ein Schnappschuss der Kachel
+        // beim Zugbeginn — erst dann wäre der Hintergrund nicht mit drauf
+        li.classList.add('gepackt');
+        vorbereitet = li;
+    });
+
+    li.addEventListener('dragstart', function (e) {
+        gezogen = li;
+        startPlatz = li.nextSibling;
+        // erst nach dem Schnappschuss des Zugbilds, sonst trägt auch das
+        // mitfliegende Bild das Ziel-Highlight
+        setTimeout(function () { if (gezogen === li) li.classList.add('dragging'); });
+        e.dataTransfer.effectAllowed = 'move';
+        // Firefox startet ohne gesetzte Daten gar keinen Zug
+        e.dataTransfer.setData('text/plain', '');
+    });
+    li.addEventListener('dragend', function () {
+        // Loslassen im Aus, ohne dass der Abbruch-Handler noch feuerte
+        if (li.classList.contains('abbruch') && li.nextSibling !== startPlatz) {
+            li.parentNode.insertBefore(li, startPlatz);
+        }
+        li.classList.remove('dragging', 'abbruch', 'gepackt');
+        li.draggable = false;
+        gezogen = null;
+        vorbereitet = null;
+        startPlatz = null;
+    });
+    return griff;
+}
+
+function sortierbar(ul) {
+    if (ul.dataset.sortierbar) return;
+    ul.dataset.sortierbar = '1';
+
+    ul.addEventListener('dragover', function (e) {
+        // nur die eigene Section nimmt an
+        if (!gezogen || gezogen.parentNode !== ul) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+
+        // Ziel ist die ganze Kachel unterm Zeiger, keine Lückenrechnerei:
+        // sie gibt ihren Platz her, die Zugrichtung entscheidet die Seite.
+        // Über Lücken (auch der eigenen Kachel) bleibt die Vorschau stehen.
+        var ziel = e.target.closest ? e.target.closest('li') : null;
+        if (!ziel || ziel === gezogen || ziel.parentNode !== ul) return;
+        var vor = ziel.classList.contains('btn-add') ? ziel
+            // Ziel liegt vor der Zugkachel → davor, sonst dahinter
+            : (ziel.compareDocumentPosition(gezogen) & Node.DOCUMENT_POSITION_FOLLOWING)
+                ? ziel : ziel.nextSibling;
+        if (vor !== gezogen && vor !== gezogen.nextSibling) ul.insertBefore(gezogen, vor);
+    });
+
+    // die Kachel steht schon am Ziel; preventDefault hält den Browser nur
+    // davon ab, den Zugtext in das contentEditable darunter zu setzen
+    ul.addEventListener('drop', function (e) { e.preventDefault(); });
 }
 
 // ── Collect & Save ────────────────────────────────────────────────
@@ -481,7 +590,7 @@ function collectData() {
 
 // Vergleich gegen die beim Rendern gestempelten Ursprungswerte
 function aenderungen() {
-    var geloescht = [], geaendert = [], neu = 0;
+    var geloescht = [], geaendert = [], verschoben = [], neu = 0;
     document.querySelectorAll('ul.group li:not(.btn-add)').forEach(function (li) {
         var a = li.querySelector('a');
         if (!a) return;
@@ -497,13 +606,29 @@ function aenderungen() {
                 '\n  → ' + name + '  ' + url);
         }
     });
-    return { geloescht: geloescht, geaendert: geaendert, neu: neu };
+
+    // Umgestellt heißt: die Ausgangspositionen steigen nicht mehr an
+    document.querySelectorAll('#container section').forEach(function (section) {
+        var ul = section.querySelector('ul.group');
+        if (!ul) return;
+        var letzte = -1, umgestellt = false;
+        ul.querySelectorAll('li:not(.btn-add):not(.removed)').forEach(function (li) {
+            if (li.dataset.pos0 === undefined) return;   // neu, hat keine Ausgangsposition
+            var pos = +li.dataset.pos0;
+            if (pos < letzte) umgestellt = true;
+            letzte = pos;
+        });
+        var titel = section.querySelector('h3.name a');
+        if (umgestellt) verschoben.push('· ' + (titel ? titel.textContent : ''));
+    });
+
+    return { geloescht: geloescht, geaendert: geaendert, verschoben: verschoben, neu: neu };
 }
 
 function bestaetigen() {
     var d = aenderungen();
 
-    if (!d.geaendert.length && !d.geloescht.length) {
+    if (!d.geaendert.length && !d.geloescht.length && !d.verschoben.length) {
         // nichts zu überschreiben — neue Einträge und Einstellungen zählen mit
         if (!d.neu && !prefsGeaendert) {
             alert('Keine Änderungen — nichts zu speichern.');
@@ -515,6 +640,10 @@ function bestaetigen() {
     var text = 'Änderungen übernehmen?\n';
     if (d.geaendert.length) {
         text += '\nGeändert (' + d.geaendert.length + '):\n' + d.geaendert.join('\n') + '\n';
+    }
+    if (d.verschoben.length) {
+        text += '\nReihenfolge geändert (' + d.verschoben.length + '):\n' +
+            d.verschoben.join('\n') + '\n';
     }
     if (d.geloescht.length) {
         text += '\nGelöscht (' + d.geloescht.length + '):\n' + d.geloescht.join('\n') + '\n';
