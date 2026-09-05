@@ -1,3 +1,10 @@
+/* Kachel: 190px reichen für alle Namen bis 183px Text (li a hat rechts kein Polster).
+   Spalte: 6 Kacheln — eine siebte passte auch in die alten 1250px nicht */
+:root {
+    --kachel: 190px;
+    --spalte: calc(6 * var(--kachel));
+}
+
 @media (prefers-color-scheme: light) {
     :root {
         --front-body: #eee;
@@ -53,8 +60,8 @@ body {
     box-sizing: border-box;
     padding: 0 1em;
     height: 50px;
-    /* Inhalt endet auf der Kachelkante: 1250 Spalte + 1em Polster + Rahmen */
-    max-width: calc(1250px + 1em + 4px);
+    /* Außenkante bündig mit der Kachelreihe: Spalte + linkes Polster von .group */
+    max-width: calc(var(--spalte) + 0.12em);
     /* als Flex-Element sonst zusammengedrückt */
     flex-shrink: 0;
     border: 1px solid var(--text-col);
@@ -124,17 +131,18 @@ li,
     font-family: "Ubuntu", "Helvetica neue", Helvetica, Arial, sans-serif;
 }
 
-/* lange Namen werden gekürzt statt umgebrochen */
+/* lange Namen werden hart abgeschnitten statt umgebrochen — keine Auslassungspunkte */
 li a {
     display: block;
-    padding: .2em 0.3em;
+    /* rechts kein Polster: so passen 16 Zeichen in die 190px-Kachel */
+    padding: .2em 0 .2em 0.3em;
     margin: 0;
     text-decoration: none;
     border-radius: .35em;
     cursor: var(--curs-hov) 1 30, auto;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
+    text-overflow: clip;
 }
 
 /* nach section:hover a, damit die eigene Kachel gewinnt */
@@ -202,10 +210,10 @@ div.seite::-webkit-scrollbar {
     display: none;
 }
 
-/* overflow: hidden garantiert die exakt gleiche Kachelgröße */
+/* feste Breite: 6 Kacheln = eine Spalte */
 li {
     margin: 0;
-    width: auto;
+    width: var(--kachel);
     height: 36px;
     overflow: hidden;
     clear: both;
@@ -229,7 +237,7 @@ li {
 
 .group {
     width: 100%;
-    max-width: 1250px;
+    max-width: var(--spalte);
     margin-top: .5em;
     margin-bottom: 1em;
     padding-left: 0.12em;
@@ -740,12 +748,12 @@ body.edit-mode li.btn-add {
     body.edit-mode li:not(.btn-add) {
         display: inline-grid;
         vertical-align: top;
-        /* breiter Griff innerhalb der festen 190px — die Zeilen bleiben */
+        /* breiter Griff innerhalb der festen Kachelbreite — die Zeilen bleiben */
         grid-template-columns: 39px minmax(0, 1fr) 20px;
         align-items: center;
-        /* feste Lesebreite — sonst richtet sich die Kachel nach dem URL-Text
+        /* Lesebreite — sonst richtet sich die Kachel nach dem URL-Text
            und die Zeilenbildung entspricht nicht mehr der Leseansicht */
-        width: 190px;
+        width: var(--kachel);
         min-height: 52px;
         padding: 2px 0;
         box-sizing: border-box;
@@ -780,10 +788,10 @@ body.edit-mode li.btn-add {
 
     body.edit-mode li a[contenteditable] {
         grid-area: 1 / 2 / 2 / 3;
-        /* in der festen Breite gekürzt; zum Bearbeiten wächst er beim Fokus */
+        /* in der festen Breite abgeschnitten; zum Bearbeiten wächst er beim Fokus */
         white-space: nowrap;
         overflow: hidden;
-        text-overflow: ellipsis;
+        text-overflow: clip;
     }
 
     body.edit-mode li a[contenteditable]:focus,
@@ -816,7 +824,7 @@ body.edit-mode li.btn-add {
         align-items: center;
         justify-content: center;
         vertical-align: top;
-        width: 190px;
+        width: var(--kachel);
         height: auto;
         /* Kachelhöhe = Namenszeile + URL-Zeile, nicht deren min-height */
         min-height: 56px;
@@ -879,7 +887,7 @@ body.nav-icons .secname .secshort {
 
 /* Zentriert wird der Inhalt, nicht #container */
 body.align-center .title {
-    max-width: 1250px;
+    max-width: calc(var(--spalte) + 0.12em);
     /* als Flex-Element verhindern auto-Margen sonst das Strecken */
     width: 100%;
     margin-left: auto;
@@ -887,13 +895,13 @@ body.align-center .title {
 }
 
 body.align-center .name {
-    padding-left: max(0.2em, (100% - 1250px) / 2);
-    padding-right: max(0px, (100% - 1250px) / 2);
+    padding-left: max(0.2em, (100% - var(--spalte)) / 2);
+    padding-right: max(0px, (100% - var(--spalte)) / 2);
 }
 
 body.align-center .group,
 body.align-center .settings-row {
-    max-width: 1250px;
+    max-width: var(--spalte);
     margin-left: auto;
     margin-right: auto;
 }
@@ -926,7 +934,7 @@ body.edit-mode #container {
     margin: 10px 0;
     /* bündig mit dem Linktext; ohne font-size, damit em wie in .group zählt */
     width: 100%;
-    max-width: 1250px;
+    max-width: var(--spalte);
     padding-left: 0.36em;
     box-sizing: border-box;
 }
@@ -997,23 +1005,8 @@ body.edit-mode #container {
     margin-top: 1.2em;
 }
 
-/* ohne Schreibrecht: nur die Einstellungen, dafür der Weg zur Anmeldung */
-.settings-login {
-    display: none;
-    text-decoration: none;
-}
-
-body.edit-readonly .settings-login {
-    display: inline-block;
-}
-
-body.edit-readonly .settings-save {
-    display: none;
-}
-
 .settings-cancel,
-.settings-save,
-.settings-login {
+.settings-save {
     padding: 6px 16px;
     border: 1px solid var(--sect-col);
     border-radius: 20px;

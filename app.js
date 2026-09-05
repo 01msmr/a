@@ -343,8 +343,6 @@ function buildSettingsPanel() {
         '<div class="settings-row settings-actions">' +
         '<button class="settings-cancel">Abbrechen</button>' +
         '<button class="settings-save">Speichern</button>' +
-        // nur ohne Schreibrecht sichtbar; öffnet den geschützten Ordner zur Anmeldung
-        '<a class="settings-login" href="edit/">Anmelden zum Bearbeiten</a>' +
         '</div>';
 
     panel.querySelectorAll('.pref-toggle').forEach(function (input) {
@@ -399,21 +397,18 @@ function darfSpeichern() {
         .catch(function () { return false; });   // im Zweifel nichts freigeben
 }
 
+// Ohne Anmeldung (401 vom Server) passiert nichts — der Edit Mode bleibt zu
 function enterEditMode() {
-    document.body.classList.add('edit-mode');
-    raster();   // gesetzte Rasterhöhen lösen, sonst schlagen sie die Edit-Regeln
-
-    // erst im nächsten Frame, sonst rastert scroll-snap zurück
-    var panel = document.querySelector('.settings-panel');
-    if (panel) requestAnimationFrame(function () { panel.scrollIntoView(); });
-
-    // Die Links erst freigeben, wenn der Server das Speichern auch annimmt.
-    // Ohne Anmeldung bleiben die Einstellungen — die liegen ohnehin lokal.
     darfSpeichern().then(function (darf) {
-        document.body.classList.toggle('edit-readonly', !darf);
-        var abbrechen = document.querySelector('.settings-cancel');
-        if (abbrechen) abbrechen.textContent = darf ? 'Abbrechen' : 'Fertig';
-        if (darf) linksFreigeben();
+        if (!darf) return;
+        document.body.classList.add('edit-mode');
+        raster();   // gesetzte Rasterhöhen lösen, sonst schlagen sie die Edit-Regeln
+
+        // erst im nächsten Frame, sonst rastert scroll-snap zurück
+        var panel = document.querySelector('.settings-panel');
+        if (panel) requestAnimationFrame(function () { panel.scrollIntoView(); });
+
+        linksFreigeben();
     });
 }
 
