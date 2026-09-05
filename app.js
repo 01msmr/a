@@ -88,6 +88,8 @@ function render(data) {
         if (document.body.classList.contains('edit-mode')) return;
         if (e.key === 'ArrowDown') { e.preventDefault(); jumpBy(1); }
         else if (e.key === 'ArrowUp') { e.preventDefault(); jumpBy(-1); }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); linkBy(1); }
+        else if (e.key === 'ArrowLeft') { e.preventDefault(); linkBy(-1); }
     });
     container.innerHTML = '';
     container.appendChild(buildSettingsPanel());
@@ -301,6 +303,30 @@ function jumpBy(delta, umlaufen) {
     focusContent(sections[jumpTarget]);
 }
 
+// Pfeil links/rechts: von Kachel zu Kachel, über Section-Grenzen hinweg.
+// Ausgangspunkt: die zuletzt mit der Maus berührte Kachel, wenn die Maus seit dem
+// letzten Tastendruck bewegt wurde; sonst die fokussierte; sonst die erste der Section
+var mausKachel = null;
+var mausBewegt = false;
+
+function linkBy(delta) {
+    var links = Array.prototype.slice.call(document.querySelectorAll('#container li a'));
+    if (!links.length) return;
+    var i = -1;
+    if (mausBewegt && mausKachel && mausKachel.isConnected) i = links.indexOf(mausKachel);
+    if (i === -1) i = links.indexOf(document.activeElement);
+    mausBewegt = false;
+    var ziel;
+    if (i === -1) {
+        var sec = document.querySelector('#container section.aktuell') ||
+            document.querySelector('#container section');
+        ziel = sec.querySelector('li a') || links[0];
+    } else {
+        ziel = links[Math.max(0, Math.min(links.length - 1, i + delta))];
+    }
+    ziel.focus();
+}
+
 // Sprungtasten der unteren Leiste
 ['step-prev', 'step-next'].forEach(function (id, i) {
     var el = document.getElementById(id);
@@ -359,8 +385,18 @@ function buildSettingsPanel() {
 document.getElementById('container').addEventListener('mousemove', function (e) {
     var a = e.target.closest('li a');
     if (!a) return;
+    mausKachel = a;   // Ausgangspunkt für die Pfeiltasten (linkBy)
     var r = a.getBoundingClientRect();
     a.style.setProperty('--cx', (e.clientX - r.left) + 'px');
+});
+
+// ── Maus oder Tastatur: nur das zuletzt benutzte Gerät hebt eine Kachel hervor ──
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Tab' || e.key.indexOf('Arrow') === 0) document.body.classList.add('tastatur');
+});
+document.addEventListener('mousemove', function () {
+    document.body.classList.remove('tastatur');
+    mausBewegt = true;
 });
 
 // ── Load ──────────────────────────────────────────────────────────

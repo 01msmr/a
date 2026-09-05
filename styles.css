@@ -160,12 +160,20 @@ li a::before {
     border-radius: .35em;
 }
 
-/* nach section:hover a, damit die eigene Kachel gewinnt */
-li a:hover {
+/* nach section:hover a, damit die eigene Kachel gewinnt.
+   Tastatur (Tab, Pfeil links/rechts) zeigt dieselbe Fläche; beim Bearbeiten nicht.
+   Es leuchtet nur eine Kachel: body.tastatur (app.js) schaltet zwischen Maus und Tastatur um */
+body:not(.tastatur) li a:hover,
+body.tastatur li a:not([contenteditable]):focus-visible {
     color: var(--text-hov);
 }
 
-li a:hover::before {
+li a:focus-visible {
+    outline: none;
+}
+
+body:not(.tastatur) li a:hover::before,
+body.tastatur li a:not([contenteditable]):focus-visible::before {
     background-color: var(--back-hov);
 }
 
@@ -193,7 +201,7 @@ li a:hover::before {
         z-index: 1;
     }
 
-    li a:hover::after {
+    body:not(.tastatur) li a:hover::after {
         display: block;
     }
 
@@ -408,11 +416,13 @@ li.tot a {
     color: #c00;
 }
 
-li.tot a:hover {
+body:not(.tastatur) li.tot a:hover,
+body.tastatur li.tot a:not([contenteditable]):focus-visible {
     color: var(--front-body);
 }
 
-li.tot a:hover::before {
+body:not(.tastatur) li.tot a:hover::before,
+body.tastatur li.tot a:not([contenteditable]):focus-visible::before {
     background-color: #c00;
 }
 
@@ -420,7 +430,8 @@ section:is(:hover, :focus, :focus-within, .aktuell) li.tot a {
     color: #c00;
 }
 
-section:is(:hover, :focus, :focus-within, .aktuell) li.tot a:hover {
+body:not(.tastatur) section:is(:hover, :focus, :focus-within, .aktuell) li.tot a:hover,
+body.tastatur section:is(:hover, :focus, :focus-within, .aktuell) li.tot a:not([contenteditable]):focus-visible {
     color: var(--front-body);
 }
 
