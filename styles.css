@@ -141,7 +141,7 @@ li a {
     padding: .2em 0 .2em 0.3em;
     margin: 0;
     text-decoration: none;
-    cursor: var(--curs-hov) 1 30, auto;
+    cursor: var(--curs-hov) 1 30, auto;   /* Rückfall ohne Hover-Medium; sonst gezeichnet, s. ::after */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: clip;
@@ -167,6 +167,40 @@ li a:hover {
 
 li a:hover::before {
     background-color: var(--back-hov);
+}
+
+/* Der Strich-Cursor wird in der Kachel gezeichnet statt vom System: so deckt er
+   Fläche und eigenen Text, wird aber an der Kachelkante beschnitten (overflow: hidden).
+   Die x-Position setzt app.js per --cx; nur mit Maus, sonst bliebe er nach dem Tippen stehen */
+@media (hover: hover) {
+    li a {
+        cursor: none;
+    }
+
+    li a::after {
+        content: "";
+        display: none;
+        position: absolute;
+        left: var(--cx, -10px);
+        /* immer von Ober- bis Unterkante der Kachel, egal wo die Maus steht */
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        margin-left: -1px;
+        background: var(--curs-hov) no-repeat;
+        background-size: 100% 100%;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    li a:hover::after {
+        display: block;
+    }
+
+    /* beim Bearbeiten gilt der Text-Cursor */
+    body.edit-mode li a::after {
+        display: none;
+    }
 }
 
 section a {

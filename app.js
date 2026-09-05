@@ -355,6 +355,14 @@ function buildSettingsPanel() {
     return panel;
 }
 
+// ── Gezeichneter Strich-Cursor in der Kachel (Position für li a::after) ──
+document.getElementById('container').addEventListener('mousemove', function (e) {
+    var a = e.target.closest('li a');
+    if (!a) return;
+    var r = a.getBoundingClientRect();
+    a.style.setProperty('--cx', (e.clientX - r.left) + 'px');
+});
+
 // ── Load ──────────────────────────────────────────────────────────
 fetch('links.php?t=' + Date.now())
     .then(function (r) { return r.json(); })
