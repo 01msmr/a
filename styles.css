@@ -134,20 +134,38 @@ li,
 /* lange Namen werden hart abgeschnitten statt umgebrochen — keine Auslassungspunkte */
 li a {
     display: block;
+    /* füllt die Kachel ganz aus — der Cursor trifft auch die Ecken */
+    height: 100%;
+    box-sizing: border-box;
     /* rechts kein Polster: so passen 16 Zeichen in die 190px-Kachel */
     padding: .2em 0 .2em 0.3em;
     margin: 0;
     text-decoration: none;
-    border-radius: .35em;
     cursor: var(--curs-hov) 1 30, auto;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: clip;
+    /* eigener Stapel, damit die Fläche (::before) hinter dem Text liegt */
+    position: relative;
+    z-index: 0;
+}
+
+/* Der Link bleibt eckig (Trefferfläche), nur die Hover-Fläche ist gerundet:
+   der Browser beschneidet die Trefferfläche sonst auf die Rundung */
+li a::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: .35em;
 }
 
 /* nach section:hover a, damit die eigene Kachel gewinnt */
 li a:hover {
     color: var(--text-hov);
+}
+
+li a:hover::before {
     background-color: var(--back-hov);
 }
 
@@ -215,6 +233,8 @@ li {
     margin: 0;
     width: var(--kachel);
     height: 36px;
+    /* oben statt Grundlinie: sonst bleibt unter jeder Reihe der Unterlängen-Spalt (5px) */
+    vertical-align: top;
     overflow: hidden;
     clear: both;
 }
@@ -355,8 +375,11 @@ li.tot a {
 }
 
 li.tot a:hover {
-    background-color: #c00;
     color: var(--front-body);
+}
+
+li.tot a:hover::before {
+    background-color: #c00;
 }
 
 section:is(:hover, :focus, :focus-within, .aktuell) li.tot a {
@@ -516,7 +539,6 @@ section:is(:hover, :focus, :focus-within, .aktuell) li.tot a:hover {
 
     li a {
         padding: .05em;
-        border-radius: .35em;
     }
 
     .group {
@@ -618,7 +640,7 @@ body.edit-mode li a[contenteditable] {
     text-overflow: clip;
 }
 
-body.edit-mode li a[contenteditable]:focus {
+body.edit-mode li a[contenteditable]:focus::before {
     background: rgba(128, 128, 128, 0.15);
     border-radius: 4px;
 }
