@@ -425,6 +425,15 @@ a.secname:visited {
     color: var(--sect-col);
 }
 
+/* Chip-Inhalt (Kürzel, Icon samt ::before) schaltet ebenfalls sofort */
+a.secname *,
+a.secname *::before,
+a.secname *::after,
+a.secname::before,
+a.secname::after {
+    transition: none;
+}
+
 /* Jede Section hat eine eigene Farbe (--c, von app.js gesetzt):
    Hover = Fläche mit Deckkraft, aktiv = volle Deckkraft mit Kontrastschrift.
    .mit-hover koppelt Chip und Titel: der eine leuchtet, wenn die Maus auf dem anderen liegt */
