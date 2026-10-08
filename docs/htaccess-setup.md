@@ -2,7 +2,6 @@
 
 ```
 a.msmr.co/
-├── .htaccess                            Cache-Regel (siehe unten)
 ├── index.html   app.js   styles.css     öffentlich
 ├── links.php                            öffentlich, liefert die Liste aus
 ├── links.default.json                   Saat, nur beim allerersten Aufruf
@@ -14,13 +13,9 @@ a.msmr.co/
     └── save.php
 ```
 
-## Cache: immer die neueste Fassung
+## Lokale Demo
 
-Die `.htaccess` im Wurzelverzeichnis setzt für HTML, CSS, JS, JSON und PHP `Cache-Control: no-cache`. Der Browser fragt dann bei jedem normalen Reload beim Server nach und bekommt bei unveränderter Datei nur ein kurzes 304. Ohne die Regel schätzt er die Haltbarkeit selbst, und ein normaler Reload zeigt altes CSS oder JS, bis man hart neu lädt.
-
-Lokal zum Gestalten: `php -S 0.0.0.0:8080 tools/dev-router.php` im Projektordner — der Router liefert alles mit `no-store`, auch ohne Apache.
-
-Bilder (PNG, Favicons) bleiben normal gecacht. Die Regel braucht `mod_headers` — Prüfen: Antwort-Header von `https://a.msmr.co/styles.css` muss `Cache-Control: no-cache` enthalten.
+Zum Gestalten lokal: `php -S 0.0.0.0:8080 tools/dev-router.php` im Projektordner. Der Router liefert alles mit `no-store` und hängt eine Versionsnummer an CSS und JS, damit der Browser nie eine alte Kopie zeigt. Er gehört nicht auf den Server.
 
 ## Wie die Daten fließen
 
