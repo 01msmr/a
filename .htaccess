@@ -1,0 +1,7 @@
+# Code immer frisch: der Browser fragt bei jedem Laden nach (304, wenn unverändert).
+# Ohne diese Zeilen rät er die Haltbarkeit selbst — ein normaler Reload zeigt dann altes CSS/JS.
+<IfModule mod_headers.c>
+    <FilesMatch "\.(html|css|js|json|php)$">
+        Header set Cache-Control "no-cache"
+    </FilesMatch>
+</IfModule>

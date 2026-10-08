@@ -28,6 +28,10 @@ applyPrefs();
 var EDIT_OPTION = '__edit';
 var syncActive = function () { };
 
+// kräftige, gesättigte Farben (ohne Grauanteil): weiße Schrift (hell) bzw. dunkle Schrift (dunkel) bleibt lesbar
+var SEC_COLORS = ['#f85a5a', '#fb8f2a', '#f0b400', '#8ac430', '#2fc16c', '#22b59f', '#18b4d6',
+    '#4a92f0', '#6c70f2', '#9a62f0', '#c456e8', '#ea4fa8', '#f4587a', '#f67a3a', '#2fae82'];
+
 function makeIcon(icon) {
     var i = document.createElement('i');
     i.className = 'fa-solid ' + (icon || 'fa-hashtag') + ' secicon';
@@ -35,7 +39,18 @@ function makeIcon(icon) {
     return i;
 }
 
+// Chip und Titel einer Section leuchten gemeinsam, sobald einer von beiden berührt wird
+function koppleHover(a, b) {
+    [[a, b], [b, a]].forEach(function (p) {
+        p[0].addEventListener('mouseenter', function () { p[1].classList.add('mit-hover'); });
+        p[0].addEventListener('mouseleave', function () { p[1].classList.remove('mit-hover', 'mit-druck'); });
+        p[0].addEventListener('mousedown', function () { p[1].classList.add('mit-druck'); });
+        p[0].addEventListener('mouseup', function () { p[1].classList.remove('mit-druck'); });
+    });
+}
+
 function render(data) {
+    var chipOf = {};
     var nav = document.getElementById('section-nav-list');
     var sel = document.getElementById('section-jumper');
     nav.innerHTML = '';
@@ -47,8 +62,9 @@ function render(data) {
     editOpt.textContent = 'edit';
     sel.appendChild(editOpt);
 
-    data.forEach(function (sec) {
+    data.forEach(function (sec, idx) {
         var a = document.createElement('a');
+        a.style.setProperty('--c', SEC_COLORS[idx % SEC_COLORS.length]);
         a.className = 'secname';
         a.href = '#' + sec.id;
         a.target = '_self';
@@ -61,6 +77,7 @@ function render(data) {
         // gewickelt, damit nicht das Event als Fokusziel ankommt
         a.addEventListener('click', function () { focusContent(); });
         nav.appendChild(a);
+        chipOf[sec.id] = a;
 
         var opt = document.createElement('option');
         opt.value = '#' + sec.id;
@@ -94,8 +111,9 @@ function render(data) {
     container.innerHTML = '';
     container.appendChild(buildSettingsPanel());
 
-    data.forEach(function (sec) {
+    data.forEach(function (sec, idx) {
         var section = document.createElement('section');
+        section.style.setProperty('--c', SEC_COLORS[idx % SEC_COLORS.length]);   // erbt an Titel und Kacheln
         section.tabIndex = -1;   // fokussierbar, aber nicht in der Tab-Reihenfolge
 
         var h3 = document.createElement('h3');
@@ -110,6 +128,7 @@ function render(data) {
         titleLink.appendChild(makeIcon(sec.icon));
         titleLink.appendChild(document.createTextNode(sec.title));
         h3.appendChild(titleLink);
+        koppleHover(chipOf[sec.id], h3);
 
         var ul = document.createElement('ul');
         ul.className = 'group';
@@ -129,6 +148,13 @@ function render(data) {
     applyPrefs();
     trackActiveSection();
     raster();
+    // Reload mit #hash: der Browser springt in nachgeladenem Inhalt nicht selbst dorthin,
+    // sonst zeigt der Inhalt die erste Section, während die Markierung zur Adresse gehört
+    var ziel = location.hash.length > 1 && document.getElementById(location.hash.slice(1));
+    if (ziel) {
+        ziel.scrollIntoView({ behavior: 'instant' });
+        syncActive();
+    }
     focusContent();
 }
 
@@ -382,13 +408,16 @@ function buildSettingsPanel() {
 }
 
 // ── Gezeichneter Strich-Cursor in der Kachel (Position für li a::after) ──
-document.getElementById('container').addEventListener('mousemove', function (e) {
+// auch beim Betreten (mouseover): sonst blitzt der Strich kurz an der alten Position
+function setzeStrich(e) {
     var a = e.target.closest('li a');
     if (!a) return;
     mausKachel = a;   // Ausgangspunkt für die Pfeiltasten (linkBy)
     var r = a.getBoundingClientRect();
     a.style.setProperty('--cx', (e.clientX - r.left) + 'px');
-});
+}
+document.getElementById('container').addEventListener('mouseover', setzeStrich);
+document.getElementById('container').addEventListener('mousemove', setzeStrich);
 
 // ── Maus oder Tastatur: nur das zuletzt benutzte Gerät hebt eine Kachel hervor ──
 document.addEventListener('keydown', function (e) {

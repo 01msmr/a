@@ -15,6 +15,11 @@
         --back-hov: #666;
         --title-col: #000;
         --title-dom: #888;
+        --on-c: #fff;
+        /* Regel für Schrift in Sektionsfarbe: gleiche Farbe, Helligkeit (OKLCH-L) auf diesen Bereich begrenzt.
+           Helle Farben werden dunkler, dunkle bleiben wie sie sind */
+        --text-l-min: 0;
+        --text-l-max: .64;
         --curs-img: url(c-point-light.png);
         --curs-hov: url(c-line-light.png);
     }
@@ -30,6 +35,10 @@
         --back-hov: #eee;
         --title-col: #fff;
         --title-dom: #999;
+        --on-c: #111;
+        /* im Dunkeln umgekehrt: nie dunkler als dieser Wert */
+        --text-l-min: .72;
+        --text-l-max: 1;
         --curs-img: url(c-point.png);
         --curs-hov: url(c-line.png);
     }
@@ -56,16 +65,13 @@ body {
 .title {
     color: var(--title-col);
     margin: 0;
-    /* Polster = Eckenradius, damit Chips in der Rundung bleiben */
     box-sizing: border-box;
-    padding: 0 1em;
+    padding: 0 0 0 1em;
     height: 50px;
     /* Außenkante bündig mit der Kachelreihe: Spalte + linkes Polster von .group */
     max-width: calc(var(--spalte) + 0.12em);
     /* als Flex-Element sonst zusammengedrückt */
     flex-shrink: 0;
-    border: 1px solid var(--text-col);
-    border-radius: 1em;
     position: sticky;
     display: flex;
     align-items: center;
@@ -117,8 +123,9 @@ section {
     color: var(--text-col);
 }
 
-/* kontrastreich bei Hover, Fokus oder als oberste Section */
-section:is(:hover, :focus, :focus-within, .aktuell) a {
+/* kontrastreich bei Hover, Tastatur-Fokus oder als oberste Section — ein Mausklick-Fokus zählt nicht,
+   sonst wirkt die Section nach der Rückkehr von einem Link noch gehovert */
+section:is(:hover, :focus-visible, :has(:focus-visible), .aktuell) a {
     color: var(--sect-col);
 }
 
@@ -133,12 +140,15 @@ li,
 
 /* lange Namen werden hart abgeschnitten statt umgebrochen — keine Auslassungspunkte */
 li a {
-    display: block;
+    display: flex;
+    align-items: center;   /* Text mittig in der Fläche */
     /* füllt die Kachel ganz aus — der Cursor trifft auch die Ecken */
     height: 100%;
     box-sizing: border-box;
     /* rechts kein Polster: so passen 16 Zeichen in die 190px-Kachel */
-    padding: .2em 0 .2em 0.3em;
+    /* Schrift optisch mittig: Tinte von Oberlänge (l, d) bis Unterlänge (q, g) sitzt
+       in Ubuntu ca. .068em tiefer als die Mitte der Zeilenbox — oben weniger, unten mehr Polster */
+    padding: .352em 0 .488em 0.3em;
     margin: 0;
     text-decoration: none;
     cursor: var(--curs-hov) 1 30, auto;   /* Rückfall ohne Hover-Medium; sonst gezeichnet, s. ::after */
@@ -193,8 +203,8 @@ body.tastatur li a:not([contenteditable]):focus-visible::before {
         /* immer von Ober- bis Unterkante der Kachel, egal wo die Maus steht */
         top: 0;
         bottom: 0;
-        width: 2px;
-        margin-left: -1px;
+        width: 3px;
+        margin-left: -1.5px;
         background: var(--curs-hov) no-repeat;
         background-size: 100% 100%;
         pointer-events: none;
@@ -216,15 +226,25 @@ section a {
 }
 
 a.secname {
-    display: inline-block;
     box-sizing: border-box;
-    height: 48px;
-    padding: 8px;
+    /* volle Höhe der Leiste, volle Breite: die Chips teilen sich den Platz */
+    align-self: stretch;
+    flex: 1 1 auto;
+    text-align: center;
+    padding: 0 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     font-size: 1em;
     min-width: 35px;
     color: var(--sect-col);
     text-decoration: none;
-    border-right: 1px solid var(--text-col);
+    /* Kanten wie ein echter Knopf: links Licht, rechts Schatten; oben/unten erst bei Hover sichtbar */
+    border: 1px solid transparent;
+    border-left-color: rgba(255, 255, 255, .35);
+    border-right-color: rgba(0, 0, 0, .15);
+    position: relative;
+    transition: none;   /* Knöpfe reagieren sofort */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -232,12 +252,32 @@ a.secname {
     line-height: 1.4em;
 }
 
-.secname:first-child {
-    border-left: 1px solid var(--sect-col);
+/* alles blendet schnell um; die Kachelfläche noch schneller (0 Spezifität, Einzelregeln gewinnen) */
+*,
+::before,
+::after {
+    transition: color .3s ease, background-color .3s ease, border-color .3s ease, box-shadow .3s ease, transform .3s ease;
 }
 
-.secname:last-child {
-    border-right: 1px solid var(--text-col);
+/* URL-Kachel: Text sofort, nur die Fläche blendet kurz ein (--hl = Stärke des Glanzes) */
+@property --hl {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 0;
+}
+
+li a {
+    transition: none;
+}
+
+li a::before {
+    background-image: linear-gradient(rgba(255, 255, 255, calc(.46 * var(--hl))), rgba(255, 255, 255, calc(.12 * var(--hl))) 36%, rgba(255, 255, 255, 0) 38%, rgba(0, 0, 0, calc(.2 * var(--hl))));
+    transition: background-color .12s ease, --hl .12s ease;
+}
+
+body:not(.tastatur) li a:hover::before,
+body.tastatur li a:not([contenteditable]):focus-visible::before {
+    --hl: 1;
 }
 
 html {
@@ -250,15 +290,15 @@ body {
 }
 
 div.seite {
-    width: 99%;
-    height: 99%;
+    inset: 0;   /* füllt das ganze Fenster, kein Streifen vom Hintergrund */
+    width: 100%;
+    height: 100%;
     /* Spalte: Leiste oben, Container füllt den Rest genau aus */
     display: flex;
     flex-direction: column;
     overscroll-behavior: none;
     overflow-x: hidden;
     margin: 0px;
-    border-radius: 0.87em;
     background-color: var(--front-body);
     position: fixed;
     -ms-overflow-style: none;
@@ -300,8 +340,9 @@ li {
 .group {
     width: 100%;
     max-width: var(--spalte);
-    margin-top: .5em;
-    margin-bottom: 1em;
+    /* kein Abstand zwischen Titel, Kacheln und nächster Section */
+    margin-top: 0;
+    margin-bottom: 0;
     padding-left: 0.12em;
     font-family: "helvetica neue", helvetica, arial, sans-serif;
     color: var(--sect-col);
@@ -309,12 +350,24 @@ li {
     background: none;
 }
 
-section:is(:hover, :focus, :focus-within, .aktuell),
-section:is(:hover, :focus, :focus-within, .aktuell) .name,
-section:is(:hover, :focus, :focus-within, .aktuell) .group {
+section:is(:hover, :focus-visible, :has(:focus-visible), .aktuell),
+section:is(:hover, :focus-visible, :has(:focus-visible), .aktuell) .name,
+section:is(:hover, :focus-visible, :has(:focus-visible), .aktuell) .group {
     color: var(--title-col);
     border-color: var(--title-col);
     cursor: var(--curs-img) 1 1, auto;
+}
+
+/* gehoverte Section (direkt oder per Nav-Chip): Titel in voller Sektionsfarbe statt Grau */
+#container section:is(:hover, :has(:focus-visible), :has(.name.mit-hover)) .name:not(.active, .mit-druck),
+#container section:is(:hover, :has(:focus-visible), :has(.name.mit-hover)) .name:not(.active, .mit-druck) a {
+    color: var(--c-text, var(--title-col));
+}
+
+/* auch der Rest der per Nav-Chip gehoverten Section wird kontrastreich */
+section:has(.name.mit-hover:not(.active)),
+section:has(.name.mit-hover:not(.active)) .group {
+    color: var(--title-col);
 }
 
 #container:focus,
@@ -354,33 +407,144 @@ section h3 a {
 /* behält seine Inhaltsbreite; der Leerraum landet rechts davon */
 #section-nav-list {
     display: flex;
-    flex: 0 1 auto;
-    margin-right: auto;
+    margin-right: 0;
     white-space: nowrap;
     overflow: hidden;
     min-width: 0;
     font-size: 0.9em;
     align-self: stretch;
+    flex: 1 1 auto;
 }
 
 a.secname:visited {
     color: var(--sect-col);
 }
 
-/* aktive Section: Vorder- und Hintergrund getauscht */
-a.secname.active {
-    background-color: var(--sect-col);
-    color: var(--front-body);
+/* Jede Section hat eine eigene Farbe (--c, von app.js gesetzt):
+   Hover = Fläche mit Deckkraft, aktiv = volle Deckkraft mit Kontrastschrift.
+   .mit-hover koppelt Chip und Titel: der eine leuchtet, wenn die Maus auf dem anderen liegt */
+section {
+    --c-text: oklch(from var(--c, var(--sect-col)) clamp(var(--text-l-min), l, var(--text-l-max)) c h);
 }
 
-/* Hover: Passiv-Farbe als Hintergrund, Schrift unverändert */
-a.secname:not(.active):hover,
-section .name:not(.active):hover {
-    background-color: var(--text-col);
+a.secname,
+#container section .name {
+    --c-hov: color-mix(in srgb, var(--c, var(--sect-col)) 28%, transparent);
 }
 
-a.secname:not(.active):hover {
+#container section .name {
+    border-bottom-color: var(--c, var(--text-col));
+}
+
+#container section .name:not(.active):is(:hover, .mit-hover) {
+    background-color: var(--c-hov);
+}
+
+a.secname:not(.active):is(:hover, .mit-hover) {
     color: var(--sect-col);
+}
+
+a.secname.active,
+#container section .name.active {
+    background-color: var(--c, var(--sect-col));
+}
+
+/* Knöpfe über die volle Höhe: flach in Ruhe, erhaben bei Hover (auch gekoppelt),
+   eingedrückt wenn aktiv oder gedrückt. Der Titel der Section spiegelt Hover und Druck
+   des Chips — und umgekehrt */
+a.secname:not(.active):is(:hover, .mit-hover) {
+    z-index: 1;
+    background-color: color-mix(in srgb, var(--c, var(--sect-col)) 30%, var(--front-body));
+    background-image: linear-gradient(rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, .15));
+    border-color: rgba(255, 255, 255, .85) rgba(0, 0, 0, .5) color-mix(in srgb, var(--c, var(--sect-col)) 30%, var(--front-body)) rgba(255, 255, 255, .75);
+    background-origin: border-box;
+    /* Schein nur oben und seitlich: unten (zum Titel) kein Schatten */
+    box-shadow: 0 -3px 7px -1px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .6);
+}
+
+/* aktiv: Chip und Titel sind eine durchgehende Fläche — keine Kante, kein Schatten dazwischen */
+a.secname.active {
+    /* keine Seitenkanten: sonst bleibt neben dem Innenschatten ein farbiger Strich */
+    border-width: 0;
+    padding: 1px 9px 0;
+}
+
+a.secname.active,
+#container section .name.active {
+    z-index: 0;
+    background-color: var(--c, var(--sect-col));
+    background-image: none;
+    border-color: var(--c, var(--sect-col));
+    box-shadow: none;
+}
+
+/* aktiver Knopf: Innenschatten links, oben, rechts. Die Seitenschatten laufen bis unten durch
+   und werden dabei schmaler (Spitze unten); unten liegt kein Schatten */
+a.secname.active {
+    background-image: linear-gradient(rgba(70, 70, 70, .4) 2.5px, rgba(70, 70, 70, 0) 2.5px);   /* hart, graue Deckkraft */
+    /* nur zwischen den Seitenstreifen, sonst werden die oberen Ecken doppelt dunkel */
+    background-repeat: no-repeat;
+    background-size: calc(100% - 6px) 100%;
+    background-position: 3px 0;
+}
+
+a.secname.active::before,
+a.secname.active::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 3.5px;
+    background: rgba(70, 70, 70, .4);
+    pointer-events: none;
+}
+
+a.secname.active::before {
+    left: 0;
+    /* volle Breite bis kurz vor Schluss, nur die letzten ~5px runden sich ein */
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 5px), 85% calc(100% - 3px), 55% calc(100% - 1.5px), 25% calc(100% - .5px), 0 100%);
+}
+
+a.secname.active::after {
+    right: 0;
+    clip-path: polygon(100% 0, 0 0, 0 calc(100% - 5px), 15% calc(100% - 3px), 45% calc(100% - 1.5px), 75% calc(100% - .5px), 100% 100%);
+}
+
+a.secname:has(+ .active) {
+    border-right-color: transparent;
+}
+
+a.secname.active + a.secname {
+    border-left-color: transparent;
+}
+
+/* Section, Titel und Gruppe schalten bei Hover/Aktiv immer sofort — kein Überblenden, kein Flackern */
+#container section,
+#container section *,
+#container section .name *::before,
+#container section .name *::after {   /* Font-Awesome-Icon sitzt im ::before */
+    transition: none;
+}
+
+/* Klick: der Knopf sinkt in die Tiefe (kleiner), keine Bewegung nach unten; Titel gibt leicht nach */
+a.secname:is(:active, .mit-druck):not(.active) {
+    transform: scale(.96);
+    box-shadow: 0 -2px 4px -1px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .6);
+}
+
+#container section .name.mit-druck:not(.active) {
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .3);
+}
+
+/* aktiver Titel: kein Strich darunter */
+#container section .name.active {
+    border-bottom-color: transparent;
+}
+
+a.secname.active,
+#container section .name.active,
+#container section .name.active a {
+    color: var(--on-c);
 }
 
 /* kein heller Spalt zwischen Leiste und angedocktem Header */
@@ -388,20 +552,19 @@ body.docked .title {
     border-bottom-color: var(--sect-col);
 }
 
-/* Trennstrich weg, sobald das Band eine Fläche hat */
-section .name.active,
-section .name:not(.active):hover {
-    border-bottom-color: transparent;
+/* aktive oder gehoverte Section (auch per Nav-Chip): URLs in voller Sektionsfarbe, Hover-Fläche voll deckend */
+section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) li a {
+    color: var(--c-text, var(--sect-col));
 }
 
-/* nur der aktive Header wird invertiert */
-section .name.active {
-    background-color: var(--sect-col);
+body:not(.tastatur) section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) li a:hover,
+body.tastatur section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) li a:not([contenteditable]):focus-visible {
+    color: var(--on-c);
 }
 
-.name.active,
-.name.active a {
-    color: var(--front-body);
+body:not(.tastatur) section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) li a:hover::before,
+body.tastatur section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) li a:not([contenteditable]):focus-visible::before {
+    background-color: var(--c, var(--back-hov));
 }
 
 /* Sprungtasten nur am Telefon */
@@ -411,28 +574,23 @@ section .name.active {
 
 /* ── Nicht erreichbare Links ─────────────────────────────────────── */
 
-/* Rot als Schrift im Ruhezustand, als Fläche im Aktivzustand */
-li.tot a {
-    color: #c00;
+/* tote Links sehen aus wie alle, nur ein roter Punkt (5px) oben rechts, konzentrisch in der Eckrundung */
+li.tot {
+    position: relative;
 }
 
-body:not(.tastatur) li.tot a:hover,
-body.tastatur li.tot a:not([contenteditable]):focus-visible {
-    color: var(--front-body);
-}
-
-body:not(.tastatur) li.tot a:hover::before,
-body.tastatur li.tot a:not([contenteditable]):focus-visible::before {
-    background-color: #c00;
-}
-
-section:is(:hover, :focus, :focus-within, .aktuell) li.tot a {
-    color: #c00;
-}
-
-body:not(.tastatur) section:is(:hover, :focus, :focus-within, .aktuell) li.tot a:hover,
-body.tastatur section:is(:hover, :focus, :focus-within, .aktuell) li.tot a:not([contenteditable]):focus-visible {
-    color: var(--front-body);
+li.tot::after {
+    content: "";
+    position: absolute;
+    /* Mittelpunkt = Mittelpunkt der Eckrundung der Kachel (.35em, s. li a::before) */
+    top: calc(.35em - 2.5px);
+    right: calc(.35em - 2.5px);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #c00;
+    pointer-events: none;
+    z-index: 2;
 }
 
 .title select {
