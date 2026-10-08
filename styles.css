@@ -364,6 +364,11 @@ section:is(:hover, :focus-visible, :has(:focus-visible), .aktuell) .group {
     color: var(--c-text, var(--title-col));
 }
 
+/* Unterkante: grau in Ruhe, bei Hover (direkt oder per Nav-Chip) in der Sektionsfarbe */
+#container section:is(:hover, :has(:focus-visible), :has(.name.mit-hover)) .name:not(.active, .mit-druck) {
+    border-bottom-color: var(--c, var(--title-col));
+}
+
 /* auch der Rest der per Nav-Chip gehoverten Section wird kontrastreich */
 section:has(.name.mit-hover:not(.active)),
 section:has(.name.mit-hover:not(.active)) .group {
