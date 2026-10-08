@@ -432,10 +432,6 @@ a.secname,
     --c-hov: color-mix(in srgb, var(--c, var(--sect-col)) 28%, transparent);
 }
 
-#container section .name {
-    border-bottom-color: var(--c, var(--text-col));
-}
-
 #container section .name:not(.active):is(:hover, .mit-hover) {
     background-color: var(--c-hov);
 }
