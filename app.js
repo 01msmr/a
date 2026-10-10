@@ -594,8 +594,11 @@ document.addEventListener('mousemove', function (e) {
 function mitApp(data) {
     var app = data.filter(function (s) { return s.id === 'app'; })[0];
     if (!app) {
-        data.splice(2, 0, { id: 'app', title: 'APP', icon: 'icon-squircle', links: [] });
-    } else if (app.icon === 'fa-mobile-screen') {
+        data.splice(2, 0, { id: 'app', title: 'app', icon: 'icon-squircle', links: [] });
+    } else if (app.title === 'APP') {
+        app.title = 'app';   // kleingeschrieben wie die anderen; die Großbuchstaben macht das CSS
+    }
+    if (app && app.icon === 'fa-mobile-screen') {
         app.icon = 'icon-squircle';   // vorher gespeichertes Handy-Icon ersetzen
     }
     return data;
