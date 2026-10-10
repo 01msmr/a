@@ -140,7 +140,8 @@ section {
 
 /* kontrastreich bei Hover, Tastatur-Fokus oder als oberste Section — ein Mausklick-Fokus zählt nicht,
    sonst wirkt die Section nach der Rückkehr von einem Link noch gehovert */
-body:not(.tastatur) section:is(:hover, .aktuell) a,
+body:not(.tastatur) section:is(:hover) a,
+body:not(.tastatur):where(:not(:has(section:hover, .name.mit-hover:not(.active)))) section.aktuell a,
 body.tastatur section:is(:focus-visible, :has(:focus-visible), .aktuell) a {
     color: var(--sect-col);
 }
@@ -366,11 +367,14 @@ li {
     background: none;
 }
 
-body:not(.tastatur) section:is(:hover, .aktuell),
+body:not(.tastatur) section:is(:hover),
+body:not(.tastatur):where(:not(:has(section:hover, .name.mit-hover:not(.active)))) section.aktuell,
 body.tastatur section:is(:focus-visible, :has(:focus-visible), .aktuell),
-body:not(.tastatur) section:is(:hover, .aktuell) .name,
+body:not(.tastatur) section:is(:hover) .name,
+body:not(.tastatur):where(:not(:has(section:hover, .name.mit-hover:not(.active)))) section.aktuell .name,
 body.tastatur section:is(:focus-visible, :has(:focus-visible), .aktuell) .name,
-body:not(.tastatur) section:is(:hover, .aktuell) .group,
+body:not(.tastatur) section:is(:hover) .group,
+body:not(.tastatur):where(:not(:has(section:hover, .name.mit-hover:not(.active)))) section.aktuell .group,
 body.tastatur section:is(:focus-visible, :has(:focus-visible), .aktuell) .group {
     color: var(--title-col);
     border-color: var(--title-col);
@@ -587,16 +591,20 @@ body.docked .title {
 
 /* aktive oder gehoverte Section (auch per Nav-Chip): die ganze Section in Sektionsfarbe, Text weiß;
    nur die Kachel unter dem Cursor kehrt um: helle Fläche, Text in Sektionsfarbe */
-body:not(.tastatur) #container section:is(.aktuell, :hover, :has(.name.mit-hover:not(.active))),
+body:not(.tastatur) #container section:is(:hover, :has(.name.mit-hover:not(.active))),
+body:not(.tastatur):where(:not(:has(section:hover, .name.mit-hover:not(.active)))) #container section.aktuell,
 body.tastatur #container section:is(.aktuell, :has(:focus-visible)) {
     background-color: var(--c, transparent);
 }
 
-body:not(.tastatur) #container section:is(.aktuell, :hover, :has(.name.mit-hover:not(.active))) .name:not(.active, .mit-druck),
+body:not(.tastatur) #container section:is(:hover, :has(.name.mit-hover:not(.active))) .name:not(.active, .mit-druck),
+body:not(.tastatur):where(:not(:has(section:hover, .name.mit-hover:not(.active)))) #container section.aktuell .name:not(.active, .mit-druck),
 body.tastatur #container section:is(.aktuell, :has(:focus-visible)) .name:not(.active, .mit-druck),
-body:not(.tastatur) #container section:is(.aktuell, :hover, :has(.name.mit-hover:not(.active))) .name:not(.active, .mit-druck) a,
+body:not(.tastatur) #container section:is(:hover, :has(.name.mit-hover:not(.active))) .name:not(.active, .mit-druck) a,
+body:not(.tastatur):where(:not(:has(section:hover, .name.mit-hover:not(.active)))) #container section.aktuell .name:not(.active, .mit-druck) a,
 body.tastatur #container section:is(.aktuell, :has(:focus-visible)) .name:not(.active, .mit-druck) a,
-body:not(.tastatur) section:is(.aktuell, :hover, :has(.name.mit-hover:not(.active))) li a,
+body:not(.tastatur) section:is(:hover, :has(.name.mit-hover:not(.active))) li a,
+body:not(.tastatur):where(:not(:has(section:hover, .name.mit-hover:not(.active)))) section.aktuell li a,
 body.tastatur section:is(.aktuell, :has(:focus-visible)) li a {
     color: var(--on-c);
 }
