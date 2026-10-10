@@ -50,7 +50,7 @@ html[data-zoom="l"] {
         --title-col: #fff;
         --title-dom: #999;
         --on-c: #111;
-        --chip-inv: #111;
+        --chip-inv: var(--front-body);
         /* im Dunkeln umgekehrt: nie dunkler als dieser Wert */
         --text-l-min: .72;
         --text-l-max: 1;
