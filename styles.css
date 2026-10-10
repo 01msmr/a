@@ -1176,6 +1176,18 @@ body.nav-icons .secname .secshort {
     display: none;
 }
 
+/* Squircle (App-Icon-Form): gefüllt wie die Solid-Icons, folgt der Textfarbe */
+.icon-squircle::before {
+    content: "";
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: -.125em;
+    background-color: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1C20 1 23 4 23 12S20 23 12 23 1 20 1 12 4 1 12 1Z'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1C20 1 23 4 23 12S20 23 12 23 1 20 1 12 4 1 12 1Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
 /* Section-Header: immer Icon + Titel */
 .name .secicon {
     display: inline-block;

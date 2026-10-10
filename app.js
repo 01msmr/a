@@ -34,7 +34,8 @@ var SEC_COLORS = ['#f85a5a', '#fb8f2a', '#f0b400', '#8ac430', '#2fc16c', '#22b59
 
 function makeIcon(icon) {
     var i = document.createElement('i');
-    i.className = 'fa-solid ' + (icon || 'fa-hashtag') + ' secicon';
+    // eigenes Icon ohne Font Awesome: Squircle (s. styles.css)
+    i.className = (icon === 'icon-squircle' ? icon : 'fa-solid ' + (icon || 'fa-hashtag')) + ' secicon';
     i.setAttribute('aria-hidden', 'true');
     return i;
 }
@@ -520,7 +521,7 @@ document.addEventListener('mousemove', function (e) {
 // APP gehört als 3. Section in die Reihe; fehlt sie in den gespeicherten Daten, kommt sie leer dazu
 function mitApp(data) {
     if (!data.some(function (s) { return s.id === 'app'; })) {
-        data.splice(2, 0, { id: 'app', title: 'APP', icon: 'fa-mobile-screen', links: [] });
+        data.splice(2, 0, { id: 'app', title: 'APP', icon: 'icon-squircle', links: [] });
     }
     return data;
 }
