@@ -509,8 +509,9 @@ function zeichneIcon(ic, e, w) {
 function settingsAnzeige() {
     document.querySelectorAll('#settings-pop .set-btn').forEach(function (b, i) {
         var e = EINSTELLUNGEN[i], w = e.get(), nach = wertNach(e, w);
-        var vorschau = document.body.classList.contains('tastatur')
-            ? b.matches(':focus-visible') : b.matches(':hover');
+        // nach einem Klick gilt der neue Zustand, bis der Zeiger den Knopf verlässt
+        var vorschau = !b.dataset.geklickt && (document.body.classList.contains('tastatur')
+            ? b.matches(':focus-visible') : b.matches(':hover'));
         zeichneIcon(b.querySelector('.set-icon'), e, vorschau ? nach : w);
         b.title = e.label + ': ' + wertName(e, w) + ' → ' + wertName(e, nach);
         b.setAttribute('aria-label', e.label + ': ' + wertName(e, w) + ' — zum Umschalten drücken (' + wertName(e, nach) + ')');
@@ -538,9 +539,13 @@ function settingsPlatzieren() {
         b.className = 'set-btn';
         b.innerHTML = '<span class="set-icon" aria-hidden="true"></span>';
         ['mouseenter', 'mouseleave', 'focus', 'blur'].forEach(function (t) {
-            b.addEventListener(t, settingsAnzeige);
+            b.addEventListener(t, function () {
+                if (t === 'mouseleave' || t === 'blur') delete b.dataset.geklickt;
+                settingsAnzeige();
+            });
         });
         b.addEventListener('click', function () {
+            b.dataset.geklickt = '1';
             e.set(wertNach(e, e.get()));
             settingsAnzeige();
             if (e.schliesst) { pop.hidePopover(); return; }
