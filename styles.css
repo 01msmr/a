@@ -1417,12 +1417,10 @@ body:not(.tastatur) .settings-btn:hover,
     font: bold .8em Ubuntu, "Helvetica neue", Helvetica, Arial, sans-serif;
 }
 
-/* Ausrichtung: Buchstabe links oder mittig in fester Breite, Linie darunter als Bezugskante */
+/* Ausrichtung: Buchstabe links oder mittig in fester Breite */
 .set-ausrichtung {
     display: inline-block;
     width: 1.4rem;
-    padding-bottom: .1em;
-    border-bottom: 2px solid currentColor;
     text-align: left;
 }
 
