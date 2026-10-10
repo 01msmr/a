@@ -1234,9 +1234,9 @@ body.align-center .group {
 
 /* ── Raster-Ansicht ──────────────────────────────────────────────── */
 
-/* Die Linien sind die Sektionsfarbe mit 25 % Deckkraft; auf eingefärbter Section die Schriftfarbe darauf */
+/* Die Linien sind grau (25 % Deckkraft); auf eingefärbter Section die Schriftfarbe darauf */
 section {
-    --linie: color-mix(in srgb, var(--c, var(--sect-col)) 25%, transparent);
+    --linie: color-mix(in srgb, var(--sect-col) 25%, transparent);
 }
 
 body:not(.tastatur) section:is(:hover, :has(.name.mit-hover:not(.active))),
@@ -1272,6 +1272,17 @@ body.view-grid:not(.edit-mode) li {
     min-width: 0;
     border-right: 1px solid var(--linie);
     border-bottom: 1px solid var(--linie);
+}
+
+/* kein zusätzlicher Strich zwischen Titel und Raster (die Oberkante der Gruppe ist schon eine Linie),
+   kein Polster unter der Gruppe; der Titel hat die Fläche der Sektionsfarbe mit der bekannten Deckkraft */
+body.view-grid:not(.edit-mode) #container section .name {
+    border-bottom-width: 0;
+    background-color: var(--c-hov);
+}
+
+body.view-grid:not(.edit-mode) .group {
+    padding-bottom: 0;
 }
 
 /* eckig, ohne Glanz */
