@@ -348,6 +348,12 @@ function mausSection() {
     return el && el.closest ? el.closest('#container section') : null;
 }
 
+// erste Kachel einer Section, bei Pfeil links (delta < 0) die letzte
+function kachelAn(section, delta) {
+    var k = section.querySelectorAll('li a');
+    return k.length ? k[delta < 0 ? k.length - 1 : 0] : null;
+}
+
 function linkBy(delta) {
     var links = Array.prototype.slice.call(document.querySelectorAll('#container li a'));
     if (!links.length) return;
@@ -359,7 +365,7 @@ function linkBy(delta) {
         else {
             // Maus in einer Section, aber nicht auf einer Kachel: deren erste Kachel
             var unter = mausSection();
-            ziel = unter && unter.querySelector('li a');
+            ziel = unter && kachelAn(unter, delta);
         }
     }
     if (i === -1 && !ziel) i = links.indexOf(document.activeElement);
@@ -369,7 +375,8 @@ function linkBy(delta) {
     } else if (i === -1) {
         var sec = document.querySelector('#container section.aktuell') ||
             document.querySelector('#container section');
-        ziel = sec.querySelector('li a') || links[0];
+        // links: die letzte Kachel der Section, rechts: die erste
+        ziel = kachelAn(sec, delta) || links[0];
     } else {
         ziel = links[Math.max(0, Math.min(links.length - 1, i + delta))];
     }
