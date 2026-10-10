@@ -1428,15 +1428,22 @@ body:not(.tastatur) .settings-btn:hover,
     text-align: center;
 }
 
+/* Hover und Tastaturfokus kehren um: Fläche in Schriftfarbe, Icon in Flächenfarbe */
 body:not(.tastatur) .set-btn:hover,
-.set-btn:focus-visible {
-    background-color: color-mix(in srgb, var(--sect-col) 18%, transparent);
-    color: var(--title-col);
+body.tastatur .set-btn:focus-visible {
+    background-color: var(--sect-col);
+    color: var(--front-body);
     outline: none;
 }
 
+/* das „t“ im Squircle ist sonst in Flächenfarbe und verschwände */
+body:not(.tastatur) .set-btn:hover .mit-t::after,
+body.tastatur .set-btn:focus-visible .mit-t::after {
+    color: var(--sect-col);
+}
+
 .set-btn:focus-visible {
-    box-shadow: inset 0 0 0 2px var(--sect-col);
+    outline: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
