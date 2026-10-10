@@ -1345,6 +1345,18 @@ body:not(.tastatur) .settings-btn:hover,
     font-weight: bold;
 }
 
+/* mehrere Symbole übereinander als ein Icon */
+.set-stapel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: .8rem;
+}
+
+.set-stapel i {
+    line-height: .85;
+}
+
 /* Navigation: Squircle, mit „t“ darin (Schrift in Flächenfarbe) wenn der Text aktiv ist */
 .set-icon.icon-squircle {
     position: relative;

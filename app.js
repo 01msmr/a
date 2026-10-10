@@ -458,8 +458,8 @@ var EINSTELLUNGEN = [
     {
         label: 'Bearbeiten',
         werte: [['aus', 'aus'], ['an', 'an (zum Beenden drücken)']],
-        // Stift = aus; Diskette = es wird bearbeitet, Klick beendet und fragt nach dem Speichern
-        icons: { aus: 'fa-pen', an: 'fa-floppy-disk' },
+        // zwei Chevrons übereinander = aus; Diskette = es wird bearbeitet, Klick beendet und fragt nach dem Speichern
+        icons: { aus: ['fa-chevron-up', 'fa-chevron-down'], an: 'fa-floppy-disk' },
         get: function () { return document.body.classList.contains('edit-mode') ? 'an' : 'aus'; },
         set: function (w) { if (w === 'an') enterEditMode(); else beendeBearbeiten(); },
         schliesst: true
@@ -482,6 +482,15 @@ function settingsAnzeige() {
         } else if (e.buchstabe) {
             ic.className = 'set-icon set-letter set-ausrichtung ' + w;
             ic.textContent = e.buchstabe[w];
+        } else if (Array.isArray(e.icons[w])) {
+            // mehrere Symbole als ein Icon, senkrecht gestapelt
+            ic.className = 'set-icon set-stapel';
+            ic.textContent = '';
+            e.icons[w].forEach(function (k) {
+                var g = document.createElement('i');
+                g.className = 'fa-solid ' + k;
+                ic.appendChild(g);
+            });
         } else {
             ic.className = 'set-icon fa-solid ' + e.icons[w];
             ic.textContent = '';
