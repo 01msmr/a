@@ -473,14 +473,16 @@ var EINSTELLUNGEN = [
     {
         label: 'Navigation',
         werte: [['short', 'Text'], ['icons', 'Icons']],
-        icons: { short: 'fa-font', icons: 'fa-icons' },
+        // Squircle wie bei APP; mit „t“ darin = Text aktiv
+        squircle: { short: true, icons: false },
         get: function () { return getPref('navMode'); },
         set: function (w) { setPref('navMode', w); }
     },
     {
         label: 'Ausrichtung',
         werte: [['left', 'links'], ['center', 'Mitte']],
-        icons: { left: 'fa-align-left', center: 'fa-align-center' },
+        // „l“ linksbündig bzw. „c“ zentriert in einer festen Breite
+        buchstabe: { left: 'l', center: 'c' },
         get: function () { return getPref('align'); },
         set: function (w) { setPref('align', w); }
     }
@@ -496,6 +498,12 @@ function settingsAnzeige() {
             var d = e.icon(w);
             ic.className = 'set-icon set-letter' + (d.auto ? ' auto' : '');
             ic.textContent = d.text;
+        } else if (e.squircle) {
+            ic.className = 'set-icon icon-squircle' + (e.squircle[w] ? ' mit-t' : '');
+            ic.textContent = '';
+        } else if (e.buchstabe) {
+            ic.className = 'set-icon set-letter set-ausrichtung ' + w;
+            ic.textContent = e.buchstabe[w];
         } else {
             ic.className = 'set-icon fa-solid ' + e.icons[w];
             ic.textContent = '';

@@ -1390,6 +1390,42 @@ body:not(.tastatur) .settings-btn:hover,
     font-weight: bold;
 }
 
+/* Navigation: Squircle, mit „t“ darin (Schrift in Flächenfarbe) wenn der Text aktiv ist */
+.set-icon.icon-squircle {
+    position: relative;
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+}
+
+.set-icon.icon-squircle::before {
+    vertical-align: top;
+}
+
+.set-icon.mit-t::after {
+    content: "t";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--front-body);
+    font: bold .8em Ubuntu, "Helvetica neue", Helvetica, Arial, sans-serif;
+}
+
+/* Ausrichtung: Buchstabe links oder mittig in fester Breite, Linie darunter als Bezugskante */
+.set-ausrichtung {
+    display: inline-block;
+    width: 1.4rem;
+    padding-bottom: .1em;
+    border-bottom: 2px solid currentColor;
+    text-align: left;
+}
+
+.set-ausrichtung.center {
+    text-align: center;
+}
+
 /* automatisch gewählt: unterstrichen */
 .set-letter.auto {
     text-decoration: underline;
