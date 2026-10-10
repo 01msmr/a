@@ -1349,16 +1349,20 @@ body:not(.tastatur) .settings-btn:hover,
     position: fixed;
     inset: auto;
     margin: 0;
-    padding: .25rem;
-    width: auto;
+    padding: 0;
     box-sizing: border-box;
-    border: 1px solid var(--text-col);
-    border-radius: .35rem;
+    border: 0;
+    /* hängt am Zahnrad: oben bündig, nur die freien Ecken unten sind gerundet */
+    border-radius: 0 0 .35rem .35rem;
+    overflow: hidden;
     background: var(--front-body);
     color: var(--sect-col);
     box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .35);
     flex-direction: column;
-    gap: .125rem;
+}
+
+.settings-pop.nach-oben {
+    border-radius: .35rem .35rem 0 0;
 }
 
 .settings-pop:popover-open {
@@ -1369,11 +1373,11 @@ body:not(.tastatur) .settings-btn:hover,
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 2.75rem;
-    height: 2.75rem;
+    width: 100%;
+    aspect-ratio: 1;
     padding: 0;
     border: 0;
-    border-radius: .25rem;
+    border-radius: 0;
     background: transparent;
     color: var(--sect-col);
     font: inherit;

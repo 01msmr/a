@@ -513,19 +513,17 @@ function settingsAnzeige() {
     });
 }
 
-// unter dem Zahnrad, rechtsbündig; in der unteren Leiste (Telefon) nach oben
+// bündig unter dem Zahnrad, gleich breit; in der unteren Leiste (Telefon) bündig darüber
 function settingsPlatzieren() {
     var pop = document.getElementById('settings-pop');
     var r = document.getElementById('settings-btn').getBoundingClientRect();
-    pop.style.right = Math.max(8, window.innerWidth - r.right) + 'px';
-    pop.style.left = 'auto';
-    if (r.top > window.innerHeight / 2) {
-        pop.style.top = 'auto';
-        pop.style.bottom = (window.innerHeight - r.top + 4) + 'px';
-    } else {
-        pop.style.bottom = 'auto';
-        pop.style.top = (r.bottom + 4) + 'px';
-    }
+    var oben = r.top > window.innerHeight / 2;
+    pop.style.width = r.width + 'px';
+    pop.style.left = r.left + 'px';
+    pop.style.right = 'auto';
+    pop.style.top = oben ? 'auto' : r.bottom + 'px';
+    pop.style.bottom = oben ? (window.innerHeight - r.top) + 'px' : 'auto';
+    pop.classList.toggle('nach-oben', oben);
 }
 
 (function () {
