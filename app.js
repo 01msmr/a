@@ -467,37 +467,53 @@ var EINSTELLUNGEN = [
     }
 ];
 
+function wertName(e, w) {
+    return (e.beschr && e.beschr(w)) ||
+        e.werte.filter(function (p) { return p[0] === w; })[0][1];
+}
+
+function wertNach(e, w) {
+    var i = 0;
+    e.werte.forEach(function (p, k) { if (p[0] === w) i = k; });
+    return e.werte[(i + 1) % e.werte.length][0];
+}
+
+// zeichnet das Icon für den Wert w
+function zeichneIcon(ic, e, w) {
+    if (e.icon) {
+        var d = e.icon(w);
+        ic.className = 'set-icon set-letter';
+        ic.textContent = d.text;
+    } else if (e.squircle) {
+        ic.className = 'set-icon icon-squircle' + (e.squircle[w] ? ' mit-t' : '');
+        ic.textContent = '';
+    } else if (e.buchstabe) {
+        ic.className = 'set-icon set-letter set-ausrichtung ' + w;
+        ic.textContent = e.buchstabe[w];
+    } else if (Array.isArray(e.icons[w])) {
+        // mehrere Symbole als ein Icon, senkrecht gestapelt
+        ic.className = 'set-icon set-stapel';
+        ic.textContent = '';
+        e.icons[w].forEach(function (k) {
+            var g = document.createElement('i');
+            g.className = 'fa-solid ' + k;
+            ic.appendChild(g);
+        });
+    } else {
+        ic.className = 'set-icon fa-solid ' + e.icons[w];
+        ic.textContent = '';
+    }
+}
+
+// Ruhe: Icon = Zustand. Unter dem Zeiger (oder mit Tastaturfokus): Icon = was der Klick ergibt
 function settingsAnzeige() {
     document.querySelectorAll('#settings-pop .set-btn').forEach(function (b, i) {
-        var e = EINSTELLUNGEN[i], w = e.get();
-        var beschr = (e.beschr && e.beschr(w)) ||
-            e.werte.filter(function (p) { return p[0] === w; })[0][1];
-        var ic = b.querySelector('.set-icon');
-        if (e.icon) {
-            var d = e.icon(w);
-            ic.className = 'set-icon set-letter' + (d.auto ? ' auto' : '');
-            ic.textContent = d.text;
-        } else if (e.squircle) {
-            ic.className = 'set-icon icon-squircle' + (e.squircle[w] ? ' mit-t' : '');
-            ic.textContent = '';
-        } else if (e.buchstabe) {
-            ic.className = 'set-icon set-letter set-ausrichtung ' + w;
-            ic.textContent = e.buchstabe[w];
-        } else if (Array.isArray(e.icons[w])) {
-            // mehrere Symbole als ein Icon, senkrecht gestapelt
-            ic.className = 'set-icon set-stapel';
-            ic.textContent = '';
-            e.icons[w].forEach(function (k) {
-                var g = document.createElement('i');
-                g.className = 'fa-solid ' + k;
-                ic.appendChild(g);
-            });
-        } else {
-            ic.className = 'set-icon fa-solid ' + e.icons[w];
-            ic.textContent = '';
-        }
-        b.title = e.label + ': ' + beschr;
-        b.setAttribute('aria-label', e.label + ': ' + beschr + ' — zum Umschalten drücken');
+        var e = EINSTELLUNGEN[i], w = e.get(), nach = wertNach(e, w);
+        var vorschau = document.body.classList.contains('tastatur')
+            ? b.matches(':focus-visible') : b.matches(':hover');
+        zeichneIcon(b.querySelector('.set-icon'), e, vorschau ? nach : w);
+        b.title = e.label + ': ' + wertName(e, w) + ' → ' + wertName(e, nach);
+        b.setAttribute('aria-label', e.label + ': ' + wertName(e, w) + ' — zum Umschalten drücken (' + wertName(e, nach) + ')');
     });
 }
 
@@ -521,10 +537,11 @@ function settingsPlatzieren() {
         b.type = 'button';
         b.className = 'set-btn';
         b.innerHTML = '<span class="set-icon" aria-hidden="true"></span>';
+        ['mouseenter', 'mouseleave', 'focus', 'blur'].forEach(function (t) {
+            b.addEventListener(t, settingsAnzeige);
+        });
         b.addEventListener('click', function () {
-            var i = 0, w = e.get();
-            e.werte.forEach(function (p, k) { if (p[0] === w) i = k; });
-            e.set(e.werte[(i + 1) % e.werte.length][0]);
+            e.set(wertNach(e, e.get()));
             settingsAnzeige();
             if (e.schliesst) { pop.hidePopover(); return; }
             settingsPlatzieren();   // der Zoom verschiebt das Zahnrad
