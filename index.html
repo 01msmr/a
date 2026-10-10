@@ -87,6 +87,10 @@
                 a.<span class="titledomain">msmr.co</span>
             </a>
             <nav id="section-nav-list"></nav>
+            <button type="button" id="settings-btn" class="settings-btn" popovertarget="settings-pop"
+                aria-label="Einstellungen" title="Einstellungen">
+                <i class="fa-solid fa-gear" aria-hidden="true"></i>
+            </button>
             <!-- autocomplete=off: sonst stellt Chrome beim Reload die alte
                  Auswahl wieder her und löst damit erneut den Edit-Mode aus -->
             <select id="section-jumper" autocomplete="off"></select>
@@ -99,18 +103,8 @@
             </a>
         </h3>
         <article id="container" class="container"></article>
-        <div class="ctl-bar">
-            <div id="theme-ctl" class="zoom-ctl" role="group" aria-label="Farbschema">
-                <button type="button" data-theme="auto" title="Automatisch (Systemvorgabe)" aria-label="Automatisch"><i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i></button>
-                <button type="button" data-theme="light" title="Hell" aria-label="Hell"><i class="fa-solid fa-sun" aria-hidden="true"></i></button>
-                <button type="button" data-theme="dark" title="Dunkel" aria-label="Dunkel"><i class="fa-solid fa-moon" aria-hidden="true"></i></button>
-            </div>
-            <div id="zoom-ctl" class="zoom-ctl" role="group" aria-label="Zoom">
-                <button type="button" data-zoom="s">S</button>
-                <button type="button" data-zoom="m">M</button>
-                <button type="button" data-zoom="l">L</button>
-            </div>
-        </div>
+        <!-- ein Knopf pro Einstellung, schaltet reihum; Inhalt baut app.js -->
+        <div id="settings-pop" class="settings-pop" popover></div>
     </div>
 
     <script src="app.js"></script>

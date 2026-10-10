@@ -17,9 +17,7 @@ function setPref(name, value) {
 function applyPrefs() {
     document.body.classList.toggle('nav-icons', getPref('navMode') === 'icons');
     document.body.classList.toggle('align-center', getPref('align') === 'center');
-    document.querySelectorAll('.pref-toggle').forEach(function (input) {
-        input.checked = getPref(input.dataset.pref) === input.dataset.on;
-    });
+    if (typeof settingsAnzeige === 'function') settingsAnzeige();
 }
 
 applyPrefs();
@@ -425,35 +423,16 @@ function makeLi(name, url, tot) {
     return li;
 }
 
-// ── Einstellungs-Panel (nur im Edit Mode sichtbar) ─────────────────
-function switchRow(pref, on, off, label) {
-    return '<div class="settings-row">' +
-        '<span class="settings-label">' + label + '</span>' +
-        '<label class="switch">' +
-        '<input type="checkbox" class="pref-toggle" data-pref="' + pref +
-        '" data-on="' + on + '" data-off="' + off + '">' +
-        '<span class="switch-track"></span>' +
-        '</label>' +
-        '</div>';
-}
-
+// ── Bearbeiten: Abbrechen/Speichern (nur im Edit Mode sichtbar) ────
 function buildSettingsPanel() {
     var panel = document.createElement('div');
     panel.className = 'settings-panel';
     panel.innerHTML =
-        '<h3 class="name"><i class="fa-solid fa-gear secicon" aria-hidden="true"></i>Einstellungen</h3>' +
-        switchRow('navMode', 'icons', 'short', 'Navigation mit Icons') +
-        switchRow('align', 'left', 'center', 'Seite linksbündig') +
         '<div class="settings-row settings-actions">' +
         '<button class="settings-cancel">Abbrechen</button>' +
         '<button class="settings-save">Speichern</button>' +
         '</div>';
 
-    panel.querySelectorAll('.pref-toggle').forEach(function (input) {
-        input.addEventListener('change', function () {
-            setPref(input.dataset.pref, input.checked ? input.dataset.on : input.dataset.off);
-        });
-    });
     panel.querySelector('.settings-cancel').addEventListener('click', cancelEdit);
     panel.querySelector('.settings-save').addEventListener('click', save);
     return panel;
@@ -471,22 +450,87 @@ function setzeStrich(e) {
 document.getElementById('container').addEventListener('mouseover', setzeStrich);
 document.getElementById('container').addEventListener('mousemove', setzeStrich);
 
-// ── Zoom: Knöpfe S/M/L, Tasten + - 0 (API msmrZoom steht im <head>) ──
-function zoomAnzeige() {
-    var auto = window.msmrZoom.mode() === 'auto';
-    document.querySelectorAll('#zoom-ctl button').forEach(function (b) {
-        var an = b.dataset.zoom === window.msmrZoom.get();
-        b.setAttribute('aria-pressed', an);
-        b.title = an && auto ? 'Zoom automatisch' : '';
+// ── Einstellungen: Zahnrad in der Leiste, Overlay mit einem Knopf pro Einstellung ──
+// Jeder Knopf schaltet reihum durch seine Werte. API für Zoom/Farbschema steht im <head>.
+var EINSTELLUNGEN = [
+    {
+        label: 'Zoom',
+        werte: [['auto', 'Auto'], ['s', 'S'], ['m', 'M'], ['l', 'L']],
+        get: function () { return window.msmrZoom.mode() === 'auto' ? 'auto' : window.msmrZoom.get(); },
+        zeige: function (w) { return w === 'auto' ? 'Auto (' + window.msmrZoom.get().toUpperCase() + ')' : null; },
+        set: function (w) { if (w === 'auto') window.msmrZoom.reset(); else window.msmrZoom.set(w); }
+    },
+    {
+        label: 'Farbschema',
+        werte: [['auto', 'Auto'], ['light', 'Hell'], ['dark', 'Dunkel']],
+        get: function () { return window.msmrTheme.get(); },
+        set: function (w) { window.msmrTheme.set(w); }
+    },
+    {
+        label: 'Navigation',
+        werte: [['short', 'Text'], ['icons', 'Icons']],
+        get: function () { return getPref('navMode'); },
+        set: function (w) { setPref('navMode', w); }
+    },
+    {
+        label: 'Ausrichtung',
+        werte: [['left', 'Links'], ['center', 'Mitte']],
+        get: function () { return getPref('align'); },
+        set: function (w) { setPref('align', w); }
+    }
+];
+
+function settingsAnzeige() {
+    document.querySelectorAll('#settings-pop .set-btn').forEach(function (b, i) {
+        var e = EINSTELLUNGEN[i], w = e.get();
+        var text = e.zeige && e.zeige(w);
+        if (!text) text = e.werte.filter(function (p) { return p[0] === w; })[0][1];
+        b.querySelector('.set-val').textContent = text;
+        b.setAttribute('aria-label', e.label + ': ' + text + ' — zum Umschalten drücken');
     });
-    document.getElementById('zoom-ctl').classList.toggle('auto', auto);
 }
-document.getElementById('zoom-ctl').addEventListener('click', function (e) {
-    var b = e.target.closest('button');
-    if (b) window.msmrZoom.set(b.dataset.zoom);
-});
-document.addEventListener('msmrzoom', zoomAnzeige);
-zoomAnzeige();
+
+// unter dem Zahnrad, rechtsbündig; in der unteren Leiste (Telefon) nach oben
+function settingsPlatzieren() {
+    var pop = document.getElementById('settings-pop');
+    var r = document.getElementById('settings-btn').getBoundingClientRect();
+    pop.style.right = Math.max(8, window.innerWidth - r.right) + 'px';
+    pop.style.left = 'auto';
+    if (r.top > window.innerHeight / 2) {
+        pop.style.top = 'auto';
+        pop.style.bottom = (window.innerHeight - r.top + 4) + 'px';
+    } else {
+        pop.style.bottom = 'auto';
+        pop.style.top = (r.bottom + 4) + 'px';
+    }
+}
+
+(function () {
+    var pop = document.getElementById('settings-pop');
+    EINSTELLUNGEN.forEach(function (e) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'set-btn';
+        b.innerHTML = '<span class="set-label"></span><span class="set-val"></span>';
+        b.querySelector('.set-label').textContent = e.label;
+        b.addEventListener('click', function () {
+            var i = 0, w = e.get();
+            e.werte.forEach(function (p, k) { if (p[0] === w) i = k; });
+            e.set(e.werte[(i + 1) % e.werte.length][0]);
+            settingsAnzeige();
+            settingsPlatzieren();   // der Zoom verschiebt das Zahnrad
+        });
+        pop.appendChild(b);
+    });
+    pop.addEventListener('beforetoggle', function (ev) {
+        if (ev.newState === 'open') settingsPlatzieren();
+    });
+    window.addEventListener('resize', function () { if (pop.matches(':popover-open')) settingsPlatzieren(); });
+    document.addEventListener('msmrzoom', settingsAnzeige);
+    document.addEventListener('msmrtheme', settingsAnzeige);
+    settingsAnzeige();
+})();
+
 document.addEventListener('keydown', function (e) {
     if (e.ctrlKey || e.metaKey || e.altKey) return;   // Browser-Zoom bleibt unberührt
     if (e.target.closest('input, select, textarea, [contenteditable]')) return;
@@ -494,19 +538,6 @@ document.addEventListener('keydown', function (e) {
     else if (e.key === '-') window.msmrZoom.step(-1);
     else if (e.key === '0') window.msmrZoom.reset();
 });
-
-// ── Farbschema: Knöpfe auto/hell/dunkel (API msmrTheme steht im <head>) ──
-function themeAnzeige() {
-    document.querySelectorAll('#theme-ctl button').forEach(function (b) {
-        b.setAttribute('aria-pressed', b.dataset.theme === window.msmrTheme.get());
-    });
-}
-document.getElementById('theme-ctl').addEventListener('click', function (e) {
-    var b = e.target.closest('button');
-    if (b) window.msmrTheme.set(b.dataset.theme);
-});
-document.addEventListener('msmrtheme', themeAnzeige);
-themeAnzeige();
 
 // ── Maus oder Tastatur: nur das zuletzt benutzte Gerät hebt eine Kachel hervor ──
 document.addEventListener('keydown', function (e) {

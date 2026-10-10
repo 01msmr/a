@@ -790,6 +790,7 @@ li.tot::after {
     #section-nav-list,
     .secname,
     #section-jumper,
+    .settings-btn,
     .stepper {
         flex-shrink: 0;
         padding: 0 0.8em;
@@ -798,6 +799,7 @@ li.tot::after {
     /* niedriger: der 48px-Chip gab bisher die Leistenhöhe vor */
     a.secname,
     #section-jumper,
+    .settings-btn,
     .stepper {
         height: 2.375rem;
     }
@@ -1262,66 +1264,6 @@ body.edit-mode #container {
     box-sizing: border-box;
 }
 
-.settings-label {
-    min-width: 13em;
-    color: var(--sect-col);
-    font-size: 0.875rem;
-}
-
-/* iOS-Schalter */
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 2.75rem;
-    height: 1.625rem;
-    flex-shrink: 0;
-    cursor: pointer;
-}
-
-.switch input {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    opacity: 0;
-    cursor: pointer;
-}
-
-.switch-track {
-    position: absolute;
-    inset: 0;
-    border-radius: 13px;
-    background: var(--text-col);
-    pointer-events: none;
-    transition: background-color .2s ease;
-}
-
-.switch-track::before {
-    content: "";
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 1.25rem;
-    height: 1.25rem;
-    border-radius: 50%;
-    background: var(--front-body);
-    transition: transform .2s ease;
-}
-
-.switch input:checked+.switch-track {
-    background: var(--sect-col);
-}
-
-.switch input:checked+.switch-track::before {
-    transform: translateX(18px);
-}
-
-.switch input:focus-visible+.switch-track {
-    outline: 2px solid var(--sect-col);
-    outline-offset: 2px;
-}
-
 .settings-actions {
     justify-content: flex-start;
     gap: 0.5rem;
@@ -1379,60 +1321,81 @@ body.edit-mode #container {
         display: inline-block;
     }
 }
-/* ── Zoom-Knöpfe S/M/L ───────────────────────────────────────────── */
+/* ── Einstellungen: Zahnrad in der Leiste + Overlay ─────────────── */
 
-.ctl-bar {
-    display: flex;
-    gap: .5rem;
-    position: fixed;
-    right: .5rem;
-    bottom: .5rem;
-    z-index: 50;
-}
-
-.zoom-ctl {
-    display: flex;
-    background: var(--front-body);
-    border-radius: .25rem;
-    box-shadow: 0 0 0 1px var(--front-body), 0 0.0625rem 0.25rem rgba(0, 0, 0, .35);
-}
-
-.zoom-ctl button {
-    font: inherit;
-    font-size: .8125rem;
-    padding: .125rem .5rem;
-    color: var(--sect-col);
+.settings-btn {
+    align-self: stretch;
+    flex: 0 0 auto;
+    width: 2.75rem;
+    padding: 0;
+    border: 0;
     background: transparent;
-    border: 1px solid var(--sect-col);
-    margin-left: -1px;
+    color: var(--sect-col);
+    font-size: 1em;
     cursor: inherit;
 }
 
-.zoom-ctl button:first-child {
-    border-radius: .25rem 0 0 .25rem;
-    margin-left: 0;
+body:not(.tastatur) .settings-btn:hover,
+.settings-btn:focus-visible,
+.settings-btn:popover-open,
+.settings-btn[aria-expanded="true"] {
+    color: var(--title-col);
+    background-color: color-mix(in srgb, var(--sect-col) 15%, transparent);
+    outline: none;
 }
 
-.zoom-ctl button:last-child {
-    border-radius: 0 .25rem .25rem 0;
+/* ein Stapel aus Vollbreite-Knöpfen, wie ein Dropdown, aber jeder Knopf schaltet reihum */
+.settings-pop {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    padding: .25rem;
+    width: 15rem;
+    max-width: calc(100vw - 1rem);
+    box-sizing: border-box;
+    border: 1px solid var(--text-col);
+    border-radius: .35rem;
+    background: var(--front-body);
+    color: var(--sect-col);
+    box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .35);
+    flex-direction: column;
+    gap: .25rem;
 }
 
-.zoom-ctl button[aria-pressed="true"] {
-    background: var(--sect-col);
-    color: var(--front-body);
+.settings-pop:popover-open {
+    display: flex;
 }
 
-/* automatisch gewählt: nur unterstrichen statt gefüllt */
-.zoom-ctl.auto button[aria-pressed="true"] {
+.set-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    padding: .55rem .7rem;
+    border: 0;
+    border-radius: .25rem;
     background: transparent;
     color: var(--sect-col);
-    text-decoration: underline;
+    font: inherit;
+    font-size: .9rem;
+    text-align: left;
+    cursor: inherit;
 }
 
-.zoom-ctl button:focus-visible {
-    outline: 2px solid var(--sect-col);
-    outline-offset: 1px;
-    position: relative;
+.set-val {
+    color: var(--title-col);
+    font-weight: bold;
+}
+
+body:not(.tastatur) .set-btn:hover,
+.set-btn:focus-visible {
+    background-color: color-mix(in srgb, var(--sect-col) 18%, transparent);
+    outline: none;
+}
+
+.set-btn:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--sect-col);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1441,9 +1404,3 @@ body.edit-mode #container {
     }
 }
 
-/* Telefon: die untere Leiste (Sprungtasten) bleibt frei */
-@media only screen and (min-device-width: 350px) and (max-device-width: 812px) {
-    .ctl-bar {
-        bottom: calc(2.75rem + env(safe-area-inset-bottom, 0px));
-    }
-}
