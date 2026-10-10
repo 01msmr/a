@@ -530,6 +530,43 @@ function settingsPlatzieren() {
         });
         pop.appendChild(b);
     });
+    // Zahnrad: Klick schaltet das Overlay um; mit der Maus geht auch drücken, auf einen Knopf ziehen
+    // und loslassen — das schaltet nur diesen Knopf weiter und schließt das Overlay (wie ein Menü)
+    var zg = document.getElementById('settings-btn');
+    var maus = false, warOffen = false;
+    function offen() { return pop.matches(':popover-open'); }
+    function knopfUnter(ev) {
+        var el = document.elementFromPoint(ev.clientX, ev.clientY);
+        return el && el.closest ? el.closest('#settings-pop .set-btn') : null;
+    }
+    zg.addEventListener('pointerdown', function (ev) {
+        if (ev.pointerType !== 'mouse' || ev.button !== 0) return;
+        maus = true;
+        warOffen = offen();
+        if (!warOffen) pop.showPopover();
+    });
+    document.addEventListener('pointerup', function (ev) {
+        if (!maus) return;
+        var knopf = knopfUnter(ev);
+        var aufZahnrad = ev.target.closest && ev.target.closest('#settings-btn');
+        if (knopf) { knopf.click(); if (offen()) pop.hidePopover(); }   // gezogen und losgelassen: schalten, schließen
+        else if (aufZahnrad) { if (warOffen) pop.hidePopover(); }   // einfacher Klick: umschalten
+        else pop.hidePopover();   // woanders losgelassen
+        maus = !!aufZahnrad;   // nach dem Loslassen auf dem Zahnrad folgt noch der click, den der Handler unten überspringt
+    });
+    // Tastatur und Touch: normaler Klick; ein Mausklick wurde oben schon behandelt
+    zg.addEventListener('click', function () {
+        if (maus) { maus = false; return; }
+        if (offen()) pop.hidePopover(); else pop.showPopover();
+    });
+    // Klick außerhalb und Esc schließen (manuelles Popover kennt beides nicht)
+    document.addEventListener('pointerdown', function (ev) {
+        if (offen() && !ev.target.closest('#settings-pop, #settings-btn')) pop.hidePopover();
+    });
+    document.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Escape' && offen()) pop.hidePopover();
+    });
+
     pop.addEventListener('beforetoggle', function (ev) {
         if (ev.newState === 'open') settingsPlatzieren();
     });
