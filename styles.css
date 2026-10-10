@@ -501,7 +501,7 @@ body:not(.tastatur) a.secname:not(.active):is(:hover, .mit-hover) {
     border-color: rgba(255, 255, 255, .85) rgba(0, 0, 0, .5) color-mix(in srgb, var(--c, var(--sect-col)) 30%, var(--front-body)) rgba(255, 255, 255, .75);
     background-origin: border-box;
     /* Schein nur oben und seitlich: unten (zum Titel) kein Schatten */
-    box-shadow: 0 -3px 7px -1px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .6);
+    box-shadow: 0 -0.1875rem 0.4375rem -0.0625rem rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .6);
 }
 
 /* aktiv: Chip und Titel sind eine durchgehende Fläche — keine Kante, kein Schatten dazwischen */
@@ -522,11 +522,11 @@ a.secname.active {
 /* aktiver Knopf: Innenschatten links, oben, rechts. Die Seitenschatten laufen bis unten durch
    und werden dabei schmaler (Spitze unten); unten liegt kein Schatten */
 a.secname.active {
-    background-image: linear-gradient(rgba(70, 70, 70, .4) 2.5px, rgba(70, 70, 70, 0) 2.5px);   /* hart, graue Deckkraft */
+    background-image: linear-gradient(rgba(70, 70, 70, .4) 0.1562rem, rgba(70, 70, 70, 0) 0.1562rem);   /* hart, graue Deckkraft */
     /* nur zwischen den Seitenstreifen, sonst werden die oberen Ecken doppelt dunkel */
     background-repeat: no-repeat;
-    background-size: calc(100% - 6px) 100%;
-    background-position: 3px 0;
+    background-size: calc(100% - 0.375rem) 100%;
+    background-position: 0.1875rem 0;
 }
 
 a.secname.active::before,
@@ -535,7 +535,7 @@ a.secname.active::after {
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 3.5px;
+    width: 0.2188rem;
     background: rgba(70, 70, 70, .4);
     pointer-events: none;
 }
@@ -543,12 +543,12 @@ a.secname.active::after {
 a.secname.active::before {
     left: 0;
     /* volle Breite bis kurz vor Schluss, nur die letzten ~5px runden sich ein */
-    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 5px), 85% calc(100% - 3px), 55% calc(100% - 1.5px), 25% calc(100% - .5px), 0 100%);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 0.3125rem), 85% calc(100% - 0.1875rem), 55% calc(100% - 0.0938rem), 25% calc(100% - 0.0312rem), 0 100%);
 }
 
 a.secname.active::after {
     right: 0;
-    clip-path: polygon(100% 0, 0 0, 0 calc(100% - 5px), 15% calc(100% - 3px), 45% calc(100% - 1.5px), 75% calc(100% - .5px), 100% 100%);
+    clip-path: polygon(100% 0, 0 0, 0 calc(100% - 0.3125rem), 15% calc(100% - 0.1875rem), 45% calc(100% - 0.0938rem), 75% calc(100% - 0.0312rem), 100% 100%);
 }
 
 a.secname:has(+ .active) {
@@ -570,11 +570,11 @@ a.secname.active + a.secname {
 /* Klick: der Knopf sinkt in die Tiefe (kleiner), keine Bewegung nach unten; Titel gibt leicht nach */
 a.secname:is(:active, .mit-druck):not(.active) {
     transform: scale(.96);
-    box-shadow: 0 -2px 4px -1px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .6);
+    box-shadow: 0 -0.125rem 0.25rem -0.0625rem rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .6);
 }
 
 #container section .name.mit-druck {
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, .3);
+    box-shadow: inset 0 0.0625rem 0.1875rem rgba(0, 0, 0, .3);
 }
 
 a.secname.active {
@@ -772,7 +772,7 @@ li.tot::after {
     a.secname,
     #section-jumper,
     .stepper {
-        height: 38px;
+        height: 2.375rem;
     }
 
     /* reicht mit viewport-fit=cover bis an den Bildschirmrand */
@@ -786,7 +786,7 @@ li.tot::after {
         align-items: center;
         justify-content: center;
         box-sizing: border-box;
-        min-width: 38px;
+        min-width: 2.375rem;
         padding: 0 0.5em;
         margin-left: 5px;
         /* gefüllt: Fläche in Rahmenfarbe, Chevron in Flächenfarbe */
@@ -1349,7 +1349,7 @@ body.edit-mode #container {
     z-index: 50;
     background: var(--front-body);
     border-radius: .25rem;
-    box-shadow: 0 0 0 1px var(--front-body), 0 1px 4px rgba(0, 0, 0, .35);
+    box-shadow: 0 0 0 1px var(--front-body), 0 0.0625rem 0.25rem rgba(0, 0, 0, .35);
 }
 
 .zoom-ctl button {
