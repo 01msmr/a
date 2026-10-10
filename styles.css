@@ -382,7 +382,7 @@ li {
     font-family: "Helvetica Neue", helvetica, arial, sans-serif;
     font-size: 1.4em;
     text-transform: uppercase;
-    border-bottom: .06em solid var(--teiler);
+    border-bottom: .06em solid var(--text-col);
     background: none;
     padding-left: 0.2em;
 }
