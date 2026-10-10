@@ -346,7 +346,7 @@ li {
     box-sizing: border-box;
     width: 100%;
     padding-top: 0.25em;
-    padding-bottom: .2em;
+    padding-bottom: .1em;   /* die andere Hälfte (.1em × 1.4 des Titels) liegt unter der Kachelgruppe */
     margin-top: 0px;
     margin-bottom: 0px;
     font-family: "Helvetica Neue", helvetica, arial, sans-serif;
@@ -364,6 +364,7 @@ li {
     margin-top: 0;
     margin-bottom: 0;
     padding-left: 0.12em;
+    padding-bottom: .14em;
     font-family: "helvetica neue", helvetica, arial, sans-serif;
     color: var(--sect-col);
     border-bottom-width: 1px;
