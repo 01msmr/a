@@ -641,10 +641,10 @@ li.tot::after {
     content: "";
     position: absolute;
     /* Mittelpunkt = Mittelpunkt der Eckrundung der Kachel (.35em, s. li a::before) */
-    top: calc(.35em - 2.5px);
-    right: calc(.35em - 2.5px);
-    width: 5px;
-    height: 5px;
+    top: calc(.35em - .15625rem);
+    right: calc(.35em - .15625rem);
+    width: .3125rem;
+    height: .3125rem;
     border-radius: 50%;
     background: #c00;
     pointer-events: none;
