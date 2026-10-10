@@ -48,7 +48,8 @@ function render(data) {
     var chipOf = {};
     var nav = document.getElementById('section-nav-list');
     var sel = document.getElementById('section-jumper');
-    nav.innerHTML = '';
+    var zahnrad = document.getElementById('settings-btn');   // bleibt als letzter Eintrag in der Leiste
+    nav.querySelectorAll('.secname').forEach(function (a) { a.remove(); });
     sel.innerHTML = '';
 
     data.forEach(function (sec, idx) {
@@ -65,7 +66,7 @@ function render(data) {
         a.appendChild(short);
         // gewickelt, damit nicht das Event als Fokusziel ankommt
         a.addEventListener('click', function () { focusContent(); });
-        nav.appendChild(a);
+        nav.insertBefore(a, zahnrad);
         chipOf[sec.id] = a;
 
         var opt = document.createElement('option');

@@ -268,7 +268,8 @@ section a {
     color: var(--text-col);
 }
 
-a.secname {
+a.secname,
+.settings-btn {
     box-sizing: border-box;
     /* volle Höhe der Leiste, volle Breite: die Chips teilen sich den Platz */
     align-self: stretch;
@@ -1166,7 +1167,8 @@ body.nav-icons .secname .secicon {
 }
 
 /* quadratischer Chip, Icon horizontal mittig */
-body.nav-icons a.secname {
+body.nav-icons a.secname,
+body.nav-icons .settings-btn {
     width: 3rem;
     text-align: center;
     /* kein seitliches Polster — sonst wird das größere Icon beschnitten */
@@ -1251,14 +1253,16 @@ body.edit-mode #container {
         padding: 0 0.4em;
     }
 
-    a.secname {
+    a.secname,
+    .settings-btn {
         padding-left: 0.25rem;
         padding-right: 0.25rem;
         font-size: 0.75em;
     }
 
     /* Icon bleibt 25px, nur die Tippfläche schrumpft */
-    body.nav-icons a.secname {
+    body.nav-icons a.secname,
+    body.nav-icons .settings-btn {
         width: 2.5rem;
         padding-left: 0;
         padding-right: 0;
@@ -1274,16 +1278,10 @@ body.edit-mode #container {
 /* ── Einstellungen: Zahnrad in der Leiste + Overlay ─────────────── */
 
 .settings-btn {
-    align-self: stretch;
-    flex: 0 0 auto;
-    width: 2.75rem;
-    padding: 0;
-    border: 0;
+    /* Breite, Polster und Kanten kommen von den Nav-Chips (s. a.secname) */
     background: transparent;
-    color: var(--sect-col);
-    font-size: 1em;
+    font-family: inherit;
     cursor: inherit;
-    transition: none;
 }
 
 body:not(.tastatur) .settings-btn:hover,
