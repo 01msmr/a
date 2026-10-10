@@ -395,6 +395,12 @@ body.tastatur #container section:is(:has(:focus-visible)) .name:not(.mit-druck) 
     border-bottom-color: var(--c, var(--title-col));
 }
 
+/* die eingefärbte aktuelle Section hat keine dunkle Unterkante, sie verschmilzt mit der Fläche */
+body.tastatur #container section.aktuell .name,
+body:not(.tastatur):where(:not(:has(section:hover, .name.mit-hover:not(.active)))) #container section.aktuell .name {
+    border-bottom-color: var(--c, var(--title-col));
+}
+
 /* auch der Rest der per Nav-Chip gehoverten Section wird kontrastreich */
 body:not(.tastatur) section:has(.name.mit-hover:not(.active)),
 body:not(.tastatur) section:has(.name.mit-hover:not(.active)) .group {
