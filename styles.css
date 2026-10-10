@@ -578,14 +578,16 @@ body.docked .title {
     border-bottom-color: var(--sect-col);
 }
 
-/* aktive oder gehoverte Section (auch per Nav-Chip): Kacheln in Sektionsfarbe mit weißem Text;
-   die Kachel unter dem Cursor kehrt um: weiße Fläche, Text in Sektionsfarbe */
-section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) li a {
-    color: var(--on-c);
+/* aktive oder gehoverte Section (auch per Nav-Chip): die ganze Section in Sektionsfarbe, Text weiß;
+   nur die Kachel unter dem Cursor kehrt um: helle Fläche, Text in Sektionsfarbe */
+#container section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) {
+    background-color: var(--c, transparent);
 }
 
-section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) li a::before {
-    background-color: var(--c, var(--back-hov));
+#container section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) .name:not(.active, .mit-druck),
+#container section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) .name:not(.active, .mit-druck) a,
+section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) li a {
+    color: var(--on-c);
 }
 
 body:not(.tastatur) section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) li a:hover,
