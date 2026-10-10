@@ -1344,14 +1344,13 @@ body:not(.tastatur) .settings-btn:hover,
     outline: none;
 }
 
-/* ein Stapel aus Vollbreite-Knöpfen, wie ein Dropdown, aber jeder Knopf schaltet reihum */
+/* senkrechter Stapel aus Icon-Knöpfen: jedes Icon zeigt den Zustand einer Einstellung, Klick schaltet reihum */
 .settings-pop {
     position: fixed;
     inset: auto;
     margin: 0;
     padding: .25rem;
-    width: 15rem;
-    max-width: calc(100vw - 1rem);
+    width: auto;
     box-sizing: border-box;
     border: 1px solid var(--text-col);
     border-radius: .35rem;
@@ -1359,7 +1358,7 @@ body:not(.tastatur) .settings-btn:hover,
     color: var(--sect-col);
     box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .35);
     flex-direction: column;
-    gap: .25rem;
+    gap: .125rem;
 }
 
 .settings-pop:popover-open {
@@ -1369,28 +1368,38 @@ body:not(.tastatur) .settings-btn:hover,
 .set-btn {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    width: 100%;
-    padding: .55rem .7rem;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
     border: 0;
     border-radius: .25rem;
     background: transparent;
     color: var(--sect-col);
     font: inherit;
-    font-size: .9rem;
-    text-align: left;
     cursor: inherit;
 }
 
-.set-val {
-    color: var(--title-col);
+.set-icon {
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+.set-letter {
+    font-family: Ubuntu, "Helvetica neue", Helvetica, Arial, sans-serif;
     font-weight: bold;
+}
+
+/* automatisch gewählt: unterstrichen */
+.set-letter.auto {
+    text-decoration: underline;
+    text-underline-offset: .2em;
 }
 
 body:not(.tastatur) .set-btn:hover,
 .set-btn:focus-visible {
     background-color: color-mix(in srgb, var(--sect-col) 18%, transparent);
+    color: var(--title-col);
     outline: none;
 }
 

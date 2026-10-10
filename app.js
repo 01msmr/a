@@ -451,30 +451,36 @@ document.getElementById('container').addEventListener('mouseover', setzeStrich);
 document.getElementById('container').addEventListener('mousemove', setzeStrich);
 
 // ── Einstellungen: Zahnrad in der Leiste, Overlay mit einem Knopf pro Einstellung ──
-// Jeder Knopf schaltet reihum durch seine Werte. API für Zoom/Farbschema steht im <head>.
+// Ein Icon pro Einstellung zeigt den aktuellen Wert; jeder Klick schaltet reihum weiter. API für Zoom/Farbschema steht im <head>.
+// icon: Font-Awesome-Klasse oder Buchstabe (Zoom); zeigt den aktuellen Wert
 var EINSTELLUNGEN = [
     {
         label: 'Zoom',
-        werte: [['auto', 'Auto'], ['s', 'S'], ['m', 'M'], ['l', 'L']],
+        werte: [['auto', 'automatisch'], ['s', 'S'], ['m', 'M'], ['l', 'L']],
         get: function () { return window.msmrZoom.mode() === 'auto' ? 'auto' : window.msmrZoom.get(); },
-        zeige: function (w) { return w === 'auto' ? 'Auto (' + window.msmrZoom.get().toUpperCase() + ')' : null; },
+        // automatisch: der gewählte Buchstabe, unterstrichen
+        icon: function (w) { return { text: window.msmrZoom.get().toUpperCase(), auto: w === 'auto' }; },
+        beschr: function (w) { return w === 'auto' ? 'automatisch (' + window.msmrZoom.get().toUpperCase() + ')' : null; },
         set: function (w) { if (w === 'auto') window.msmrZoom.reset(); else window.msmrZoom.set(w); }
     },
     {
         label: 'Farbschema',
-        werte: [['auto', 'Auto'], ['light', 'Hell'], ['dark', 'Dunkel']],
+        werte: [['auto', 'automatisch'], ['light', 'hell'], ['dark', 'dunkel']],
+        icons: { auto: 'fa-circle-half-stroke', light: 'fa-sun', dark: 'fa-moon' },
         get: function () { return window.msmrTheme.get(); },
         set: function (w) { window.msmrTheme.set(w); }
     },
     {
         label: 'Navigation',
         werte: [['short', 'Text'], ['icons', 'Icons']],
+        icons: { short: 'fa-font', icons: 'fa-icons' },
         get: function () { return getPref('navMode'); },
         set: function (w) { setPref('navMode', w); }
     },
     {
         label: 'Ausrichtung',
-        werte: [['left', 'Links'], ['center', 'Mitte']],
+        werte: [['left', 'links'], ['center', 'Mitte']],
+        icons: { left: 'fa-align-left', center: 'fa-align-center' },
         get: function () { return getPref('align'); },
         set: function (w) { setPref('align', w); }
     }
@@ -483,10 +489,19 @@ var EINSTELLUNGEN = [
 function settingsAnzeige() {
     document.querySelectorAll('#settings-pop .set-btn').forEach(function (b, i) {
         var e = EINSTELLUNGEN[i], w = e.get();
-        var text = e.zeige && e.zeige(w);
-        if (!text) text = e.werte.filter(function (p) { return p[0] === w; })[0][1];
-        b.querySelector('.set-val').textContent = text;
-        b.setAttribute('aria-label', e.label + ': ' + text + ' — zum Umschalten drücken');
+        var beschr = (e.beschr && e.beschr(w)) ||
+            e.werte.filter(function (p) { return p[0] === w; })[0][1];
+        var ic = b.querySelector('.set-icon');
+        if (e.icon) {
+            var d = e.icon(w);
+            ic.className = 'set-icon set-letter' + (d.auto ? ' auto' : '');
+            ic.textContent = d.text;
+        } else {
+            ic.className = 'set-icon fa-solid ' + e.icons[w];
+            ic.textContent = '';
+        }
+        b.title = e.label + ': ' + beschr;
+        b.setAttribute('aria-label', e.label + ': ' + beschr + ' — zum Umschalten drücken');
     });
 }
 
@@ -511,8 +526,7 @@ function settingsPlatzieren() {
         var b = document.createElement('button');
         b.type = 'button';
         b.className = 'set-btn';
-        b.innerHTML = '<span class="set-label"></span><span class="set-val"></span>';
-        b.querySelector('.set-label').textContent = e.label;
+        b.innerHTML = '<span class="set-icon" aria-hidden="true"></span>';
         b.addEventListener('click', function () {
             var i = 0, w = e.get();
             e.werte.forEach(function (p, k) { if (p[0] === w) i = k; });
