@@ -1275,10 +1275,9 @@ body.view-grid:not(.edit-mode) li {
 }
 
 /* kein zusätzlicher Strich zwischen Titel und Raster (die Oberkante der Gruppe ist schon eine Linie),
-   kein Polster unter der Gruppe; der Titel hat die Fläche der Sektionsfarbe mit der bekannten Deckkraft */
+   kein Polster unter der Gruppe */
 body.view-grid:not(.edit-mode) #container section .name {
     border-bottom-width: 0;
-    background-color: var(--c-hov);
 }
 
 body.view-grid:not(.edit-mode) .group {
