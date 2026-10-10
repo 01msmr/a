@@ -610,10 +610,10 @@ body.tastatur section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-
     background-color: var(--chip-inv);
 }
 
-/* Strich-Cursor auf der weißen Kachel: in der Sektionsfarbe (das Strich-Bild dient als Maske) */
+/* Strich-Cursor auf der weißen Kachel: exakt in der Sektionsfarbe wie die Fläche (das Strich-Bild dient als Maske) */
 @media (hover: hover) {
     body:not(.tastatur) section:is(.aktuell, :hover, :has(.name.mit-hover:not(.active))) li a:hover::after {
-        background: var(--c-text, var(--sect-col));
+        background: var(--c, var(--sect-col));
         -webkit-mask: var(--curs-hov) no-repeat 0 0 / 100% 100%;
         mask: var(--curs-hov) no-repeat 0 0 / 100% 100%;
     }
