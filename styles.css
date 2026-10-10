@@ -1284,6 +1284,12 @@ body.view-grid:not(.edit-mode) .group {
     padding-bottom: 0;
 }
 
+/* Hover (Maus) bzw. Fokus (Tastatur): der Titel hebt sich mit der bekannten Deckkraft (28 %) in der Schriftfarbe von der Fläche ab */
+body.view-grid:not(.edit-mode):not(.tastatur) #container section:is(:hover, :has(.name.mit-hover:not(.active))) .name,
+body.view-grid:not(.edit-mode).tastatur #container section:is(:focus-visible, :has(:focus-visible)) .name {
+    background-color: color-mix(in srgb, var(--on-c) 28%, transparent);
+}
+
 /* eckig, ohne Glanz */
 body.view-grid:not(.edit-mode) li a::before {
     border-radius: 0;
