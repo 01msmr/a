@@ -1232,6 +1232,54 @@ body.align-center .group {
     margin-right: auto;
 }
 
+/* ── Raster-Ansicht ──────────────────────────────────────────────── */
+
+/* Die Linien sind die Sektionsfarbe mit 25 % Deckkraft; auf eingefärbter Section die Schriftfarbe darauf */
+section {
+    --linie: color-mix(in srgb, var(--c, var(--sect-col)) 25%, transparent);
+}
+
+body:not(.tastatur) section:is(:hover, :has(.name.mit-hover:not(.active))),
+body:not(.tastatur):where(:not(:has(section:hover, .name.mit-hover:not(.active)))) section.aktuell,
+body.tastatur section:is(.aktuell, :focus-visible, :has(:focus-visible)) {
+    --linie: color-mix(in srgb, var(--on-c) 25%, transparent);
+}
+
+/* Spalten füllen die Breite (volle Breite) bzw. bleiben bei Mitte in der festen Spaltenbreite;
+   im Edit-Mode gilt weiter das Kachel-Layout der Chips */
+body.view-grid:not(.edit-mode) .group {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--kachel), 1fr));
+    gap: 0;
+    padding-left: 0;
+    border-top: 1px solid var(--linie);
+    border-left: 1px solid var(--linie);
+}
+
+/* die Linien der Gruppe gewinnen gegen die allgemeine Randfarbe der aktiven Section */
+body.view-grid:not(.edit-mode) #container section .group {
+    border-top-color: var(--linie);
+    border-left-color: var(--linie);
+}
+
+body.view-grid:not(.edit-mode):not(.align-center) .group {
+    max-width: none;
+}
+
+body.view-grid:not(.edit-mode) li {
+    display: block;
+    width: auto;
+    min-width: 0;
+    border-right: 1px solid var(--linie);
+    border-bottom: 1px solid var(--linie);
+}
+
+/* eckig, ohne Glanz */
+body.view-grid:not(.edit-mode) li a::before {
+    border-radius: 0;
+    background-image: none;
+}
+
 /* ── Bearbeiten ──────────────────────────────────────────────────── */
 
 /* sonst rastet der Container die bearbeitete Section wieder aus dem Bild */
@@ -1349,6 +1397,31 @@ body:not(.tastatur) .settings-btn.offen {
 .set-letter {
     font-family: Ubuntu, "Helvetica neue", Helvetica, Arial, sans-serif;
     font-weight: bold;
+}
+
+/* Ansicht: vier Kacheln. Chips = gefüllt, gerundet, mit Abstand; Raster = Umriss, eckig, aneinander */
+.set-kacheln {
+    display: grid;
+    grid-template: 1fr 1fr / 1fr 1fr;
+    gap: .14em;
+    width: 1em;
+    height: 1em;
+}
+
+.set-kacheln i {
+    background: currentColor;
+    border-radius: .3em;
+}
+
+.set-kacheln.eckig {
+    gap: 0;
+}
+
+.set-kacheln.eckig i {
+    background: none;
+    border: 1.5px solid currentColor;
+    border-radius: 0;
+    margin: 0 -.75px -.75px 0;   /* Nachbarränder fallen zusammen */
 }
 
 /* mehrere Symbole übereinander als ein Icon */

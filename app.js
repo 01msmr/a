@@ -1,5 +1,5 @@
 // ── Ansichts-Einstellungen ────────────────────────────────────────
-var PREF_DEFAULTS = { navMode: 'short', align: 'left' };
+var PREF_DEFAULTS = { navMode: 'short', align: 'left', view: 'chips' };
 
 function getPref(name) {
     try { return localStorage.getItem('a.' + name) || PREF_DEFAULTS[name]; }
@@ -14,6 +14,7 @@ function setPref(name, value) {
 function applyPrefs() {
     document.body.classList.toggle('nav-icons', getPref('navMode') === 'icons');
     document.body.classList.toggle('align-center', getPref('align') === 'center');
+    document.body.classList.toggle('view-grid', getPref('view') === 'grid');
     if (typeof settingsAnzeige === 'function') settingsAnzeige();
 }
 
@@ -449,7 +450,17 @@ var EINSTELLUNGEN = [
         set: function (w) { setPref('navMode', w); }
     },
     {
+        label: 'Ansicht',
+        werte: [['chips', 'Chips'], ['grid', 'Raster']],
+        // vier Kacheln: gerundet und getrennt = Chips; eckig und aneinander = Raster
+        kacheln: { chips: false, grid: true },
+        get: function () { return getPref('view'); },
+        set: function (w) { setPref('view', w); }
+    },
+    {
         label: 'Ausrichtung',
+        // im Raster heißt „links“ volle Breite
+        beschr: function (w) { return w === 'left' && getPref('view') === 'grid' ? 'volle Breite' : null; },
         werte: [['left', 'links'], ['center', 'Mitte']],
         // „l“ linksbündig bzw. „c“ zentriert in einer festen Breite
         buchstabe: { left: 'l', center: 'c' },
@@ -488,6 +499,10 @@ function zeichneIcon(ic, e, w) {
     } else if (e.squircle) {
         ic.className = 'set-icon icon-squircle' + (e.squircle[w] ? ' mit-t' : '');
         ic.textContent = '';
+    } else if (e.kacheln) {
+        ic.className = 'set-icon set-kacheln' + (e.kacheln[w] ? ' eckig' : '');
+        ic.textContent = '';
+        for (var k = 0; k < 4; k++) ic.appendChild(document.createElement('i'));
     } else if (e.buchstabe) {
         ic.className = 'set-icon set-letter set-ausrichtung ' + w;
         ic.textContent = e.buchstabe[w];
