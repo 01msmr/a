@@ -177,8 +177,16 @@ function trackActiveSection() {
                 aktiv = h3;
             }
         });
+        // Maus zuletzt benutzt und über einer Section: deren Chip leuchtet, sonst die oberste
+        var nav = active;
+        if (mausPos && !document.body.classList.contains('tastatur')) {
+            var unterMaus = document.elementFromPoint(mausPos.x, mausPos.y);
+            var sec = unterMaus && unterMaus.closest && unterMaus.closest('#container section');
+            var kopf = sec && sec.querySelector('h3.name');
+            if (kopf) nav = '#' + kopf.id;
+        }
         chips.forEach(function (chip) {
-            chip.classList.toggle('active', chip.hash === active);
+            chip.classList.toggle('active', chip.hash === nav);
         });
         headings.forEach(function (h3) {
             var passt = '#' + h3.id === active;
@@ -192,6 +200,21 @@ function trackActiveSection() {
         sel.value = active;
         jumpTarget = null;   // Scrollen zur Ruhe gekommen
     };
+
+    // Chip folgt der Maus; Verlassen des Inhalts (Leiste, Rand) → wieder die oberste Section
+    var mausPos = null, wartet = false;
+    container.addEventListener('mousemove', function (e) {
+        mausPos = { x: e.clientX, y: e.clientY };
+        // nach dem Umschalten auf Maus (document-Handler läuft nach diesem)
+        if (!wartet) { wartet = true; setTimeout(function () { wartet = false; syncActive(); }); }
+    });
+    container.addEventListener('mouseleave', function () {
+        mausPos = null;
+        syncActive();
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Tab' || e.key.indexOf('Arrow') === 0) setTimeout(syncActive);
+    });
 
     // erst nach Scroll-Ruhe nachziehen
     container.addEventListener('scroll', function () {
