@@ -1297,6 +1297,11 @@ body.view-grid:not(.edit-mode) li.tot::after {
     border-radius: 0;
 }
 
+/* volle Breite (Raster, nicht zentriert): auch die Leiste läuft über die ganze Seite */
+body.view-grid:not(.align-center) .title {
+    max-width: none;
+}
+
 /* eckig, ohne Glanz */
 body.view-grid:not(.edit-mode) li a::before {
     border-radius: 0;
