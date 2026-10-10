@@ -57,8 +57,6 @@ html[data-zoom="l"] {
         --title-dom: #999;
         --on-c: #111;
         --chip-inv: var(--front-body);
-    --teiler: color-mix(in srgb, #fff 66%, transparent);
-    --teiler-c: color-mix(in srgb, var(--on-c) 66%, transparent);
         --teiler: color-mix(in srgb, #fff 66%, transparent);
         --teiler-c: color-mix(in srgb, var(--on-c) 66%, transparent);
         /* im Dunkeln etwas weniger Glanz auf den Kacheln */
@@ -83,6 +81,8 @@ html[data-zoom="l"] {
     --title-dom: #999;
     --on-c: #111;
     --chip-inv: var(--front-body);
+    --teiler: color-mix(in srgb, #fff 66%, transparent);
+    --teiler-c: color-mix(in srgb, var(--on-c) 66%, transparent);
     /* im Dunkeln etwas weniger Glanz auf den Kacheln */
     --glanz: .6;
     /* im Dunkeln umgekehrt: nie dunkler als dieser Wert */
