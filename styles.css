@@ -1283,15 +1283,23 @@ body.edit-mode #container {
     color: var(--sect-col);
     font-size: 1em;
     cursor: inherit;
+    transition: none;
 }
 
 body:not(.tastatur) .settings-btn:hover,
-.settings-btn:focus-visible,
-.settings-btn:popover-open,
-.settings-btn[aria-expanded="true"] {
+.settings-btn:focus-visible {
     color: var(--title-col);
     background-color: color-mix(in srgb, var(--sect-col) 15%, transparent);
     outline: none;
+}
+
+/* gedrückt oder Overlay offen: umgekehrt, bündig mit dem Overlay darunter */
+.settings-btn:active,
+.settings-btn.offen,
+body:not(.tastatur) .settings-btn:active,
+body:not(.tastatur) .settings-btn.offen {
+    color: var(--front-body);
+    background-color: var(--sect-col);
 }
 
 /* senkrechter Stapel aus Icon-Knöpfen: jedes Icon zeigt den Zustand einer Einstellung, Klick schaltet reihum */

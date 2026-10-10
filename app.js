@@ -590,7 +590,10 @@ function settingsPlatzieren() {
     pop.addEventListener('focusin', zuStoppen);
     pop.addEventListener('focusout', zuStarten);
     pop.addEventListener('toggle', function (ev) {
-        if (ev.newState === 'open') zuStarten(); else zuStoppen();
+        var an = ev.newState === 'open';
+        zahnrad.classList.toggle('offen', an);   // Zahnrad kehrt um, solange das Overlay offen ist
+        zahnrad.setAttribute('aria-expanded', an);
+        if (an) zuStarten(); else zuStoppen();
     });
     document.addEventListener('msmrzoom', settingsAnzeige);
     document.addEventListener('msmrtheme', settingsAnzeige);
