@@ -66,7 +66,7 @@ Plesk zieht `main` selbst und legt die Repo-Dateien nach `httpdocs`. Die Live-Da
 Damit Doku und Projektdateien nicht öffentlich im Webverzeichnis landen, unter **Zusätzliche Bereitstellungsaktionen** eintragen:
 
 ```
-rm -rf docs LICENSE README.md CHANGELOG.md .github .gitignore
+rm -rf docs LICENSE CHANGELOG.md .github .gitignore
 ```
 
 `edit` gehört **nicht** in diese Liste. Der GitHub-Pages-Workflow entfernt es, weil dort kein PHP läuft — auf dem echten Server ist es der Kern der Anwendung.
