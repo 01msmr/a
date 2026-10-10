@@ -428,9 +428,18 @@ document.addEventListener('mousemove', function () {
     mausBewegt = true;
 });
 
+// APP gehört als 3. Section in die Reihe; fehlt sie in den gespeicherten Daten, kommt sie leer dazu
+function mitApp(data) {
+    if (!data.some(function (s) { return s.id === 'app'; })) {
+        data.splice(2, 0, { id: 'app', title: 'APP', icon: 'fa-mobile-screen', links: [] });
+    }
+    return data;
+}
+
 // ── Load ──────────────────────────────────────────────────────────
 fetch('links.php?t=' + Date.now())
     .then(function (r) { return r.json(); })
+    .then(mitApp)
     .then(render)
     .catch(function (e) {
         document.getElementById('container').innerHTML =
