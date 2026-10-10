@@ -458,8 +458,8 @@ var EINSTELLUNGEN = [
         label: 'Zoom',
         werte: [['auto', 'automatisch'], ['s', 'S'], ['m', 'M'], ['l', 'L']],
         get: function () { return window.msmrZoom.mode() === 'auto' ? 'auto' : window.msmrZoom.get(); },
-        // automatisch: der gewählte Buchstabe, unterstrichen
-        icon: function (w) { return { text: window.msmrZoom.get().toUpperCase(), auto: w === 'auto' }; },
+        // vier Stufen: A (automatisch), S, M, L
+        icon: function (w) { return { text: w === 'auto' ? 'A' : w.toUpperCase() }; },
         beschr: function (w) { return w === 'auto' ? 'automatisch (' + window.msmrZoom.get().toUpperCase() + ')' : null; },
         set: function (w) { if (w === 'auto') window.msmrZoom.reset(); else window.msmrZoom.set(w); }
     },

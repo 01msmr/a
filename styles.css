@@ -1430,12 +1430,6 @@ body:not(.tastatur) .settings-btn:hover,
     text-align: center;
 }
 
-/* automatisch gewählt: unterstrichen */
-.set-letter.auto {
-    text-decoration: underline;
-    text-underline-offset: .2em;
-}
-
 body:not(.tastatur) .set-btn:hover,
 .set-btn:focus-visible {
     background-color: color-mix(in srgb, var(--sect-col) 18%, transparent);
