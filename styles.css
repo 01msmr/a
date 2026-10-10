@@ -1,7 +1,20 @@
 /* Kachel: 190px reichen für alle Namen bis 183px Text (li a hat rechts kein Polster).
    Spalte: 6 Kacheln — eine siebte passte auch in die alten 1250px nicht */
+html {
+    --zoom: 1;
+    font-size: calc(100% * var(--zoom));
+}
+
+html[data-zoom="m"] {
+    --zoom: 1.25;
+}
+
+html[data-zoom="l"] {
+    --zoom: 1.6;
+}
+
 :root {
-    --kachel: 190px;
+    --kachel: 11.875rem;
     --spalte: calc(6 * var(--kachel));
 }
 
@@ -69,7 +82,7 @@ body {
     margin: 0;
     box-sizing: border-box;
     padding: 0 0 0 1em;
-    height: 50px;
+    height: 3.125rem;
     /* Außenkante bündig mit der Kachelreihe: Spalte + linkes Polster von .group */
     max-width: calc(var(--spalte) + 0.12em);
     /* als Flex-Element sonst zusammengedrückt */
@@ -79,7 +92,7 @@ body {
     align-items: center;
     /* Dropdown hinter den Chips, bricht bei Platzmangel um */
     flex-wrap: wrap;
-    column-gap: 6px;
+    column-gap: 0.375rem;
     overflow-x: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -136,7 +149,7 @@ li,
     display: inline-block;
     list-style-type: none;
     color: var(--back-body);
-    min-width: 190px;
+    min-width: var(--kachel);
     font-family: "Ubuntu", "Helvetica neue", Helvetica, Arial, sans-serif;
 }
 
@@ -233,12 +246,12 @@ a.secname {
     align-self: stretch;
     flex: 1 1 auto;
     text-align: center;
-    padding: 0 8px;
+    padding: 0 0.5rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     font-size: 1em;
-    min-width: 35px;
+    min-width: 2.1875rem;
     color: var(--sect-col);
     text-decoration: none;
     /* Kanten wie ein echter Knopf: links Licht, rechts Schatten; oben/unten erst bei Hover sichtbar */
@@ -316,7 +329,7 @@ div.seite::-webkit-scrollbar {
 li {
     margin: 0;
     width: var(--kachel);
-    height: 36px;
+    height: 2.25rem;
     /* oben statt Grundlinie: sonst bleibt unter jeder Reihe der Unterlängen-Spalt (5px) */
     vertical-align: top;
     overflow: hidden;
@@ -420,7 +433,8 @@ section h3 a {
     min-width: 0;
     font-size: 0.9em;
     align-self: stretch;
-    flex: 1 1 auto;
+    /* Basis 0: die Chips teilen sich den Rest und brechen auch bei großem Zoom nicht in eine zweite Zeile */
+    flex: 1 1 0;
 }
 
 a.secname:visited {
@@ -642,7 +656,7 @@ li.tot::after {
     /* Spaltenzahl folgt der Breite: hoch vier, quer sechs */
     .group {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(var(--kachel), 1fr));
         gap: 0;
     }
 
@@ -846,7 +860,7 @@ body.edit-mode #container::after {
 
 body.edit-mode li {
     height: auto;
-    min-height: 36px;
+    min-height: 2.25rem;
     /* die URL-Zeile darf beim Bearbeiten aus der Kachel ragen */
     overflow: visible;
 }
@@ -871,13 +885,13 @@ body.edit-mode li a[contenteditable]:focus::before {
 
 body.edit-mode .edit-url {
     display: block;
-    font-size: 11px;
+    font-size: 0.6875rem;
     opacity: 0.5;
-    padding: 0 2px 4px 7px;
+    padding: 0 2px 0.25rem 0.4375rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 180px;
+    max-width: 11.25rem;
     outline: none;
     cursor: text;
 }
@@ -893,12 +907,12 @@ body.edit-mode .edit-url:focus {
 
 body.edit-mode .btn-del {
     display: inline-block;
-    margin-left: 4px;
+    margin-left: 0.25rem;
     padding: 2px;
     border-radius: 3px;
     color: #c00;
     cursor: pointer;
-    font-size: 22px;
+    font-size: 1.375rem;
     vertical-align: middle;
     line-height: 1;
     user-select: none;
@@ -931,12 +945,12 @@ body.edit-mode li.removed .btn-del:hover {
 
 body.edit-mode .btn-move {
     display: inline-block;
-    width: 20px;
+    width: 1.25rem;
     text-align: center;
     color: var(--sect-col);
     opacity: .55;
     cursor: grab;
-    font-size: 15px;
+    font-size: 0.9375rem;
     line-height: 1;
     user-select: none;
 }
@@ -973,12 +987,12 @@ body.edit-mode li.dragging.abbruch {
 
 body.edit-mode li.btn-add {
     display: inline-block;
-    height: 28px;
-    line-height: 28px;
-    margin: 4px 0 0 6px;
+    height: 1.75rem;
+    line-height: 1.75rem;
+    margin: 0.25rem 0 0 0.375rem;
     color: #080;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 1.125rem;
     user-select: none;
     min-width: 0;
 }
@@ -991,16 +1005,16 @@ body.edit-mode li.btn-add {
         display: inline-grid;
         vertical-align: top;
         /* breiter Griff innerhalb der festen Kachelbreite — die Zeilen bleiben */
-        grid-template-columns: 39px minmax(0, 1fr) 20px;
+        grid-template-columns: 2.4375rem minmax(0, 1fr) 1.25rem;
         align-items: center;
         /* Lesebreite — sonst richtet sich die Kachel nach dem URL-Text
            und die Zeilenbildung entspricht nicht mehr der Leseansicht */
         width: var(--kachel);
-        min-height: 52px;
+        min-height: 3.25rem;
         padding: 2px 0;
         box-sizing: border-box;
         /* Lücke, sonst klebt das × am Anfasser der Nachbarkachel */
-        margin-right: 8px;
+        margin-right: 0.5rem;
     }
 
     /* volle Kachelhöhe als Griffleiste — ein 15px-Pünktchen verfehlt man.
@@ -1012,7 +1026,7 @@ body.edit-mode li.btn-add {
         display: block;
         font-size: 0;
         border-radius: 4px;
-        padding: 5px 6px;
+        padding: 0.3125rem 0.375rem;
         box-sizing: border-box;
         /* zwei Spalten größerer Punkte mit Luft dazwischen */
         background-image: radial-gradient(circle, var(--sect-col) 1.7px, transparent 2.1px);
@@ -1056,8 +1070,8 @@ body.edit-mode li.btn-add {
     body.edit-mode li .edit-url {
         grid-area: 2 / 2 / 3 / 4;
         max-width: none;
-        font-size: 12px;
-        padding-left: 4px;
+        font-size: 0.75rem;
+        padding-left: 0.25rem;
     }
 
     /* gleich groß wie eine Kachel, das + mittig — kein Zielen auf 28px nötig */
@@ -1069,12 +1083,12 @@ body.edit-mode li.btn-add {
         width: var(--kachel);
         height: auto;
         /* Kachelhöhe = Namenszeile + URL-Zeile, nicht deren min-height */
-        min-height: 56px;
+        min-height: 3.5rem;
         line-height: normal;
-        margin: 0 8px 0 0;
+        margin: 0 0.5rem 0 0;
         padding: 2px 0;
         box-sizing: border-box;
-        font-size: 22px;
+        font-size: 1.375rem;
         border-radius: .35em;
     }
 
@@ -1092,12 +1106,12 @@ body.edit-mode li.btn-add {
 
 body.nav-icons .secname .secicon {
     display: inline-block;
-    font-size: 25px;
+    font-size: 1.5625rem;
 }
 
 /* quadratischer Chip, Icon horizontal mittig */
 body.nav-icons a.secname {
-    width: 48px;
+    width: 3rem;
     text-align: center;
     /* kein seitliches Polster — sonst wird das größere Icon beschnitten */
     padding-left: 0;
@@ -1172,8 +1186,8 @@ body.edit-mode #container {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 6px;
-    margin: 10px 0;
+    gap: 0.375rem;
+    margin: 0.625rem 0;
     /* bündig mit dem Linktext; ohne font-size, damit em wie in .group zählt */
     width: 100%;
     max-width: var(--spalte);
@@ -1184,15 +1198,15 @@ body.edit-mode #container {
 .settings-label {
     min-width: 13em;
     color: var(--sect-col);
-    font-size: 14px;
+    font-size: 0.875rem;
 }
 
 /* iOS-Schalter */
 .switch {
     position: relative;
     display: inline-block;
-    width: 44px;
-    height: 26px;
+    width: 2.75rem;
+    height: 1.625rem;
     flex-shrink: 0;
     cursor: pointer;
 }
@@ -1221,8 +1235,8 @@ body.edit-mode #container {
     position: absolute;
     top: 3px;
     left: 3px;
-    width: 20px;
-    height: 20px;
+    width: 1.25rem;
+    height: 1.25rem;
     border-radius: 50%;
     background: var(--front-body);
     transition: transform .2s ease;
@@ -1243,19 +1257,19 @@ body.edit-mode #container {
 
 .settings-actions {
     justify-content: flex-start;
-    gap: 8px;
+    gap: 0.5rem;
     margin-top: 1.2em;
 }
 
 .settings-cancel,
 .settings-save {
-    padding: 6px 16px;
+    padding: 0.375rem 1rem;
     border: 1px solid var(--sect-col);
     border-radius: 20px;
     background: var(--front-body);
     color: var(--sect-col);
     font-family: "Ubuntu", sans-serif;
-    font-size: 13px;
+    font-size: 0.8125rem;
     cursor: pointer;
 }
 
@@ -1279,14 +1293,14 @@ body.edit-mode #container {
     }
 
     a.secname {
-        padding-left: 4px;
-        padding-right: 4px;
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
         font-size: 0.75em;
     }
 
     /* Icon bleibt 25px, nur die Tippfläche schrumpft */
     body.nav-icons a.secname {
-        width: 40px;
+        width: 2.5rem;
         padding-left: 0;
         padding-right: 0;
     }
@@ -1296,5 +1310,68 @@ body.edit-mode #container {
 @media only screen and (min-device-width: 813px) and (max-device-width: 1024px) and (orientation: landscape) {
     .titledomain {
         display: inline-block;
+    }
+}
+/* ── Zoom-Knöpfe S/M/L ───────────────────────────────────────────── */
+
+.zoom-ctl {
+    display: flex;
+    position: fixed;
+    right: .5rem;
+    bottom: .5rem;
+    z-index: 50;
+    background: var(--front-body);
+    border-radius: .25rem;
+    box-shadow: 0 0 0 1px var(--front-body), 0 1px 4px rgba(0, 0, 0, .35);
+}
+
+.zoom-ctl button {
+    font: inherit;
+    font-size: .8125rem;
+    padding: .125rem .5rem;
+    color: var(--sect-col);
+    background: transparent;
+    border: 1px solid var(--sect-col);
+    margin-left: -1px;
+    cursor: inherit;
+}
+
+.zoom-ctl button:first-child {
+    border-radius: .25rem 0 0 .25rem;
+    margin-left: 0;
+}
+
+.zoom-ctl button:last-child {
+    border-radius: 0 .25rem .25rem 0;
+}
+
+.zoom-ctl button[aria-pressed="true"] {
+    background: var(--sect-col);
+    color: var(--front-body);
+}
+
+/* automatisch gewählt: nur unterstrichen statt gefüllt */
+.zoom-ctl.auto button[aria-pressed="true"] {
+    background: transparent;
+    color: var(--sect-col);
+    text-decoration: underline;
+}
+
+.zoom-ctl button:focus-visible {
+    outline: 2px solid var(--sect-col);
+    outline-offset: 1px;
+    position: relative;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+        transition: none !important;
+    }
+}
+
+/* Telefon: die untere Leiste (Sprungtasten) bleibt frei */
+@media only screen and (min-device-width: 350px) and (max-device-width: 812px) {
+    .zoom-ctl {
+        bottom: calc(2.75rem + env(safe-area-inset-bottom, 0px));
     }
 }

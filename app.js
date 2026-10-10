@@ -419,6 +419,30 @@ function setzeStrich(e) {
 document.getElementById('container').addEventListener('mouseover', setzeStrich);
 document.getElementById('container').addEventListener('mousemove', setzeStrich);
 
+// ── Zoom: Knöpfe S/M/L, Tasten + - 0 (API msmrZoom steht im <head>) ──
+function zoomAnzeige() {
+    var auto = window.msmrZoom.mode() === 'auto';
+    document.querySelectorAll('#zoom-ctl button').forEach(function (b) {
+        var an = b.dataset.zoom === window.msmrZoom.get();
+        b.setAttribute('aria-pressed', an);
+        b.title = an && auto ? 'Zoom automatisch' : '';
+    });
+    document.getElementById('zoom-ctl').classList.toggle('auto', auto);
+}
+document.getElementById('zoom-ctl').addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (b) window.msmrZoom.set(b.dataset.zoom);
+});
+document.addEventListener('msmrzoom', zoomAnzeige);
+zoomAnzeige();
+document.addEventListener('keydown', function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;   // Browser-Zoom bleibt unberührt
+    if (e.target.closest('input, select, textarea, [contenteditable]')) return;
+    if (e.key === '+' || e.key === '=') window.msmrZoom.step(1);
+    else if (e.key === '-') window.msmrZoom.step(-1);
+    else if (e.key === '0') window.msmrZoom.reset();
+});
+
 // ── Maus oder Tastatur: nur das zuletzt benutzte Gerät hebt eine Kachel hervor ──
 document.addEventListener('keydown', function (e) {
     if (e.key === 'Tab' || e.key.indexOf('Arrow') === 0) document.body.classList.add('tastatur');
