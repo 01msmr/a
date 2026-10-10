@@ -463,7 +463,8 @@ var EINSTELLUNGEN = [
         icons: { aus: ['fa-chevron-up', 'fa-chevron-down'], an: 'fa-floppy-disk' },
         get: function () { return document.body.classList.contains('edit-mode') ? 'an' : 'aus'; },
         set: function (w) { if (w === 'an') enterEditMode(); else beendeBearbeiten(); },
-        schliesst: true
+        schliesst: true,
+        ohneVorschau: true   // Icon bleibt bei Hover wie es ist
     }
 ];
 
@@ -510,7 +511,7 @@ function settingsAnzeige() {
     document.querySelectorAll('#settings-pop .set-btn').forEach(function (b, i) {
         var e = EINSTELLUNGEN[i], w = e.get(), nach = wertNach(e, w);
         // nach einem Klick gilt der neue Zustand, bis der Zeiger den Knopf verlässt
-        var vorschau = !b.dataset.geklickt && (document.body.classList.contains('tastatur')
+        var vorschau = !e.ohneVorschau && !b.dataset.geklickt && (document.body.classList.contains('tastatur')
             ? b.matches(':focus-visible') : b.matches(':hover'));
         zeichneIcon(b.querySelector('.set-icon'), e, vorschau ? nach : w);
         b.title = e.label + ': ' + wertName(e, w) + ' → ' + wertName(e, nach);
