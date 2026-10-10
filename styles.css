@@ -32,8 +32,8 @@ html[data-zoom="l"] {
     --on-c: #fff;
     --chip-inv: #fff;
     /* Trennlinie unter dem Section-Titel: Tinte bzw. Schrift auf Farbe, je zur Hälfte deckend */
-    --teiler: color-mix(in srgb, #000 66%, transparent);
-    --teiler-c: color-mix(in srgb, var(--on-c) 66%, transparent);
+    --teiler: color-mix(in srgb, #000 75%, transparent);
+    --teiler-c: color-mix(in srgb, var(--on-c) 75%, transparent);
     --glanz: 1;
     /* Regel für Schrift in Sektionsfarbe: gleiche Farbe, Helligkeit (OKLCH-L) auf diesen Bereich begrenzt.
        Helle Farben werden dunkler, dunkle bleiben wie sie sind */
@@ -57,8 +57,8 @@ html[data-zoom="l"] {
         --title-dom: #999;
         --on-c: #111;
         --chip-inv: var(--front-body);
-        --teiler: color-mix(in srgb, #fff 66%, transparent);
-        --teiler-c: color-mix(in srgb, var(--on-c) 66%, transparent);
+        --teiler: color-mix(in srgb, #fff 75%, transparent);
+        --teiler-c: color-mix(in srgb, var(--on-c) 75%, transparent);
         /* im Dunkeln etwas weniger Glanz auf den Kacheln */
         --glanz: .6;
         /* im Dunkeln umgekehrt: nie dunkler als dieser Wert */
@@ -81,8 +81,8 @@ html[data-zoom="l"] {
     --title-dom: #999;
     --on-c: #111;
     --chip-inv: var(--front-body);
-    --teiler: color-mix(in srgb, #fff 66%, transparent);
-    --teiler-c: color-mix(in srgb, var(--on-c) 66%, transparent);
+    --teiler: color-mix(in srgb, #fff 75%, transparent);
+    --teiler-c: color-mix(in srgb, var(--on-c) 75%, transparent);
     /* im Dunkeln etwas weniger Glanz auf den Kacheln */
     --glanz: .6;
     /* im Dunkeln umgekehrt: nie dunkler als dieser Wert */
