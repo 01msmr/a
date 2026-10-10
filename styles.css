@@ -1355,8 +1355,9 @@ body:not(.tastatur) .settings-btn:hover,
     /* hängt am Zahnrad: oben bündig, nur die freien Ecken unten sind gerundet */
     border-radius: 0 0 .49rem .49rem;   /* wie die Kacheln: .35em bei 1.4rem Schrift */
     overflow: hidden;
-    background: var(--front-body);
-    color: var(--sect-col);
+    /* offen = umgekehrt: Fläche in Schriftfarbe, Icons in Flächenfarbe */
+    background: var(--sect-col);
+    color: var(--front-body);
     box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .35);
     flex-direction: column;
 }
@@ -1379,7 +1380,7 @@ body:not(.tastatur) .settings-btn:hover,
     border: 0;
     border-radius: 0;
     background: transparent;
-    color: var(--sect-col);
+    color: var(--front-body);
     font: inherit;
     cursor: inherit;
 }
@@ -1413,7 +1414,7 @@ body:not(.tastatur) .settings-btn:hover,
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--front-body);
+    color: var(--sect-col);
     font: bold .8em Ubuntu, "Helvetica neue", Helvetica, Arial, sans-serif;
 }
 
@@ -1436,18 +1437,18 @@ body:not(.tastatur) .settings-btn:hover,
     transition: none;
 }
 
-/* Hover und Tastaturfokus kehren um: Fläche in Schriftfarbe, Icon in Flächenfarbe */
+/* Hover und Tastaturfokus kehren wieder um: Fläche in Flächenfarbe, Icon in Schriftfarbe */
 body:not(.tastatur) .set-btn:hover,
 body.tastatur .set-btn:focus-visible {
-    background-color: var(--sect-col);
-    color: var(--front-body);
+    background-color: var(--front-body);
+    color: var(--sect-col);
     outline: none;
 }
 
-/* das „t“ im Squircle ist sonst in Flächenfarbe und verschwände */
+/* das „t“ im Squircle bleibt in der Farbe, die die Fläche gerade hat */
 body:not(.tastatur) .set-btn:hover .mit-t::after,
 body.tastatur .set-btn:focus-visible .mit-t::after {
-    color: var(--sect-col);
+    color: var(--front-body);
 }
 
 .set-btn:focus-visible {
