@@ -16,6 +16,7 @@
         --title-col: #000;
         --title-dom: #888;
         --on-c: #fff;
+        --chip-inv: #fff;
         /* Regel für Schrift in Sektionsfarbe: gleiche Farbe, Helligkeit (OKLCH-L) auf diesen Bereich begrenzt.
            Helle Farben werden dunkler, dunkle bleiben wie sie sind */
         --text-l-min: 0;
@@ -36,6 +37,7 @@
         --title-col: #fff;
         --title-dom: #999;
         --on-c: #111;
+        --chip-inv: #111;
         /* im Dunkeln umgekehrt: nie dunkler als dieser Wert */
         --text-l-min: .72;
         --text-l-max: 1;
@@ -562,19 +564,24 @@ body.docked .title {
     border-bottom-color: var(--sect-col);
 }
 
-/* aktive oder gehoverte Section (auch per Nav-Chip): URLs in voller Sektionsfarbe, Hover-Fläche voll deckend */
+/* aktive oder gehoverte Section (auch per Nav-Chip): Kacheln in Sektionsfarbe mit weißem Text;
+   die Kachel unter dem Cursor kehrt um: weiße Fläche, Text in Sektionsfarbe */
 section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) li a {
-    color: var(--c-text, var(--sect-col));
+    color: var(--on-c);
+}
+
+section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) li a::before {
+    background-color: var(--c, var(--back-hov));
 }
 
 body:not(.tastatur) section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) li a:hover,
 body.tastatur section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) li a:not([contenteditable]):focus-visible {
-    color: var(--on-c);
+    color: var(--c-text, var(--sect-col));
 }
 
 body:not(.tastatur) section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) li a:hover::before,
 body.tastatur section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) li a:not([contenteditable]):focus-visible::before {
-    background-color: var(--c, var(--back-hov));
+    background-color: var(--chip-inv);
 }
 
 /* Sprungtasten nur am Telefon */
