@@ -546,6 +546,27 @@ function settingsPlatzieren() {
         if (ev.newState === 'open') settingsPlatzieren();
     });
     window.addEventListener('resize', function () { if (pop.matches(':popover-open')) settingsPlatzieren(); });
+
+    // Mit Maus: schließt sich 6 s nach dem Verlassen von Overlay und Zahnrad (Touch/ohne Zeiger: nie)
+    var zeiger = matchMedia('(hover: hover) and (pointer: fine)');
+    var zu = null;
+    function zuStoppen() { clearTimeout(zu); zu = null; }
+    function zuStarten() {
+        zuStoppen();
+        if (!zeiger.matches || !pop.matches(':popover-open')) return;
+        zu = setTimeout(function () { if (pop.matches(':popover-open')) pop.hidePopover(); }, 6000);
+    }
+    var zahnrad = document.getElementById('settings-btn');
+    [pop, zahnrad].forEach(function (el) {
+        el.addEventListener('mouseenter', zuStoppen);
+        el.addEventListener('mouseleave', zuStarten);
+    });
+    // Tastaturbedienung im Overlay hält es offen
+    pop.addEventListener('focusin', zuStoppen);
+    pop.addEventListener('focusout', zuStarten);
+    pop.addEventListener('toggle', function (ev) {
+        if (ev.newState === 'open') zuStarten(); else zuStoppen();
+    });
     document.addEventListener('msmrzoom', settingsAnzeige);
     document.addEventListener('msmrtheme', settingsAnzeige);
     settingsAnzeige();
