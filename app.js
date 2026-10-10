@@ -6,11 +6,8 @@ function getPref(name) {
     catch (e) { return PREF_DEFAULTS[name]; }
 }
 
-var prefsGeaendert = false;
-
 function setPref(name, value) {
     try { localStorage.setItem('a.' + name, value); } catch (e) { }
-    prefsGeaendert = true;
     applyPrefs();
 }
 
@@ -23,7 +20,6 @@ function applyPrefs() {
 applyPrefs();
 
 // ── Render ────────────────────────────────────────────────────────
-var EDIT_OPTION = '__edit';
 var syncActive = function () { };
 
 // kräftige, gesättigte Farben (ohne Grauanteil): weiße Schrift (hell) bzw. dunkle Schrift (dunkel) bleibt lesbar
@@ -55,12 +51,6 @@ function render(data) {
     nav.innerHTML = '';
     sel.innerHTML = '';
 
-    // an erster Stelle; löst beim Laden nichts aus (change nur bei Auswahl)
-    var editOpt = document.createElement('option');
-    editOpt.value = EDIT_OPTION;
-    editOpt.textContent = 'edit';
-    sel.appendChild(editOpt);
-
     data.forEach(function (sec, idx) {
         var a = document.createElement('a');
         a.style.setProperty('--c', SEC_COLORS[idx % SEC_COLORS.length]);
@@ -85,11 +75,6 @@ function render(data) {
     });
 
     sel.addEventListener('change', function () {
-        if (sel.value === EDIT_OPTION) {
-            enterEditMode();
-            syncActive();
-            return;
-        }
         var el = document.querySelector(sel.value);
         if (el) el.scrollIntoView();
         // iOS gibt den Fokus nach dem Schließen der Auswahlliste an das select zurück
@@ -100,7 +85,6 @@ function render(data) {
     var container = document.getElementById('container');
     container.tabIndex = -1;
     container.innerHTML = '';
-    container.appendChild(buildSettingsPanel());
 
     data.forEach(function (sec, idx) {
         var section = document.createElement('section');
@@ -423,21 +407,6 @@ function makeLi(name, url, tot) {
     return li;
 }
 
-// ── Bearbeiten: Abbrechen/Speichern (nur im Edit Mode sichtbar) ────
-function buildSettingsPanel() {
-    var panel = document.createElement('div');
-    panel.className = 'settings-panel';
-    panel.innerHTML =
-        '<div class="settings-row settings-actions">' +
-        '<button class="settings-cancel">Abbrechen</button>' +
-        '<button class="settings-save">Speichern</button>' +
-        '</div>';
-
-    panel.querySelector('.settings-cancel').addEventListener('click', cancelEdit);
-    panel.querySelector('.settings-save').addEventListener('click', save);
-    return panel;
-}
-
 // ── Gezeichneter Strich-Cursor in der Kachel (Position für li a::after) ──
 // auch beim Betreten (mouseover): sonst blitzt der Strich kurz an der alten Position
 function setzeStrich(e) {
@@ -485,6 +454,15 @@ var EINSTELLUNGEN = [
         buchstabe: { left: 'l', center: 'c' },
         get: function () { return getPref('align'); },
         set: function (w) { setPref('align', w); }
+    },
+    {
+        label: 'Bearbeiten',
+        werte: [['aus', 'aus'], ['an', 'an (zum Beenden drücken)']],
+        // Stift = aus; Diskette = es wird bearbeitet, Klick beendet und fragt nach dem Speichern
+        icons: { aus: 'fa-pen', an: 'fa-floppy-disk' },
+        get: function () { return document.body.classList.contains('edit-mode') ? 'an' : 'aus'; },
+        set: function (w) { if (w === 'an') enterEditMode(); else beendeBearbeiten(); },
+        schliesst: true
     }
 ];
 
@@ -538,6 +516,7 @@ function settingsPlatzieren() {
             e.werte.forEach(function (p, k) { if (p[0] === w) i = k; });
             e.set(e.werte[(i + 1) % e.werte.length][0]);
             settingsAnzeige();
+            if (e.schliesst) { pop.hidePopover(); return; }
             settingsPlatzieren();   // der Zoom verschiebt das Zahnrad
         });
         pop.appendChild(b);
@@ -624,8 +603,6 @@ document.querySelector('.title').addEventListener('dblclick', function (e) {
 
 function preventEnter(e) { if (e.key === 'Enter') e.preventDefault(); }
 
-function cancelEdit() { location.reload(); }
-
 // Löschen ist bis zum Speichern umkehrbar
 function makeDelButton(li) {
     var del = document.createElement('span');
@@ -653,12 +630,8 @@ function enterEditMode() {
         if (!darf) return;
         document.body.classList.add('edit-mode');
         raster();   // gesetzte Rasterhöhen lösen, sonst schlagen sie die Edit-Regeln
-
-        // erst im nächsten Frame, sonst rastert scroll-snap zurück
-        var panel = document.querySelector('.settings-panel');
-        if (panel) requestAnimationFrame(function () { panel.scrollIntoView(); });
-
         linksFreigeben();
+        settingsAnzeige();
     });
 }
 
@@ -875,19 +848,13 @@ function aenderungen() {
     return { geloescht: geloescht, geaendert: geaendert, verschoben: verschoben, neu: neu };
 }
 
-function bestaetigen() {
+// Text der Änderungen für die Rückfrage; leer, wenn nichts zu speichern ist
+function aenderungsText() {
     var d = aenderungen();
-
     if (!d.geaendert.length && !d.geloescht.length && !d.verschoben.length) {
-        // nichts zu überschreiben — neue Einträge und Einstellungen zählen mit
-        if (!d.neu && !prefsGeaendert) {
-            alert('Keine Änderungen — nichts zu speichern.');
-            return false;
-        }
-        return true;
+        return d.neu ? 'Neue Einträge speichern?' : '';
     }
-
-    var text = 'Änderungen übernehmen?\n';
+    var text = 'Änderungen speichern?\n';
     if (d.geaendert.length) {
         text += '\nGeändert (' + d.geaendert.length + '):\n' + d.geaendert.join('\n') + '\n';
     }
@@ -898,11 +865,19 @@ function bestaetigen() {
     if (d.geloescht.length) {
         text += '\nGelöscht (' + d.geloescht.length + '):\n' + d.geloescht.join('\n') + '\n';
     }
-    return confirm(text);
+    return text;
+}
+
+// Bearbeiten beenden: nichts geändert → einfach zu; sonst fragen, ob gespeichert wird,
+// bei „Nein“ ob verworfen wird; bei erneutem „Nein“ bleibt der Edit Mode offen
+function beendeBearbeiten() {
+    var text = aenderungsText();
+    if (!text) { location.reload(); return; }
+    if (confirm(text)) save();
+    else if (confirm('Änderungen verwerfen?')) location.reload();
 }
 
 function save() {
-    if (!bestaetigen()) return;
     var json = JSON.stringify(collectData(), null, 2);
     fetch('edit/save.php', {
         method: 'POST',

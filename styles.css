@@ -1224,67 +1224,17 @@ body.align-center .name {
     padding-right: max(0px, (100% - var(--spalte)) / 2);
 }
 
-body.align-center .group,
-body.align-center .settings-row {
+body.align-center .group {
     max-width: var(--spalte);
     margin-left: auto;
     margin-right: auto;
 }
 
-/* ── Einstellungs-Panel ──────────────────────────────────────────── */
+/* ── Bearbeiten ──────────────────────────────────────────────────── */
 
-.settings-panel {
-    display: none;
-}
-
-body.edit-mode .settings-panel {
-    display: block;
-    margin-bottom: 1.6em;
-}
-
-/* sonst rastet der Container das Panel wieder aus dem Bild */
+/* sonst rastet der Container die bearbeitete Section wieder aus dem Bild */
 body.edit-mode #container {
     scroll-snap-type: none;
-}
-
-.settings-panel .name {
-    color: var(--sect-col);
-}
-
-.settings-row {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.375rem;
-    margin: 0.625rem 0;
-    /* bündig mit dem Linktext; ohne font-size, damit em wie in .group zählt */
-    width: 100%;
-    max-width: var(--spalte);
-    padding-left: 0.36em;
-    box-sizing: border-box;
-}
-
-.settings-actions {
-    justify-content: flex-start;
-    gap: 0.5rem;
-    margin-top: 1.2em;
-}
-
-.settings-cancel,
-.settings-save {
-    padding: 0.375rem 1rem;
-    border: 1px solid var(--sect-col);
-    border-radius: 20px;
-    background: var(--front-body);
-    color: var(--sect-col);
-    font-family: "Ubuntu", sans-serif;
-    font-size: 0.8125rem;
-    cursor: pointer;
-}
-
-.settings-save {
-    background: var(--sect-col);
-    color: var(--front-body);
 }
 
 /* ── iPad: alle 15 Chips in eine Reihe ───────────────────────────── */
