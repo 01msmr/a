@@ -5,6 +5,122 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 
 ---
 
+## 2026-10-09 bis 11 — Sektionsfarben, Zoom, Farbschema, Einstellungs-Overlay, Raster
+
+Aus einem Feinschliff der Nav und der Kacheln wurde eine umfassende Überarbeitung der
+Oberfläche. Geprüft wurde im Headless-Browser (Vivaldi über CDP) mit Messwerten und
+Screenshots, nicht nach Augenmaß; Telefon, iPad, Dunkelmodus im Raster und die
+Fernbedienung am TV blieben ungeprüft.
+
+### Sektionsfarben und Hervorhebung
+
+Jede Section hat eine Farbe (`--c`, 15 Töne aus `SEC_COLORS`, nach Position). Daraus
+leiten sich ab: `--c-hov` (28 % Deckkraft), `--on-c` (Schrift auf der Farbe) und
+`--c-text` (die Sektionsfarbe mit auf einen Bereich begrenzter Helligkeit, damit sie auf
+Weiß bzw. Dunkel lesbar bleibt).
+
+Die **aktive oder gehoverte Section füllt sich ganz** in ihrer Farbe, Schrift weiß (im
+Dunkeln `#111`). Die Kachel unter dem Cursor kehrt um: helle Fläche, Text in der
+Sektionsfarbe, der gezeichnete Strich-Cursor ebenfalls. Die Titel-Hervorhebung der aktiven
+Section entfiel; der Nav-Chip folgt im Maus-Modus der Section unter der Maus.
+
+Es zählt **nur die zuletzt benutzte Eingabe**. `body.tastatur` (gesetzt bei Tab und Pfeilen,
+entfernt bei Mausbewegung) schaltet zwischen Hover-Regeln und Fokus-Regeln um. Im
+Maus-Modus tritt die „aktuelle“ Section zurück, solange eine andere gehovert wird —
+vorher waren zwei gleichzeitig eingefärbt.
+
+Behoben: Beim Tastatur-Sprung bekam die Ziel-Section zuerst den Fokus und erst später
+`.aktuell`. In der Lücke galt nur die allgemeine Regel, die Titel, Unterkante und Text auf
+`--title-col` setzt, im Dunkeln also ein weißes Aufblitzen. Die Einfärbung gilt jetzt auch
+bei `section:focus-visible`.
+
+### app als dritte Section
+
+`mitApp()` in `app.js` setzt die Section `app` an Position 3, wenn sie in den Daten fehlt;
+ein früher gespeichertes „APP“ und das Handy-Icon werden beim Laden auf `app` und den
+Squircle umgestellt. Der Titel steht kleingeschrieben da, die Großbuchstaben macht
+`text-transform` wie bei den anderen. Das Icon `icon-squircle` ist eine Superellipse mit
+Exponent 5 (Apples App-Icons; ein mathematisches Squircle hätte 4), als CSS-Maske aus einem
+SVG gezeichnet — Font Awesome hat keine solche Form.
+
+### Zoom S / M / L
+
+`html` bekommt `font-size: calc(100% * var(--zoom))` mit 1, 1,25 und 1,6. Kachelbreite,
+Zeilen- und Leistenhöhe, Abstände, Schatten und der rote Punkt stehen in `rem`; Haarlinien
+bleiben `1px`. Die Wahl liegt je Gerät in `localStorage["msmr.zoom"]`, ohne Eintrag gilt ein
+automatischer Standard (TV, breit ohne Maus, Tablet). Ein Inline-Skript im `<head>` setzt
+sie vor dem ersten Paint. API: `msmrZoom.get/set/step/cycle/reset`. Tasten `+`, `-`, `0`.
+
+Die Nav-Chips bekamen `flex: 1 1 0`, damit sie bei großem Zoom nicht in eine zweite Zeile
+brechen. Die `device-width`-Media-Queries bleiben in `px`.
+
+### Farbschema auto / hell / dunkel
+
+Die Variablen stehen für Hell (Standard), für die Systemvorgabe Dunkel und für die
+ausdrückliche Wahl `data-theme="dark"`. Dunkel steht deshalb zweimal in `styles.css` — eine
+Media Query kennt kein Attribut. Die Wahl liegt in `localStorage["msmr.theme"]`, ohne Eintrag
+folgt die Seite dem System. Im Dunkeln hat die Hover-Kachel die Seitenfarbe als Fläche und
+der Glanz ist auf 60 % gesenkt (`--glanz`).
+
+### Einstellungen im Overlay
+
+Zahnrad als letzter Nav-Eintrag, davor die Chips, danach das Dropdown. Ein Klick öffnet
+einen senkrechten Stapel aus Icon-Knöpfen (ein natives `popover="manual"`), jeder schaltet
+reihum. Das Icon zeigt in Ruhe den Zustand und unter dem Zeiger das Ergebnis des Klicks; nach
+einem Klick den neuen Zustand, bis der Zeiger den Knopf verlassen hat. Der Stapel ist so
+breit wie das Zahnrad, das dieselben Breitenregeln wie die Nav-Chips teilt, und invertiert
+sich solange er offen ist. Drücken, auf einen Knopf ziehen und Loslassen schaltet nur diesen
+Knopf. Mit Maus schließt er sich 3 s nach dem Verlassen, ohne Zeiger nie.
+
+Der frühere Einstellungsblock im Edit-Mode und die zwei Knopfleisten unten rechts
+entfielen. Die Einstellungen Navigation (Text/Icons) und Ausrichtung (links/Mitte) sind
+vom Edit-Mode ins Overlay gewandert.
+
+### Raster-Ansicht
+
+Neue Einstellung „Ansicht“: eckige Kacheln ohne Glanz, 1 px Linien auf den Gitterlinien
+(grau in inaktiven Sections, hell in der eingefärbten), kein Strich unter dem Titel und kein
+Polster unter der Gruppe. Bei Hover hebt sich der Titel mit 28 % in der Schriftfarbe von der
+Fläche ab. „Links“ heißt hier volle Breite, auch die Leiste. Der tote Link ist ein rotes
+Quadrat bündig in der Ecke. Der Edit-Mode bleibt beim Chip-Layout.
+
+### Bearbeiten
+
+Einstieg über das Overlay (zwei Chevrons; während der Bearbeitung eine Diskette) oder
+Doppelklick auf die Leiste. Speichern/Abbrechen und der Eintrag „edit“ im Dropdown
+entfielen. Das Beenden fragt: speichern? sonst verwerfen? sonst weiterbearbeiten; ohne
+Änderung lädt die Seite einfach neu. Links lassen sich in andere Sections ziehen (nur mit
+Maus); der Speichern-Dialog meldet dann die Ziel-Section als geändert.
+
+### Tastatur
+
+- Pfeile gelten auch mit Fokus auf Nav-Chips oder Zahnrad.
+- Nach einer Mausbewegung starten sie an der Section bzw. Kachel unter der Maus statt am
+  Scrollstand. Davor sprang „nach unten“ zur ersten Section.
+- Pfeil links nach einem Section-Wechsel geht auf die letzte Kachel der Section.
+
+### Weiteres
+
+- Favicon ist jetzt `apple-icon-180x180.png`; `favicon-32x32.png` existierte nicht. Pfade im
+  Manifest sind relativ zum Manifest.
+- `tools/dev-router.php`: Demo-Server mit `no-store` und Versionsnummer an CSS/JS. Eine
+  zeitweilige Cache-`.htaccess` ist wieder entfernt, die echte Seite lädt korrekt.
+- Die Seite hat keine Rundung des Rahmens mehr (`div.seite` füllt das Fenster); die
+  Eckenrundung der Vivaldi-Webview ist eine Browsereinstellung.
+
+### Fallstricke, die bleiben
+
+- **Spezifität bei den Hover-Regeln.** Die Einfärbung steht in mehreren Selektorlisten
+  (Maus, Fokus, aktuell). Wer eine Eigenschaft ändert, muss alle drei erwischen.
+- **`:where(:not(:has(...)))`** hält die Spezifität der „aktuell“-Regeln klein; ein
+  normales `:not()` würde sie über die Hover-Regeln heben.
+- **`custom property` mit Farbe im `:root`.** `--teiler` o. Ä. mit `var(--c)` im `:root`
+  wertet nicht pro Section aus; solche Mischungen gehören direkt in die Regel.
+- **`sed -i` auf macOS** braucht `-i ''`; Python-Ersetzungen mit `assert` sind sicherer.
+- **Screenshots im Headless-Browser** zeigen die Seite am rechten Rand doppelt und
+  lassen das Overlay manchmal aus; Messwerte (`getComputedStyle`, `elementFromPoint`) sind
+  verlässlicher als das Bild.
+
 ## 2026-07-26 — Höhenraster, gekürzte Namen, Fokus, tote Links
 
 Der Tag begann mit zwei Wünschen fürs iPad und wuchs zu einer Überarbeitung
