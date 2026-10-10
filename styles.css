@@ -31,6 +31,9 @@ html[data-zoom="l"] {
     --title-dom: #888;
     --on-c: #fff;
     --chip-inv: #fff;
+    /* Trennlinie unter dem Section-Titel: Tinte bzw. Schrift auf Farbe, je zur Hälfte deckend */
+    --teiler: color-mix(in srgb, #000 50%, transparent);
+    --teiler-c: color-mix(in srgb, var(--on-c) 50%, transparent);
     --glanz: 1;
     /* Regel für Schrift in Sektionsfarbe: gleiche Farbe, Helligkeit (OKLCH-L) auf diesen Bereich begrenzt.
        Helle Farben werden dunkler, dunkle bleiben wie sie sind */
@@ -54,6 +57,10 @@ html[data-zoom="l"] {
         --title-dom: #999;
         --on-c: #111;
         --chip-inv: var(--front-body);
+    --teiler: color-mix(in srgb, #fff 50%, transparent);
+    --teiler-c: color-mix(in srgb, var(--on-c) 50%, transparent);
+        --teiler: color-mix(in srgb, #fff 50%, transparent);
+        --teiler-c: color-mix(in srgb, var(--on-c) 50%, transparent);
         /* im Dunkeln etwas weniger Glanz auf den Kacheln */
         --glanz: .6;
         /* im Dunkeln umgekehrt: nie dunkler als dieser Wert */
@@ -375,7 +382,7 @@ li {
     font-family: "Helvetica Neue", helvetica, arial, sans-serif;
     font-size: 1.4em;
     text-transform: uppercase;
-    border-bottom: .06em solid var(--text-col);
+    border-bottom: .06em solid var(--teiler);
     background: none;
     padding-left: 0.2em;
 }
@@ -419,13 +426,13 @@ body.tastatur #container section:is(:has(:focus-visible)) .name:not(.mit-druck) 
 /* Unterkante: grau in Ruhe, bei Hover (direkt oder per Nav-Chip) in der Sektionsfarbe */
 body:not(.tastatur) #container section:is(:hover, :has(.name.mit-hover)) .name:not(.mit-druck),
 body.tastatur #container section:is(:has(:focus-visible)) .name:not(.mit-druck) {
-    border-bottom-color: var(--c, var(--title-col));
+    border-bottom-color: var(--teiler-c);
 }
 
 /* die eingefärbte aktuelle Section hat keine dunkle Unterkante, sie verschmilzt mit der Fläche */
 body.tastatur #container section.aktuell .name,
 body:not(.tastatur):where(:not(:has(section:hover, .name.mit-hover:not(.active)))) #container section.aktuell .name {
-    border-bottom-color: var(--c, var(--title-col));
+    border-bottom-color: var(--teiler-c);
 }
 
 /* auch der Rest der per Nav-Chip gehoverten Section wird kontrastreich */
