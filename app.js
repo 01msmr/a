@@ -547,14 +547,14 @@ function settingsPlatzieren() {
     });
     window.addEventListener('resize', function () { if (pop.matches(':popover-open')) settingsPlatzieren(); });
 
-    // Mit Maus: schließt sich 6 s nach dem Verlassen von Overlay und Zahnrad (Touch/ohne Zeiger: nie)
+    // Mit Maus: schließt sich 3 s nach dem Verlassen von Overlay und Zahnrad (Touch/ohne Zeiger: nie)
     var zeiger = matchMedia('(hover: hover) and (pointer: fine)');
     var zu = null;
     function zuStoppen() { clearTimeout(zu); zu = null; }
     function zuStarten() {
         zuStoppen();
         if (!zeiger.matches || !pop.matches(':popover-open')) return;
-        zu = setTimeout(function () { if (pop.matches(':popover-open')) pop.hidePopover(); }, 6000);
+        zu = setTimeout(function () { if (pop.matches(':popover-open')) pop.hidePopover(); }, 3000);
     }
     var zahnrad = document.getElementById('settings-btn');
     [pop, zahnrad].forEach(function (el) {
