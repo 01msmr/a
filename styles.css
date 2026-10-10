@@ -1290,6 +1290,13 @@ body.view-grid:not(.edit-mode).tastatur #container section:is(:focus-visible, :h
     background-color: color-mix(in srgb, var(--on-c) 28%, transparent);
 }
 
+/* toter Link im Raster: roter Punkt wird ein Quadrat gleicher Größe, bündig in der oberen rechten Ecke innen */
+body.view-grid:not(.edit-mode) li.tot::after {
+    top: 0;
+    right: 0;
+    border-radius: 0;
+}
+
 /* eckig, ohne Glanz */
 body.view-grid:not(.edit-mode) li a::before {
     border-radius: 0;
