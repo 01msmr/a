@@ -137,6 +137,7 @@ function render(data) {
             li.dataset.name0 = link.name;   // Ursprungswerte für den Vergleich
             li.dataset.url0 = link.url;
             li.dataset.pos0 = i;
+            li.dataset.sec0 = sec.id;
             ul.appendChild(li);
         });
 
@@ -567,6 +568,7 @@ function ziehbar() { return matchMedia('(pointer: fine)').matches; }
 var gezogen = null;      // Kachel, die gerade zieht
 var vorbereitet = null;  // Kachel, deren Anfasser gedrückt ist
 var startPlatz = null;   // Nachbar beim Zugbeginn, für die Rückkehr beim Abbruch
+var startListe = null;   // Liste beim Zugbeginn: eine Kachel darf in jede Section wandern
 
 // ein Klick ohne Zug muss die Kachel wieder festsetzen
 document.addEventListener('mouseup', function () {
@@ -577,14 +579,14 @@ document.addEventListener('mouseup', function () {
     }
 });
 
-// außerhalb der eigenen Liste: Linie weg, Kachel kehrt an den Start zurück
-// und zeigt den Abbruch — was man sieht, ist immer das Ergebnis des Loslassens
+// außerhalb jeder Liste: Kachel kehrt an den Start zurück und zeigt den Abbruch —
+// was man sieht, ist immer das Ergebnis des Loslassens
 document.addEventListener('dragover', function (e) {
     if (!gezogen) return;
-    var drin = gezogen.parentNode.contains(e.target);
+    var drin = !!(e.target.closest && e.target.closest('ul.group'));
     gezogen.classList.toggle('abbruch', !drin);
-    if (!drin && gezogen.nextSibling !== startPlatz) {
-        gezogen.parentNode.insertBefore(gezogen, startPlatz);
+    if (!drin && (gezogen.parentNode !== startListe || gezogen.nextSibling !== startPlatz)) {
+        startListe.insertBefore(gezogen, startPlatz);
     }
 });
 
@@ -605,6 +607,7 @@ function makeMoveHandle(li) {
     li.addEventListener('dragstart', function (e) {
         gezogen = li;
         startPlatz = li.nextSibling;
+        startListe = li.parentNode;
         // erst nach dem Schnappschuss des Zugbilds, sonst trägt auch das
         // mitfliegende Bild das Ziel-Highlight
         setTimeout(function () { if (gezogen === li) li.classList.add('dragging'); });
@@ -614,14 +617,16 @@ function makeMoveHandle(li) {
     });
     li.addEventListener('dragend', function () {
         // Loslassen im Aus, ohne dass der Abbruch-Handler noch feuerte
-        if (li.classList.contains('abbruch') && li.nextSibling !== startPlatz) {
-            li.parentNode.insertBefore(li, startPlatz);
+        if (li.classList.contains('abbruch') &&
+            (li.parentNode !== startListe || li.nextSibling !== startPlatz)) {
+            startListe.insertBefore(li, startPlatz);
         }
         li.classList.remove('dragging', 'abbruch', 'gepackt');
         li.draggable = false;
         gezogen = null;
         vorbereitet = null;
         startPlatz = null;
+        startListe = null;
     });
     return griff;
 }
@@ -631,8 +636,7 @@ function sortierbar(ul) {
     ul.dataset.sortierbar = '1';
 
     ul.addEventListener('dragover', function (e) {
-        // nur die eigene Section nimmt an
-        if (!gezogen || gezogen.parentNode !== ul) return;
+        if (!gezogen) return;
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
 
@@ -640,7 +644,7 @@ function sortierbar(ul) {
         // sie gibt ihren Platz her, die Zugrichtung entscheidet die Seite.
         // Über Lücken (auch der eigenen Kachel) bleibt die Vorschau stehen.
         var ziel = e.target.closest ? e.target.closest('li') : null;
-        if (!ziel || ziel === gezogen || ziel.parentNode !== ul) return;
+        if (!ziel || ziel === gezogen || ziel.parentNode !== ul) return;   // Lücken: Vorschau bleibt
         var vor = ziel.classList.contains('btn-add') ? ziel
             // Ziel liegt vor der Zugkachel → davor, sonst dahinter
             : (ziel.compareDocumentPosition(gezogen) & Node.DOCUMENT_POSITION_FOLLOWING)
@@ -712,9 +716,11 @@ function aenderungen() {
     document.querySelectorAll('#container section').forEach(function (section) {
         var ul = section.querySelector('ul.group');
         if (!ul) return;
+        var secId = (section.querySelector('h3.name') || {}).id;
         var letzte = -1, umgestellt = false;
         ul.querySelectorAll('li:not(.btn-add):not(.removed)').forEach(function (li) {
             if (li.dataset.pos0 === undefined) return;   // neu, hat keine Ausgangsposition
+            if (li.dataset.sec0 !== secId) umgestellt = true;   // aus einer anderen Section herübergezogen
             var pos = +li.dataset.pos0;
             if (pos < letzte) umgestellt = true;
             letzte = pos;
