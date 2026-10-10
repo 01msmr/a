@@ -1353,7 +1353,7 @@ body:not(.tastatur) .settings-btn:hover,
     box-sizing: border-box;
     border: 0;
     /* hängt am Zahnrad: oben bündig, nur die freien Ecken unten sind gerundet */
-    border-radius: 0 0 .35rem .35rem;
+    border-radius: 0 0 .49rem .49rem;   /* wie die Kacheln: .35em bei 1.4rem Schrift */
     overflow: hidden;
     background: var(--front-body);
     color: var(--sect-col);
@@ -1362,7 +1362,7 @@ body:not(.tastatur) .settings-btn:hover,
 }
 
 .settings-pop.nach-oben {
-    border-radius: .35rem .35rem 0 0;
+    border-radius: .49rem .49rem 0 0;
 }
 
 .settings-pop:popover-open {
@@ -1426,6 +1426,14 @@ body:not(.tastatur) .settings-btn:hover,
 
 .set-ausrichtung.center {
     text-align: center;
+}
+
+/* Umschalten und Hover ohne Übergang */
+.settings-pop,
+.settings-pop *,
+.settings-pop *::before,
+.settings-pop *::after {
+    transition: none;
 }
 
 /* Hover und Tastaturfokus kehren um: Fläche in Schriftfarbe, Icon in Flächenfarbe */
