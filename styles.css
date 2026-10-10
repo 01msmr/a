@@ -140,7 +140,8 @@ section {
 
 /* kontrastreich bei Hover, Tastatur-Fokus oder als oberste Section — ein Mausklick-Fokus zählt nicht,
    sonst wirkt die Section nach der Rückkehr von einem Link noch gehovert */
-section:is(:hover, :focus-visible, :has(:focus-visible), .aktuell) a {
+body:not(.tastatur) section:is(:hover, .aktuell) a,
+body.tastatur section:is(:focus-visible, :has(:focus-visible), .aktuell) a {
     color: var(--sect-col);
 }
 
@@ -365,28 +366,34 @@ li {
     background: none;
 }
 
-section:is(:hover, :focus-visible, :has(:focus-visible), .aktuell),
-section:is(:hover, :focus-visible, :has(:focus-visible), .aktuell) .name,
-section:is(:hover, :focus-visible, :has(:focus-visible), .aktuell) .group {
+body:not(.tastatur) section:is(:hover, .aktuell),
+body.tastatur section:is(:focus-visible, :has(:focus-visible), .aktuell),
+body:not(.tastatur) section:is(:hover, .aktuell) .name,
+body.tastatur section:is(:focus-visible, :has(:focus-visible), .aktuell) .name,
+body:not(.tastatur) section:is(:hover, .aktuell) .group,
+body.tastatur section:is(:focus-visible, :has(:focus-visible), .aktuell) .group {
     color: var(--title-col);
     border-color: var(--title-col);
     cursor: var(--curs-img) 1 1, auto;
 }
 
 /* gehoverte Section (direkt oder per Nav-Chip): Titel in voller Sektionsfarbe statt Grau */
-#container section:is(:hover, :has(:focus-visible), :has(.name.mit-hover)) .name:not(.active, .mit-druck),
-#container section:is(:hover, :has(:focus-visible), :has(.name.mit-hover)) .name:not(.active, .mit-druck) a {
+body:not(.tastatur) #container section:is(:hover, :has(.name.mit-hover)) .name:not(.active, .mit-druck),
+body.tastatur #container section:is(:has(:focus-visible)) .name:not(.active, .mit-druck),
+body:not(.tastatur) #container section:is(:hover, :has(.name.mit-hover)) .name:not(.active, .mit-druck) a,
+body.tastatur #container section:is(:has(:focus-visible)) .name:not(.active, .mit-druck) a {
     color: var(--c-text, var(--title-col));
 }
 
 /* Unterkante: grau in Ruhe, bei Hover (direkt oder per Nav-Chip) in der Sektionsfarbe */
-#container section:is(:hover, :has(:focus-visible), :has(.name.mit-hover)) .name:not(.active, .mit-druck) {
+body:not(.tastatur) #container section:is(:hover, :has(.name.mit-hover)) .name:not(.active, .mit-druck),
+body.tastatur #container section:is(:has(:focus-visible)) .name:not(.active, .mit-druck) {
     border-bottom-color: var(--c, var(--title-col));
 }
 
 /* auch der Rest der per Nav-Chip gehoverten Section wird kontrastreich */
-section:has(.name.mit-hover:not(.active)),
-section:has(.name.mit-hover:not(.active)) .group {
+body:not(.tastatur) section:has(.name.mit-hover:not(.active)),
+body:not(.tastatur) section:has(.name.mit-hover:not(.active)) .group {
     color: var(--title-col);
 }
 
@@ -462,11 +469,11 @@ a.secname,
     --c-hov: color-mix(in srgb, var(--c, var(--sect-col)) 28%, transparent);
 }
 
-#container section .name:not(.active):is(:hover, .mit-hover) {
+body:not(.tastatur) #container section .name:not(.active):is(:hover, .mit-hover) {
     background-color: var(--c-hov);
 }
 
-a.secname:not(.active):is(:hover, .mit-hover) {
+body:not(.tastatur) a.secname:not(.active):is(:hover, .mit-hover) {
     color: var(--sect-col);
 }
 
@@ -478,7 +485,7 @@ a.secname.active,
 /* Knöpfe über die volle Höhe: flach in Ruhe, erhaben bei Hover (auch gekoppelt),
    eingedrückt wenn aktiv oder gedrückt. Der Titel der Section spiegelt Hover und Druck
    des Chips — und umgekehrt */
-a.secname:not(.active):is(:hover, .mit-hover) {
+body:not(.tastatur) a.secname:not(.active):is(:hover, .mit-hover) {
     z-index: 1;
     background-color: color-mix(in srgb, var(--c, var(--sect-col)) 30%, var(--front-body));
     background-image: linear-gradient(rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, .15));
@@ -580,13 +587,17 @@ body.docked .title {
 
 /* aktive oder gehoverte Section (auch per Nav-Chip): die ganze Section in Sektionsfarbe, Text weiß;
    nur die Kachel unter dem Cursor kehrt um: helle Fläche, Text in Sektionsfarbe */
-#container section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) {
+body:not(.tastatur) #container section:is(.aktuell, :hover, :has(.name.mit-hover:not(.active))),
+body.tastatur #container section:is(.aktuell, :has(:focus-visible)) {
     background-color: var(--c, transparent);
 }
 
-#container section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) .name:not(.active, .mit-druck),
-#container section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) .name:not(.active, .mit-druck) a,
-section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) li a {
+body:not(.tastatur) #container section:is(.aktuell, :hover, :has(.name.mit-hover:not(.active))) .name:not(.active, .mit-druck),
+body.tastatur #container section:is(.aktuell, :has(:focus-visible)) .name:not(.active, .mit-druck),
+body:not(.tastatur) #container section:is(.aktuell, :hover, :has(.name.mit-hover:not(.active))) .name:not(.active, .mit-druck) a,
+body.tastatur #container section:is(.aktuell, :has(:focus-visible)) .name:not(.active, .mit-druck) a,
+body:not(.tastatur) section:is(.aktuell, :hover, :has(.name.mit-hover:not(.active))) li a,
+body.tastatur section:is(.aktuell, :has(:focus-visible)) li a {
     color: var(--on-c);
 }
 
