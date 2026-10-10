@@ -382,7 +382,8 @@ document.addEventListener('keydown', function (e) {
     if (document.body.classList.contains('edit-mode')) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     var t = e.target;
-    if (t !== document.body && !(t.closest && t.closest('#container'))) return;
+    // Inhalt, Chips und Zahnrad der Leiste; das Dropdown behält seine Pfeiltasten
+    if (t !== document.body && !(t.closest && t.closest('#container, .title a, .title button'))) return;
     if (e.key === 'ArrowDown') { e.preventDefault(); jumpBy(1); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); jumpBy(-1); }
     else if (e.key === 'ArrowRight') { e.preventDefault(); linkBy(1); }
