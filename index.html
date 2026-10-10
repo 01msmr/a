@@ -10,6 +10,28 @@
     <title>a.msmr.co</title>
     <base target="_blank" />
 
+    <!-- Farbschema auto/hell/dunkel: vor dem ersten Paint setzen; Wahl pro Gerät, ohne Wahl gilt die Systemvorgabe -->
+    <script>
+        (() => {
+            const KEY = 'msmr.theme', MODES = ['light', 'dark'];
+            const read = () => { try { const v = localStorage.getItem(KEY); return MODES.includes(v) ? v : null; } catch { return null; } };
+            const apply = () => {
+                const v = read(), el = document.documentElement;
+                if (v) el.dataset.theme = v; else delete el.dataset.theme;
+                document.dispatchEvent(new Event('msmrtheme'));
+            };
+            window.msmrTheme = {
+                get: () => read() || 'auto',
+                set(m) {
+                    try { if (MODES.includes(m)) localStorage.setItem(KEY, m); else localStorage.removeItem(KEY); } catch { }
+                    apply();
+                },
+            };
+            apply();
+            addEventListener('storage', e => e.key === KEY && apply());
+        })();
+    </script>
+
     <!-- Zoom s/m/l: vor dem ersten Paint setzen; Wahl pro Gerät in localStorage, sonst automatisch -->
     <script>
         (() => {
@@ -77,10 +99,17 @@
             </a>
         </h3>
         <article id="container" class="container"></article>
-        <div id="zoom-ctl" class="zoom-ctl" role="group" aria-label="Zoom">
-            <button type="button" data-zoom="s">S</button>
-            <button type="button" data-zoom="m">M</button>
-            <button type="button" data-zoom="l">L</button>
+        <div class="ctl-bar">
+            <div id="theme-ctl" class="zoom-ctl" role="group" aria-label="Farbschema">
+                <button type="button" data-theme="auto" title="Automatisch (Systemvorgabe)" aria-label="Automatisch"><i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i></button>
+                <button type="button" data-theme="light" title="Hell" aria-label="Hell"><i class="fa-solid fa-sun" aria-hidden="true"></i></button>
+                <button type="button" data-theme="dark" title="Dunkel" aria-label="Dunkel"><i class="fa-solid fa-moon" aria-hidden="true"></i></button>
+            </div>
+            <div id="zoom-ctl" class="zoom-ctl" role="group" aria-label="Zoom">
+                <button type="button" data-zoom="s">S</button>
+                <button type="button" data-zoom="m">M</button>
+                <button type="button" data-zoom="l">L</button>
+            </div>
         </div>
     </div>
 

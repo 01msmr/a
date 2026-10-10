@@ -18,30 +18,32 @@ html[data-zoom="l"] {
     --spalte: calc(6 * var(--kachel));
 }
 
-@media (prefers-color-scheme: light) {
-    :root {
-        --front-body: #eee;
-        --back-body: #ccc;
-        --text-col: #bbb;
-        --sect-col: #666;
-        --text-hov: #fff;
-        --back-hov: #666;
-        --title-col: #000;
-        --title-dom: #888;
-        --on-c: #fff;
-        --chip-inv: #fff;
-        --glanz: 1;
-        /* Regel für Schrift in Sektionsfarbe: gleiche Farbe, Helligkeit (OKLCH-L) auf diesen Bereich begrenzt.
-           Helle Farben werden dunkler, dunkle bleiben wie sie sind */
-        --text-l-min: 0;
-        --text-l-max: .64;
-        --curs-img: url(c-point-light.png);
-        --curs-hov: url(c-line-light.png);
-    }
+:root,
+:root[data-theme="light"] {
+    color-scheme: light;
+    --front-body: #eee;
+    --back-body: #ccc;
+    --text-col: #bbb;
+    --sect-col: #666;
+    --text-hov: #fff;
+    --back-hov: #666;
+    --title-col: #000;
+    --title-dom: #888;
+    --on-c: #fff;
+    --chip-inv: #fff;
+    --glanz: 1;
+    /* Regel für Schrift in Sektionsfarbe: gleiche Farbe, Helligkeit (OKLCH-L) auf diesen Bereich begrenzt.
+       Helle Farben werden dunkler, dunkle bleiben wie sie sind */
+    --text-l-min: 0;
+    --text-l-max: .64;
+    --curs-img: url(c-point-light.png);
+    --curs-hov: url(c-line-light.png);
 }
 
+/* dunkel: Systemvorgabe (außer bei ausdrücklich „hell“) oder ausdrückliche Wahl; Werte stehen zweimal, weil eine Media Query keine Wahl per Attribut kennt */
 @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
+        color-scheme: dark;
         --front-body: #333;
         --back-body: #000;
         --text-col: #666;
@@ -60,6 +62,27 @@ html[data-zoom="l"] {
         --curs-img: url(c-point.png);
         --curs-hov: url(c-line.png);
     }
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --front-body: #333;
+    --back-body: #000;
+    --text-col: #666;
+    --sect-col: #ccc;
+    --text-hov: #666;
+    --back-hov: #eee;
+    --title-col: #fff;
+    --title-dom: #999;
+    --on-c: #111;
+    --chip-inv: var(--front-body);
+    /* im Dunkeln etwas weniger Glanz auf den Kacheln */
+    --glanz: .6;
+    /* im Dunkeln umgekehrt: nie dunkler als dieser Wert */
+    --text-l-min: .72;
+    --text-l-max: 1;
+    --curs-img: url(c-point.png);
+    --curs-hov: url(c-line.png);
 }
 
 body {
@@ -1345,12 +1368,17 @@ body.edit-mode #container {
 }
 /* ── Zoom-Knöpfe S/M/L ───────────────────────────────────────────── */
 
-.zoom-ctl {
+.ctl-bar {
     display: flex;
+    gap: .5rem;
     position: fixed;
     right: .5rem;
     bottom: .5rem;
     z-index: 50;
+}
+
+.zoom-ctl {
+    display: flex;
     background: var(--front-body);
     border-radius: .25rem;
     box-shadow: 0 0 0 1px var(--front-body), 0 0.0625rem 0.25rem rgba(0, 0, 0, .35);
@@ -1402,7 +1430,7 @@ body.edit-mode #container {
 
 /* Telefon: die untere Leiste (Sprungtasten) bleibt frei */
 @media only screen and (min-device-width: 350px) and (max-device-width: 812px) {
-    .zoom-ctl {
+    .ctl-bar {
         bottom: calc(2.75rem + env(safe-area-inset-bottom, 0px));
     }
 }

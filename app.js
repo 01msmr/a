@@ -494,6 +494,19 @@ document.addEventListener('keydown', function (e) {
     else if (e.key === '0') window.msmrZoom.reset();
 });
 
+// ── Farbschema: Knöpfe auto/hell/dunkel (API msmrTheme steht im <head>) ──
+function themeAnzeige() {
+    document.querySelectorAll('#theme-ctl button').forEach(function (b) {
+        b.setAttribute('aria-pressed', b.dataset.theme === window.msmrTheme.get());
+    });
+}
+document.getElementById('theme-ctl').addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (b) window.msmrTheme.set(b.dataset.theme);
+});
+document.addEventListener('msmrtheme', themeAnzeige);
+themeAnzeige();
+
 // ── Maus oder Tastatur: nur das zuletzt benutzte Gerät hebt eine Kachel hervor ──
 document.addEventListener('keydown', function (e) {
     if (e.key === 'Tab' || e.key.indexOf('Arrow') === 0) document.body.classList.add('tastatur');
