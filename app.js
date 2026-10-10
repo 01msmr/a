@@ -100,14 +100,6 @@ function render(data) {
 
     var container = document.getElementById('container');
     container.tabIndex = -1;
-    container.addEventListener('keydown', function (e) {
-        // im Edit-Mode gehören die Pfeiltasten dem Textcursor
-        if (document.body.classList.contains('edit-mode')) return;
-        if (e.key === 'ArrowDown') { e.preventDefault(); jumpBy(1); }
-        else if (e.key === 'ArrowUp') { e.preventDefault(); jumpBy(-1); }
-        else if (e.key === 'ArrowRight') { e.preventDefault(); linkBy(1); }
-        else if (e.key === 'ArrowLeft') { e.preventDefault(); linkBy(-1); }
-    });
     container.innerHTML = '';
     container.appendChild(buildSettingsPanel());
 
@@ -339,7 +331,12 @@ function jumpBy(delta, umlaufen) {
     var sections = document.querySelectorAll('#container section');
     if (!sections.length) return;
     var base = jumpTarget;
-    if (base === null) {
+    // Maus seit dem letzten Tastendruck bewegt: von der Section unter der Maus aus
+    var unterMaus = mausBewegt ? mausSection() : null;
+    mausBewegt = false;
+    if (unterMaus) {
+        base = Array.prototype.indexOf.call(sections, unterMaus);
+    } else if (base === null) {
         var aktiv = document.querySelector('#container section h3.name.active');
         base = 0;
         sections.forEach(function (s, i) { if (aktiv && s.contains(aktiv)) base = i; });
@@ -359,15 +356,32 @@ function jumpBy(delta, umlaufen) {
 var mausKachel = null;
 var mausBewegt = false;
 
+var mausPunkt = null;   // letzte Mausposition im Fenster
+
+function mausSection() {
+    var el = mausPunkt && document.elementFromPoint(mausPunkt.x, mausPunkt.y);
+    return el && el.closest ? el.closest('#container section') : null;
+}
+
 function linkBy(delta) {
     var links = Array.prototype.slice.call(document.querySelectorAll('#container li a'));
     if (!links.length) return;
-    var i = -1;
-    if (mausBewegt && mausKachel && mausKachel.isConnected) i = links.indexOf(mausKachel);
-    if (i === -1) i = links.indexOf(document.activeElement);
+    var i = -1, ziel = null;
+    if (mausBewegt) {
+        var el = mausPunkt && document.elementFromPoint(mausPunkt.x, mausPunkt.y);
+        var kachel = el && el.closest && el.closest('#container li a');
+        if (kachel) i = links.indexOf(kachel);
+        else {
+            // Maus in einer Section, aber nicht auf einer Kachel: deren erste Kachel
+            var unter = mausSection();
+            ziel = unter && unter.querySelector('li a');
+        }
+    }
+    if (i === -1 && !ziel) i = links.indexOf(document.activeElement);
     mausBewegt = false;
-    var ziel;
-    if (i === -1) {
+    if (ziel) {
+        // Ausgangspunkt war die Section unter der Maus
+    } else if (i === -1) {
         var sec = document.querySelector('#container section.aktuell') ||
             document.querySelector('#container section');
         ziel = sec.querySelector('li a') || links[0];
@@ -376,6 +390,19 @@ function linkBy(delta) {
     }
     ziel.focus();
 }
+
+// Pfeiltasten: auch ohne Fokus im Inhalt (z. B. nach einem Klick in die Leiste) —
+// im Edit-Mode und in Eingabefeldern gehören sie dem Textcursor
+document.addEventListener('keydown', function (e) {
+    if (document.body.classList.contains('edit-mode')) return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    var t = e.target;
+    if (t !== document.body && !(t.closest && t.closest('#container'))) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); jumpBy(1); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); jumpBy(-1); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); linkBy(1); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); linkBy(-1); }
+});
 
 // Sprungtasten der unteren Leiste
 ['step-prev', 'step-next'].forEach(function (id, i) {
@@ -471,8 +498,9 @@ document.addEventListener('keydown', function (e) {
 document.addEventListener('keydown', function (e) {
     if (e.key === 'Tab' || e.key.indexOf('Arrow') === 0) document.body.classList.add('tastatur');
 });
-document.addEventListener('mousemove', function () {
+document.addEventListener('mousemove', function (e) {
     document.body.classList.remove('tastatur');
+    mausPunkt = { x: e.clientX, y: e.clientY };
     mausBewegt = true;
 });
 
