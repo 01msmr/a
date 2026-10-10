@@ -30,6 +30,7 @@ html[data-zoom="l"] {
         --title-dom: #888;
         --on-c: #fff;
         --chip-inv: #fff;
+        --glanz: 1;
         /* Regel für Schrift in Sektionsfarbe: gleiche Farbe, Helligkeit (OKLCH-L) auf diesen Bereich begrenzt.
            Helle Farben werden dunkler, dunkle bleiben wie sie sind */
         --text-l-min: 0;
@@ -51,6 +52,8 @@ html[data-zoom="l"] {
         --title-dom: #999;
         --on-c: #111;
         --chip-inv: var(--front-body);
+        /* im Dunkeln etwas weniger Glanz auf den Kacheln */
+        --glanz: .6;
         /* im Dunkeln umgekehrt: nie dunkler als dieser Wert */
         --text-l-min: .72;
         --text-l-max: 1;
@@ -288,7 +291,7 @@ li a {
 }
 
 li a::before {
-    background-image: linear-gradient(rgba(255, 255, 255, calc(.46 * var(--hl))), rgba(255, 255, 255, calc(.12 * var(--hl))) 36%, rgba(255, 255, 255, 0) 38%, rgba(0, 0, 0, calc(.2 * var(--hl))));
+    background-image: linear-gradient(rgba(255, 255, 255, calc(.46 * var(--hl) * var(--glanz))), rgba(255, 255, 255, calc(.12 * var(--hl) * var(--glanz))) 36%, rgba(255, 255, 255, 0) 38%, rgba(0, 0, 0, calc(.2 * var(--hl) * var(--glanz))));
     transition: background-color .12s ease, --hl .12s ease;
 }
 
