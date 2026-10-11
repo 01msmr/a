@@ -62,6 +62,72 @@ function koppleHover(a, b) {
     });
 }
 
+// Liste für den Icon-Modus: Icon + Name je Section, öffnet statt des nativen Menüs
+function jumperListe(data) {
+    var pop = document.getElementById('jumper-pop');
+    pop.innerHTML = '';
+    data.forEach(function (sec) {
+        var a = document.createElement('a');
+        a.href = '#' + sec.id;
+        a.target = '_self';
+        a.appendChild(makeIcon(sec.icon));
+        a.appendChild(document.createTextNode(sec.title));
+        a.addEventListener('click', function (ev) {
+            ev.preventDefault();
+            pop.hidePopover();
+            var sel = document.getElementById('section-jumper');
+            sel.value = '#' + sec.id;
+            sel.dispatchEvent(new Event('change'));
+        });
+        pop.appendChild(a);
+    });
+}
+
+(function () {
+    var sel = document.getElementById('section-jumper');
+    var pop = document.getElementById('jumper-pop');
+    function oeffnen() {
+        var r = sel.getBoundingClientRect(), oben = r.top > window.innerHeight / 2;
+        pop.style.minWidth = r.width + 'px';
+        pop.style.left = r.left + 'px';
+        pop.style.top = oben ? 'auto' : r.bottom + 'px';
+        pop.style.bottom = oben ? (window.innerHeight - r.top) + 'px' : 'auto';
+        pop.style.maxHeight = (oben ? r.top : window.innerHeight - r.bottom) - 8 + 'px';
+        pop.classList.toggle('nach-oben', oben);
+        pop.querySelectorAll('a').forEach(function (a) {
+            a.classList.toggle('aktiv', a.getAttribute('href') === sel.value);
+        });
+        pop.showPopover();
+        var ak = pop.querySelector('a.aktiv');
+        if (ak) { ak.scrollIntoView({ block: 'nearest' }); ak.focus(); }
+    }
+    function icons() { return document.body.classList.contains('nav-icons'); }
+    sel.addEventListener('mousedown', function (ev) {
+        if (!icons()) return;
+        ev.preventDefault();
+        if (pop.matches(':popover-open')) pop.hidePopover(); else oeffnen();
+    });
+    sel.addEventListener('keydown', function (ev) {
+        if (!icons() || !(ev.key === 'Enter' || ev.key === ' ' || ev.key === 'ArrowDown' || ev.key === 'ArrowUp')) return;
+        ev.preventDefault();
+        oeffnen();
+    });
+    pop.addEventListener('keydown', function (ev) {
+        var l = Array.prototype.slice.call(pop.querySelectorAll('a')), i = l.indexOf(document.activeElement);
+        if (ev.key === 'ArrowDown') { ev.preventDefault(); l[Math.min(i + 1, l.length - 1)].focus(); }
+        else if (ev.key === 'ArrowUp') { ev.preventDefault(); l[Math.max(i - 1, 0)].focus(); }
+    });
+    document.addEventListener('pointerdown', function (ev) {
+        if (pop.matches(':popover-open') && !ev.target.closest('#jumper-pop, #section-jumper')) pop.hidePopover();
+    });
+    document.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Escape' && pop.matches(':popover-open')) { pop.hidePopover(); sel.focus(); }
+    });
+    // beim Wechsel zurück in den Text-Modus nicht offen bleiben
+    new MutationObserver(function () { if (!icons() && pop.matches(':popover-open')) pop.hidePopover(); })
+        .observe(document.body, { attributes: true, attributeFilter: ['class'] });
+})();
+
 function render(data) {
     var chipOf = {};
     var nav = document.getElementById('section-nav-list');
@@ -94,6 +160,7 @@ function render(data) {
         sel.appendChild(opt);
     });
     dropdownBeschriften();
+    jumperListe(data);
 
     sel.addEventListener('change', function () {
         var el = document.querySelector(sel.value);
