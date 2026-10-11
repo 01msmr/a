@@ -1188,6 +1188,7 @@ body:not(.nav-icons) .auto-btn[aria-pressed="true"] {
 body.nav-icons #section-jumper {
     font-family: "Font Awesome 6 Free", sans-serif;
     font-weight: 900;
+    color: var(--sect-col);   /* wie die Icons der Leiste; --title-dom ist heller */
 }
 
 /* Squircle wie Apples App-Icons: Superellipse |x|^5 + |y|^5 = 1 (n ≈ 5; ein mathematisches Squircle hat n = 4).
