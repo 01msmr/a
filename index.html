@@ -10,10 +10,11 @@
     <title>a.msmr.co</title>
     <base target="_blank" />
 
-    <!-- Farbschema auto/hell/dunkel: vor dem ersten Paint setzen; Wahl pro Gerät, ohne Wahl gilt die Systemvorgabe -->
+    <!-- Farbschema hell/dunkel: vor dem ersten Paint setzen; ohne gespeicherte Wahl folgt es dem System (Automatik) -->
     <script>
         (() => {
             const KEY = 'msmr.theme', MODES = ['light', 'dark'];
+            const dunkel = matchMedia('(prefers-color-scheme: dark)');
             const read = () => { try { const v = localStorage.getItem(KEY); return MODES.includes(v) ? v : null; } catch { return null; } };
             const apply = () => {
                 const v = read(), el = document.documentElement;
@@ -21,46 +22,32 @@
                 document.dispatchEvent(new Event('msmrtheme'));
             };
             window.msmrTheme = {
-                get: () => read() || 'auto',
-                set(m) {
-                    try { if (MODES.includes(m)) localStorage.setItem(KEY, m); else localStorage.removeItem(KEY); } catch { }
-                    apply();
-                },
+                get: () => read() || (dunkel.matches ? 'dark' : 'light'),
+                auto: () => !read(),
+                set(m) { try { localStorage.setItem(KEY, m); } catch { } apply(); },
+                setAuto() { try { localStorage.removeItem(KEY); } catch { } apply(); },
             };
             apply();
             addEventListener('storage', e => e.key === KEY && apply());
+            dunkel.addEventListener('change', apply);
         })();
     </script>
 
-    <!-- Zoom s/m/l: vor dem ersten Paint setzen; Wahl pro Gerät in localStorage, sonst automatisch -->
+    <!-- Zoom s/m: vor dem ersten Paint setzen; Wahl pro Gerät in localStorage, sonst s -->
     <script>
         (() => {
-            const KEY = 'msmr.zoom', LEVELS = ['s', 'm', 'l'];
-            const auto = () => {
-                const w = innerWidth, mq = q => matchMedia(q).matches;
-                if (/SmartTV|Tizen|Web0S|webOS|NetCast|AFTM|AFTS|Android TV|BRAVIA|HbbTV|CrKey/i.test(navigator.userAgent)) return 'l';
-                if (w >= 1800 && !mq('(hover:hover) and (pointer:fine)')) return 'l';
-                if (mq('(pointer:coarse)') && w >= 900) return 'm';
-                return 's';
-            };
-            const read = () => { try { const o = JSON.parse(localStorage.getItem(KEY) || 'null'); return o && o.v === 1 && LEVELS.includes(o.level) ? o : null; } catch { return null; } };
+            const KEY = 'msmr.zoom', LEVELS = ['s', 'm'];
+            const read = () => { try { const o = JSON.parse(localStorage.getItem(KEY) || 'null'); return o && o.v === 1 && o.level === 'm' ? 'm' : 's'; } catch { return 's'; } };
             const apply = () => {
-                const o = read(), el = document.documentElement;
-                el.dataset.zoom = o ? o.level : auto();
-                el.dataset.zoomMode = o ? 'user' : 'auto';
+                document.documentElement.dataset.zoom = read();
                 document.dispatchEvent(new Event('msmrzoom'));
             };
             window.msmrZoom = {
                 get: () => document.documentElement.dataset.zoom,
-                mode: () => document.documentElement.dataset.zoomMode,
                 set(l) { if (!LEVELS.includes(l)) return; try { localStorage.setItem(KEY, JSON.stringify({ v: 1, level: l })); } catch { } apply(); },
-                cycle() { this.set(LEVELS[(LEVELS.indexOf(this.get()) + 1) % 3]); },
-                step(d) { this.set(LEVELS[Math.max(0, Math.min(2, LEVELS.indexOf(this.get()) + d))]); },
-                reset() { try { localStorage.removeItem(KEY); } catch { } apply(); },
             };
             apply();
             addEventListener('storage', e => e.key === KEY && apply());
-            addEventListener('resize', () => { if (!read()) apply(); });
         })();
     </script>
 
@@ -90,6 +77,9 @@
                 <button type="button" id="settings-btn" class="settings-btn"
                 aria-label="Einstellungen" title="Einstellungen">
                 <i class="fa-solid fa-gear" aria-hidden="true"></i>
+            </button>
+                <button type="button" id="auto-btn" class="settings-btn auto-btn" aria-pressed="false">
+                <i class="fa-regular fa-circle" aria-hidden="true"></i>
             </button>
             </nav>
             <!-- autocomplete=off: sonst stellt Chrome beim Reload die alte

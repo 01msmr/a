@@ -430,22 +430,20 @@ document.getElementById('container').addEventListener('mouseover', setzeStrich);
 document.getElementById('container').addEventListener('mousemove', setzeStrich);
 
 // ── Einstellungen: Zahnrad in der Leiste, Overlay mit einem Knopf pro Einstellung ──
-// Ein Icon pro Einstellung zeigt den aktuellen Wert; jeder Klick schaltet reihum weiter. API für Zoom/Farbschema steht im <head>.
+// Ein Icon pro Einstellung zeigt den aktuellen Wert; jeder Klick schaltet zum anderen von zwei Werten. API für Zoom/Farbschema steht im <head>.
 // icon: Font-Awesome-Klasse oder Buchstabe (Zoom); zeigt den aktuellen Wert
 var EINSTELLUNGEN = [
     {
         label: 'Zoom',
-        werte: [['auto', 'automatisch'], ['s', 'S'], ['m', 'M'], ['l', 'L']],
-        get: function () { return window.msmrZoom.mode() === 'auto' ? 'auto' : window.msmrZoom.get(); },
-        // vier Stufen: a (automatisch), S, M, L
-        icon: function (w) { return { text: w === 'auto' ? 'a' : w.toUpperCase() }; },
-        beschr: function (w) { return w === 'auto' ? 'automatisch (' + window.msmrZoom.get().toUpperCase() + ')' : null; },
-        set: function (w) { if (w === 'auto') window.msmrZoom.reset(); else window.msmrZoom.set(w); }
+        werte: [['s', 'S'], ['m', 'M']],
+        get: function () { return window.msmrZoom.get(); },
+        icon: function (w) { return { text: w.toUpperCase() }; },
+        set: function (w) { window.msmrZoom.set(w); }
     },
     {
         label: 'Farbschema',
-        werte: [['auto', 'automatisch'], ['light', 'hell'], ['dark', 'dunkel']],
-        icons: { auto: 'fa-circle-half-stroke', light: 'fa-sun', dark: 'fa-moon' },
+        werte: [['light', 'hell'], ['dark', 'dunkel']],
+        icons: { light: 'fa-sun', dark: 'fa-moon' },
         get: function () { return window.msmrTheme.get(); },
         set: function (w) { window.msmrTheme.set(w); }
     },
@@ -482,8 +480,7 @@ var EINSTELLUNGEN = [
         icons: { aus: ['fa-chevron-up', 'fa-chevron-down'], an: 'fa-floppy-disk' },
         get: function () { return document.body.classList.contains('edit-mode') ? 'an' : 'aus'; },
         set: function (w) { if (w === 'an') enterEditMode(); else beendeBearbeiten(); },
-        schliesst: true,
-        ohneVorschau: true   // Icon bleibt bei Hover wie es ist
+        schliesst: true
     }
 ];
 
@@ -529,17 +526,19 @@ function zeichneIcon(ic, e, w) {
     }
 }
 
-// Ruhe: Icon = Zustand. Unter dem Zeiger (oder mit Tastaturfokus): Icon = was der Klick ergibt
 function settingsAnzeige() {
     document.querySelectorAll('#settings-pop .set-btn').forEach(function (b, i) {
         var e = EINSTELLUNGEN[i], w = e.get(), nach = wertNach(e, w);
-        // nach einem Klick gilt der neue Zustand, bis der Zeiger den Knopf verlässt
-        var vorschau = !e.ohneVorschau && !b.dataset.geklickt && (document.body.classList.contains('tastatur')
-            ? b.matches(':focus-visible') : b.matches(':hover'));
-        zeichneIcon(b.querySelector('.set-icon'), e, vorschau ? nach : w);
+        zeichneIcon(b.querySelector('.set-icon'), e, w);
         b.title = e.label + ': ' + wertName(e, w) + ' → ' + wertName(e, nach);
         b.setAttribute('aria-label', e.label + ': ' + wertName(e, w) + ' — zum Umschalten drücken (' + wertName(e, nach) + ')');
     });
+    // Automatik: Kreis leer = aus, gefüllt = Farbschema folgt dem System
+    var auto = window.msmrTheme.auto(), ab = document.getElementById('auto-btn');
+    ab.querySelector('i').className = (auto ? 'fa-solid' : 'fa-regular') + ' fa-circle';
+    ab.setAttribute('aria-pressed', auto);
+    ab.title = 'Farbschema automatisch (System): ' + (auto ? 'an' : 'aus');
+    ab.setAttribute('aria-label', ab.title);
 }
 
 // bündig unter dem Zahnrad, gleich breit; in der unteren Leiste (Telefon) bündig darüber
@@ -562,14 +561,7 @@ function settingsPlatzieren() {
         b.type = 'button';
         b.className = 'set-btn';
         b.innerHTML = '<span class="set-icon" aria-hidden="true"></span>';
-        ['mouseenter', 'mouseleave', 'focus', 'blur'].forEach(function (t) {
-            b.addEventListener(t, function () {
-                if (t === 'mouseleave' || t === 'blur') delete b.dataset.geklickt;
-                settingsAnzeige();
-            });
-        });
         b.addEventListener('click', function () {
-            b.dataset.geklickt = '1';
             e.set(wertNach(e, e.get()));
             settingsAnzeige();
             if (e.schliesst) { pop.hidePopover(); return; }
@@ -642,6 +634,9 @@ function settingsPlatzieren() {
         zahnrad.setAttribute('aria-expanded', an);
         if (an) zuStarten(); else zuStoppen();
     });
+    document.getElementById('auto-btn').addEventListener('click', function () {
+        if (window.msmrTheme.auto()) window.msmrTheme.set(window.msmrTheme.get()); else window.msmrTheme.setAuto();
+    });
     document.addEventListener('msmrzoom', settingsAnzeige);
     document.addEventListener('msmrtheme', settingsAnzeige);
     settingsAnzeige();
@@ -650,9 +645,8 @@ function settingsPlatzieren() {
 document.addEventListener('keydown', function (e) {
     if (e.ctrlKey || e.metaKey || e.altKey) return;   // Browser-Zoom bleibt unberührt
     if (e.target.closest('input, select, textarea, [contenteditable]')) return;
-    if (e.key === '+' || e.key === '=') window.msmrZoom.step(1);
-    else if (e.key === '-') window.msmrZoom.step(-1);
-    else if (e.key === '0') window.msmrZoom.reset();
+    if (e.key === '+' || e.key === '=') window.msmrZoom.set('m');
+    else if (e.key === '-' || e.key === '0') window.msmrZoom.set('s');
 });
 
 // ── Maus oder Tastatur: nur das zuletzt benutzte Gerät hebt eine Kachel hervor ──

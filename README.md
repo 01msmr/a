@@ -70,7 +70,7 @@ damit der Browser nie eine alte Kopie zeigt.
   nicht im Dropdown und nicht im Edit-Mode.
 - Es zählt immer nur die zuletzt benutzte Eingabe (Maus **oder** Tastatur), die andere
   wird für die Hervorhebung ignoriert.
-- `+` / `-` ändern den Zoom, `0` setzt ihn auf automatisch. Strg/Cmd bleiben dem Browser-Zoom.
+- `+` / `-` ändern den Zoom, `0` setzt ihn auf S. Strg/Cmd bleiben dem Browser-Zoom.
 
 ### Einstellungen (Zahnrad in der Leiste)
 
@@ -80,8 +80,8 @@ Icon den **Zustand**, unter dem Zeiger das **Ergebnis des Klicks**.
 
 | Einstellung | Werte | Icon |
 |---|---|---|
-| Zoom | auto, S, M, L | `a`, `S`, `M`, `L` |
-| Farbschema | auto, hell, dunkel | Halbkreis, Sonne, Mond |
+| Zoom | S, M | `S`, `M` |
+| Farbschema | hell, dunkel | Sonne, Mond |
 | Navigation | Text, Icons | Squircle mit `t` = Text |
 | Ansicht | Chips, Raster | vier runde Kacheln bzw. vier eckige Umrisse |
 | Ausrichtung | links, Mitte | `l`, `c` (im Raster: volle Breite, Mitte) |
@@ -95,14 +95,13 @@ Wo die Wahl liegt (je Gerät in `localStorage`, nichts davon wird mit den Links 
 
 | Schlüssel | Inhalt |
 |---|---|
-| `msmr.zoom` | `{"v":1,"level":"s"|"m"|"l"}`; ohne Eintrag gilt der automatische Standard |
+| `msmr.zoom` | `{"v":1,"level":"s"|"m"}`; ohne Eintrag gilt S |
 | `msmr.theme` | `light` oder `dark`; ohne Eintrag folgt die Seite dem System |
 | `a.navMode` | `short` oder `icons` |
 | `a.align` | `left` oder `center` |
 | `a.view` | `chips` oder `grid` |
 
-**Zoom automatisch:** TV-Browser (Tizen, webOS, …) → `l`; ab 1800 px ohne Maus → `l`;
-Touch ab 900 px (Tablet) → `m`; sonst `s`. Größen stehen in `rem` und folgen
+**Zoom:** keine Erkennung, Standard ist S. Größen stehen in `rem` und folgen
 dem Zoom (Kacheln, Leiste, Schatten, roter Punkt). Die `device-width`-Media-Queries für
 iPad und iPhone bleiben Gerätemerkmale und folgen dem Zoom nicht.
 
@@ -141,3 +140,5 @@ Welche Dateien nicht ins Webverzeichnis gehören, steht in
 ## Lizenz
 
 GNU GPL v3, siehe [LICENSE](LICENSE).
+
+Am Ende der Leiste (hinter dem Zahnrad) schaltet ein Kreis die Farbschema-Automatik: leer = feste Wahl, gefüllt = folgt dem System. Der Farbschema-Knopf im Overlay stellt dann hell/dunkel fest ein.

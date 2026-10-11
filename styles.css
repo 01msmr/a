@@ -9,10 +9,6 @@ html[data-zoom="m"] {
     --zoom: 1.25;
 }
 
-html[data-zoom="l"] {
-    --zoom: 1.6;
-}
-
 :root {
     --kachel: 11.875rem;
     --spalte: calc(6 * var(--kachel));

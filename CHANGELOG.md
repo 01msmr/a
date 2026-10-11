@@ -5,6 +5,12 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 
 ---
 
+## 2026-10-11 — Nur noch zwei Werte je Einstellung
+
+Jede Einstellung hat zwei Werte, der Knopf schaltet zum anderen, keine Vorschau beim Hover. Zoom nur S/M ohne Erkennung (gespeichertes `l` zählt als `m`). Farbschema nur hell/dunkel; die Automatik ist ein eigener Kreis am Ende der Leiste (leer/gefüllt).
+
+---
+
 ## 2026-10-09 bis 11 — Sektionsfarben, Zoom, Farbschema, Einstellungs-Overlay, Raster
 
 Aus einem Feinschliff der Nav und der Kacheln wurde eine umfassende Überarbeitung der
