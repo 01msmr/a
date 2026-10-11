@@ -9,7 +9,7 @@ Gebaut für Maus und Tastatur am Desktop, iPad und iPhone und für den Browser a
 
 | Datei | Aufgabe |
 |---|---|
-| `index.html` | Gerüst: Leiste mit Nav-Chips, Zahnrad und Dropdown, Inhalt, Overlay. Im `<head>` stehen die Skripte für Zoom und Farbschema (laufen vor dem ersten Paint) |
+| `index.html` | Gerüst: Leiste mit Nav-Chips, Zahnrad, Automatik-Kreis und Sections-Dropdown, Inhalt, Overlay. Im `<head>` stehen die Skripte für Zoom und Farbschema (laufen vor dem ersten Paint) |
 | `app.js` | Rendern, Navigation, Einstellungen, Edit-Mode |
 | `styles.css` | alles Aussehen; Farbschemata, Zoom und Raster hängen an Variablen und Klassen |
 | `links.php` | liefert `edit/links.json` aus (öffentlich) |
@@ -142,3 +142,5 @@ Welche Dateien nicht ins Webverzeichnis gehören, steht in
 GNU GPL v3, siehe [LICENSE](LICENSE).
 
 Am Ende der Leiste (hinter dem Zahnrad) schaltet ein Kreis die Farbschema-Automatik: leer = feste Wahl, gefüllt = folgt dem System. Der Farbschema-Knopf im Overlay stellt dann hell/dunkel fest ein.
+
+Im Text-Modus heißen Zahnrad und Automatik-Knopf „set“ und „auto“. Das Sections-Dropdown öffnet in beiden Modi eine eigene Liste (Namen bzw. Icons); drücken, ziehen, loslassen wählt. In `index.html` hängt an `styles.css` und `app.js` eine Version (`?v=…`): bei Änderungen hochzählen, sonst mischen Browser alte und neue Dateien.

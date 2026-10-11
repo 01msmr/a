@@ -9,6 +9,14 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 
 Jede Einstellung hat zwei Werte, der Knopf schaltet zum anderen, keine Vorschau beim Hover. Zoom nur S/M ohne Erkennung (gespeichertes `l` zählt als `m`). Farbschema nur hell/dunkel; die Automatik ist ein eigener Kreis am Ende der Leiste (leer/gefüllt).
 
+- **Text-Modus:** Zahnrad heißt „set“, der Automatik-Knopf „auto“ (aktiv = umgekehrt); im Icon-Modus Zahnrad und Kreis.
+- **Sections-Liste:** Statt des nativen Menüs öffnet das Auswahlfeld in beiden Modi eine eigene Liste (`#jumper-pop`): im Text-Modus Namen, im Icon-Modus Icons; Stapel in Feldbreite wie das Einstellungs-Overlay, nicht umgekehrt, ohne Übergänge. Drücken, ziehen, loslassen wählt einen Eintrag. Grund: das native macOS-Menü zeigt keine Webschrift (Font-Awesome-Icons erschienen als „?“).
+- **Auswahlfeld:** Bleibt ein `<select>`; im Icon-Modus zeigt es das Icon-Zeichen in der Farbe der Leisten-Icons. Beim Sprung über das Dropdown zeigt es bis zur Ankunft die gewählte Section (`selSprung`), nicht die durchscrollten.
+- **APP-Icon:** überall Font Awesomes `fa-square` statt der Squircle-Maske (die bleibt nur im Navigations-Knopf der Einstellungen). Ein Versuch, das Feld auf einen Button umzubauen, wurde verworfen.
+- **Titelzeile:** Die ganze Zeile einer Section ist der Link (`a::after` über die Zeile), nicht im Edit-Mode.
+- **Desktop:** Das Dropdown hat 0,375 rem Abstand zum rechten Seitenrand.
+- **Cache:** `styles.css` und `app.js` hängen `?v=…` an (in `index.html`); der Server schickt keine Cache-Header, ein altes `app.js` zu neuem `index.html` ließ die Seite leer. Bei Änderungen die Version hochzählen.
+
 ---
 
 ## 2026-10-09 bis 11 — Sektionsfarben, Zoom, Farbschema, Einstellungs-Overlay, Raster
