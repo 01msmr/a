@@ -62,7 +62,7 @@ function koppleHover(a, b) {
     });
 }
 
-// Liste für den Icon-Modus: Icon + Name je Section, öffnet statt des nativen Menüs
+// Sections-Liste: ein Eintrag je Section (Icon oder Name), öffnet statt des nativen Menüs
 function jumperListe(data) {
     var pop = document.getElementById('jumper-pop');
     pop.innerHTML = '';
@@ -71,7 +71,11 @@ function jumperListe(data) {
         a.href = '#' + sec.id;
         a.target = '_self';
         a.appendChild(makeIcon(sec.icon));
-        a.appendChild(document.createTextNode(sec.title));
+        var t = document.createElement('span');
+        t.className = 'secshort';
+        t.textContent = sec.title;
+        a.appendChild(t);
+        a.title = sec.title;
         a.addEventListener('click', function (ev) {
             ev.preventDefault();
             pop.hidePopover();
@@ -86,6 +90,7 @@ function jumperListe(data) {
 (function () {
     var sel = document.getElementById('section-jumper');
     var pop = document.getElementById('jumper-pop');
+    function offen() { return pop.matches(':popover-open'); }
     function oeffnen() {
         var r = sel.getBoundingClientRect(), oben = r.top > window.innerHeight / 2;
         pop.style.minWidth = r.width + 'px';
@@ -98,19 +103,33 @@ function jumperListe(data) {
             a.classList.toggle('aktiv', a.getAttribute('href') === sel.value);
         });
         pop.showPopover();
-        var ak = pop.querySelector('a.aktiv');
-        if (ak) { ak.scrollIntoView({ block: 'nearest' }); ak.focus(); }
     }
-    function icons() { return document.body.classList.contains('nav-icons'); }
+    function eintragUnter(ev) {
+        var el = document.elementFromPoint(ev.clientX, ev.clientY);
+        return el && el.closest ? el.closest('#jumper-pop a') : null;
+    }
+    // drücken, auf einen Eintrag ziehen, loslassen wählt ihn (wie beim Einstellungs-Overlay); ein einfacher Klick öffnet/schließt
+    var gedrueckt = false, warOffen = false;
     sel.addEventListener('mousedown', function (ev) {
-        if (!icons()) return;
-        ev.preventDefault();
-        if (pop.matches(':popover-open')) pop.hidePopover(); else oeffnen();
+        ev.preventDefault();   // kein natives Menü
+        gedrueckt = true;
+        warOffen = offen();
+        if (!warOffen) oeffnen();
+    });
+    document.addEventListener('mouseup', function (ev) {
+        if (!gedrueckt) return;
+        gedrueckt = false;
+        var e = eintragUnter(ev);
+        if (e) e.click();
+        else if (ev.target.closest('#section-jumper')) { if (warOffen) pop.hidePopover(); }
+        else pop.hidePopover();
     });
     sel.addEventListener('keydown', function (ev) {
-        if (!icons() || !(ev.key === 'Enter' || ev.key === ' ' || ev.key === 'ArrowDown' || ev.key === 'ArrowUp')) return;
+        if (!(ev.key === 'Enter' || ev.key === ' ' || ev.key === 'ArrowDown' || ev.key === 'ArrowUp')) return;
         ev.preventDefault();
         oeffnen();
+        var ak = pop.querySelector('a.aktiv');
+        if (ak) { ak.scrollIntoView({ block: 'nearest' }); ak.focus(); }
     });
     pop.addEventListener('keydown', function (ev) {
         var l = Array.prototype.slice.call(pop.querySelectorAll('a')), i = l.indexOf(document.activeElement);
@@ -118,14 +137,11 @@ function jumperListe(data) {
         else if (ev.key === 'ArrowUp') { ev.preventDefault(); l[Math.max(i - 1, 0)].focus(); }
     });
     document.addEventListener('pointerdown', function (ev) {
-        if (pop.matches(':popover-open') && !ev.target.closest('#jumper-pop, #section-jumper')) pop.hidePopover();
+        if (offen() && !ev.target.closest('#jumper-pop, #section-jumper')) pop.hidePopover();
     });
     document.addEventListener('keydown', function (ev) {
-        if (ev.key === 'Escape' && pop.matches(':popover-open')) { pop.hidePopover(); sel.focus(); }
+        if (ev.key === 'Escape' && offen()) { pop.hidePopover(); sel.focus(); }
     });
-    // beim Wechsel zurück in den Text-Modus nicht offen bleiben
-    new MutationObserver(function () { if (!icons() && pop.matches(':popover-open')) pop.hidePopover(); })
-        .observe(document.body, { attributes: true, attributeFilter: ['class'] });
 })();
 
 function render(data) {
