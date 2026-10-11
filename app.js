@@ -28,7 +28,7 @@ function dropdownBeschriften() {
             document.body.appendChild(i);
             var z = getComputedStyle(i, '::before').content.replace(/["']/g, '');
             i.remove();
-            o.dataset.glyph = o.dataset.icon === 'icon-squircle' || !z || z === 'none' ? '\u25A2' : z;
+            o.dataset.glyph = o.dataset.icon === 'icon-squircle' || !z || z === 'none' ? '\uf0c8' : z;
         }
         o.textContent = icons ? o.dataset.glyph : o.dataset.titel;
         o.title = o.dataset.titel;
@@ -46,8 +46,9 @@ var SEC_COLORS = ['#f85a5a', '#fb8f2a', '#e2a800', '#8ac430', '#2fc16c', '#22b59
 
 function makeIcon(icon) {
     var i = document.createElement('i');
-    // eigenes Icon ohne Font Awesome: Squircle (s. styles.css)
-    i.className = (icon === 'icon-squircle' ? icon : 'fa-solid ' + (icon || 'fa-hashtag')) + ' secicon';
+    // APP-Section: Font Awesomes fa-square (nächstes Rundrechteck) statt der eigenen Squircle-Maske
+    if (icon === 'icon-squircle') icon = 'fa-square';
+    i.className = 'fa-solid ' + (icon || 'fa-hashtag') + ' secicon';
     i.setAttribute('aria-hidden', 'true');
     return i;
 }
