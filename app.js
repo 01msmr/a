@@ -39,6 +39,7 @@ applyPrefs();
 
 // ── Render ────────────────────────────────────────────────────────
 var syncActive = function () { };
+var selSprung = null;   // Ziel eines Sprungs über das Dropdown: es zeigt bis zur Ankunft diese Section
 
 // kräftige, gesättigte Farben (ohne Grauanteil): weiße Schrift (hell) bzw. dunkle Schrift (dunkel) bleibt lesbar
 var SEC_COLORS = ['#f85a5a', '#fb8f2a', '#e2a800', '#8ac430', '#2fc16c', '#22b59f', '#18b4d6',
@@ -180,6 +181,9 @@ function render(data) {
     jumperListe(data);
 
     sel.addEventListener('change', function () {
+        selSprung = sel.value;
+        // Auffangnetz: die letzte Section erreicht den oberen Rand evtl. nie
+        setTimeout(function () { selSprung = null; syncActive(); }, 1500);
         var el = document.querySelector(sel.value);
         if (el) el.scrollIntoView();
         // iOS gibt den Fokus nach dem Schließen der Auswahlliste an das select zurück
@@ -277,7 +281,7 @@ function trackActiveSection() {
         // angedockter Header → Rahmen der Leiste mitfärben, kein heller Spalt
         document.body.classList.toggle('docked',
             !!aktiv && aktiv.getBoundingClientRect().top - top <= 1);
-        sel.value = active;
+        if (selSprung === null || selSprung === active) { selSprung = null; sel.value = active; }
         jumpTarget = null;   // Scrollen zur Ruhe gekommen
     };
 
