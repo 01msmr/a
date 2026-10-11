@@ -1172,8 +1172,22 @@ body.nav-icons .settings-btn {
     padding-right: 0;
 }
 
-body.nav-icons .secname .secshort {
+body.nav-icons .secname .secshort,
+body.nav-icons .settings-btn .secshort,
+body:not(.nav-icons) .settings-btn .secicon {
     display: none;
+}
+
+/* Text-Modus: „auto“ aktiv = umgekehrt (im Icon-Modus zeigt der gefüllte Kreis das) */
+body:not(.nav-icons) .auto-btn[aria-pressed="true"] {
+    color: var(--front-body);
+    background-color: var(--sect-col);
+}
+
+/* Icon-Modus: das Dropdown zeigt die Icons als Font-Awesome-Zeichen */
+body.nav-icons #section-jumper {
+    font-family: "Font Awesome 6 Free", sans-serif;
+    font-weight: 900;
 }
 
 /* Squircle wie Apples App-Icons: Superellipse |x|^5 + |y|^5 = 1 (n ≈ 5; ein mathematisches Squircle hat n = 4).
