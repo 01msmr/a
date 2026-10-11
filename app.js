@@ -24,7 +24,7 @@ applyPrefs();
 var syncActive = function () { };
 
 // kräftige, gesättigte Farben (ohne Grauanteil): weiße Schrift (hell) bzw. dunkle Schrift (dunkel) bleibt lesbar
-var SEC_COLORS = ['#f85a5a', '#fb8f2a', '#f0b400', '#8ac430', '#2fc16c', '#22b59f', '#18b4d6',
+var SEC_COLORS = ['#f85a5a', '#fb8f2a', '#e2a800', '#8ac430', '#2fc16c', '#22b59f', '#18b4d6',
     '#4a92f0', '#6c70f2', '#9a62f0', '#c456e8', '#ea4fa8', '#f4587a', '#f67a3a', '#2fae82'];
 
 function makeIcon(icon) {
