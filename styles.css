@@ -457,6 +457,17 @@ section h3 a {
     min-width: 0;
 }
 
+/* ganze Titelzeile ist der Link (auch Polster oben/unten) */
+body:not(.edit-mode) section h3.name {
+    position: relative;
+}
+
+body:not(.edit-mode) section h3.name a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+}
+
 .home-link {
     white-space: nowrap;
     text-decoration: none;
