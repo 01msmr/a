@@ -1065,6 +1065,11 @@ body.edit-mode li.btn-add {
    die ganze Kachel. inline-grid, damit die Spaltenbildung erhalten bleibt —
    sie ist beim Sortieren gerade das, worauf man schaut. */
 @media only screen and (min-device-width: 1025px) {
+    /* sitzt nicht bündig am Seitenrand, sonst wirkt der Rahmen abgeschnitten (Abstand wie zwischen den Chips) */
+    #section-jumper {
+        margin-right: 0.375rem;
+    }
+
     body.edit-mode li:not(.btn-add) {
         display: inline-grid;
         vertical-align: top;
