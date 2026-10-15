@@ -406,15 +406,15 @@ body.tastatur section:is(:focus-visible, :has(:focus-visible), .aktuell) .group 
 }
 
 /* gehoverte Section (direkt oder per Nav-Chip): Titel in voller Sektionsfarbe statt Grau */
-body:not(.tastatur) #container section:is(:hover, :has(.name.mit-hover)) .name:not(.mit-druck),
+body:not(.tastatur) #container section:is(:hover, :has(.name.mit-hover:not(.active))) .name:not(.mit-druck),
 body.tastatur #container section:is(:focus-visible, :has(:focus-visible)) .name:not(.mit-druck),
-body:not(.tastatur) #container section:is(:hover, :has(.name.mit-hover)) .name:not(.mit-druck) a,
+body:not(.tastatur) #container section:is(:hover, :has(.name.mit-hover:not(.active))) .name:not(.mit-druck) a,
 body.tastatur #container section:is(:focus-visible, :has(:focus-visible)) .name:not(.mit-druck) a {
     color: var(--c-text, var(--title-col));
 }
 
 /* Unterkante: grau in Ruhe, bei Hover (direkt oder per Nav-Chip) in der Sektionsfarbe */
-body:not(.tastatur) #container section:is(:hover, :has(.name.mit-hover)) .name:not(.mit-druck),
+body:not(.tastatur) #container section:is(:hover, :has(.name.mit-hover:not(.active))) .name:not(.mit-druck),
 body.tastatur #container section:is(:focus-visible, :has(:focus-visible)) .name:not(.mit-druck) {
     border-bottom-color: color-mix(in srgb, var(--c, var(--sect-col)) 75%, var(--front-body));
 }
