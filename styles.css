@@ -1622,6 +1622,7 @@ body.view-grid .geist .name {
     left: 0;
     right: 0;
     height: var(--schatten, 1.5rem);
+    opacity: var(--staerke, 1);
     pointer-events: none;
     background: linear-gradient(var(--richtung, to bottom),
         rgba(0, 0, 0, .3), rgba(0, 0, 0, .22) 20%, rgba(0, 0, 0, .12) 45%, rgba(0, 0, 0, .04) 75%, rgba(0, 0, 0, 0));

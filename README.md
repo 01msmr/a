@@ -125,7 +125,7 @@ Liegt der Titel der Ziel-Section (Nav-Chip unter der Maus oder Sprung nach Klick
 Pfeiltasten) außerhalb der Ansicht, klebt eine Kopie (`#geist-ebene`, `geistRender`) am oberen
 bzw. unteren Rand, bis der echte Titel dort ankommt und weiterläuft. Ein neues Ziel gleitet über
 die vorige Kopie: diese wird grau und wirft keinen Schatten mehr. Die Kopie wirft einen weichen
-Schatten von 66 % einer Kachelhöhe auf den Inhalt. Im Edit-Mode gibt es keine Kopie.
+Schatten von 66 % einer Kachelhöhe auf den Inhalt. Nach einem Klick läuft er aus, je näher der echte Titel seiner Stelle kommt. Im Edit-Mode gibt es keine Kopie.
 
 ## Bearbeiten
 

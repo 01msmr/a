@@ -517,12 +517,12 @@ function geistRender() {
     if (!c) return;
     var sec = document.body.classList.contains('edit-mode') ? null : geistSection();
     var cr = c.getBoundingClientRect(), hoch = c.clientHeight;
-    var lage = null, name = sec && sec.querySelector('.name'), hoehe = 0;
+    var lage = null, name = sec && sec.querySelector('.name'), hoehe = 0, abstand = 0;
     if (name) {
         var r = name.getBoundingClientRect();
         hoehe = r.height;
-        if (r.top < cr.top - 0.5) lage = 'oben';
-        else if (r.top > cr.top + hoch - hoehe + 0.5) lage = 'unten';
+        if (r.top < cr.top - 0.5) { lage = 'oben'; abstand = cr.top - r.top; }
+        else if (r.top > cr.top + hoch - hoehe + 0.5) { lage = 'unten'; abstand = r.top - (cr.top + hoch - hoehe); }
         else if (sec === geist.sprung) geist.sprung = null;   // angekommen
     }
     var cur = geist.cur;
@@ -540,7 +540,10 @@ function geistRender() {
     ebene.style.height = hoch + 'px';
     var kachel = c.querySelector('li');
     ebene.style.setProperty('--schatten', (kachel ? kachel.offsetHeight : hoehe) * 0.66 + 'px');
+    // nach einem Klick läuft der Schatten aus, je näher der echte Titel seiner Stelle kommt; dort ist er weg
+    var staerke = sec === geist.sprung ? Math.min(1, abstand / (2 * hoehe)) : 1;
     if (cur && cur.sec === sec) {
+        cur.el.style.setProperty('--staerke', staerke);
         cur.lage = lage;
         cur.el.className = 'geist ' + lage;
         cur.el.style.top = (lage === 'oben' ? 0 : hoch - hoehe) + 'px';
@@ -549,6 +552,7 @@ function geistRender() {
     // neue Kopie über die vorige
     var el = document.createElement('div');
     el.className = 'geist ' + lage;
+    el.style.setProperty('--staerke', staerke);
     el.style.setProperty('--c', sec.style.getPropertyValue('--c'));
     var klon = name.cloneNode(true);
     klon.removeAttribute('id');
