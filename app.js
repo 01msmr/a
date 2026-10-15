@@ -233,6 +233,7 @@ function render(data) {
     applyPrefs();
     trackActiveSection();
     raster();
+    fensterInit();
     // Reload mit #hash: der Browser springt in nachgeladenem Inhalt nicht selbst dorthin,
     // sonst zeigt der Inhalt die erste Section, während die Markierung zur Adresse gehört
     var ziel = location.hash.length > 1 && document.getElementById(location.hash.slice(1));
@@ -306,6 +307,275 @@ function trackActiveSection() {
         timer = setTimeout(syncActive, 75);
     });
     syncActive();
+}
+
+// ── Leuchtfenster ─────────────────────────────────────────────────
+// Die leuchtende Section (Hover, Nav-Chip, Tastatur, sonst die oberste) ist ein Fenster, das zur
+// nächsten gleitet und dabei wächst bzw. schrumpft. Die Farbe wechselt hart an den Section-Kanten:
+// jede Section malt nur ihren Teil des Fensters als Hintergrund. Zeilen (Titel, Gruppe, Kacheln)
+// bekommen .gedeckt, sobald ihre Mitte im Fenster liegt. Maße liegen im Inhalt, Scrollen ändert sie nicht.
+var fenster = {
+    container: null, secs: [], zeilen: [], sig: '', top: 0, bot: 0, ziel: null,
+    von: null, nach: null, t0: 0, dauer: 0, raf: 0, obs: []
+};
+
+function fensterZiel() {
+    var c = fenster.container, s = null, heiss = true;
+    if (document.body.classList.contains('tastatur')) {
+        s = c.querySelector('section:focus-visible') || c.querySelector('section:has(:focus-visible)');
+    } else {
+        s = c.querySelector('section:hover');
+        if (!s) {
+            var h = c.querySelector('.name.mit-hover:not(.active)');
+            s = h && h.closest('section');
+        }
+    }
+    if (!s) { s = c.querySelector('section.aktuell'); heiss = false; }
+    return s ? { sec: s, heiss: heiss } : null;
+}
+
+// misst alle Section- und Zeilenmitten im Inhalt; true, wenn sich etwas verschoben hat
+function fensterMessen() {
+    var c = fenster.container, cr = c.getBoundingClientRect(), st = c.scrollTop;
+    var secs = [], zeilen = [], sig = [];
+    var y = function (r) { return Math.round(r.top - cr.top + st); };
+    c.querySelectorAll('section').forEach(function (el) {
+        var r = el.getBoundingClientRect();
+        var name = el.querySelector('.name'), group = el.querySelector('.group');
+        var rn = name && name.getBoundingClientRect();
+        secs.push({ el: el, y: y(r), h: Math.round(r.height), an: null });
+        if (rn) zeilen.push({ el: el, y: y(rn) + Math.round(rn.height / 2), an: null });
+        if (rn) zeilen.push({ el: name, y: y(rn) + Math.round(rn.height / 2), an: null });
+        if (group) zeilen.push({ el: group, y: y(group.getBoundingClientRect()), an: null });
+        el.querySelectorAll('li').forEach(function (li) {
+            var rl = li.getBoundingClientRect();
+            zeilen.push({ el: li, y: y(rl) + Math.round(rl.height / 2), an: null });
+        });
+    });
+    secs.forEach(function (s) { sig.push(s.y, s.h); });
+    zeilen.forEach(function (z) { sig.push(z.y); });
+    sig = sig.join(',');
+    // Zustand der alten Zeilen mitnehmen, damit nichts flackert
+    var alt = new Map();
+    fenster.zeilen.forEach(function (z) { alt.set(z.el, z.an); });
+    zeilen.forEach(function (z) { z.an = alt.has(z.el) ? alt.get(z.el) : null; });
+    var geaendert = sig !== fenster.sig;
+    fenster.secs = secs; fenster.zeilen = zeilen; fenster.sig = sig;
+    return geaendert;
+}
+
+function fensterMalen(top, bot) {
+    fenster.top = top; fenster.bot = bot;
+    fenster.secs.forEach(function (s) {
+        var lo = Math.max(top, s.y) - s.y, hi = Math.min(bot, s.y + s.h) - s.y;
+        var bild = hi > lo
+            ? 'linear-gradient(to bottom, transparent ' + lo + 'px, var(--c) ' + lo + 'px, var(--c) ' + hi + 'px, transparent ' + hi + 'px)'
+            : '';
+        if (bild !== s.an) { s.el.style.backgroundImage = bild; s.an = bild; }
+    });
+    fenster.zeilen.forEach(function (z) {
+        var an = z.y >= top && z.y < bot;
+        if (an !== z.an) { z.el.classList.toggle('gedeckt', an); z.an = an; }
+    });
+}
+
+function fensterRahmen(sec) {
+    for (var i = 0; i < fenster.secs.length; i++) {
+        var s = fenster.secs[i];
+        if (s.el === sec) return { top: s.y, bot: s.y + s.h };
+    }
+    return { top: 0, bot: 0 };
+}
+
+function fensterSchritt(jetzt) {
+    var f = fenster, t = Math.min(1, (jetzt - f.t0) / f.dauer);
+    // beschleunigt von Anfang an und endet hart: kein Auslaufen
+    var e = t * t;
+    fensterMalen(f.von.top + (f.nach.top - f.von.top) * e, f.von.bot + (f.nach.bot - f.von.bot) * e);
+    f.raf = t < 1 ? requestAnimationFrame(fensterSchritt) : 0;
+}
+
+// sofort ans Ziel (Start, Layoutwechsel) oder gleitend
+function fensterZu(ziel, animiert) {
+    var f = fenster;
+    cancelAnimationFrame(f.raf); f.raf = 0;
+    var nach = fensterRahmen(ziel && ziel.sec);
+    if (!animiert) { fensterMalen(nach.top, nach.bot); return; }
+    // reduzierte Bewegung heißt kürzer, nicht keine
+    var kurz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    f.von = { top: f.top, bot: f.bot }; f.nach = nach;
+    f.dauer = kurz ? 90 : 240; f.t0 = performance.now();
+    f.raf = requestAnimationFrame(fensterSchritt);
+}
+
+function fensterSync() {
+    var f = fenster;
+    if (!f.container) return;
+    geistRender();
+    var z = fensterZiel();
+    f.container.querySelectorAll('section.heiss').forEach(function (s) {
+        if (!z || s !== z.sec || !z.heiss) s.classList.remove('heiss');
+    });
+    if (z && z.heiss) z.sec.classList.add('heiss');
+    if (z && z.sec === f.ziel) return;
+    var erstes = !f.ziel;
+    f.ziel = z && z.sec;
+    fensterZu(z, !erstes);
+}
+
+function fensterLayout() {
+    var f = fenster;
+    if (!f.container || !fensterMessen()) return;
+    f.ziel = null;   // neu bestimmen und ohne Gleiten setzen
+    fensterSync();
+}
+
+function fensterPlan(fn) {
+    var id = 0;
+    return function () {
+        cancelAnimationFrame(id);
+        id = requestAnimationFrame(fn);
+    };
+}
+
+function fensterInit() {
+    var f = fenster, c = document.getElementById('container');
+    f.obs.forEach(function (o) { o.disconnect(); });
+    f.obs = [];
+    cancelAnimationFrame(f.raf); f.raf = 0;
+    geistZuruecksetzen();
+    f.container = c; f.zeilen = []; f.secs = []; f.sig = ''; f.ziel = null; f.top = f.bot = 0;
+    fensterMessen();
+    fensterSync();
+
+    var layout = fensterPlan(fensterLayout), sync = fensterPlan(fensterSync);
+    var ro = new ResizeObserver(layout);
+    ro.observe(c);
+    c.querySelectorAll('section').forEach(function (s) { ro.observe(s); });
+    // Klassen (aktuell, mit-hover, tastatur) ändern das Ziel; neue Kacheln und Ansichtswechsel die Maße
+    var mo = new MutationObserver(function (ms) {
+        var maße = ms.some(function (m) { return m.type === 'childList'; });
+        (maße ? layout : sync)();
+    });
+    mo.observe(c, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
+    var bo = new MutationObserver(function () { layout(); sync(); });
+    bo.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    f.obs.push(ro, mo, bo);
+}
+
+// Ereignisse hängen am Dokument und gelten für jeden Durchlauf von fensterInit
+['mouseover', 'mouseout', 'focusin', 'focusout', 'keydown'].forEach(function (n) {
+    document.addEventListener(n, fensterPlan(fensterSync));
+});
+document.addEventListener('scroll', fensterPlan(fensterSync), true);
+window.addEventListener('resize', fensterPlan(fensterLayout));
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fensterPlan(fensterLayout));
+
+// ── Geist-Titel ───────────────────────────────────────────────────
+// Liegt der Titel der Ziel-Section (Nav-Chip unter der Maus oder Sprung nach Klick) außerhalb der Ansicht,
+// klebt eine Kopie am oberen bzw. unteren Rand, bis der echte Titel dort ankommt und natürlich weiterläuft.
+// Wechselt das Ziel, gleitet die neue Kopie über die vorige.
+var geist = { ebene: null, cur: null, alt: [], sprung: null, sprungT: 0, weg: 0 };
+
+function geistDauer() {
+    return matchMedia('(prefers-reduced-motion: reduce)').matches ? 90 : 240;
+}
+
+function geistEbene() {
+    if (!geist.ebene) {
+        geist.ebene = document.createElement('div');
+        geist.ebene.id = 'geist-ebene';
+        geist.ebene.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(geist.ebene);
+    }
+    return geist.ebene;
+}
+
+// Sprung (Klick, Dropdown, Pfeiltasten): die Kopie bleibt, bis der Titel in der Ansicht ist
+function geistSprung(sec) {
+    geist.sprung = sec;
+    clearTimeout(geist.sprungT);
+    geist.sprungT = setTimeout(function () { geist.sprung = null; geistRender(); }, 2500);
+    geistRender();
+}
+
+function geistSection() {
+    var c = fenster.container;
+    var h = c && c.querySelector('.name.mit-hover:not(.active)');
+    return (h && h.closest('section')) || geist.sprung;
+}
+
+function geistEntfernen(g, gleitend) {
+    if (!g) return;
+    if (!gleitend) { g.el.remove(); return; }
+    g.el.style.transform = g.lage === 'oben' ? 'translateY(-100%)' : 'translateY(100%)';
+    setTimeout(function () { g.el.remove(); }, geistDauer() + 30);
+}
+
+function geistRender() {
+    var c = fenster.container;
+    if (!c) return;
+    var sec = document.body.classList.contains('edit-mode') ? null : geistSection();
+    var cr = c.getBoundingClientRect(), hoch = c.clientHeight;
+    var lage = null, name = sec && sec.querySelector('.name'), hoehe = 0;
+    if (name) {
+        var r = name.getBoundingClientRect();
+        hoehe = r.height;
+        if (r.top < cr.top - 0.5) lage = 'oben';
+        else if (r.top > cr.top + hoch - hoehe + 0.5) lage = 'unten';
+        else if (sec === geist.sprung) geist.sprung = null;   // angekommen
+    }
+    var cur = geist.cur;
+    if (!lage) {
+        // kein Ziel: gleitet hinaus; Titel in der Ansicht: der echte Titel übernimmt sofort
+        geistEntfernen(cur, !sec);
+        geist.alt.forEach(function (g) { geistEntfernen(g, false); });
+        geist.alt = []; geist.cur = null;
+        return;
+    }
+    var ebene = geistEbene();
+    ebene.style.left = cr.left + 'px';
+    ebene.style.top = cr.top + 'px';
+    ebene.style.width = c.clientWidth + 'px';
+    ebene.style.height = hoch + 'px';
+    var kachel = c.querySelector('li');
+    ebene.style.setProperty('--schatten', (kachel ? kachel.offsetHeight : hoehe) * 0.66 + 'px');
+    if (cur && cur.sec === sec) {
+        cur.lage = lage;
+        cur.el.className = 'geist ' + lage;
+        cur.el.style.top = (lage === 'oben' ? 0 : hoch - hoehe) + 'px';
+        return;
+    }
+    // neue Kopie über die vorige
+    var el = document.createElement('div');
+    el.className = 'geist ' + lage;
+    el.style.setProperty('--c', sec.style.getPropertyValue('--c'));
+    var klon = name.cloneNode(true);
+    klon.removeAttribute('id');
+    klon.className = 'name';
+    klon.querySelectorAll('a').forEach(function (a) { a.tabIndex = -1; });
+    el.appendChild(klon);
+    el.style.top = (lage === 'oben' ? 0 : hoch - hoehe) + 'px';
+    el.style.transform = lage === 'oben' ? 'translateY(-100%)' : 'translateY(100%)';
+    ebene.appendChild(el);
+    el.getBoundingClientRect();   // Ausgangslage festschreiben
+    // beschleunigt und endet hart, wie das Fenster
+    el.style.transition = 'transform ' + geistDauer() + 'ms cubic-bezier(.55, .085, .68, .19), filter ' + geistDauer() + 'ms linear';
+    el.style.transform = 'none';
+    var neu = { sec: sec, el: el, lage: lage };
+    if (cur) { cur.el.classList.add('alt'); geist.alt.push(cur); }   // vorige: grau, ohne Schatten
+    geist.cur = neu;
+    clearTimeout(geist.weg);
+    geist.weg = setTimeout(function () {
+        geist.alt.forEach(function (g) { geistEntfernen(g, false); });
+        geist.alt = [];
+    }, geistDauer() + 30);
+}
+
+function geistZuruecksetzen() {
+    clearTimeout(geist.weg); clearTimeout(geist.sprungT);
+    if (geist.ebene) geist.ebene.innerHTML = '';
+    geist.cur = null; geist.alt = []; geist.sprung = null;
 }
 
 // Sections belegen ein ganzes Vielfaches eines Viertels der Inhaltshöhe
@@ -402,6 +672,7 @@ function focusContent(sec) {
             document.querySelectorAll('#container section.aktuell')
                 .forEach(function (s) { s.classList.remove('aktuell'); });
             ziel.classList.add('aktuell');
+            geistSprung(ziel);
         }
         (ziel || c).focus({ preventScroll: true });
     };

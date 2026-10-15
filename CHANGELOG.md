@@ -3,9 +3,13 @@
 Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 `git log`; hier beginnt die Aufzeichnung mit der Sitzung vom 25./26. Juli 2026.
 
-## 2026-10-15 — Aktiver Titel beim Nav-Hover, Raster höchstens 6 Spalten
+## 2026-10-15 — Leuchtfenster, Geist-Titel, Raster höchstens 6 Spalten
 
-- **Titelfarbe:** Beim Hover auf den Chip der aktiven Section behielt deren Titel nicht die Farbe der aktiven Section. Die Hover-Regeln für Titel und Unterkante greifen jetzt nur noch bei `.name.mit-hover:not(.active)`.
+- **Leuchtfenster:** Statt die Section beim Wechsel sofort einzufärben, gleitet ein Fenster zur neuen Section (Hover, Nav, Tastatur) und wächst bzw. schrumpft dabei. Die Farbe wechselt hart an den Section-Kanten. Zeilen schalten per `.gedeckt`, sobald ihre Mitte im Fenster liegt. Dafür ersetzen `.gedeckt`-Regeln die `:hover`/`:has`/`.aktuell`-Selektoren in `styles.css`; die Fläche ist ein Verlauf mit harten Stopps als Section-Hintergrund (`app.js`). Hover-Hintergrund des Titels erst, wenn das Fenster ihn deckt.
+- **Geist-Titel:** Liegt der Titel der Ziel-Section außerhalb der Ansicht, klebt eine Kopie am Rand, bis der echte Titel dort ankommt (auch nach einem Klick, während die Seite scrollt). Ein neues Ziel gleitet über die vorige Kopie, die grau wird und keinen Schatten mehr wirft. Weicher Schatten von 66 % einer Kachelhöhe, ohne Unterstreichung.
+- **Kachelschrift:** In der leuchtenden Section bleibt sie `--on-c` (hell: weiß, dunkel: dunkel).
+
+- **Titelfarbe (vorab):** Beim Hover auf den Chip der aktiven Section behielt deren Titel nicht die Farbe der aktiven Section. Die Hover-Regeln für Titel und Unterkante greifen jetzt nur noch bei `.name.mit-hover:not(.active)`.
 - **Raster, volle Breite:** Die Kacheln einer Section bleiben bei höchstens 6 Spalten (`minmax(max(var(--kachel), 100% / 6), 1fr)`) und füllen die Breite, statt mit ihr mehr Spalten zu bekommen.
 
 ---

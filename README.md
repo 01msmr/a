@@ -112,6 +112,21 @@ eingefärbten Section hell. „Links“ heißt hier volle Breite, auch die Leist
 über die ganze Seite; die Kacheln der Sections bleiben bei höchstens 6 Spalten und werden breiter. Ein toter Link zeigt ein rotes Quadrat in der Ecke. Der Edit-Mode
 nutzt weiter das Chip-Layout.
 
+### Leuchtfenster und Geist-Titel
+
+Die leuchtende Section (Hover, Nav-Chip, Tastatur, sonst die oberste) ist ein Fenster, das zur
+nächsten gleitet und dabei wächst bzw. schrumpft (240 ms, beschleunigt, endet hart; bei
+reduzierter Bewegung 90 ms). Die Farbe wechselt hart an den Section-Kanten. `app.js`
+(`fensterInit`) malt den Teil des Fensters als Hintergrund jeder Section und setzt `.gedeckt`
+auf Titel, Gruppe und Kacheln, deren Mitte im Fenster liegt; das CSS färbt nur noch über
+`.gedeckt`. Die Maße liegen im Inhalt, Scrollen ändert sie nicht.
+
+Liegt der Titel der Ziel-Section (Nav-Chip unter der Maus oder Sprung nach Klick, Dropdown,
+Pfeiltasten) außerhalb der Ansicht, klebt eine Kopie (`#geist-ebene`, `geistRender`) am oberen
+bzw. unteren Rand, bis der echte Titel dort ankommt und weiterläuft. Ein neues Ziel gleitet über
+die vorige Kopie: diese wird grau und wirft keinen Schatten mehr. Die Kopie wirft einen weichen
+Schatten von 66 % einer Kachelhöhe auf den Inhalt. Im Edit-Mode gibt es keine Kopie.
+
 ## Bearbeiten
 
 Setzt eine Anmeldung voraus: einmal pro Browser `https://a.msmr.co/edit/` aufrufen

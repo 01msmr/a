@@ -162,9 +162,7 @@ section {
 
 /* kontrastreich bei Hover, Tastatur-Fokus oder als oberste Section — ein Mausklick-Fokus zählt nicht,
    sonst wirkt die Section nach der Rückkehr von einem Link noch gehovert */
-body:not(.tastatur) section:is(:hover) a,
-body:not(.tastatur):where(:not(:has(section:hover, .name.mit-hover:not(.active)))) section.aktuell a,
-body.tastatur section:is(:focus-visible, :has(:focus-visible), .aktuell) a {
+body section .name.gedeckt a {
     color: var(--sect-col);
 }
 
@@ -391,44 +389,17 @@ li {
     background: none;
 }
 
-body:not(.tastatur) section:is(:hover),
-body:not(.tastatur):where(:not(:has(section:hover, .name.mit-hover:not(.active)))) section.aktuell,
-body.tastatur section:is(:focus-visible, :has(:focus-visible), .aktuell),
-body:not(.tastatur) section:is(:hover) .name,
-body:not(.tastatur):where(:not(:has(section:hover, .name.mit-hover:not(.active)))) section.aktuell .name,
-body.tastatur section:is(:focus-visible, :has(:focus-visible), .aktuell) .name,
-body:not(.tastatur) section:is(:hover) .group,
-body:not(.tastatur):where(:not(:has(section:hover, .name.mit-hover:not(.active)))) section.aktuell .group,
-body.tastatur section:is(:focus-visible, :has(:focus-visible), .aktuell) .group {
+body section.gedeckt,
+body section .name.gedeckt,
+body section .group.gedeckt {
     color: var(--title-col);
     border-color: var(--title-col);
     cursor: var(--curs-img) 1 1, auto;
 }
 
-/* gehoverte Section (direkt oder per Nav-Chip): Titel in voller Sektionsfarbe statt Grau */
-body:not(.tastatur) #container section:is(:hover, :has(.name.mit-hover:not(.active))) .name:not(.mit-druck),
-body.tastatur #container section:is(:focus-visible, :has(:focus-visible)) .name:not(.mit-druck),
-body:not(.tastatur) #container section:is(:hover, :has(.name.mit-hover:not(.active))) .name:not(.mit-druck) a,
-body.tastatur #container section:is(:focus-visible, :has(:focus-visible)) .name:not(.mit-druck) a {
-    color: var(--c-text, var(--title-col));
-}
-
-/* Unterkante: grau in Ruhe, bei Hover (direkt oder per Nav-Chip) in der Sektionsfarbe */
-body:not(.tastatur) #container section:is(:hover, :has(.name.mit-hover:not(.active))) .name:not(.mit-druck),
-body.tastatur #container section:is(:focus-visible, :has(:focus-visible)) .name:not(.mit-druck) {
+/* Unterkante der gedeckten Titelzeile: verschmilzt mit der Fläche */
+body #container section .name.gedeckt:not(.mit-druck) {
     border-bottom-color: color-mix(in srgb, var(--c, var(--sect-col)) 75%, var(--front-body));
-}
-
-/* die eingefärbte aktuelle Section hat keine dunkle Unterkante, sie verschmilzt mit der Fläche */
-body.tastatur #container section:is(.aktuell, :focus-visible) .name,
-body:not(.tastatur):where(:not(:has(section:hover, .name.mit-hover:not(.active)))) #container section.aktuell .name {
-    border-bottom-color: color-mix(in srgb, var(--c, var(--sect-col)) 75%, var(--front-body));
-}
-
-/* auch der Rest der per Nav-Chip gehoverten Section wird kontrastreich */
-body:not(.tastatur) section:has(.name.mit-hover:not(.active)),
-body:not(.tastatur) section:has(.name.mit-hover:not(.active)) .group {
-    color: var(--title-col);
 }
 
 #container:focus,
@@ -514,7 +485,7 @@ a.secname,
     --c-hov: color-mix(in srgb, var(--c, var(--sect-col)) 28%, transparent);
 }
 
-body:not(.tastatur) #container section .name:is(:hover, .mit-hover) {
+body:not(.tastatur) #container section .name.gedeckt:is(:hover, .mit-hover) {
     background-color: var(--c-hov);
 }
 
@@ -621,39 +592,27 @@ body.docked .title {
     border-bottom-color: var(--sect-col);
 }
 
-/* aktive oder gehoverte Section (auch per Nav-Chip): die ganze Section in Sektionsfarbe, Text weiß;
-   nur die Kachel unter dem Cursor kehrt um: helle Fläche, Text in Sektionsfarbe */
-body:not(.tastatur) #container section:is(:hover, :has(.name.mit-hover:not(.active))),
-body:not(.tastatur):where(:not(:has(section:hover, .name.mit-hover:not(.active)))) #container section.aktuell,
-body.tastatur #container section:is(.aktuell, :focus-visible, :has(:focus-visible)) {
-    background-color: var(--c, transparent);
-}
-
-body:not(.tastatur) #container section:is(:hover, :has(.name.mit-hover:not(.active))) .name:not(.mit-druck),
-body:not(.tastatur):where(:not(:has(section:hover, .name.mit-hover:not(.active)))) #container section.aktuell .name:not(.mit-druck),
-body.tastatur #container section:is(.aktuell, :focus-visible, :has(:focus-visible)) .name:not(.mit-druck),
-body:not(.tastatur) #container section:is(:hover, :has(.name.mit-hover:not(.active))) .name:not(.mit-druck) a,
-body:not(.tastatur):where(:not(:has(section:hover, .name.mit-hover:not(.active)))) #container section.aktuell .name:not(.mit-druck) a,
-body.tastatur #container section:is(.aktuell, :focus-visible, :has(:focus-visible)) .name:not(.mit-druck) a,
-body:not(.tastatur) section:is(:hover, :has(.name.mit-hover:not(.active))) li a,
-body:not(.tastatur):where(:not(:has(section:hover, .name.mit-hover:not(.active)))) section.aktuell li a,
-body.tastatur section:is(.aktuell, :focus-visible, :has(:focus-visible)) li a {
+/* gedeckte Zeilen (app.js: das Fenster der leuchtenden Section, die Fläche malt app.js als Section-Hintergrund):
+   Text weiß; nur die Kachel unter dem Cursor kehrt um: helle Fläche, Text in Sektionsfarbe */
+body #container section .name.gedeckt:not(.mit-druck),
+body #container section .name.gedeckt:not(.mit-druck) a,
+body section li.gedeckt a {
     color: var(--on-c);
 }
 
-body:not(.tastatur) section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) li a:hover,
-body.tastatur section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) li a:not([contenteditable]):focus-visible {
+body:not(.tastatur) section li.gedeckt a:hover,
+body.tastatur section li.gedeckt a:not([contenteditable]):focus-visible {
     color: var(--c-text, var(--sect-col));
 }
 
-body:not(.tastatur) section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) li a:hover::before,
-body.tastatur section:is(.aktuell, :hover, :has(:focus-visible), :has(.name.mit-hover:not(.active))) li a:not([contenteditable]):focus-visible::before {
+body:not(.tastatur) section li.gedeckt a:hover::before,
+body.tastatur section li.gedeckt a:not([contenteditable]):focus-visible::before {
     background-color: var(--chip-inv);
 }
 
 /* Strich-Cursor auf der weißen Kachel: exakt in der Sektionsfarbe wie die Fläche (das Strich-Bild dient als Maske) */
 @media (hover: hover) {
-    body:not(.tastatur) section:is(.aktuell, :hover, :has(.name.mit-hover:not(.active))) li a:hover::after {
+    body:not(.tastatur) section li.gedeckt a:hover::after {
         background: var(--c, var(--sect-col));
         -webkit-mask: var(--curs-hov) no-repeat 0 0 / 100% 100%;
         mask: var(--curs-hov) no-repeat 0 0 / 100% 100%;
@@ -1266,9 +1225,7 @@ section {
     --linie: color-mix(in srgb, var(--sect-col) 25%, transparent);
 }
 
-body:not(.tastatur) section:is(:hover, :has(.name.mit-hover:not(.active))),
-body:not(.tastatur):where(:not(:has(section:hover, .name.mit-hover:not(.active)))) section.aktuell,
-body.tastatur section:is(.aktuell, :focus-visible, :has(:focus-visible)) {
+body section :is(.group, li).gedeckt {
     --linie: color-mix(in srgb, var(--on-c) 25%, transparent);
 }
 
@@ -1312,8 +1269,7 @@ body.view-grid:not(.edit-mode) .group {
 }
 
 /* Hover (Maus) bzw. Fokus (Tastatur): der Titel hebt sich mit der bekannten Deckkraft (28 %) in der Schriftfarbe von der Fläche ab */
-body.view-grid:not(.edit-mode):not(.tastatur) #container section:is(:hover, :has(.name.mit-hover:not(.active))) .name,
-body.view-grid:not(.edit-mode).tastatur #container section:is(:focus-visible, :has(:focus-visible)) .name {
+body.view-grid:not(.edit-mode) #container section.heiss .name.gedeckt {
     background-color: color-mix(in srgb, var(--on-c) 28%, transparent);
 }
 
@@ -1625,4 +1581,66 @@ body:not(.tastatur) .jumper-pop a:hover,
 body.tastatur .jumper-pop a:focus-visible {
     background: var(--sect-col);
     color: var(--front-body);
+}
+
+/* ── Geist-Titel (app.js): Kopie des Ziel-Titels am Rand der Ansicht ── */
+#geist-ebene {
+    position: fixed;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.geist {
+    position: absolute;
+    left: 0;
+    right: 0;
+    background: var(--c, var(--sect-col));
+}
+
+.geist .name,
+.geist .name a {
+    color: var(--on-c);
+}
+
+.geist .name a {
+    text-decoration: none;
+}
+
+.geist .name {
+    border-bottom-color: color-mix(in srgb, var(--c, var(--sect-col)) 75%, var(--front-body));
+}
+
+body.view-grid .geist .name {
+    border-bottom-width: 0;
+}
+
+/* weicher Schatten auf den Inhalt, 66 % einer Kachelhöhe (--schatten, von app.js gesetzt) */
+.geist::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: var(--schatten, 1.5rem);
+    pointer-events: none;
+    background: linear-gradient(var(--richtung, to bottom),
+        rgba(0, 0, 0, .3), rgba(0, 0, 0, .22) 20%, rgba(0, 0, 0, .12) 45%, rgba(0, 0, 0, .04) 75%, rgba(0, 0, 0, 0));
+}
+
+.geist.oben::after {
+    top: 100%;
+}
+
+.geist.unten::after {
+    bottom: 100%;
+    --richtung: to top;
+}
+
+/* die vorige Kopie wird grau und wirft keinen Schatten mehr, während die neue darüber gleitet */
+.geist.alt {
+    filter: grayscale(1);
+}
+
+.geist.alt::after {
+    display: none;
 }
