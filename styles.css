@@ -1276,7 +1276,7 @@ body.tastatur section:is(.aktuell, :focus-visible, :has(:focus-visible)) {
    im Edit-Mode gilt weiter das Kachel-Layout der Chips */
 body.view-grid:not(.edit-mode) .group {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(var(--kachel), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(max(var(--kachel), calc(100% / 6)), 1fr));   /* höchstens 6 Spalten */
     gap: 0;
     padding-left: 0;
     border-top: 1px solid var(--linie);

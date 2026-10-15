@@ -3,6 +3,11 @@
 Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 `git log`; hier beginnt die Aufzeichnung mit der Sitzung vom 25./26. Juli 2026.
 
+## 2026-10-15 — Aktiver Titel beim Nav-Hover, Raster höchstens 6 Spalten
+
+- **Titelfarbe:** Beim Hover auf den Chip der aktiven Section behielt deren Titel nicht die Farbe der aktiven Section. Die Hover-Regeln für Titel und Unterkante greifen jetzt nur noch bei `.name.mit-hover:not(.active)`.
+- **Raster, volle Breite:** Die Kacheln einer Section bleiben bei höchstens 6 Spalten (`minmax(max(var(--kachel), 100% / 6), 1fr)`) und füllen die Breite, statt mit ihr mehr Spalten zu bekommen.
+
 ---
 
 ## 2026-10-11 — Nur noch zwei Werte je Einstellung

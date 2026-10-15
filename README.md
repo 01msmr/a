@@ -109,7 +109,7 @@ iPad und iPhone bleiben Gerätemerkmale und folgen dem Zoom nicht.
 
 Eckige Kacheln ohne Glanz, 1 px Linien. In inaktiven Sections sind sie grau, in der
 eingefärbten Section hell. „Links“ heißt hier volle Breite, auch die Leiste läuft dann
-über die ganze Seite. Ein toter Link zeigt ein rotes Quadrat in der Ecke. Der Edit-Mode
+über die ganze Seite; die Kacheln der Sections bleiben bei höchstens 6 Spalten und werden breiter. Ein toter Link zeigt ein rotes Quadrat in der Ecke. Der Edit-Mode
 nutzt weiter das Chip-Layout.
 
 ## Bearbeiten
