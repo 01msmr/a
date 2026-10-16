@@ -1748,6 +1748,11 @@ html.strich-an * {
     cursor: none !important;
 }
 
+html.strich-an.strich-punkt,
+html.strich-an.strich-punkt * {
+    cursor: var(--curs-img) 1 1, auto !important;
+}
+
 /* wie der echte Titel bei Hover auf den Chip: derselbe Schleier, damit die Übernahme nicht blitzt */
 .geist.heiss .name {
     background-color: color-mix(in srgb, var(--on-c) 28%, transparent);

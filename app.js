@@ -908,6 +908,8 @@ function strichSetzen() {
         return;
     }
     document.documentElement.classList.add('strich-an');
+    // in der Section (nicht auf Chip oder Kachel) zeigt das kleine Quadrat die Zeigerposition
+    document.documentElement.classList.toggle('strich-punkt', !!z.sec);
     // Zeile unter dem Zeiger (Kachelrand, Nav-Chip): fester Strich in voller Deckkraft
     if (z.fest) {
         var r = z.fest.getBoundingClientRect();
