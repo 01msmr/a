@@ -1,5 +1,5 @@
 // ── Ansichts-Einstellungen ────────────────────────────────────────
-var PREF_DEFAULTS = { navMode: 'short', align: 'left', view: 'chips' };
+var PREF_DEFAULTS = { navMode: 'short', align: 'left', view: 'chips', farbe: 'bunt' };
 
 function getPref(name) {
     try { return localStorage.getItem('a.' + name) || PREF_DEFAULTS[name]; }
@@ -15,6 +15,7 @@ function applyPrefs() {
     document.body.classList.toggle('nav-icons', getPref('navMode') === 'icons');
     document.body.classList.toggle('align-center', getPref('align') === 'center');
     document.body.classList.toggle('view-grid', getPref('view') === 'grid');
+    document.documentElement.dataset.farbe = getPref('farbe');
     if (typeof settingsAnzeige === 'function') settingsAnzeige();
     dropdownBeschriften();
 }
@@ -44,6 +45,11 @@ var selSprung = null;   // Ziel eines Sprungs über das Dropdown: es zeigt bis z
 // kräftige, gesättigte Farben (ohne Grauanteil): weiße Schrift (hell) bzw. dunkle Schrift (dunkel) bleibt lesbar
 var SEC_COLORS = ['#f85a5a', '#fb8f2a', '#e2a800', '#8ac430', '#2fc16c', '#22b59f', '#18b4d6',
     '#4a92f0', '#6c70f2', '#9a62f0', '#c456e8', '#ea4fa8', '#f4587a', '#f67a3a', '#2fae82'];
+
+// Section-Farbe: gleiche Helligkeit und Tönung, die Sättigung folgt --farb-int (styles.css, Einstellung „Farbe“)
+function secFarbe(idx, intensitaet) {
+    return 'oklch(from ' + SEC_COLORS[idx % SEC_COLORS.length] + ' l calc(c * ' + (intensitaet || 'var(--farb-int, 1)') + ') h)';
+}
 
 function makeIcon(icon) {
     var i = document.createElement('i');
@@ -156,7 +162,7 @@ function render(data) {
 
     data.forEach(function (sec, idx) {
         var a = document.createElement('a');
-        a.style.setProperty('--c', SEC_COLORS[idx % SEC_COLORS.length]);
+        a.style.setProperty('--c', secFarbe(idx));
         a.className = 'secname';
         a.href = '#' + sec.id;
         a.target = '_self';
@@ -197,7 +203,7 @@ function render(data) {
 
     data.forEach(function (sec, idx) {
         var section = document.createElement('section');
-        section.style.setProperty('--c', SEC_COLORS[idx % SEC_COLORS.length]);   // erbt an Titel und Kacheln
+        section.style.setProperty('--c', secFarbe(idx));   // erbt an Titel und Kacheln
         section.tabIndex = -1;   // fokussierbar, aber nicht in der Tab-Reihenfolge
 
         var h3 = document.createElement('h3');
@@ -233,6 +239,9 @@ function render(data) {
     applyPrefs();
     trackActiveSection();
     raster();
+    maszLesen();
+    lichtInit();
+    strichSecInit();
     fensterInit();
     // Reload mit #hash: der Browser springt in nachgeladenem Inhalt nicht selbst dorthin,
     // sonst zeigt der Inhalt die erste Section, während die Markierung zur Adresse gehört
@@ -309,6 +318,18 @@ function trackActiveSection() {
     syncActive();
 }
 
+// Zahlen aus den CSS-Variablen (:root in styles.css), einmal gelesen
+var masz = {};
+function maszLesen() {
+    var cs = getComputedStyle(document.documentElement);
+    ['fenster-dauer', 'fenster-dauer-kurz', 'gleiten-potenz', 'licht-dauer', 'licht-potenz', 'licht-rand-dauer', 'licht-deckung',
+        'geist-schatten', 'geist-auslauf', 'geist-haelt', 'strich-schwach'].forEach(function (n) {
+        masz[n] = parseFloat(cs.getPropertyValue('--' + n));
+    });
+}
+function gleiten(t) { return Math.pow(t, masz['gleiten-potenz']); }
+maszLesen();
+
 // ── Leuchtfenster ─────────────────────────────────────────────────
 // Die leuchtende Section (Hover, Nav-Chip, Tastatur, sonst die oberste) ist ein Fenster, das zur
 // nächsten gleitet und dabei wächst bzw. schrumpft. Die Farbe wechselt hart an den Section-Kanten:
@@ -326,7 +347,8 @@ function fensterZiel() {
     } else {
         s = c.querySelector('section:hover');
         if (!s) {
-            var h = c.querySelector('.name.mit-hover:not(.active)');
+            // auch der Chip der aktiven Section zählt: ihr Titel zeigt dieselbe Hover-Fläche wie jeder andere
+            var h = c.querySelector('.name.mit-hover');
             s = h && h.closest('section');
         }
     }
@@ -347,18 +369,37 @@ function fensterMessen() {
         if (rn) zeilen.push({ el: el, y: y(rn) + Math.round(rn.height / 2), an: null });
         if (rn) zeilen.push({ el: name, y: y(rn) + Math.round(rn.height / 2), an: null });
         if (group) zeilen.push({ el: group, y: y(group.getBoundingClientRect()), an: null });
-        el.querySelectorAll('li').forEach(function (li) {
+        var lis = el.querySelectorAll('li');
+        lis.forEach(function (li, i) {
             var rl = li.getBoundingClientRect();
-            zeilen.push({ el: li, y: y(rl) + Math.round(rl.height / 2), an: null });
+            // die letzte Kachel meldet ihrer Gruppe, ob die letzte Zeile gedeckt ist (leere Rasterfelder)
+            zeilen.push({ el: li, y: y(rl) + Math.round(rl.height / 2), an: null, ende: i === lis.length - 1 ? group : null });
+            // die untere Rasterlinie schaltet an der Unterkante der Zeile, nicht in ihrer Mitte
+            zeilen.push({ el: li, y: y(rl) + Math.round(rl.height) - 1, an: null, cls: 'gedeckt-u' });
         });
+        // leere Felder der letzten Rasterzeile (Spalten minus Rest), für ::after der Gruppe
+        if (group) {
+            var spalten = getComputedStyle(group).gridTemplateColumns.split(' ').length;
+            var leer = lis.length ? (spalten - lis.length % spalten) % spalten : spalten;
+            group.style.setProperty('--leer', leer);
+            group.classList.toggle('voll', leer === 0 || getComputedStyle(group).display !== 'grid');
+        }
     });
     secs.forEach(function (s) { sig.push(s.y, s.h); });
     zeilen.forEach(function (z) { sig.push(z.y); });
     sig = sig.join(',');
     // Zustand der alten Zeilen mitnehmen, damit nichts flackert
+    // (eine Zeile kann zwei Zustände haben: Mitte .gedeckt, Unterkante .gedeckt-u)
     var alt = new Map();
-    fenster.zeilen.forEach(function (z) { alt.set(z.el, z.an); });
-    zeilen.forEach(function (z) { z.an = alt.has(z.el) ? alt.get(z.el) : null; });
+    fenster.zeilen.forEach(function (z) {
+        var m = alt.get(z.el) || {};
+        m[z.cls || ''] = z.an;
+        alt.set(z.el, m);
+    });
+    zeilen.forEach(function (z) {
+        var m = alt.get(z.el), k = z.cls || '';
+        z.an = m && k in m ? m[k] : null;
+    });
     var geaendert = sig !== fenster.sig;
     fenster.secs = secs; fenster.zeilen = zeilen; fenster.sig = sig;
     return geaendert;
@@ -375,7 +416,11 @@ function fensterMalen(top, bot) {
     });
     fenster.zeilen.forEach(function (z) {
         var an = z.y >= top && z.y < bot;
-        if (an !== z.an) { z.el.classList.toggle('gedeckt', an); z.an = an; }
+        if (an !== z.an) {
+            z.el.classList.toggle(z.cls || 'gedeckt', an);
+            if (z.ende) z.ende.classList.toggle('ende-gedeckt', an);
+            z.an = an;
+        }
     });
 }
 
@@ -390,7 +435,7 @@ function fensterRahmen(sec) {
 function fensterSchritt(jetzt) {
     var f = fenster, t = Math.min(1, (jetzt - f.t0) / f.dauer);
     // beschleunigt von Anfang an und endet hart: kein Auslaufen
-    var e = t * t;
+    var e = gleiten(t);
     fensterMalen(f.von.top + (f.nach.top - f.von.top) * e, f.von.bot + (f.nach.bot - f.von.bot) * e);
     f.raf = t < 1 ? requestAnimationFrame(fensterSchritt) : 0;
 }
@@ -404,7 +449,7 @@ function fensterZu(ziel, animiert) {
     // reduzierte Bewegung heißt kürzer, nicht keine
     var kurz = matchMedia('(prefers-reduced-motion: reduce)').matches;
     f.von = { top: f.top, bot: f.bot }; f.nach = nach;
-    f.dauer = kurz ? 90 : 240; f.t0 = performance.now();
+    f.dauer = kurz ? masz['fenster-dauer-kurz'] : masz['fenster-dauer']; f.t0 = performance.now();
     f.raf = requestAnimationFrame(fensterSchritt);
 }
 
@@ -458,7 +503,11 @@ function fensterInit() {
         (maße ? layout : sync)();
     });
     mo.observe(c, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
-    var bo = new MutationObserver(function () { layout(); sync(); });
+    var bo = new MutationObserver(function () {
+        layout(); sync();
+        if (document.body.classList.contains('edit-mode')) lichtHart();
+        lichtPlan();
+    });
     bo.observe(document.body, { attributes: true, attributeFilter: ['class'] });
     f.obs.push(ro, mo, bo);
 }
@@ -478,7 +527,7 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(fensterPla
 var geist = { ebene: null, cur: null, alt: [], sprung: null, sprungT: 0, weg: 0 };
 
 function geistDauer() {
-    return matchMedia('(prefers-reduced-motion: reduce)').matches ? 90 : 240;
+    return matchMedia('(prefers-reduced-motion: reduce)').matches ? masz['fenster-dauer-kurz'] : masz['fenster-dauer'];
 }
 
 function geistEbene() {
@@ -495,7 +544,7 @@ function geistEbene() {
 function geistSprung(sec) {
     geist.sprung = sec;
     clearTimeout(geist.sprungT);
-    geist.sprungT = setTimeout(function () { geist.sprung = null; geistRender(); }, 2500);
+    geist.sprungT = setTimeout(function () { geist.sprung = null; geistRender(); }, masz['geist-haelt']);
     geistRender();
 }
 
@@ -505,8 +554,14 @@ function geistSection() {
     return (h && h.closest('section')) || geist.sprung;
 }
 
-function geistEntfernen(g, gleitend) {
+function geistEntfernen(g, gleitend, blass) {
     if (!g) return;
+    if (blass) {   // Übergabe an den echten Titel: kurz ausblenden, damit ein Versatz von wenigen Pixeln nicht springt
+        g.el.style.transition = 'opacity 60ms linear';
+        g.el.style.opacity = '0';
+        setTimeout(function () { g.el.remove(); }, 70);
+        return;
+    }
     if (!gleitend) { g.el.remove(); return; }
     g.el.style.transform = g.lage === 'oben' ? 'translateY(-100%)' : 'translateY(100%)';
     setTimeout(function () { g.el.remove(); }, geistDauer() + 30);
@@ -517,18 +572,29 @@ function geistRender() {
     if (!c) return;
     var sec = document.body.classList.contains('edit-mode') ? null : geistSection();
     var cr = c.getBoundingClientRect(), hoch = c.clientHeight;
-    var lage = null, name = sec && sec.querySelector('.name'), hoehe = 0, abstand = 0;
+    var lage = null, name = sec && sec.querySelector('.name'), hoehe = 0, abstand = 0, warten = null;
     if (name) {
         var r = name.getBoundingClientRect();
         hoehe = r.height;
         if (r.top < cr.top - 0.5) { lage = 'oben'; abstand = cr.top - r.top; }
         else if (r.top > cr.top + hoch - hoehe + 0.5) { lage = 'unten'; abstand = r.top - (cr.top + hoch - hoehe); }
-        else if (sec === geist.sprung) geist.sprung = null;   // angekommen
+        else if (sec === geist.sprung) {
+            // angekommen: die Kopie liegt über dem echten Titel, bis das Fenster ihn gedeckt hat (sonst blitzt er grau auf)
+            var oben = r.top - cr.top + c.scrollTop, f = fenster;
+            var gedeckt = name.classList.contains('gedeckt') && f.top <= oben + 0.5 && f.bot >= oben + hoehe - 0.5;   // Zeile ganz im Fenster
+            if (gedeckt || !geist.cur || geist.cur.sec !== sec) geist.sprung = null;
+            else warten = r.top - cr.top;
+        }
     }
     var cur = geist.cur;
+    if (!lage && warten !== null) {
+        cur.el.style.top = warten + 'px';
+        cur.el.style.setProperty('--staerke', 0);
+        return;
+    }
     if (!lage) {
         // kein Ziel: gleitet hinaus; Titel in der Ansicht: der echte Titel übernimmt sofort
-        geistEntfernen(cur, !sec);
+        geistEntfernen(cur, !sec, !!sec);
         geist.alt.forEach(function (g) { geistEntfernen(g, false); });
         geist.alt = []; geist.cur = null;
         return;
@@ -539,13 +605,15 @@ function geistRender() {
     ebene.style.width = c.clientWidth + 'px';
     ebene.style.height = hoch + 'px';
     var kachel = c.querySelector('li');
-    ebene.style.setProperty('--schatten', (kachel ? kachel.offsetHeight : hoehe) * 0.66 + 'px');
+    ebene.style.setProperty('--schatten', (kachel ? kachel.offsetHeight : hoehe) * masz['geist-schatten'] + 'px');
     // nach einem Klick läuft der Schatten aus, je näher der echte Titel seiner Stelle kommt; dort ist er weg
-    var staerke = sec === geist.sprung ? Math.min(1, abstand / (2 * hoehe)) : 1;
+    var staerke = sec === geist.sprung ? Math.min(1, abstand / (masz['geist-auslauf'] * hoehe)) : 1;
     if (cur && cur.sec === sec) {
+        cur.el.classList.toggle('heiss', !!sec.querySelector('.name.mit-hover'));
         cur.el.style.setProperty('--staerke', staerke);
         cur.lage = lage;
-        cur.el.className = 'geist ' + lage;
+        cur.el.classList.remove('oben', 'unten');
+        cur.el.classList.add(lage);
         cur.el.style.top = (lage === 'oben' ? 0 : hoch - hoehe) + 'px';
         return;
     }
@@ -553,6 +621,7 @@ function geistRender() {
     var el = document.createElement('div');
     el.className = 'geist ' + lage;
     el.style.setProperty('--staerke', staerke);
+    el.classList.toggle('heiss', !!sec.querySelector('.name.mit-hover'));
     el.style.setProperty('--c', sec.style.getPropertyValue('--c'));
     var klon = name.cloneNode(true);
     klon.removeAttribute('id');
@@ -581,6 +650,298 @@ function geistZuruecksetzen() {
     if (geist.ebene) geist.ebene.innerHTML = '';
     geist.cur = null; geist.alt = []; geist.sprung = null;
 }
+
+// ── Kachel-Licht (Chips und Raster) ───────────────────────────────
+// Die Hover-Fläche der Kachel ist ein einzelnes Element, das von Kachel zu Kachel gleitet
+// (beschleunigt, endet hart). Aus dem Nichts kommt sie in voller Größe von außen in die Kachel
+// und verlässt sie genauso, beschnitten auf die Kachel; nichts skaliert. Sie liegt im Inhalt und scrollt mit.
+// modus: 'aus' (unsichtbar), 'ein' (auf einer Kachel oder unterwegs dorthin), 'raus' (verlässt die Kachel).
+var licht = { el: null, modus: 'aus', tile: null, alt: null, da: new Set(), cur: null, von: null, nach: null,
+    clip: null, radius: 0, t0: 0, dauer: 0, linear: false, raf: 0, ende: null };
+
+function lichtAktiv() {
+    return !document.body.classList.contains('edit-mode');
+}
+
+function lichtRahmen(a) {
+    var c = fenster.container, cr = c.getBoundingClientRect(), r = a.getBoundingClientRect();
+    return { x: r.left - cr.left + c.scrollLeft, y: r.top - cr.top + c.scrollTop, w: r.width, h: r.height };
+}
+
+function lichtMalen(r) {
+    if (!(r.w >= 0 && r.h >= 0 && isFinite(r.x) && isFinite(r.y))) return;
+    licht.cur = r;
+    var s = licht.el.style, k = licht.clip;
+    s.left = r.x + 'px'; s.top = r.y + 'px'; s.width = r.w + 'px'; s.height = r.h + 'px';
+    // beschnitten auf das Rechteck der Kachel (ohne Rundung) als festes Fenster im Raum: nur der Teil des Lichts darin zeigt sich
+    s.clipPath = k
+        ? 'xywh(' + (k.x - r.x) + 'px ' + (k.y - r.y) + 'px ' + k.w + 'px ' + k.h + 'px)'
+        : '';
+}
+
+// Rundung der Kachelfläche (a::before), damit Licht und Beschnitt exakt wie die Kachel gerundet sind
+function lichtRadius(a) {
+    licht.radius = parseFloat(getComputedStyle(a, '::before').borderTopLeftRadius) || 0;
+    licht.el.style.borderRadius = licht.radius + 'px';
+}
+
+// Anteil der Kachel, den das Licht deckt
+function lichtDeckung(r, k) {
+    if (!r || !k || !k.w || !k.h) return 0;
+    var w = Math.max(0, Math.min(r.x + r.w, k.x + k.w) - Math.max(r.x, k.x));
+    var h = Math.max(0, Math.min(r.y + r.h, k.y + k.h) - Math.max(r.y, k.y));
+    return (w * h) / (k.w * k.h);
+}
+
+// Die Schrift einer Kachel kehrt um (.da), solange das Licht sie zu mindestens 95 % deckt.
+// Geprüft werden nur die Zielkachel, die verlassene und alle bisher umgekehrten: so bleibt keine hängen.
+function lichtDa() {
+    var kand = new Set(licht.da);
+    if (licht.tile) kand.add(licht.tile);
+    if (licht.alt) kand.add(licht.alt);
+    kand.forEach(function (li) {
+        var a = li.querySelector('a');
+        var an = !!a && licht.modus !== 'aus' && lichtDeckung(licht.cur, lichtRahmen(a)) >= masz['licht-deckung'];
+        li.classList.toggle('da', an);
+        if (an) licht.da.add(li); else licht.da.delete(li);
+    });
+    if (licht.alt && !licht.da.has(licht.alt)) licht.alt = null;
+    lichtZellen();
+}
+
+// Die Zelle unter dem Licht (und die verlassene) trägt die Section-Farbe sofort, ohne auf das Fenster zu warten.
+// Zwei Flächen im Inhalt unter dem Licht; so liegen sie sicher hinter der hellen Kachelfläche.
+function lichtZellen() {
+    var liste = licht.zellen || [];
+    var kand = licht.modus === 'aus' ? [] : [licht.tile, licht.alt].filter(Boolean);
+    liste.forEach(function (z, i) {
+        var li = kand[i], a = li && li.querySelector('a');
+        if (!a) { z.style.display = 'none'; return; }
+        var r = lichtRahmen(li), sec = li.closest('section');
+        z.style.display = 'block';
+        z.style.left = r.x + 'px'; z.style.top = r.y + 'px'; z.style.width = r.w + 'px'; z.style.height = r.h + 'px';
+        z.style.backgroundColor = sec ? sec.style.getPropertyValue('--c') : '';
+    });
+}
+
+function lichtSchritt(jetzt) {
+    var t = Math.max(0, Math.min(1, (jetzt - licht.t0) / licht.dauer)), v = licht.von, n = licht.nach;
+    var e = licht.linear ? t : Math.pow(t, masz['licht-potenz']);
+    lichtMalen({ x: v.x + (n.x - v.x) * e, y: v.y + (n.y - v.y) * e, w: v.w + (n.w - v.w) * e, h: v.h + (n.h - v.h) * e });
+    lichtDa();
+    if (t < 1) { licht.raf = requestAnimationFrame(lichtSchritt); return; }
+    licht.raf = 0;
+    var ende = licht.ende;
+    licht.ende = null;
+    if (ende) ende();
+}
+
+function lichtLauf(von, nach, dauer, linear, ende) {
+    cancelAnimationFrame(licht.raf);
+    licht.von = von; licht.nach = nach; licht.dauer = dauer; licht.linear = linear; licht.ende = ende || null;
+    licht.t0 = performance.now();
+    licht.raf = requestAnimationFrame(lichtSchritt);
+}
+
+// Kante der Kachel, der der Zeiger am nächsten ist (ohne Zeiger: links)
+function lichtKante(a, pos) {
+    if (!pos) return 'l';
+    var r = a.getBoundingClientRect();
+    var d = { l: Math.abs(pos.x - r.left), r: Math.abs(r.right - pos.x), t: Math.abs(pos.y - r.top), b: Math.abs(r.bottom - pos.y) };
+    var m = Math.min(d.l, d.r, d.t, d.b);
+    return m === d.l ? 'l' : m === d.r ? 'r' : m === d.t ? 't' : 'b';
+}
+
+// die Kachel um ihre eigene Größe über die Kante hinaus verschoben: das Licht "draußen"
+function lichtAussen(n, kante) {
+    var o = { x: n.x, y: n.y, w: n.w, h: n.h };
+    if (kante === 'l') o.x = n.x - n.w;
+    else if (kante === 'r') o.x = n.x + n.w;
+    else if (kante === 't') o.y = n.y - n.h;
+    else o.y = n.y + n.h;
+    return o;
+}
+
+// sofort weg, ohne Bewegung
+function lichtHart() {
+    cancelAnimationFrame(licht.raf); licht.raf = 0; licht.ende = null;
+    licht.modus = 'aus'; licht.tile = null; licht.alt = null; licht.clip = null;
+    licht.da.forEach(function (li) { li.classList.remove('da'); });
+    licht.da.clear();
+    lichtZellen();
+    if (!licht.el) return;
+    licht.el.style.opacity = '0';
+    licht.el.style.clipPath = '';
+    document.body.classList.remove('licht');
+}
+
+function lichtZu(li, mausX, mausY) {
+    if (!licht.el || !fenster.container) return;
+    var a = li && li.querySelector('a');
+    if (!a || !lichtAktiv()) { lichtHart(); return; }
+    if (li === licht.tile && licht.modus === 'ein') return;
+    var nach = lichtRahmen(a);
+    lichtRadius(a);
+    var vor = licht.tile;
+    if (licht.modus === 'aus') {
+        // aus dem Nichts: von außen über die Eintrittskante in die Kachel, beschnitten auf sie
+        licht.modus = 'ein'; licht.tile = li; licht.alt = null; licht.clip = nach;
+        licht.el.style.opacity = '1';
+        document.body.classList.add('licht');
+        var von = lichtAussen(nach, lichtKante(a, mausX == null ? null : { x: mausX, y: mausY }));
+        lichtMalen(von);
+        lichtZellen();
+        lichtLauf(von, nach, masz['licht-rand-dauer'], true, function () { licht.clip = null; lichtMalen(licht.cur); });
+        return;
+    }
+    // sichtbar (auf einer Kachel oder beim Verlassen): gleitet von hier zur neuen Kachel
+    if (vor && vor !== li) licht.alt = vor;
+    licht.modus = 'ein'; licht.tile = li; licht.clip = null;
+    lichtZellen();
+    lichtLauf(licht.cur, nach, masz['licht-dauer'], false, null);
+}
+
+// mit Zeigerposition: das Licht verlässt die Kachel über die Kante, über die der Zeiger ging (Gegenstück zum Eintritt)
+function lichtAus(pos) {
+    if (!licht.el || licht.modus !== 'ein') return;
+    var li = licht.tile, a = li && li.querySelector('a');
+    if (!a || !licht.cur || !lichtAktiv()) { lichtHart(); return; }
+    var n = lichtRahmen(a);
+    lichtRadius(a);
+    licht.modus = 'raus'; licht.alt = li; licht.tile = null; licht.clip = n;
+    lichtLauf(licht.cur, lichtAussen(n, lichtKante(a, pos)), masz['licht-rand-dauer'], true, lichtHart);
+}
+
+function lichtInit() {
+    var c = document.getElementById('container');
+    lichtHart();
+    licht.el = document.createElement('div');
+    licht.el.id = 'kachel-licht';
+    licht.el.setAttribute('aria-hidden', 'true');
+    c.insertBefore(licht.el, c.firstChild);
+    licht.zellen = [0, 1].map(function () {
+        var z = document.createElement('div');
+        z.className = 'kachel-zelle';
+        z.setAttribute('aria-hidden', 'true');
+        c.insertBefore(z, licht.el);
+        return z;
+    });
+    licht.cur = null;
+}
+
+document.addEventListener('mouseover', function (e) {
+    if (document.body.classList.contains('tastatur')) return;
+    var li = e.target.closest && e.target.closest('#container li');
+    if (li) lichtZu(li, e.clientX, e.clientY); else lichtAus({ x: e.clientX, y: e.clientY });
+});
+document.documentElement.addEventListener('mouseleave', function (e) {
+    lichtMaus = null;
+    lichtAus({ x: e.clientX, y: e.clientY });
+});
+
+// Sicherung: das Licht folgt immer der Kachel unter dem Zeiger, auch wenn kein mouseover kam
+// (Scrollen unter ruhendem Zeiger, Wechsel von Tastatur zu Maus, Layoutwechsel)
+var lichtMaus = null, lichtPlanRaf = 0;
+function lichtSync() {
+    lichtPlanRaf = 0;
+    if (!lichtMaus || document.body.classList.contains('tastatur')) return;
+    var t = document.elementFromPoint(lichtMaus.x, lichtMaus.y);
+    var li = t && t.closest && t.closest('#container li');
+    if (li) lichtZu(li, lichtMaus.x, lichtMaus.y); else lichtAus(lichtMaus);
+}
+function lichtPlan() { if (!lichtPlanRaf) lichtPlanRaf = requestAnimationFrame(lichtSync); }
+document.addEventListener('mousemove', function (e) { lichtMaus = { x: e.clientX, y: e.clientY }; lichtPlan(); }, { passive: true });
+document.addEventListener('scroll', lichtPlan, true);
+document.addEventListener('focusin', function (e) {
+    if (!document.body.classList.contains('tastatur')) return;
+    var li = e.target.closest && e.target.closest('#container li');
+    if (li && e.target.matches(':focus-visible')) lichtZu(li); else lichtAus();
+});
+window.addEventListener('resize', function () {
+    var a = licht.tile && licht.tile.querySelector('a');
+    if (!a || licht.modus !== 'ein') return;
+    cancelAnimationFrame(licht.raf); licht.raf = 0; licht.clip = null;
+    lichtMalen(lichtRahmen(a));
+    lichtDa();
+});
+
+// ── Strich-Zeiger ─────────────────────────────────────────────────
+// Der senkrechte Strich ersetzt den Punkt: Höhe der Zeile unter dem Zeiger (Titel, Nav-Chip),
+// in der Section außerhalb von Titel und Kachel deren Höhe mit 33 % Deckkraft. Auf Kacheln zeichnet ihn die Kachel selbst.
+var strich = { el: null, secEl: null, x: 0, y: 0, ziel: null, raf: 0, an: false };
+
+function strichZiel(t) {
+    if (!t || !t.closest || document.body.classList.contains('edit-mode')) return null;
+    var z = { sec: t.closest('#container section'), fest: null, hide: false };
+    if (t.closest('li a')) { z.hide = true; z.sec = null; }   // Kachel: nur ihr eigener Strich
+    else {
+        // Kachelrand (kein Hintergrund erkennen) bzw. Nav-Chip: Strich in der Höhe der Zeile
+        var el = t.closest('#container li') || t.closest('a.secname');
+        if (el) { z.fest = el; z.sec = null; }
+    }
+    return z.sec || z.fest || z.hide ? z : null;
+}
+
+function strichSetzen() {
+    strich.raf = 0;
+    var s = strich.el, b = strich.secEl, z = strich.ziel;
+    if (!z) {
+        s.style.opacity = '0';
+        if (b) b.style.opacity = '0';
+        document.documentElement.classList.remove('strich-an');
+        return;
+    }
+    document.documentElement.classList.add('strich-an');
+    // Zeile unter dem Zeiger (Kachelrand, Nav-Chip): fester Strich in voller Deckkraft
+    if (z.fest) {
+        var r = z.fest.getBoundingClientRect();
+        s.style.left = strich.x + 'px';
+        s.style.top = r.top + 'px';
+        s.style.height = r.height + 'px';
+        s.style.opacity = '1';
+    } else s.style.opacity = '0';
+    // ganze Section (Hintergrund, Titel, hinter den Kacheln): im Inhalt, schwach, scrollt mit
+    if (b) {
+        if (z.sec) {
+            var c = document.getElementById('container'), cr = c.getBoundingClientRect(), sr = z.sec.getBoundingClientRect();
+            var oben = Math.max(sr.top, cr.top), unten = Math.min(sr.bottom, cr.bottom);
+            b.style.left = (strich.x - cr.left + c.scrollLeft) + 'px';
+            b.style.top = (oben - cr.top + c.scrollTop) + 'px';
+            b.style.height = Math.max(0, unten - oben) + 'px';
+            b.style.opacity = String(masz['strich-schwach']);
+        } else b.style.opacity = '0';
+    }
+}
+
+// Der Section-Strich liegt im Inhalt unter Kacheln und Licht (erstes Kind)
+function strichSecInit() {
+    var c = document.getElementById('container');
+    strich.secEl = document.createElement('div');
+    strich.secEl.id = 'strich-sec';
+    strich.secEl.setAttribute('aria-hidden', 'true');
+    c.insertBefore(strich.secEl, c.firstChild);
+}
+
+function strichPlanen(e) {
+    if (e) { strich.x = e.clientX; strich.y = e.clientY; strich.ziel = strichZiel(e.target); }
+    else strich.ziel = strichZiel(document.elementFromPoint(strich.x, strich.y));
+    if (!strich.raf) strich.raf = requestAnimationFrame(strichSetzen);
+}
+
+(function () {
+    if (!matchMedia('(hover: hover)').matches) return;
+    strich.el = document.createElement('div');
+    strich.el.id = 'strich';
+    strich.el.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(strich.el);
+    document.addEventListener('mousemove', strichPlanen, { passive: true });
+    document.addEventListener('mouseover', strichPlanen, { passive: true });
+    document.documentElement.addEventListener('mouseleave', function () {
+        strich.ziel = null;
+        if (!strich.raf) strich.raf = requestAnimationFrame(strichSetzen);
+    });
+    document.addEventListener('scroll', function () { if (strich.ziel) strichPlanen(); }, true);
+})();
 
 // Sections belegen ein ganzes Vielfaches eines Viertels der Inhaltshöhe
 var rasterBasis = 0;
@@ -830,6 +1191,14 @@ var EINSTELLUNGEN = [
         set: function (w) { window.msmrTheme.set(w); }
     },
     {
+        label: 'Farbe',
+        werte: [['bunt', 'bunt'], ['blass', 'blass']],
+        // Kreis in einer Section-Farbe: kräftig = bunt, fast farblos (gleiche Helligkeit) = blass
+        kreis: { bunt: '1', blass: 'var(--farbe-blass)' },
+        get: function () { return getPref('farbe'); },
+        set: function (w) { setPref('farbe', w); }
+    },
+    {
         label: 'Navigation',
         werte: [['short', 'Text'], ['icons', 'Icons']],
         // Squircle wie bei APP; mit „t“ darin = Text aktiv
@@ -883,6 +1252,10 @@ function zeichneIcon(ic, e, w) {
         var d = e.icon(w);
         ic.className = 'set-icon set-letter';
         ic.textContent = d.text;
+    } else if (e.kreis) {
+        ic.className = 'set-icon set-kreis';
+        ic.textContent = '';
+        ic.style.setProperty('--k', secFarbe(6, e.kreis[w]));
     } else if (e.squircle) {
         ic.className = 'set-icon icon-squircle' + (e.squircle[w] ? ' mit-t' : '');
         ic.textContent = '';
@@ -926,9 +1299,19 @@ function settingsAnzeige() {
 // bündig unter dem Zahnrad, gleich breit; in der unteren Leiste (Telefon) bündig darüber
 function settingsPlatzieren() {
     var pop = document.getElementById('settings-pop');
-    var r = document.getElementById('settings-btn').getBoundingClientRect();
+    var gz = document.getElementById('settings-btn');
+    var r = gz.getBoundingClientRect();
     var oben = r.top > window.innerHeight / 2;
-    pop.style.width = r.width + 'px';
+    // Im Raster läuft die Leiste über die ganze Breite und das Zahnrad streckt sich: die Breite bleibt die des Zahnrads,
+    // die Knopfhöhe (und damit die Höhe des Overlays) aber dieselbe wie bei Chips; dafür mit der Leistenbreite der Chips messen
+    var leiste = document.querySelector('.title'), breite = r.width;
+    if (document.body.classList.contains('view-grid') && !document.body.classList.contains('align-center') && leiste) {
+        leiste.style.maxWidth = 'calc(var(--spalte) + 0.12em)';
+        breite = gz.getBoundingClientRect().width;
+        leiste.style.maxWidth = '';
+    }
+    pop.style.width = r.width + 'px';   // bündig mit dem Zahnrad, auch wenn es sich im Raster streckt
+    pop.style.setProperty('--set-hoehe', breite + 'px');   // Knopfhöhe wie bei Chips
     pop.style.left = r.left + 'px';
     pop.style.right = 'auto';
     pop.style.top = oben ? 'auto' : r.bottom + 'px';

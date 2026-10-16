@@ -82,6 +82,7 @@ Icon den **Zustand**, unter dem Zeiger das **Ergebnis des Klicks**.
 |---|---|---|
 | Zoom | S, M | `S`, `M` |
 | Farbschema | hell, dunkel | Sonne, Mond |
+| Farbe | bunt, blass | Kreis in einer Section-Farbe, kräftig bzw. fast farblos |
 | Navigation | Text, Icons | Squircle mit `t` = Text |
 | Ansicht | Chips, Raster | vier runde Kacheln bzw. vier eckige Umrisse |
 | Ausrichtung | links, Mitte | `l`, `c` (im Raster: volle Breite, Mitte) |
@@ -89,7 +90,7 @@ Icon den **Zustand**, unter dem Zeiger das **Ergebnis des Klicks**.
 
 Mit der Maus geht auch: Zahnrad drücken, auf einen Knopf ziehen, loslassen. Das schaltet nur
 diesen Knopf. Esc oder ein Klick daneben schließt. Mit Maus schließt sich das Overlay 3 s
-nach dem Verlassen von selbst, ohne Zeiger (Touch, TV) nie.
+nach dem Verlassen von selbst, ohne Zeiger (Touch, TV) nie. Beim Öffnen gleitet es unter dem Zahnrad herunter, beim Schließen hinauf, die Farben wechseln unterwegs; bei reduzierter Bewegung ist das kürzer, nicht aus. Es ist so breit wie das Zahnrad; die Knopfhöhe bleibt im Raster wie bei Chips.
 
 Wo die Wahl liegt (je Gerät in `localStorage`, nichts davon wird mit den Links gespeichert):
 
@@ -97,6 +98,7 @@ Wo die Wahl liegt (je Gerät in `localStorage`, nichts davon wird mit den Links 
 |---|---|
 | `msmr.zoom` | `{"v":1,"level":"s"|"m"}`; ohne Eintrag gilt S |
 | `msmr.theme` | `light` oder `dark`; ohne Eintrag folgt die Seite dem System |
+| `a.farbe` | `bunt` oder `blass` |
 | `a.navMode` | `short` oder `icons` |
 | `a.align` | `left` oder `center` |
 | `a.view` | `chips` oder `grid` |
@@ -109,23 +111,53 @@ iPad und iPhone bleiben Gerätemerkmale und folgen dem Zoom nicht.
 
 Eckige Kacheln ohne Glanz, 1 px Linien. In inaktiven Sections sind sie grau, in der
 eingefärbten Section hell. „Links“ heißt hier volle Breite, auch die Leiste läuft dann
-über die ganze Seite; die Kacheln der Sections bleiben bei höchstens 6 Spalten und werden breiter. Ein toter Link zeigt ein rotes Quadrat in der Ecke. Der Edit-Mode
+über die ganze Seite; die Kacheln der Sections bleiben bei höchstens 6 Spalten und werden breiter. Leere Felder der letzten Zeile tragen die Linien der Kacheln. Ein toter Link zeigt ein rotes Quadrat in der Ecke. Der Edit-Mode
 nutzt weiter das Chip-Layout.
 
 ### Leuchtfenster und Geist-Titel
 
 Die leuchtende Section (Hover, Nav-Chip, Tastatur, sonst die oberste) ist ein Fenster, das zur
-nächsten gleitet und dabei wächst bzw. schrumpft (240 ms, beschleunigt, endet hart; bei
-reduzierter Bewegung 90 ms). Die Farbe wechselt hart an den Section-Kanten. `app.js`
+nächsten gleitet und dabei wächst bzw. schrumpft (200 ms, beschleunigt, endet hart; bei
+reduzierter Bewegung 60 ms). Die Farbe wechselt hart an den Section-Kanten. `app.js`
 (`fensterInit`) malt den Teil des Fensters als Hintergrund jeder Section und setzt `.gedeckt`
-auf Titel, Gruppe und Kacheln, deren Mitte im Fenster liegt; das CSS färbt nur noch über
-`.gedeckt`. Die Maße liegen im Inhalt, Scrollen ändert sie nicht.
+auf Titel, Gruppe und Kacheln, deren Mitte im Fenster liegt (`.gedeckt-u` für die untere
+Rasterlinie an der Unterkante); das CSS färbt nur noch über diese Klassen. Die Maße liegen im
+Inhalt, Scrollen ändert sie nicht. Der Titel der gehoverten Section (auch der des aktiven
+Chips) zeigt eine 28-%-Fläche.
 
 Liegt der Titel der Ziel-Section (Nav-Chip unter der Maus oder Sprung nach Klick, Dropdown,
 Pfeiltasten) außerhalb der Ansicht, klebt eine Kopie (`#geist-ebene`, `geistRender`) am oberen
-bzw. unteren Rand, bis der echte Titel dort ankommt und weiterläuft. Ein neues Ziel gleitet über
-die vorige Kopie: diese wird grau und wirft keinen Schatten mehr. Die Kopie wirft einen weichen
-Schatten von 66 % einer Kachelhöhe auf den Inhalt. Nach einem Klick läuft er aus, je näher der echte Titel seiner Stelle kommt. Im Edit-Mode gibt es keine Kopie.
+bzw. unteren Rand, bis der echte Titel dort ankommt und weiterläuft; sie bleibt, bis das Fenster
+die Titelzeile ganz deckt, und blendet dann 60 ms aus. Ein neues Ziel gleitet über die vorige
+Kopie: diese wird grau und wirft keinen Schatten mehr. Die Kopie wirft einen weichen Schatten von
+66 % einer Kachelhöhe auf den Inhalt. Nach einem Klick läuft er aus, je näher der echte Titel
+seiner Stelle kommt. Im Edit-Mode gibt es keine Kopie.
+
+### Kachel-Licht
+
+Die Hover-Fläche der Kachel (Chips und Raster) ist ein einzelnes Element (`#kachel-licht`,
+`licht*` in `app.js`), das von Kachel zu Kachel gleitet (90 ms). Aus dem Nichts kommt es in
+voller Größe von außen über die Eintrittskante durch ein festes Rechteck ohne Rundung in die
+Kachel (90 ms, linear) und verlässt sie über die Austrittskante genauso; die gerundete Fläche
+selbst wird nie skaliert. Die Kachelschrift kehrt um (`.da`), sobald das Licht sie zu 95 % deckt.
+Die Zelle unter dem Licht trägt die Section-Farbe sofort (`.kachel-zelle`). Gezeichnet wird im
+Inhalt, das Licht scrollt mit und folgt bei Bewegung und Scrollen der Kachel unter dem Zeiger.
+
+### Strich-Zeiger
+
+Ein senkrechter Strich ersetzt den Punkt: auf Nav-Chips und Kachelrändern in Zeilenhöhe, auf
+Section-Hintergrund und Titel in Section-Höhe mit 33 % Deckkraft (`#strich-sec`, hinter Titel,
+Kacheln und Licht). Auf einer Kachel zeichnet nur diese ihren Strich. In Feldern, Dropdown,
+Einstellungen und im Edit-Mode bleibt der Systemzeiger; Touch bleibt ohne Strich.
+
+### Zentrale Variablen
+
+Im ersten `:root` von `styles.css` stehen die Stellgrößen; `app.js` liest sie einmal
+(`maszLesen`): `--fenster-dauer` (200), `--fenster-dauer-kurz` (60), `--gleiten-potenz` (2),
+`--licht-dauer` (90), `--licht-potenz` (1,4), `--licht-rand-dauer` (90), `--licht-deckung` (.95),
+`--geist-schatten` (.66), `--geist-auslauf` (2), `--geist-haelt` (2500), `--strich-schwach` (.33),
+`--strich-breite`, `--strich-weich` (80), `--farbe-blass` (.3), `--pop-dauer` (200). Zeiten in ms.
+Die Einstellung „Farbe“ skaliert die Sättigung aller Section-Farben (`oklch`) über `--farb-int`.
 
 ## Bearbeiten
 

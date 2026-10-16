@@ -12,6 +12,29 @@ html[data-zoom="m"] {
 :root {
     --kachel: 11.875rem;
     --spalte: calc(6 * var(--kachel));
+
+    /* Bewegung (app.js liest die Zahlen; Zeiten in ms) */
+    --fenster-dauer: 200;        /* Leuchtfenster und Geist-Titel gleiten */
+    --fenster-dauer-kurz: 60;    /* dasselbe bei reduzierter Bewegung */
+    --gleiten-potenz: 2;         /* beschleunigt von Anfang an, endet hart (t hoch n) */
+    --licht-dauer: 90;           /* Kachel-Licht von Kachel zu Kachel */
+    --licht-potenz: 1.4;         /* dessen Kurve: sanfter als das Fenster, endet ebenfalls hart */
+    --licht-rand-dauer: 90;      /* Kachel-Licht füllt bzw. räumt von der Kante */
+    --licht-deckung: .95;        /* Anteil, ab dem die Kachelschrift umkehrt */
+    --geist-schatten: .66;       /* Schattenlänge als Anteil einer Kachelhöhe */
+    --geist-auslauf: 2;          /* Schatten läuft über so viele Titelhöhen aus */
+    --geist-haelt: 2500;         /* so lange wartet ein Sprung höchstens auf den Titel */
+    --strich-schwach: .33;       /* Deckkraft des Strichs auf Titel und Section */
+    --strich-breite: 3px;
+    --strich-weich: 80;          /* Strich folgt weich in Höhe und Lage */
+    --pop-dauer: 200;            /* Einstellungs-Overlay gleitet auf und zu (ms) */
+    --pop-kurve: cubic-bezier(.55, .085, .68, .19);   /* beschleunigt, endet hart */
+    --pop-t: calc(var(--pop-dauer) * 1ms);
+    --pop-uebergang: transform var(--pop-t) var(--pop-kurve), clip-path var(--pop-t) var(--pop-kurve),
+        background-color var(--pop-t) var(--pop-kurve), color var(--pop-t) var(--pop-kurve),
+        overlay var(--pop-t) allow-discrete, display var(--pop-t) allow-discrete;
+    --farb-int: 1;               /* Sättigung der Section-Farben, bei Einstellung „blass“ s. u. */
+    --farbe-blass: .3;
 }
 
 :root,
@@ -210,8 +233,8 @@ li a::before {
 /* nach section:hover a, damit die eigene Kachel gewinnt.
    Tastatur (Tab, Pfeil links/rechts) zeigt dieselbe Fläche; beim Bearbeiten nicht.
    Es leuchtet nur eine Kachel: body.tastatur (app.js) schaltet zwischen Maus und Tastatur um */
-body:not(.tastatur) li a:hover,
-body.tastatur li a:not([contenteditable]):focus-visible {
+body:not(.tastatur):not(.licht) li a:hover,
+body.tastatur:not(.licht) li a:not([contenteditable]):focus-visible {
     color: var(--text-hov);
 }
 
@@ -234,6 +257,7 @@ body.tastatur li a:not([contenteditable]):focus-visible::before {
 
     li a::after {
         content: "";
+        transition: none;   /* Farbwechsel schaltet sofort */
         display: none;
         position: absolute;
         left: var(--cx, -10px);
@@ -398,7 +422,7 @@ body section .group.gedeckt {
 }
 
 /* Unterkante der gedeckten Titelzeile: verschmilzt mit der Fläche */
-body #container section .name.gedeckt:not(.mit-druck) {
+body #container section .name.gedeckt {
     border-bottom-color: color-mix(in srgb, var(--c, var(--sect-col)) 75%, var(--front-body));
 }
 
@@ -485,7 +509,7 @@ a.secname,
     --c-hov: color-mix(in srgb, var(--c, var(--sect-col)) 28%, transparent);
 }
 
-body:not(.tastatur) #container section .name.gedeckt:is(:hover, .mit-hover) {
+body:not(.tastatur) #container section .name.gedeckt:hover {
     background-color: var(--c-hov);
 }
 
@@ -594,14 +618,15 @@ body.docked .title {
 
 /* gedeckte Zeilen (app.js: das Fenster der leuchtenden Section, die Fläche malt app.js als Section-Hintergrund):
    Text weiß; nur die Kachel unter dem Cursor kehrt um: helle Fläche, Text in Sektionsfarbe */
-body #container section .name.gedeckt:not(.mit-druck),
-body #container section .name.gedeckt:not(.mit-druck) a,
+body #container section .name.gedeckt,
+body #container section .name.gedeckt a,
 body section li.gedeckt a {
     color: var(--on-c);
 }
 
-body:not(.tastatur) section li.gedeckt a:hover,
-body.tastatur section li.gedeckt a:not([contenteditable]):focus-visible {
+body:not(.tastatur):not(.licht) section li.gedeckt a:hover,
+body.tastatur:not(.licht) section li.gedeckt a:not([contenteditable]):focus-visible,
+body.licht section li.da a {
     color: var(--c-text, var(--sect-col));
 }
 
@@ -1225,7 +1250,8 @@ section {
     --linie: color-mix(in srgb, var(--sect-col) 25%, transparent);
 }
 
-body section :is(.group, li).gedeckt {
+body section :is(.group, li).gedeckt,
+body.licht section li.da {
     --linie: color-mix(in srgb, var(--on-c) 25%, transparent);
 }
 
@@ -1258,6 +1284,16 @@ body.view-grid:not(.edit-mode) li {
     border-bottom: 1px solid var(--linie);
 }
 
+/* untere Rasterlinie: schaltet mit dem Fenster an der Unterkante der Zeile (.gedeckt-u, app.js) */
+body.view-grid:not(.edit-mode) li {
+    border-bottom-color: color-mix(in srgb, var(--sect-col) 25%, transparent);
+}
+
+body.view-grid:not(.edit-mode) li.gedeckt-u,
+body.licht.view-grid:not(.edit-mode) li.da {
+    border-bottom-color: color-mix(in srgb, var(--on-c) 25%, transparent);
+}
+
 /* kein zusätzlicher Strich zwischen Titel und Raster (die Oberkante der Gruppe ist schon eine Linie),
    kein Polster unter der Gruppe */
 body.view-grid:not(.edit-mode) #container section .name {
@@ -1269,7 +1305,7 @@ body.view-grid:not(.edit-mode) .group {
 }
 
 /* Hover (Maus) bzw. Fokus (Tastatur): der Titel hebt sich mit der bekannten Deckkraft (28 %) in der Schriftfarbe von der Fläche ab */
-body.view-grid:not(.edit-mode) #container section.heiss .name.gedeckt {
+body:not(.edit-mode) #container section.heiss .name.gedeckt {
     background-color: color-mix(in srgb, var(--on-c) 28%, transparent);
 }
 
@@ -1289,6 +1325,33 @@ body.view-grid:not(.align-center) .title {
 body.view-grid:not(.edit-mode) li a::before {
     border-radius: 0;
     background-image: none;
+}
+
+/* Hover-Fläche der Kachel als eigenes Element (#kachel-licht, app.js), das von Kachel zu Kachel gleitet;
+   der Text kehrt um (.da), sobald das Licht zu 95 % unter der Kachel liegt */
+#container {
+    position: relative;
+}
+
+#kachel-licht {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+    background-color: var(--chip-inv);   /* der Zeiger liegt immer in der leuchtenden Section */
+}
+
+body.licht:not(.edit-mode) #container li a:hover::before,
+body.licht:not(.edit-mode).tastatur #container li a:not([contenteditable]):focus-visible::before {
+    background-color: transparent;
+    background-image: none;
+}
+
+/* Chips: das Licht ist gerundet und glänzt wie die Hover-Fläche der Kachel (--hl: 1) */
+body:not(.view-grid) #kachel-licht {
+    --hl: 1;
+    border-radius: .35em;
+    background-image: linear-gradient(rgba(255, 255, 255, calc(.46 * var(--hl) * var(--glanz))), rgba(255, 255, 255, calc(.12 * var(--hl) * var(--glanz))) 36%, rgba(255, 255, 255, 0) 38%, rgba(0, 0, 0, calc(.2 * var(--hl) * var(--glanz))));
 }
 
 /* ── Bearbeiten ──────────────────────────────────────────────────── */
@@ -1370,19 +1433,49 @@ body:not(.tastatur) .settings-btn.offen {
     /* hängt am Zahnrad: oben bündig, nur die freien Ecken unten sind gerundet */
     border-radius: 0 0 .49rem .49rem;   /* wie die Kacheln: .35em bei 1.4rem Schrift */
     overflow: hidden;
-    /* offen = umgekehrt: Fläche in Schriftfarbe, Icons in Flächenfarbe */
-    background: var(--sect-col);
-    color: var(--front-body);
+    /* zu: Farben der Leiste; offen = umgekehrt: Fläche in Schriftfarbe, Icons in Flächenfarbe.
+       Beim Öffnen gleitet das Overlay unter dem Zahnrad herunter, beim Schließen wieder hinauf,
+       und die Farben wechseln unterwegs (Fenster fest am Zahnrad, Schatten bleibt sichtbar) */
+    background: var(--front-body);
+    color: var(--sect-col);
+    transform: translateY(-100%);
+    clip-path: inset(100% -2rem -2rem -2rem);
+    transition: var(--pop-uebergang);
     box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .35);
     flex-direction: column;
 }
 
 .settings-pop.nach-oben {
     border-radius: .49rem .49rem 0 0;
+    transform: translateY(100%);
+    clip-path: inset(-2rem -2rem 100% -2rem);
 }
 
 .settings-pop:popover-open {
     display: flex;
+    background: var(--sect-col);
+    color: var(--front-body);
+    transform: none;
+    clip-path: inset(0 -2rem -2rem -2rem);
+}
+
+.settings-pop.nach-oben:popover-open {
+    clip-path: inset(-2rem -2rem 0 -2rem);
+}
+
+/* Ausgangslage beim Öffnen = zugeklappt */
+@starting-style {
+    .settings-pop:popover-open {
+        background: var(--front-body);
+        color: var(--sect-col);
+        transform: translateY(-100%);
+        clip-path: inset(100% -2rem -2rem -2rem);
+    }
+
+    .settings-pop.nach-oben:popover-open {
+        transform: translateY(100%);
+        clip-path: inset(-2rem -2rem 100% -2rem);
+    }
 }
 
 .set-btn {
@@ -1390,12 +1483,13 @@ body:not(.tastatur) .settings-btn.offen {
     align-items: center;
     justify-content: center;
     width: 100%;
+    height: var(--set-hoehe, auto);   /* ohne Wert quadratisch */
     aspect-ratio: 1;
     padding: 0;
     border: 0;
     border-radius: 0;
     background: transparent;
-    color: var(--front-body);
+    color: inherit;
     font: inherit;
     cursor: inherit;
 }
@@ -1512,6 +1606,18 @@ body.tastatur .set-btn:focus-visible .mit-t::after {
         transition: none !important;
     }
 }
+
+/* reduziert heißt kürzer, nicht keine: das Einstellungs-Overlay gleitet weiter, nur schneller */
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --pop-dauer: 90;
+    }
+
+    .settings-pop {
+        transition: var(--pop-uebergang) !important;
+    }
+}
+
 
 
 /* Sections-Liste: gleiche Gestalt wie das Einstellungs-Overlay (Stapel, Breite des Felds), aber nicht umgekehrt;
@@ -1644,4 +1750,77 @@ body.view-grid .geist .name {
 
 .geist.alt::after {
     display: none;
+}
+
+/* ── Strich-Zeiger (app.js): senkrechter Strich statt des Punkts ── */
+#strich {
+    position: fixed;
+    z-index: 50;
+    width: var(--strich-breite);
+    margin-left: calc(var(--strich-breite) / -2);
+    opacity: 0;
+    pointer-events: none;
+    background: var(--curs-hov) no-repeat;
+    background-size: 100% 100%;
+    transition: top calc(var(--strich-weich) * 1ms) ease-out, height calc(var(--strich-weich) * 1ms) ease-out;   /* Farbe und Deckkraft schalten sofort */
+}
+
+html.strich-an,
+html.strich-an * {
+    cursor: none !important;
+}
+
+/* wie der echte Titel bei Hover auf den Chip: derselbe Schleier, damit die Übernahme nicht blitzt */
+.geist.heiss .name {
+    background-color: color-mix(in srgb, var(--on-c) 28%, transparent);
+}
+
+/* Raster: leere Felder der letzten Zeile (eine Fläche bis zum Zeilenende, --leer setzt app.js) tragen die Linien der Kacheln */
+body.view-grid:not(.edit-mode) .group::after {
+    content: "";
+    grid-column: span var(--leer, 1);
+    border-right: 1px solid var(--linie);
+    border-bottom: 1px solid var(--linie);
+}
+
+body.view-grid:not(.edit-mode) .group.voll::after {
+    display: none;
+}
+
+body.view-grid:not(.edit-mode) .group.ende-gedeckt::after {
+    border-color: color-mix(in srgb, var(--on-c) 25%, transparent);
+}
+
+/* Strich der ganzen Section: im Inhalt hinter Titel, Kacheln und Licht, scrollt mit */
+#strich-sec {
+    position: absolute;
+    z-index: 0;
+    width: var(--strich-breite);
+    margin-left: calc(var(--strich-breite) / -2);
+    opacity: 0;
+    pointer-events: none;
+    background: var(--curs-hov) no-repeat;
+    background-size: 100% 100%;
+    transition: top calc(var(--strich-weich) * 1ms) ease-out, height calc(var(--strich-weich) * 1ms) ease-out;
+}
+
+/* Einstellung „Farbe“: blass = fast farblos bei gleicher Helligkeit */
+:root[data-farbe="blass"] {
+    --farb-int: var(--farbe-blass);
+}
+
+.set-kreis {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    border-radius: 50%;
+    background: var(--k);
+}
+
+/* die Zelle unter dem Kachel-Licht trägt die Section-Farbe sofort (Flächen im Inhalt hinter dem Licht, app.js) */
+.kachel-zelle {
+    position: absolute;
+    z-index: 0;
+    display: none;
+    pointer-events: none;
 }

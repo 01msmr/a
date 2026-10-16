@@ -3,14 +3,29 @@
 Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 `git log`; hier beginnt die Aufzeichnung mit der Sitzung vom 25./26. Juli 2026.
 
-## 2026-10-15 — Leuchtfenster, Geist-Titel, Raster höchstens 6 Spalten
+## 2026-10-15 bis 16 — Leuchtfenster, Geist-Titel, Kachel-Licht, Strich-Zeiger, Farbe
 
-- **Leuchtfenster:** Statt die Section beim Wechsel sofort einzufärben, gleitet ein Fenster zur neuen Section (Hover, Nav, Tastatur) und wächst bzw. schrumpft dabei. Die Farbe wechselt hart an den Section-Kanten. Zeilen schalten per `.gedeckt`, sobald ihre Mitte im Fenster liegt. Dafür ersetzen `.gedeckt`-Regeln die `:hover`/`:has`/`.aktuell`-Selektoren in `styles.css`; die Fläche ist ein Verlauf mit harten Stopps als Section-Hintergrund (`app.js`). Hover-Hintergrund des Titels erst, wenn das Fenster ihn deckt.
-- **Geist-Titel:** Liegt der Titel der Ziel-Section außerhalb der Ansicht, klebt eine Kopie am Rand, bis der echte Titel dort ankommt (auch nach einem Klick, während die Seite scrollt). Ein neues Ziel gleitet über die vorige Kopie, die grau wird und keinen Schatten mehr wirft. Weicher Schatten von 66 % einer Kachelhöhe, ohne Unterstreichung. Nach einem Klick läuft der Schatten aus, je näher der echte Titel seiner Stelle kommt (linear über zwei Titelhöhen, dort ist er weg); beim bloßen Hover bleibt er voll.
-- **Kachelschrift:** In der leuchtenden Section bleibt sie `--on-c` (hell: weiß, dunkel: dunkel).
+**Leuchtfenster und Geist-Titel**
+- **Leuchtfenster:** Statt die Section beim Wechsel sofort einzufärben, gleitet ein Fenster zur neuen Section (Hover, Nav, Tastatur, sonst die oberste) und wächst bzw. schrumpft dabei (200 ms, beschleunigt, endet hart). Die Farbe wechselt hart an den Section-Kanten: jede Section malt ihren Teil als Verlauf mit harten Stopps (`app.js`, `fensterInit`). Zeilen schalten per `.gedeckt`, sobald ihre Mitte im Fenster liegt; die untere Rasterlinie per `.gedeckt-u` an der Unterkante der Zeile. `.gedeckt`-Regeln ersetzen die `:hover`/`:has`/`.aktuell`-Selektoren in `styles.css`. Hover-Fläche des Titels (28 %) in Chips und Raster; auch der Chip der aktiven Section zählt als Hover.
+- **Geist-Titel:** Liegt der Titel der Ziel-Section außerhalb der Ansicht, klebt eine Kopie am Rand, bis der echte Titel dort ankommt (auch nach einem Klick, während die Seite scrollt). Sie wird erst entfernt, wenn das Fenster die Titelzeile ganz deckt, und blendet dabei 60 ms aus. Ein neues Ziel gleitet über die vorige Kopie, die grau wird und keinen Schatten mehr wirft. Weicher Schatten von 66 % einer Kachelhöhe, nach einem Klick auslaufend, ohne Unterstreichung.
+- **Kachelschrift:** In der leuchtenden Section bleibt sie `--on-c` (hell: weiß, dunkel: dunkel). Der Druckzustand des Titels (`.mit-druck`) ändert nur noch den Schatten, nicht mehr die Farbe (kein Hell-Dunkel-Hell beim Klick auf einen Nav-Chip).
+- **Zustandscache:** Beim Neumessen bleibt der Zustand je Zeile und je Klasse (`.gedeckt`, `.gedeckt-u`) erhalten; vorher überschrieb einer den anderen, und die Kachelschrift hing in falscher Farbe.
 
-- **Titelfarbe (vorab):** Beim Hover auf den Chip der aktiven Section behielt deren Titel nicht die Farbe der aktiven Section. Die Hover-Regeln für Titel und Unterkante greifen jetzt nur noch bei `.name.mit-hover:not(.active)`.
-- **Raster, volle Breite:** Die Kacheln einer Section bleiben bei höchstens 6 Spalten (`minmax(max(var(--kachel), 100% / 6), 1fr)`) und füllen die Breite, statt mit ihr mehr Spalten zu bekommen.
+**Kachel-Licht (Chips und Raster)**
+- Die Hover-Fläche der Kachel ist ein einzelnes Element (`#kachel-licht`), das von Kachel zu Kachel gleitet (90 ms, Kurve `--licht-potenz`). Aus dem Nichts kommt es in voller Größe von außen über die Eintrittskante durch ein festes Rechteck ohne Rundung (Kachelgröße) in die Kachel und verlässt sie genauso (90 ms, linear); es wird nichts skaliert. Die Kachelschrift kehrt erst um (`.da`), wenn das Licht sie zu 95 % deckt; geprüft wird je Frame, so bleibt keine hängen. Die Zelle unter dem Licht trägt die Section-Farbe sofort (`.kachel-zelle`, hinter dem Licht), das Fenster der Section läuft davon unabhängig. Das Licht folgt sicherheitshalber bei Bewegung und Scrollen der Kachel unter dem Zeiger.
+
+**Strich-Zeiger**
+- Senkrechter Strich statt des Punkts: auf Nav-Chips und Kachelrändern in Zeilenhöhe, auf Section-Hintergrund und Titel in Section-Höhe mit 33 % Deckkraft (`#strich-sec` im Inhalt, hinter Titel, Kacheln und Licht; nicht beim Hover auf einer Kachel, dort zeichnet die Kachel ihren eigenen Strich). Systemzeiger bleibt in Feldern, Dropdown, Einstellungen und im Edit-Mode. Farbe schaltet sofort.
+
+**Einstellungen**
+- **Farbe:** Neue Einstellung bunt/blass: die Sättigung aller Section-Farben sinkt bei gleicher Helligkeit (`--farbe-blass`, 0,3); Icon ein Kreis in einer Section-Farbe. Gespeichert als `a.farbe`.
+- **Overlay:** Gleitet beim Öffnen unter dem Zahnrad herunter und beim Schließen hinauf (am Telefon umgekehrt), die Farben wechseln unterwegs (200 ms, bei reduzierter Bewegung 90 ms). Breite bündig mit dem Zahnrad; im Raster behalten die Knöpfe die Höhe wie bei Chips.
+
+**Raster**
+- Kacheln einer Section bleiben bei höchstens 6 Spalten und füllen die Breite. Leere Felder der letzten Zeile tragen die Linien der Kacheln (`--leer`, `.group::after`).
+
+**Zentral**
+- Zeiten, Kurven, Anteile und Deckkraft stehen als Variablen im ersten `:root` von `styles.css`, `app.js` liest sie einmal (`maszLesen`).
 
 ---
 
