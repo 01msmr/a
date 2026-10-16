@@ -26,7 +26,6 @@ html[data-zoom="m"] {
     --geist-haelt: 2500;         /* so lange wartet ein Sprung höchstens auf den Titel */
     --strich-schwach: .33;       /* Deckkraft des Strichs auf Titel und Section */
     --strich-breite: 3px;
-    --strich-weich: 80;          /* Strich folgt weich in Höhe und Lage */
     --pop-dauer: 200;            /* Einstellungs-Overlay gleitet auf und zu (ms) */
     --pop-kurve: cubic-bezier(.55, .085, .68, .19);   /* beschleunigt, endet hart */
     --pop-t: calc(var(--pop-dauer) * 1ms);
@@ -1762,7 +1761,7 @@ body.view-grid .geist .name {
     pointer-events: none;
     background: var(--curs-hov) no-repeat;
     background-size: 100% 100%;
-    transition: top calc(var(--strich-weich) * 1ms) ease-out, height calc(var(--strich-weich) * 1ms) ease-out;   /* Farbe und Deckkraft schalten sofort */
+    transition: none;   /* volle Höhe sofort, keine Skalierung */
 }
 
 html.strich-an,
@@ -1801,7 +1800,7 @@ body.view-grid:not(.edit-mode) .group.ende-gedeckt::after {
     pointer-events: none;
     background: var(--curs-hov) no-repeat;
     background-size: 100% 100%;
-    transition: top calc(var(--strich-weich) * 1ms) ease-out, height calc(var(--strich-weich) * 1ms) ease-out;
+    transition: none;   /* volle Höhe sofort, keine Skalierung */
 }
 
 /* Einstellung „Farbe“: blass = fast farblos bei gleicher Helligkeit */

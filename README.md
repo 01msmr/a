@@ -156,7 +156,7 @@ Im ersten `:root` von `styles.css` stehen die Stellgrößen; `app.js` liest sie 
 (`maszLesen`): `--fenster-dauer` (200), `--fenster-dauer-kurz` (60), `--gleiten-potenz` (2),
 `--licht-dauer` (90), `--licht-potenz` (1,4), `--licht-rand-dauer` (90), `--licht-deckung` (.95),
 `--geist-schatten` (.66), `--geist-auslauf` (2), `--geist-haelt` (2500), `--strich-schwach` (.33),
-`--strich-breite`, `--strich-weich` (80), `--farbe-blass` (.3), `--pop-dauer` (200). Zeiten in ms.
+`--strich-breite`, `--farbe-blass` (.3), `--pop-dauer` (200). Zeiten in ms.
 Die Einstellung „Farbe“ skaliert die Sättigung aller Section-Farben (`oklch`) über `--farb-int`.
 
 ## Bearbeiten
