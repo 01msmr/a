@@ -55,6 +55,7 @@ html[data-zoom="m"] {
     --text-l-min: 0;
     --text-l-max: .64;
     --curs-img: url(c-point-light.png);
+    --curs-sec: url(c-point.png);   /* Quadrat in der Section: weiß, im Dunkeln invertiert */
     --curs-hov: url(c-line-light.png);
 }
 
@@ -78,6 +79,7 @@ html[data-zoom="m"] {
         --text-l-min: .72;
         --text-l-max: 1;
         --curs-img: url(c-point.png);
+        --curs-sec: url(c-point-light.png);
         --curs-hov: url(c-line.png);
     }
 }
@@ -100,6 +102,7 @@ html[data-zoom="m"] {
     --text-l-min: .72;
     --text-l-max: 1;
     --curs-img: url(c-point.png);
+    --curs-sec: url(c-point-light.png);
     --curs-hov: url(c-line.png);
 }
 
@@ -1750,7 +1753,7 @@ html.strich-an * {
 
 html.strich-an.strich-punkt,
 html.strich-an.strich-punkt * {
-    cursor: var(--curs-img) 1 1, auto !important;
+    cursor: var(--curs-sec) 1 1, auto !important;
 }
 
 /* wie der echte Titel bei Hover auf den Chip: derselbe Schleier, damit die Übernahme nicht blitzt */
