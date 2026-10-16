@@ -256,8 +256,8 @@ body.tastatur li a:not([contenteditable]):focus-visible::before {
 
     li a::after {
         content: "";
-        transition: none;   /* Farbwechsel schaltet sofort */
-        display: none;
+        opacity: 0;
+        transition: opacity .12s ease;   /* blendet mit der Fläche (::before) ein und aus */
         position: absolute;
         left: var(--cx, -10px);
         /* immer von Ober- bis Unterkante der Kachel, egal wo die Maus steht */
@@ -272,7 +272,7 @@ body.tastatur li a:not([contenteditable]):focus-visible::before {
     }
 
     body:not(.tastatur) li a:hover::after {
-        display: block;
+        opacity: 1;
     }
 
     /* beim Bearbeiten gilt der Text-Cursor */
