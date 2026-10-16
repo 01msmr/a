@@ -1172,6 +1172,18 @@ function setzeStrich(e) {
 document.getElementById('container').addEventListener('mouseover', setzeStrich);
 document.getElementById('container').addEventListener('mousemove', setzeStrich);
 
+// Strich der nächsten Kachel vorab setzen (Bewegungsrichtung), damit er beim Betreten schon an der Stelle liegt
+var letzteMaus = null;
+document.getElementById('container').addEventListener('mousemove', function (e) {
+    if (letzteMaus) {
+        var x = e.clientX + (e.clientX - letzteMaus.x) * 3, y = e.clientY + (e.clientY - letzteMaus.y) * 3;
+        var el = document.elementFromPoint(x, y);
+        var a = el && el.closest('li a');
+        if (a && a !== e.target.closest('li a')) a.style.setProperty('--cx', (x - a.getBoundingClientRect().left) + 'px');
+    }
+    letzteMaus = { x: e.clientX, y: e.clientY };
+});
+
 // ── Einstellungen: Zahnrad in der Leiste, Overlay mit einem Knopf pro Einstellung ──
 // Ein Icon pro Einstellung zeigt den aktuellen Wert; jeder Klick schaltet zum anderen von zwei Werten. API für Zoom/Farbschema steht im <head>.
 // icon: Font-Awesome-Klasse oder Buchstabe (Zoom); zeigt den aktuellen Wert
