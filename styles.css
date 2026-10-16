@@ -210,7 +210,7 @@ li a {
     padding: .352em 0 .488em 0.3em;
     margin: 0;
     text-decoration: none;
-    cursor: var(--curs-hov) 1 30, auto;   /* Rückfall ohne Hover-Medium; sonst gezeichnet, s. ::after */
+    cursor: var(--curs-hov) 1 30, auto;   /* Rückfall ohne Hover-Medium; sonst gezeichnet, s. .licht-strich */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: clip;
@@ -246,38 +246,10 @@ body.tastatur li a:not([contenteditable]):focus-visible::before {
     background-color: var(--back-hov);
 }
 
-/* Der Strich-Cursor wird in der Kachel gezeichnet statt vom System: so deckt er
-   Fläche und eigenen Text, wird aber an der Kachelkante beschnitten (overflow: hidden).
-   Die x-Position setzt app.js per --cx; nur mit Maus, sonst bliebe er nach dem Tippen stehen */
+/* Der Strich-Cursor der Kachel sitzt im Licht (.licht-strich, app.js) und gleitet mit ihm; hier nur der Systemzeiger */
 @media (hover: hover) {
     li a {
         cursor: none;
-    }
-
-    li a::after {
-        content: "";
-        opacity: 0;
-        transition: opacity .12s ease;   /* blendet mit der Fläche (::before) ein und aus */
-        position: absolute;
-        left: var(--cx, -10px);
-        /* immer von Ober- bis Unterkante der Kachel, egal wo die Maus steht */
-        top: 0;
-        bottom: 0;
-        width: 3px;
-        margin-left: -1.5px;
-        background: var(--curs-hov) no-repeat;
-        background-size: 100% 100%;
-        pointer-events: none;
-        z-index: 1;
-    }
-
-    body:not(.tastatur) li a:hover::after {
-        opacity: 1;
-    }
-
-    /* beim Bearbeiten gilt der Text-Cursor */
-    body.edit-mode li a::after {
-        display: none;
     }
 }
 
@@ -632,15 +604,6 @@ body.licht section li.da a {
 body:not(.tastatur) section li.gedeckt a:hover::before,
 body.tastatur section li.gedeckt a:not([contenteditable]):focus-visible::before {
     background-color: var(--chip-inv);
-}
-
-/* Strich-Cursor auf der weißen Kachel: exakt in der Sektionsfarbe wie die Fläche (das Strich-Bild dient als Maske) */
-@media (hover: hover) {
-    body:not(.tastatur) section li.gedeckt a:hover::after {
-        background: var(--c, var(--sect-col));
-        -webkit-mask: var(--curs-hov) no-repeat 0 0 / 100% 100%;
-        mask: var(--curs-hov) no-repeat 0 0 / 100% 100%;
-    }
 }
 
 /* Sprungtasten nur am Telefon */
@@ -1344,6 +1307,22 @@ body.licht:not(.edit-mode) #container li a:hover::before,
 body.licht:not(.edit-mode).tastatur #container li a:not([contenteditable]):focus-visible::before {
     background-color: transparent;
     background-image: none;
+}
+
+/* Strich-Cursor im Licht: Farbe der Section (das Strich-Bild dient als Maske), volle Höhe; nur mit Maus */
+.licht-strich {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    margin-left: -1.5px;
+    background: var(--sc, var(--sect-col));
+    -webkit-mask: var(--curs-hov) no-repeat 0 0 / 100% 100%;
+    mask: var(--curs-hov) no-repeat 0 0 / 100% 100%;
+}
+
+body.tastatur .licht-strich {
+    display: none;
 }
 
 /* Chips: das Licht ist gerundet und glänzt wie die Hover-Fläche der Kachel (--hl: 1) */

@@ -657,7 +657,7 @@ function geistZuruecksetzen() {
 // und verlässt sie genauso, beschnitten auf die Kachel; nichts skaliert. Sie liegt im Inhalt und scrollt mit.
 // modus: 'aus' (unsichtbar), 'ein' (auf einer Kachel oder unterwegs dorthin), 'raus' (verlässt die Kachel).
 var licht = { el: null, modus: 'aus', tile: null, alt: null, da: new Set(), cur: null, von: null, nach: null,
-    clip: null, radius: 0, t0: 0, dauer: 0, linear: false, raf: 0, ende: null };
+    clip: null, radius: 0, t0: 0, dauer: 0, linear: false, raf: 0, ende: null, strich: null };
 
 function lichtAktiv() {
     return !document.body.classList.contains('edit-mode');
@@ -683,6 +683,14 @@ function lichtMalen(r) {
 function lichtRadius(a) {
     licht.radius = parseFloat(getComputedStyle(a, '::before').borderTopLeftRadius) || 0;
     licht.el.style.borderRadius = licht.radius + 'px';
+}
+
+// Der Strich-Cursor sitzt im Licht und gleitet mit: Lage relativ zum Licht = Zeiger relativ zur Zielkachel; Farbe der Section
+function lichtStrich(li, mausX) {
+    var sec = li.closest('section');
+    licht.el.style.setProperty('--sc', sec ? sec.style.getPropertyValue('--c') : '');
+    if (mausX == null) return;
+    licht.strich.style.left = (mausX - li.querySelector('a').getBoundingClientRect().left) + 'px';
 }
 
 // Anteil der Kachel, den das Licht deckt
@@ -782,6 +790,7 @@ function lichtZu(li, mausX, mausY) {
     if (li === licht.tile && licht.modus === 'ein') return;
     var nach = lichtRahmen(a);
     lichtRadius(a);
+    lichtStrich(li, mausX);
     var vor = licht.tile;
     if (licht.modus === 'aus') {
         // aus dem Nichts: von außen über die Eintrittskante in die Kachel, beschnitten auf sie
@@ -819,6 +828,9 @@ function lichtInit() {
     licht.el.id = 'kachel-licht';
     licht.el.setAttribute('aria-hidden', 'true');
     c.insertBefore(licht.el, c.firstChild);
+    licht.strich = document.createElement('div');
+    licht.strich.className = 'licht-strich';
+    licht.el.appendChild(licht.strich);
     licht.zellen = [0, 1].map(function () {
         var z = document.createElement('div');
         z.className = 'kachel-zelle';
@@ -850,7 +862,11 @@ function lichtSync() {
     if (li) lichtZu(li, lichtMaus.x, lichtMaus.y); else lichtAus(lichtMaus);
 }
 function lichtPlan() { if (!lichtPlanRaf) lichtPlanRaf = requestAnimationFrame(lichtSync); }
-document.addEventListener('mousemove', function (e) { lichtMaus = { x: e.clientX, y: e.clientY }; lichtPlan(); }, { passive: true });
+document.addEventListener('mousemove', function (e) {
+    lichtMaus = { x: e.clientX, y: e.clientY };
+    if (licht.modus === 'ein' && licht.tile) lichtStrich(licht.tile, e.clientX);
+    lichtPlan();
+}, { passive: true });
 document.addEventListener('scroll', lichtPlan, true);
 document.addEventListener('focusin', function (e) {
     if (!document.body.classList.contains('tastatur')) return;
@@ -1160,29 +1176,13 @@ function makeLi(name, url, tot) {
     return li;
 }
 
-// ── Gezeichneter Strich-Cursor in der Kachel (Position für li a::after) ──
-// auch beim Betreten (mouseover): sonst blitzt der Strich kurz an der alten Position
-function setzeStrich(e) {
+// ── Ausgangspunkt für die Pfeiltasten (linkBy): die Kachel unter der Maus ──
+function setzeMausKachel(e) {
     var a = e.target.closest('li a');
-    if (!a) return;
-    mausKachel = a;   // Ausgangspunkt für die Pfeiltasten (linkBy)
-    var r = a.getBoundingClientRect();
-    a.style.setProperty('--cx', (e.clientX - r.left) + 'px');
+    if (a) mausKachel = a;
 }
-document.getElementById('container').addEventListener('mouseover', setzeStrich);
-document.getElementById('container').addEventListener('mousemove', setzeStrich);
-
-// Strich der nächsten Kachel vorab setzen (Bewegungsrichtung), damit er beim Betreten schon an der Stelle liegt
-var letzteMaus = null;
-document.getElementById('container').addEventListener('mousemove', function (e) {
-    if (letzteMaus) {
-        var x = e.clientX + (e.clientX - letzteMaus.x) * 3, y = e.clientY + (e.clientY - letzteMaus.y) * 3;
-        var el = document.elementFromPoint(x, y);
-        var a = el && el.closest('li a');
-        if (a && a !== e.target.closest('li a')) a.style.setProperty('--cx', (x - a.getBoundingClientRect().left) + 'px');
-    }
-    letzteMaus = { x: e.clientX, y: e.clientY };
-});
+document.getElementById('container').addEventListener('mouseover', setzeMausKachel);
+document.getElementById('container').addEventListener('mousemove', setzeMausKachel);
 
 // ── Einstellungen: Zahnrad in der Leiste, Overlay mit einem Knopf pro Einstellung ──
 // Ein Icon pro Einstellung zeigt den aktuellen Wert; jeder Klick schaltet zum anderen von zwei Werten. API für Zoom/Farbschema steht im <head>.
