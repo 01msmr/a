@@ -284,6 +284,20 @@ function render(data) {
     focusContent();
 }
 
+// Ersatz für scrollend ohne Wartezeit: ruft fn, sobald die Scrollposition zwei Frames lang stillsteht
+var ruheRaf = new Map();
+function bisRuhe(fn) {
+    cancelAnimationFrame(ruheRaf.get(fn));
+    var c = document.getElementById('container'), pos = null, still = 0;
+    (function schritt() {
+        var p = c.scrollTop + ',' + window.scrollY;
+        still = p === pos ? still + 1 : 0;
+        pos = p;
+        if (still >= 2) { ruheRaf.delete(fn); fn(); return; }
+        ruheRaf.set(fn, requestAnimationFrame(schritt));
+    })();
+}
+
 // Oberste sichtbare Section: Chip invertiert, Dropdown nachgeführt.
 function trackActiveSection() {
     var container = document.getElementById('container');
@@ -350,7 +364,7 @@ function trackActiveSection() {
         clearTimeout(timer);
         var jetzt = performance.now();
         if (jetzt - letzte > 80) { letzte = jetzt; syncActive(); }
-        if (!('onscrollend' in window)) timer = setTimeout(syncActive, 120);   // nur Ersatz ohne scrollend
+        if (!('onscrollend' in window)) bisRuhe(syncActive);   // nur Ersatz ohne scrollend
     });
     container.addEventListener('scrollend', function () { clearTimeout(timer); syncActive(); });
     syncActive();
@@ -432,7 +446,7 @@ document.addEventListener('scroll', function () {
     wischt = true;
     document.body.classList.add('wischt');
     clearTimeout(wischT);
-    if (!('onscrollend' in window)) wischT = setTimeout(wischEnde, 200);   // nur Ersatz ohne scrollend
+    if (!('onscrollend' in window)) bisRuhe(wischEnde);   // nur Ersatz ohne scrollend
 }, true);
 
 function fensterZiel() {
