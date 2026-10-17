@@ -68,6 +68,9 @@ Names in this log are the current English ones (the code was translated to Engli
 - Ghost headers (`ghostHeader.stack`) again form a stack of all sections between view and target (ordered by distance, target on top, those in between lying ready underneath): further away only the copy of the target glides in, nearer the ones above just glide out and uncover the ones below (before they first glided down). If the target jumped over several, they glide out together. Every change takes 400 ms, the next target waits, only the last one counts (fast hovering skips intermediate steps). Gliding in and out with ease-out; shadow and line fade out quickly at the end of gliding out during the last 25 %.
 - With keyboard navigation a resting mouse pointer over nav chips or headings triggers neither line/chevron nor a ghost header.
 
+**Home screen icon: "a" closer to the dot**
+- In all icons (`ico-light-*`, `ico-dark-*`, embedded copy) the "a" sits closer to the dot: half of the gap between the two letters is closed (the gap was about 12 % of the icon width), the dot keeps its shape and the pair stays centered. Regenerated from the Ubuntu font, then `node tools/touch-icon.js inline`.
+
 **Home screen icon: light only**
 - The dark-mode tag is removed again (iOS 27.2 ignores `media` and showed the dark icon in both modes). The home screen icon is the light one with the thin white outline in both modes.
 
