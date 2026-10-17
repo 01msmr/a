@@ -18,7 +18,7 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 - Beim Wischen zeigt das Leuchtfenster keinen Hover-Zustand, bleibt aber bei der aktuellen Section (kein Flackern des Hintergrunds); die Chips verlieren ihre Hover-Optik (`html.wischt`).
 - Das Wischen endet erst, wenn der Finger oben ist (`fingerDa`, `touchstart`/`touchend`): hält er beim Ziehen kurz still, bleibt die Vorhersage, und das Fenster geht nicht hin und her.
 - **Fehler behoben:** Die Wisch-Klasse lag am `body`; deren Klassenwechsel löste die Neuvermessung (`layout()`) aus und störte den Scroll-Auslauf. Jetzt am `html`.
-- Das Leuchtfenster geht beim Wischbeginn schon zur nächsten Section in Wischrichtung (nach 12 px Fingerweg, der Richtung folgend, solange die aktive Section noch die vom Start ist) und gleitet auf Touch 1,1-mal so lang wie mit der Maus (220 ms; getestet waren 320 und 120 ms).
+- Das Leuchtfenster geht beim Wischbeginn schon zur nächsten Section in Wischrichtung (nach 12 px Fingerweg, der Richtung folgend, solange die aktive Section noch die vom Start ist) und jagt auf Touch dem Ziel nach (`fensterJagd`, Zeitkonstante 70 ms) statt mit fester Dauer zu gleiten: bei Zielwechsel unterwegs bleibt der Schwung erhalten (vorher fuhr jedes neue Ziel mit Geschwindigkeit 0 an, das gab Stufen sowie Schrumpfen und Wachsen).
 - iPhone hochkant: kein `scroll-snap-stop: always`, ein Wisch darf mehrere Sections überspringen; gerastet wird am Ende.
 
 **Aufräumen (HTML und Logik, Aussehen unverändert)**

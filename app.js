@@ -608,6 +608,19 @@ function fensterSchritt(jetzt) {
     f.raf = t < 1 ? requestAnimationFrame(fensterSchritt) : 0;
 }
 
+// Touch: das Fenster jagt dem Ziel nach (Annäherung mit Zeitkonstante 70 ms). Wechselt das Ziel unterwegs, behält es Schwung und Lage,
+// statt wie bei der festen Dauer mit Geschwindigkeit 0 neu anzufahren (das gab Stufen, Schrumpfen und Wachsen beim Wischen).
+function fensterJagd(jetzt) {
+    var f = fenster, dt = Math.min(64, jetzt - (f.tl || jetzt));
+    f.tl = jetzt;
+    var k = 1 - Math.exp(-dt / 70);
+    var top = f.top + (f.nach.top - f.top) * k, bot = f.bot + (f.nach.bot - f.bot) * k;
+    var fertig = Math.abs(f.nach.top - top) < 0.5 && Math.abs(f.nach.bot - bot) < 0.5;
+    if (fertig) { top = f.nach.top; bot = f.nach.bot; }
+    fensterMalen(top, bot);
+    f.raf = fertig ? 0 : requestAnimationFrame(fensterJagd);
+}
+
 // sofort ans Ziel (Start, Layoutwechsel) oder gleitend
 function fensterZu(ziel, animiert) {
     var f = fenster;
@@ -617,8 +630,12 @@ function fensterZu(ziel, animiert) {
     // reduzierte Bewegung heißt kürzer, nicht keine
     var kurz = matchMedia('(prefers-reduced-motion: reduce)').matches;
     f.von = { top: f.top, bot: f.bot }; f.nach = nach;
-    // Touch (Smartphone, Tablet): 1,1-mal so lang wie mit der Maus (zwischen 120 und 320 ms)
-    f.dauer = kurz ? masz['fenster-dauer-kurz'] : masz['fenster-dauer'] * (istTouch() ? 1.1 : 1);
+    if (istTouch() && !kurz) {
+        f.tl = performance.now();
+        f.raf = requestAnimationFrame(fensterJagd);
+        return;
+    }
+    f.dauer = kurz ? masz['fenster-dauer-kurz'] : masz['fenster-dauer'];
     f.t0 = performance.now();
     f.raf = requestAnimationFrame(fensterSchritt);
 }
