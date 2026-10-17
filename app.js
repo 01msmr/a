@@ -813,17 +813,16 @@ function geistRender() {
     var spaeter = cur && !!(cur.sec.compareDocumentPosition(sec) & Node.DOCUMENT_POSITION_FOLLOWING);
     var weicht = cur && (lage === 'oben' ? spaeter : !spaeter);
     var kurve = 'transform ' + geistDauer() + 'ms cubic-bezier(.55, .085, .68, .19), filter ' + geistDauer() + 'ms linear';
+    // die neue Kopie gleitet immer ein, samt Schatten und Linie; weicht die vorige, liegt sie darunter und gleitet gleichzeitig hinaus
+    el.style.transform = lage === 'oben' ? 'translateY(-100%)' : 'translateY(100%)';
+    if (weicht) ebene.insertBefore(el, cur.el); else ebene.appendChild(el);
+    el.getBoundingClientRect();   // Ausgangslage festschreiben
+    // beschleunigt und endet hart, wie das Fenster
+    el.style.transition = kurve;
+    el.style.transform = 'none';
     if (weicht) {
-        ebene.insertBefore(el, cur.el);
         cur.el.style.transition = kurve;
         cur.el.style.transform = cur.lage === 'oben' ? 'translateY(-100%)' : 'translateY(100%)';
-    } else {
-        el.style.transform = lage === 'oben' ? 'translateY(-100%)' : 'translateY(100%)';
-        ebene.appendChild(el);
-        el.getBoundingClientRect();   // Ausgangslage festschreiben
-        // beschleunigt und endet hart, wie das Fenster
-        el.style.transition = kurve;
-        el.style.transform = 'none';
     }
     var neu = { sec: sec, el: el, lage: lage };
     if (cur) { cur.el.classList.add('alt'); geist.alt.push(cur); }   // vorige: behält die Farbe, ohne Schatten (nur die dünne Linie)
