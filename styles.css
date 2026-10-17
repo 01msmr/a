@@ -1794,3 +1794,10 @@ body.view-grid:not(.edit-mode) .group.ende-gedeckt::after {
 #section-jumper {
     touch-action: none;
 }
+
+/* Wischen mit dem Finger: Chips und Einträge zeigen keinen Hover-/Druck-Zustand */
+body.wischt a.sec-btn:not(.active) {
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+}

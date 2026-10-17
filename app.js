@@ -296,7 +296,7 @@ function trackActiveSection() {
         var active = chips.length ? chips[0].hash : '';
         var aktiv = null;
         headings.forEach(function (h3) {
-            if (h3.getBoundingClientRect().top - top <= 8) {
+            if (h3.getBoundingClientRect().top - top <= 24) {   // schon kurz vor dem Einrasten aktiv
                 active = '#' + h3.id;
                 aktiv = h3;
             }
@@ -344,10 +344,15 @@ function trackActiveSection() {
     });
 
     // erst nach Scroll-Ruhe nachziehen
+    // während des Scrollens alle 80 ms nachziehen (auch bei sehr langsamem Wischen), am Ende (scrollend oder Ruhe) ein letztes Mal
+    var letzte = 0;
     container.addEventListener('scroll', function () {
         clearTimeout(timer);
-        timer = setTimeout(syncActive, 75);
+        var jetzt = performance.now();
+        if (jetzt - letzte > 80) { letzte = jetzt; syncActive(); }
+        timer = setTimeout(syncActive, 120);
     });
+    container.addEventListener('scrollend', function () { clearTimeout(timer); syncActive(); });
     syncActive();
 }
 
@@ -377,6 +382,8 @@ var fenster = {
 // Bis zur nächsten echten Mausbewegung (mehr als 4 px), einem anderen Klick oder (nur nach einem Titelklick) einem Tastendruck bleibt die angeklickte Section das Ziel.
 
 // art: 'titel' (ein Tastendruck löst die Sperre) oder 'nav' (Chip oder Listeneintrag)
+var wischt = false, wischT = 0, letzterZeiger = 'mouse';
+
 function sperreAn(sec, x, y, art) {
     sperre.sec = sec;
     sperre.art = art;
@@ -399,6 +406,7 @@ function sperreAus() {
 
 // schon beim Drücken, damit der Chip sofort aktiv ist (kein Hover-/Druck-Zustand) und der Zeiger beim Hochscrollen verschwindet
 document.addEventListener('pointerdown', function (e) {
+    letzterZeiger = e.pointerType;
     var ziel = e.button === 0 && !document.body.classList.contains('edit-mode') && e.target.closest && e.target.closest('#container .name a, a.sec-btn');
     var sec = ziel && (ziel.matches('a.sec-btn') ? (document.querySelector(ziel.getAttribute('href')) || ziel).closest('section') : ziel.closest('section'));
     if (!sec) { sperreAus(); return; }
@@ -411,13 +419,20 @@ document.addEventListener('mousemove', function (e) {
 document.addEventListener('keydown', function () { if (sperre.art === 'titel') sperreAus(); });
 
 // Touch-Wischen: solange der Inhalt per Finger scrollt (samt Auslauf), zeigt das Fenster kein Ziel, auch nicht die aktive Section oben
-var wischt = false, wischT = 0, letzterZeiger = 'mouse';
-document.addEventListener('pointerdown', function (e) { letzterZeiger = e.pointerType; }, true);
+function wischEnde() {
+    wischt = false;
+    document.body.classList.remove('wischt');
+    fensterSync();
+}
+document.addEventListener('scrollend', function () { if (wischt) { clearTimeout(wischT); wischEnde(); } }, true);
+// Wischen mit dem Finger beendet die Klick-Sperre (die Maus tut das per Bewegung)
+document.addEventListener('touchmove', function () { if (sperre.sec) sperreAus(); }, { passive: true });
 document.addEventListener('scroll', function () {
     if (letzterZeiger === 'mouse' || document.body.classList.contains('gesperrt')) return;
     wischt = true;
+    document.body.classList.add('wischt');
     clearTimeout(wischT);
-    wischT = setTimeout(function () { wischt = false; fensterSync(); }, 200);
+    wischT = setTimeout(wischEnde, 200);
 }, true);
 
 function fensterZiel() {
