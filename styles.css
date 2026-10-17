@@ -1492,7 +1492,7 @@ body:not(.tastatur) .settings-btn.offen {
     position: absolute;
     right: .35rem;
     bottom: .3rem;
-    font-size: .55rem;
+    font-size: .8rem;
     font-weight: bold;
     line-height: 1;
 }
