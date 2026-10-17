@@ -61,33 +61,7 @@ html[data-zoom="m"] {
     --curs-hov: url(c-line-light.png);
 }
 
-/* dunkel: Systemvorgabe (außer bei ausdrücklich „hell“) oder ausdrückliche Wahl; Werte stehen zweimal, weil eine Media Query keine Wahl per Attribut kennt */
-@media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-        color-scheme: dark;
-        --front-body: #333;
-        --back-body: #000;
-        --text-col: #666;
-        --sect-col: #ccc;
-        --text-hov: #666;
-        --back-hov: #eee;
-        --title-col: #fff;
-        --title-dom: #999;
-        --on-c: #111;
-        --chip-inv: var(--front-body);
-        /* im Dunkeln etwas weniger Glanz auf den Kacheln */
-        --glanz: .6;
-        /* im Dunkeln umgekehrt: nie dunkler als dieser Wert */
-        --text-l-min: .72;
-        --text-l-max: 1;
-        --curs-img: url(c-point.png);
-        --curs-sec: url(c-point-light.png);
-        --curs-auf: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='32' height='32'%3E%3Cpath d='M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z' fill='%23111' stroke='rgba(255,255,255,.45)' stroke-width='30' paint-order='stroke'/%3E%3C/svg%3E") 16 16, auto;
-        --curs-ab: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='32' height='32'%3E%3Cpath d='M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z' fill='%23111' stroke='rgba(255,255,255,.45)' stroke-width='30' paint-order='stroke'/%3E%3C/svg%3E") 16 16, auto;
-        --curs-hov: url(c-line.png);
-    }
-}
-
+/* dunkel: ein Block für Systemvorgabe und ausdrückliche Wahl — das Skript im <head> setzt data-theme immer (auto = Wert des Systems) */
 :root[data-theme="dark"] {
     color-scheme: dark;
     --front-body: #333;

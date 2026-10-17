@@ -18,7 +18,7 @@
             const read = () => { try { const v = localStorage.getItem(KEY); return MODES.includes(v) ? v : null; } catch { return null; } };
             const apply = () => {
                 const v = read(), el = document.documentElement;
-                if (v) el.dataset.theme = v; else delete el.dataset.theme;
+                el.dataset.theme = v || (dunkel.matches ? 'dark' : 'light');   // auto folgt dem System; CSS kennt nur light und dark
                 document.dispatchEvent(new Event('msmrtheme'));
             };
             window.msmrTheme = {
@@ -60,7 +60,7 @@
     <link rel="manifest" href="./favicon/manifest.json">
     <meta name="theme-color" content="#ffffff">
 
-    <link rel="stylesheet" href="styles.css?v=2026-10-17ad">
+    <link rel="stylesheet" href="styles.css?v=2026-10-17ae">
 
     <script type="text/javascript">
         document.addEventListener("touchstart", function () { }, true);
@@ -99,7 +99,7 @@
         <div id="settings-pop" class="settings-pop" popover="manual"></div>
     </div>
 
-    <script src="app.js?v=2026-10-17ad"></script>
+    <script src="app.js?v=2026-10-17ae"></script>
 </body>
 
 </html>
