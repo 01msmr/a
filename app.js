@@ -806,6 +806,9 @@ function ghostHeaderRender() {
     function slideOut(g) {   // gleitet samt Schatten und Linie hinaus und wird danach entfernt
         g.el.style.transition = curve;
         g.el.style.transform = ghostHeaderOffscreen(g.edge);
+        g.el.classList.add('out');   // Schatten und Linie blenden am Ende des Hinausgleitens schnell aus (styles.css)
+        g.el.style.setProperty('--ausblend-start', Math.round(ghostHeaderDuration() * 0.75) + 'ms');
+        g.el.style.setProperty('--ausblend-dauer', Math.round(ghostHeaderDuration() * 0.25) + 'ms');
         ghostHeader.leaving.push(g);
     }
     function scheduleRemoval() {

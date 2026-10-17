@@ -1700,6 +1700,12 @@ body.view-grid .ghost-header .name {
     filter: none;
 }
 
+/* hinausgleitende Kopie: Schatten und Linie blenden im letzten Viertel der Bewegung schnell auf 0 aus */
+.ghost-header.out::after {
+    opacity: 0;
+    transition: opacity var(--ausblend-dauer, 100ms) linear var(--ausblend-start, 300ms);
+}
+
 /* darunterliegende Kopie: weder Schatten noch Linie, damit es bei mehreren nicht immer dunkler wird */
 .ghost-header.under::after {
     display: none;
