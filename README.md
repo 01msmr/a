@@ -243,20 +243,17 @@ The pointers belong there too (`--curs-img`, `--curs-sec`, `--curs-hov`, `--curs
 
 ## Home screen icon (iOS)
 
-The home screen icon is `favicon/ico-light-180.png` (180×180, opaque, rendered from the page's Ubuntu font, white "a." on dark grey #2a2a2e: already in the form iOS's automatic dark mode produces, so it stays readable; a web shortcut cannot supply its own dark variant). On iOS 27.2 the
+The home screen icon comes in two versions: `favicon/ico-light-180.png` (black "a." on #eee) and `favicon/ico-dark-180.png` (soft light grey "a." on dark grey, less contrast than white on near-black), both 180×180, opaque, rendered from the page's Ubuntu font with the "a" close to the dot. iOS ignores `media` on `apple-touch-icon`, so a script in `index.html` sets the link from the current color scheme (`matchMedia`); the icon stays as it was when the shortcut was added, so switch the appearance and add the shortcut again to change it. The static link is the fallback without JavaScript. A web shortcut cannot follow the system appearance by itself. On iOS 27.2 the
 Add to Home Screen sheet loads the icon with its own loader that fails on any network URL and then shows a letter tile,
-although the file is fine and opens in a Safari tab. That is why `index.html` currently embeds the icon as a `data:` URI in
-`<link rel="apple-touch-icon">`. The switch is reversible:
+although the file is fine and opens in a Safari tab. That is why `index.html` currently embeds both icons as `data:` URIs.
+The switch is reversible:
 
 ```
 node tools/touch-icon.js inline   # embed the icon (current; run again after changing the icon file)
 node tools/touch-icon.js url      # default variant: link ./favicon/ico-light-180.png
 ```
 
-There is no dark variant: a second tag `<link rel="apple-touch-icon" media="(prefers-color-scheme: dark)">` was tried, and
-iOS 27.2 ignored `media` and showed the dark icon in both modes. In dark mode iOS puts the light icon on black itself; the thin white
-outline keeps the "a." visible (the home screen icon style "Light" on the phone avoids the darkening). `tools/touch-icon.js` would
-switch a dark tag along if one were added again.
+Both versions are switched together by the script (the `ICONS` line) and the fallback link.
 Both variants also copy the icon to `/apple-touch-icon.png` and `/apple-touch-icon-precomposed.png`. iOS keeps the icon from
 the moment a shortcut is added: to see a change, delete the shortcut, clear the website data for a.msmr.co in Safari and add it again.
 

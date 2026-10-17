@@ -3,7 +3,7 @@
 //                                     Add to Home Screen sheet fails to load the icon from a network URL)
 //   node tools/touch-icon.js url      the default: link the file by URL
 // Run "inline" again after changing the icon file, so the embedded copy stays the same as the file.
-// A dark variant for dark mode (media) is switched along if present.
+// The script in index.html that swaps the icon by color scheme (ICONS line) is switched along.
 // It also copies the icon to /apple-touch-icon.png and /apple-touch-icon-precomposed.png (asked for by other iOS versions and browsers).
 const fs = require('fs');
 const path = require('path');
@@ -20,7 +20,7 @@ if (mode !== 'inline' && mode !== 'url') {
 const file = path.join(root, 'index.html');
 const html = fs.readFileSync(file, 'utf8');
 const LINK = /<link rel="apple-touch-icon" href="[^"]*">/;
-const DARK_LINK = /<link rel="apple-touch-icon" media="\(prefers-color-scheme: dark\)" href="[^"]*">/;
+const ICONS_LINE = /const ICONS = \{ light: '[^']*', dark: '[^']*' \};/;   // in the script that swaps the icon by color scheme
 if (!LINK.test(html)) {
     console.error('index.html: no <link rel="apple-touch-icon" href="…"> found');
     process.exit(1);
@@ -29,8 +29,8 @@ const href = function (icon) {
     return mode === 'inline' ? 'data:image/png;base64,' + fs.readFileSync(path.join(root, icon)).toString('base64') : './' + icon;
 };
 let out = html.replace(LINK, '<link rel="apple-touch-icon" href="' + href(ICON) + '">');
-// the dark variant is optional: only replaced if index.html has it
-out = out.replace(DARK_LINK, '<link rel="apple-touch-icon" media="(prefers-color-scheme: dark)" href="' + href(DARK_ICON) + '">');
+// the script that sets the icon by color scheme carries both icons (light and dark)
+out = out.replace(ICONS_LINE, "const ICONS = { light: '" + href(ICON) + "', dark: '" + href(DARK_ICON) + "' };");
 fs.writeFileSync(file, out);
 const png = fs.readFileSync(path.join(root, ICON));
 
