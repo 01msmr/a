@@ -350,13 +350,16 @@ function sperreAus() {
     syncActive();
 }
 
-document.addEventListener('click', function (e) {
+// schon beim Drücken, damit der Chip sofort aktiv ist (kein Hover-/Druck-Zustand) und der Zeiger beim Hochscrollen verschwindet
+document.addEventListener('pointerdown', function (e) {
     var ziel = e.button === 0 && !document.body.classList.contains('edit-mode') && e.target.closest && e.target.closest('#container .name a, a.secname');
     var sec = ziel && (ziel.matches('a.secname') ? (document.querySelector(ziel.getAttribute('href')) || ziel).closest('section') : ziel.closest('section'));
     if (!sec) { sperreAus(); return; }
     sperre.sec = sec;
     document.body.classList.add('gesperrt');
     sperre.x = e.clientX; sperre.y = e.clientY;
+    fensterSync();
+    syncActive();
 }, true);
 document.addEventListener('mousemove', function (e) {
     if (sperre.sec && Math.hypot(e.clientX - sperre.x, e.clientY - sperre.y) > 4) sperreAus();
@@ -916,10 +919,8 @@ var strich = { el: null, pfeil: null, secEl: null, x: 0, y: 0, ziel: null, raf: 
 function strichZiel(t) {
     if (!t || !t.closest || document.body.classList.contains('edit-mode')) return null;
     var z = { sec: t.closest('#container section'), fest: null, hide: false, kopf: !!t.closest('#container .name') };
-    // gesperrt: liegt der Zeiger nicht in der angeklickten Section, zeigt er keinen Section-Strich und keinen Titel-Chevron
-    if (sperre.sec && z.sec !== sperre.sec) { z.sec = null; z.kopf = false; }
-    // gesperrt: auch auf Nav-Chips kein Strich und kein Chevron (der Chip der angeklickten Section ist aktiv, die anderen zeigen keinen Hover)
-    if (sperre.sec && t.closest('a.secname')) return null;
+    // gesperrt: auf Nav-Chips und außerhalb der angeklickten Section gar kein Zeiger, bis die Maus sich bewegt
+    if (sperre.sec && (t.closest('a.secname') || z.sec !== sperre.sec)) return { sec: null, fest: null, hide: true, kopf: false };
     if (t.closest('li a')) { z.hide = true; z.sec = null; }   // Kachel: nur ihr eigener Strich
     else {
         // Kachelrand (kein Hintergrund erkennen) bzw. Nav-Chip: Strich in der Höhe der Zeile
