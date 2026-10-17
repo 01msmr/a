@@ -1249,6 +1249,7 @@ var EINSTELLUNGEN = [
     {
         label: 'Color',
         werte: [['bunt', 'color'], ['blass', 'pale']],
+        text: { bunt: 'col', blass: 'pale' },
         // Kreis in einer Section-Farbe: kräftig = bunt, fast farblos (gleiche Helligkeit) = blass
         kreis: { bunt: '1', blass: 'var(--farbe-blass)' },
         get: function () { return getPref('farbe'); },
@@ -1265,6 +1266,7 @@ var EINSTELLUNGEN = [
     {
         label: 'View',
         werte: [['chips', 'chips'], ['grid', 'grid']],
+        text: { chips: 'chip', grid: 'grid' },
         // vier Kacheln: gerundet und getrennt = Chips; eckig und aneinander = Raster
         kacheln: { chips: false, grid: true },
         get: function () { return getPref('view'); },
@@ -1275,6 +1277,7 @@ var EINSTELLUNGEN = [
         // im Raster heißt „links“ volle Breite
         beschr: function (w) { return w === 'left' && getPref('view') === 'grid' ? 'full' : null; },
         werte: [['left', 'left'], ['center', 'center']],
+        text: { left: 'left', center: 'cen' },
         icons: { left: 'fa-align-left', center: 'fa-align-center' },
         get: function () { return getPref('align'); },
         set: function (w) { setPref('align', w); }
@@ -1282,6 +1285,7 @@ var EINSTELLUNGEN = [
     {
         label: 'Edit',
         werte: [['aus', 'edit'], ['an', 'done']],
+        text: { aus: 'edit', an: 'save' },
         // zwei Chevrons übereinander = aus; Diskette = es wird bearbeitet, Klick beendet und fragt nach dem Speichern
         icons: { aus: ['fa-chevron-up', 'fa-chevron-down'], an: 'fa-floppy-disk' },
         get: function () { return document.body.classList.contains('edit-mode') ? 'an' : 'aus'; },
@@ -1305,7 +1309,7 @@ function wertNach(e, w) {
 // Text-Modus: Wörter; Icon-Modus: Sonne/Mond, „auto“ als gefüllter Kreis
 function zeichneSchema(ic, w) {
     var icons = document.body.classList.contains('nav-icons');
-    var sym = { light: 'fa-sun', dark: 'fa-moon' }, wort = { auto: 'auto', light: 'light', dark: 'dark' };
+    var sym = { light: 'fa-sun', dark: 'fa-moon' }, wort = { auto: 'aut', light: 'light', dark: 'dark' };
     function glyph(klasse, extra) {
         var g = document.createElement('i');
         g.className = klasse + (extra ? ' ' + extra : '');
@@ -1337,7 +1341,7 @@ function zeichneIcon(ic, e, w) {
         zeichneSchema(ic, w);
     } else if (!document.body.classList.contains('nav-icons')) {
         ic.className = 'set-icon set-letter set-text';
-        ic.textContent = wertName(e, w);
+        ic.textContent = (e.beschr && e.beschr(w)) || (e.text && e.text[w]) || wertName(e, w);
     } else if (e.kreis) {
         ic.className = 'set-icon set-kreis';
         ic.textContent = '';

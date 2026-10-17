@@ -1509,7 +1509,7 @@ body:not(.tastatur) .settings-btn.offen {
 }
 
 .set-text {
-    font-size: clamp(.85rem, 22cqw, 1.25rem);   /* nutzt die Breite des Knopfs */
+    font-size: clamp(1rem, 30cqw, 1.7rem);   /* nutzt die Breite des Knopfs */
 }
 
 /* Ansicht: vier Kacheln. Chips = gefüllt, gerundet, mit Abstand; Raster = Umriss, eckig, aneinander */
