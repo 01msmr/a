@@ -200,10 +200,11 @@ Liste gefüllt und ins Sichtfeld gescrollt. Namen verlieren eine Endung (`tbx.li
   und wählt den Eintrag unter dem Finger in einem Zug (`touch-action: none` am Feld).
 - **Scrollen:** die aktive Section wird während des Wischens alle 80 ms nachgezogen und am Ende über `scrollend`
   und `bisRuhe` (zwei stille Frames) bestätigt; sie gilt 24 px vor dem Einrasten als aktiv. Während des Wischens
-  (`html.wischt`, endet erst mit dem Finger oben; nicht am `body`: dessen Klassenwechsel löst die Neuvermessung aus) bleibt das Leuchtfenster bei
-  der aktuellen Section ohne Hover, die Chips ohne Hover-Optik; schon nach 12 px Fingerweg geht es zur nächsten
-  Section in Wischrichtung (`wischVorhersage`, folgt der Richtung, bis die aktive Section wechselt) und jagt
-  auf Touch dem Ziel nach (Zeitkonstante 70 ms, `fensterJagd`): wechselt das Ziel unterwegs, bleibt der Schwung erhalten. Hochkant auf dem iPhone ist `scroll-snap-stop`
+  (`html.wischt`, endet erst mit dem Finger oben; nicht am `body`: dessen Klassenwechsel löst die Neuvermessung aus)
+  haben die Chips keine Hover-Optik. Das Leuchtfenster ist beim Scrollen eine Funktion der Scrollposition
+  (`fensterScroll`): zwischen zwei Section-Oberkanten geht es vom Rahmen der einen zu dem der nächsten über (Oberkante =
+  Scrollposition), am Einrastpunkt deckt es genau die Section. Es läuft so mit Finger, Auslauf, Stepper- und Chip-Sprüngen,
+  ohne eigene Zeit (kein Vorauseilen, Zurückbleiben oder Zucken). Nur ein Tap auf eine Section animiert es (feste Dauer). Hochkant auf dem iPhone ist `scroll-snap-stop`
   normal: ein Wisch darf mehrere Sections überspringen.
 
 ### Zentrale Variablen

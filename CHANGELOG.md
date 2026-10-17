@@ -16,9 +16,9 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 **Scrollen**
 - Aktivierung auch bei langsamem Wischen: Nachziehen alle 80 ms während des Scrollens, am Ende per `scrollend` und zusätzlich per eigener Ruhe-Erkennung (`bisRuhe`, zwei stille Frames, ohne Wartezeit). Eine Section gilt 24 px vor dem Einrasten als aktiv (vorher 8 px).
 - Beim Wischen zeigt das Leuchtfenster keinen Hover-Zustand, bleibt aber bei der aktuellen Section (kein Flackern des Hintergrunds); die Chips verlieren ihre Hover-Optik (`html.wischt`).
-- Das Wischen endet erst, wenn der Finger oben ist (`fingerDa`, `touchstart`/`touchend`): hält er beim Ziehen kurz still, bleibt die Vorhersage, und das Fenster geht nicht hin und her.
+- Das Wischen endet erst, wenn der Finger oben ist (`fingerDa`, `touchstart`/`touchend`): hält er beim Ziehen kurz still, geht es gleich weiter, ohne dass das Wischen zwischendurch endet.
 - **Fehler behoben:** Die Wisch-Klasse lag am `body`; deren Klassenwechsel löste die Neuvermessung (`layout()`) aus und störte den Scroll-Auslauf. Jetzt am `html`.
-- Das Leuchtfenster geht beim Wischbeginn schon zur nächsten Section in Wischrichtung (nach 12 px Fingerweg, der Richtung folgend, solange die aktive Section noch die vom Start ist) und jagt auf Touch dem Ziel nach (`fensterJagd`, Zeitkonstante 70 ms) statt mit fester Dauer zu gleiten: bei Zielwechsel unterwegs bleibt der Schwung erhalten (vorher fuhr jedes neue Ziel mit Geschwindigkeit 0 an, das gab Stufen sowie Schrumpfen und Wachsen).
+- **Leuchtfenster auf Touch an die Scrollposition gekoppelt (`fensterScroll`):** Aus der Bildschirmaufnahme (Stepper-Schritt) ging hervor, dass das Fenster mit eigener Zeit lief und der Scrollkurve vorauseilte (obere Reihen unbedeckt, das Fenster schrumpfte, wuchs im langen Auslauf wieder). Jetzt geht es zwischen zwei Section-Oberkanten vom Rahmen der einen zu dem der nächsten über (Oberkante = Scrollposition); am Einrastpunkt deckt es genau die Section. Entfallen sind die Wischvorhersage (`wischVorhersage`), `fensterJagd` und die Touch-Dauer; ein Tap auf eine Section animiert weiter mit fester Dauer.
 - iPhone hochkant: kein `scroll-snap-stop: always`, ein Wisch darf mehrere Sections überspringen; gerastet wird am Ende.
 
 **Aufräumen (HTML und Logik, Aussehen unverändert)**

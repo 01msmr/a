@@ -438,8 +438,7 @@ function sperreAusEreignis(e, touch) {
 }
 document.addEventListener('pointerdown', function (e) {
     zeigerArtSetzen(e.pointerType);
-    if (istTouch()) { if (fenster.container) wischTop = fenster.container.scrollTop; }
-    else sperreAusEreignis(e, false);
+    if (!istTouch()) sperreAusEreignis(e, false);
 }, true);
 document.addEventListener('click', function (e) {
     if (istTouch() && e.detail !== undefined) sperreAusEreignis(e, true);
@@ -455,28 +454,9 @@ document.addEventListener('pointermove', function (e) {
 }, true);
 
 // ── Touch-Wischen ─────────────────────────────────────────────────
-// Solange der Inhalt per Finger scrollt (samt Auslauf), zeigt das Fenster keinen Hover-Zustand und die Chips keine Hover-Optik (html.wischt).
-// Wischbeginn: das Fenster geht zur nächsten Section in Wischrichtung, sobald der Finger 12 px gezogen hat (kein Zucken bei Kleinstbewegung),
-// und folgt der Richtung, solange die aktive Section noch die vom Start ist
-var wischt = false, wischVon = null, wischTop = 0, wischRicht = 0, wischGipfel = 0;
-function wischStart() {
-    wischVon = fenster.container && fenster.container.querySelector('section.aktuell');
-    wischRicht = 0; wischGipfel = 0;
-}
-// Die Richtung rastet bei 12 px ein und kehrt erst um, wenn der Finger 48 px vom Gipfel zurückgeht: Zittern und Einrasten lassen das Fenster nicht springen
-function wischVorhersage() {
-    var c = fenster.container, cur = c && c.querySelector('section.aktuell');
-    if (!c || !wischVon || cur !== wischVon) return null;
-    var d = c.scrollTop - wischTop;
-    if (!wischRicht) {
-        if (Math.abs(d) < 12) return null;
-        wischRicht = d > 0 ? 1 : -1; wischGipfel = d;
-    } else if (wischRicht * (d - wischGipfel) > 0) wischGipfel = d;
-    else if (Math.abs(d - wischGipfel) > 48) { wischRicht = -wischRicht; wischGipfel = d; }
-    var l = Array.prototype.slice.call(c.querySelectorAll('section')), i = l.indexOf(cur);
-    return l[i + wischRicht] || null;
-}
-// Das Wischen endet erst, wenn der Finger oben ist: hält er beim Ziehen kurz still, ruht zwar das Scrollen, die Vorhersage soll aber bleiben
+// Solange der Inhalt scrollt (samt Auslauf), ist das Fenster an die Scrollposition gekoppelt (fensterScroll) und die Chips zeigen keine Hover-Optik (html.wischt).
+var wischt = false;
+// Das Wischen endet erst, wenn der Finger oben ist: hält er beim Ziehen kurz still, ruht zwar das Scrollen, es geht aber gleich weiter
 var fingerDa = false;
 document.addEventListener('touchstart', function () { fingerDa = true; }, { passive: true, capture: true });
 ['touchend', 'touchcancel'].forEach(function (n) {
@@ -485,8 +465,6 @@ document.addEventListener('touchstart', function () { fingerDa = true; }, { pass
 
 function wischEnde() {
     if (fingerDa) return;
-    wischVon = null;
-    if (fenster.container) wischTop = fenster.container.scrollTop;
     wischt = false;
     document.documentElement.classList.remove('wischt');
     fensterSync();
@@ -495,8 +473,8 @@ document.addEventListener('scrollend', function () { if (wischt) wischEnde(); },
 // Wischen mit dem Finger beendet die Klick-Sperre (die Maus tut das per Bewegung)
 document.addEventListener('touchmove', function () { if (sperre.sec) sperreAus(); }, { passive: true });
 document.addEventListener('scroll', function () {
-    if (!istTouch() || document.body.classList.contains('gesperrt')) return;
-    if (!wischt) { wischt = true; wischStart(); fensterSync(); }
+    if (!istTouch()) return;
+    wischt = true;
     // nicht am body: dessen Klassenwechsel löst eine Neuvermessung aus und stört den Auslauf
     document.documentElement.classList.add('wischt');
     bisRuhe(wischEnde);
@@ -516,8 +494,6 @@ function fensterZiel() {
             s = h && h.closest('section');
         }
     }
-    // beim Wischen bleibt die Hintergrundfläche bei der aktuellen Section, nur ohne Hover-Zustand (sonst flackert sie)
-    if (wischt && !document.body.classList.contains('tastatur')) { s = wischVorhersage(); heiss = false; }
     if (!s) { s = c.querySelector('section.aktuell'); heiss = false; }
     return s ? { sec: s, heiss: heiss } : null;
 }
@@ -608,19 +584,6 @@ function fensterSchritt(jetzt) {
     f.raf = t < 1 ? requestAnimationFrame(fensterSchritt) : 0;
 }
 
-// Touch: das Fenster jagt dem Ziel nach (Annäherung mit Zeitkonstante 70 ms). Wechselt das Ziel unterwegs, behält es Schwung und Lage,
-// statt wie bei der festen Dauer mit Geschwindigkeit 0 neu anzufahren (das gab Stufen, Schrumpfen und Wachsen beim Wischen).
-function fensterJagd(jetzt) {
-    var f = fenster, dt = Math.min(64, jetzt - (f.tl || jetzt));
-    f.tl = jetzt;
-    var k = 1 - Math.exp(-dt / 70);
-    var top = f.top + (f.nach.top - f.top) * k, bot = f.bot + (f.nach.bot - f.bot) * k;
-    var fertig = Math.abs(f.nach.top - top) < 0.5 && Math.abs(f.nach.bot - bot) < 0.5;
-    if (fertig) { top = f.nach.top; bot = f.nach.bot; }
-    fensterMalen(top, bot);
-    f.raf = fertig ? 0 : requestAnimationFrame(fensterJagd);
-}
-
 // sofort ans Ziel (Start, Layoutwechsel) oder gleitend
 function fensterZu(ziel, animiert) {
     var f = fenster;
@@ -630,20 +593,40 @@ function fensterZu(ziel, animiert) {
     // reduzierte Bewegung heißt kürzer, nicht keine
     var kurz = matchMedia('(prefers-reduced-motion: reduce)').matches;
     f.von = { top: f.top, bot: f.bot }; f.nach = nach;
-    if (istTouch() && !kurz) {
-        f.tl = performance.now();
-        f.raf = requestAnimationFrame(fensterJagd);
-        return;
-    }
     f.dauer = kurz ? masz['fenster-dauer-kurz'] : masz['fenster-dauer'];
     f.t0 = performance.now();
     f.raf = requestAnimationFrame(fensterSchritt);
+}
+
+// Touch: beim Scrollen ist das Fenster eine Funktion der Scrollposition. Zwischen zwei Section-Oberkanten geht es vom Rahmen der einen
+// zu dem der nächsten über (Oberkante = Scrollposition), am Einrastpunkt deckt es genau die Section. So läuft es mit dem Finger und dem
+// Auslauf, ohne eigene Zeit: kein Vorauseilen, Zurückbleiben oder Zucken bei Zielwechseln. Die letzte Section erreicht die Oberkante evtl. nie:
+// Ihr Übergang endet beim größten Scrollweg.
+function fensterScroll() {
+    var f = fenster, c = f.container, l = f.secs;
+    if (!l.length) return;
+    cancelAnimationFrame(f.raf); f.raf = 0;
+    f.ziel = null;   // danach neu bestimmen
+    var st = c.scrollTop, max = c.scrollHeight - c.clientHeight, i = 0;
+    while (i + 1 < l.length && l[i + 1].y <= st + 0.5) i++;
+    var a = l[i], top = a.y, bot = a.y + a.h;
+    if (i + 1 < l.length) {
+        var b = l[i + 1], ende = Math.min(b.y, max), p = ende > a.y ? Math.max(0, Math.min(1, (st - a.y) / (ende - a.y))) : 0;
+        top = a.y + (b.y - a.y) * p;
+        bot = a.y + a.h + (b.y + b.h - a.y - a.h) * p;
+    }
+    fensterMalen(top, bot);
 }
 
 function fensterSync() {
     var f = fenster;
     if (!f.container) return;
     ghostHeaderRender();
+    if (istTouch() && !document.body.classList.contains('tastatur') && (wischt || !sperre.sec)) {
+        f.container.querySelectorAll('section.heiss').forEach(function (s) { s.classList.remove('heiss'); });
+        fensterScroll();
+        return;
+    }
     var z = fensterZiel();
     f.container.querySelectorAll('section.heiss').forEach(function (s) {
         if (!z || s !== z.sec || !z.heiss) s.classList.remove('heiss');
