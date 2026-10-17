@@ -20,12 +20,13 @@ function applyPrefs() {
     dropdownBeschriften();
 }
 
-// Dropdown: Text-Modus das Wort „sec“, Icon-Modus nur ein dünner Chevron (styles.css, #section-jumper), nach oben, solange die Liste offen ist
+// Dropdown: Text-Modus das Wort „sec“, Icon-Modus der Font-Awesome-Chevron wie die anderen Nav-Icons, nach oben, solange die Liste offen ist
 function dropdownBeschriften(offen) {
-    if (offen !== undefined) document.getElementById('section-jumper').classList.toggle('offen', offen);
-    var icons = document.body.classList.contains('nav-icons');
+    var sel = document.getElementById('section-jumper');
+    if (offen !== undefined) sel.classList.toggle('offen', offen);
+    var icons = document.body.classList.contains('nav-icons'), auf = sel.classList.contains('offen');
     document.querySelectorAll('#section-jumper option').forEach(function (o) {
-        o.textContent = icons ? '' : 'sec';
+        o.textContent = icons ? (auf ? '\uf077' : '\uf078') : 'sec';
         o.title = o.dataset.titel;
     });
 }

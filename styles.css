@@ -1143,7 +1143,7 @@ body:not(.nav-icons) .settings-btn .secicon {
     display: none;
 }
 
-/* das Dropdown zeigt im Text-Modus das Wort „sec“, im Icon-Modus einen dünnen Chevron (zwei Diagonalen, 1,5 px, in der Schriftfarbe), mittig; nach oben, solange die Liste offen ist */
+/* das Dropdown zeigt im Text-Modus das Wort „sec“, im Icon-Modus einen Chevron (nach oben, solange die Liste offen ist) */
 #section-jumper {
     -webkit-appearance: none;
     appearance: none;
@@ -1160,20 +1160,11 @@ body:not(.nav-icons) .settings-btn .secicon {
     cursor: inherit;
 }
 
+/* Icon-Modus: der Chevron als Font-Awesome-Zeichen in der Größe der anderen Nav-Icons */
 body.nav-icons #section-jumper {
-    background-repeat: no-repeat;
-    background-size: .5rem .5rem;
-    background-position: calc(50% - .25rem) 50%, calc(50% + .25rem) 50%;
-    /* links „\“, rechts „/“ = V; offen umgekehrt = Λ */
-    background-image:
-        linear-gradient(to top right, transparent calc(50% - .75px), currentColor calc(50% - .75px), currentColor calc(50% + .75px), transparent calc(50% + .75px)),
-        linear-gradient(to top left, transparent calc(50% - .75px), currentColor calc(50% - .75px), currentColor calc(50% + .75px), transparent calc(50% + .75px));
-}
-
-body.nav-icons #section-jumper.offen {
-    background-image:
-        linear-gradient(to top left, transparent calc(50% - .75px), currentColor calc(50% - .75px), currentColor calc(50% + .75px), transparent calc(50% + .75px)),
-        linear-gradient(to top right, transparent calc(50% - .75px), currentColor calc(50% - .75px), currentColor calc(50% + .75px), transparent calc(50% + .75px));
+    font-family: "Font Awesome 6 Free", sans-serif;
+    font-weight: 900;
+    font-size: 1.5625rem;
 }
 
 /* Squircle wie Apples App-Icons: Superellipse |x|^5 + |y|^5 = 1 (n ≈ 5; ein mathematisches Squircle hat n = 4).
