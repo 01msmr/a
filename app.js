@@ -332,10 +332,33 @@ var fenster = {
     von: null, nach: null, t0: 0, dauer: 0, raf: 0, obs: []
 };
 
+// Nach dem Klick auf einen Titel scrollt die Section nach oben, und der ruhende Zeiger liegt danach über einer anderen.
+// Bis zur nächsten echten Mausbewegung (mehr als 4 px), einem Tastendruck oder einem anderen Klick bleibt die angeklickte Section das Ziel.
+var sperre = { sec: null, x: 0, y: 0 };
+
+function sperreAus() {
+    if (!sperre.sec) return;
+    sperre.sec = null;
+    fensterSync();
+}
+
+document.addEventListener('click', function (e) {
+    var titel = e.button === 0 && !document.body.classList.contains('edit-mode') && e.target.closest && e.target.closest('#container .name a');
+    if (!titel) { sperreAus(); return; }
+    sperre.sec = titel.closest('section');
+    sperre.x = e.clientX; sperre.y = e.clientY;
+}, true);
+document.addEventListener('mousemove', function (e) {
+    if (sperre.sec && Math.hypot(e.clientX - sperre.x, e.clientY - sperre.y) > 4) sperreAus();
+}, { passive: true });
+document.addEventListener('keydown', sperreAus);
+
 function fensterZiel() {
     var c = fenster.container, s = null, heiss = true;
     if (document.body.classList.contains('tastatur')) {
         s = c.querySelector('section:focus-visible') || c.querySelector('section:has(:focus-visible)');
+    } else if (sperre.sec) {
+        s = sperre.sec;
     } else {
         s = c.querySelector('section:hover');
         if (!s) {
@@ -481,6 +504,7 @@ function fensterInit() {
     f.obs = [];
     cancelAnimationFrame(f.raf); f.raf = 0;
     geistZuruecksetzen();
+    sperre.sec = null;
     f.container = c; f.zeilen = []; f.secs = []; f.sig = ''; f.ziel = null; f.top = f.bot = 0;
     fensterMessen();
     fensterSync();
@@ -881,6 +905,8 @@ var strich = { el: null, pfeil: null, secEl: null, x: 0, y: 0, ziel: null, raf: 
 function strichZiel(t) {
     if (!t || !t.closest || document.body.classList.contains('edit-mode')) return null;
     var z = { sec: t.closest('#container section'), fest: null, hide: false, kopf: !!t.closest('#container .name') };
+    // gesperrt: liegt der Zeiger nicht in der angeklickten Section, zeigt er keinen Section-Strich und keinen Titel-Chevron
+    if (sperre.sec && z.sec !== sperre.sec) { z.sec = null; z.kopf = false; }
     if (t.closest('li a')) { z.hide = true; z.sec = null; }   // Kachel: nur ihr eigener Strich
     else {
         // Kachelrand (kein Hintergrund erkennen) bzw. Nav-Chip: Strich in der Höhe der Zeile
