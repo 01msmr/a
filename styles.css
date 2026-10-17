@@ -261,7 +261,8 @@ section a {
 }
 
 a.secname,
-.settings-btn {
+.settings-btn,
+#section-jumper {
     box-sizing: border-box;
     /* volle Höhe der Leiste, volle Breite: die Chips teilen sich den Platz */
     align-self: stretch;
@@ -633,15 +634,6 @@ li.tot::after {
     background: #c00;
     pointer-events: none;
     z-index: 2;
-}
-
-.title select {
-    background-color: transparent;
-    border: 1px solid var(--text-col);
-    color: var(--title-dom);
-    border-radius: 5px;
-    font-family: inherit;
-    font-size: 0.8em;
 }
 
 /* iPad */
@@ -1145,9 +1137,19 @@ body:not(.nav-icons) .settings-btn .secicon {
 
 /* das Dropdown zeigt einen Font-Awesome-Chevron */
 #section-jumper {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 3rem;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
     font-family: "Font Awesome 6 Free", sans-serif;
     font-weight: 900;
-    color: var(--sect-col);   /* wie die Icons der Leiste; --title-dom ist heller */
+    font-size: 1.5625rem;
+    text-align: center;
+    text-align-last: center;
+    cursor: inherit;
 }
 
 /* Squircle wie Apples App-Icons: Superellipse |x|^5 + |y|^5 = 1 (n ≈ 5; ein mathematisches Squircle hat n = 4).
@@ -1382,7 +1384,9 @@ body.edit-mode #container {
 }
 
 body:not(.tastatur) .settings-btn:hover,
-.settings-btn:focus-visible {
+.settings-btn:focus-visible,
+body:not(.tastatur) #section-jumper:hover,
+#section-jumper:focus-visible {
     color: var(--title-col);
     background-color: color-mix(in srgb, var(--sect-col) 15%, transparent);
     outline: none;
