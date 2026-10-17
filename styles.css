@@ -56,8 +56,8 @@ html[data-zoom="m"] {
     --text-l-max: .64;
     --curs-img: url(c-point-light.png);
     --curs-sec: url(c-point.png);   /* Quadrat in der Section: weiß, im Dunkeln invertiert */
-    --curs-auf: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='34' height='34'%3E%3Cpath d='M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z' fill='white' stroke='rgba(0,0,0,.45)' stroke-width='30' paint-order='stroke'/%3E%3C/svg%3E") 17 17, auto;
-    --curs-ab: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='34' height='34'%3E%3Cpath d='M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z' fill='white' stroke='rgba(0,0,0,.45)' stroke-width='30' paint-order='stroke'/%3E%3C/svg%3E") 17 17, auto;
+    --curs-auf: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='25' height='25'%3E%3Cpath d='M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z' fill='white' stroke='rgba(0,0,0,.45)' stroke-width='30' paint-order='stroke'/%3E%3C/svg%3E") 12 12, auto;
+    --curs-ab: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='25' height='25'%3E%3Cpath d='M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z' fill='white' stroke='rgba(0,0,0,.45)' stroke-width='30' paint-order='stroke'/%3E%3C/svg%3E") 12 12, auto;
     --curs-hov: url(c-line-light.png);
 }
 
@@ -81,8 +81,8 @@ html[data-zoom="m"] {
     --text-l-max: 1;
     --curs-img: url(c-point.png);
     --curs-sec: url(c-point-light.png);
-    --curs-auf: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='34' height='34'%3E%3Cpath d='M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z' fill='%23111' stroke='rgba(255,255,255,.45)' stroke-width='30' paint-order='stroke'/%3E%3C/svg%3E") 17 17, auto;
-    --curs-ab: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='34' height='34'%3E%3Cpath d='M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z' fill='%23111' stroke='rgba(255,255,255,.45)' stroke-width='30' paint-order='stroke'/%3E%3C/svg%3E") 17 17, auto;
+    --curs-auf: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='25' height='25'%3E%3Cpath d='M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z' fill='%23111' stroke='rgba(255,255,255,.45)' stroke-width='30' paint-order='stroke'/%3E%3C/svg%3E") 12 12, auto;
+    --curs-ab: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='25' height='25'%3E%3Cpath d='M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z' fill='%23111' stroke='rgba(255,255,255,.45)' stroke-width='30' paint-order='stroke'/%3E%3C/svg%3E") 12 12, auto;
     --curs-hov: url(c-line.png);
 }
 
@@ -1291,6 +1291,22 @@ body:not(.view-grid) #kachel-licht {
     --hl: 1;
     border-radius: .35em;
     background-image: linear-gradient(rgba(255, 255, 255, calc(.46 * var(--hl) * var(--glanz))), rgba(255, 255, 255, calc(.12 * var(--hl) * var(--glanz))) 36%, rgba(255, 255, 255, 0) 38%, rgba(0, 0, 0, calc(.2 * var(--hl) * var(--glanz))));
+}
+
+/* ── Sections umsortieren (Edit-Mode, app.js: sectionsSortierbar) ── */
+.sec-griff {
+    cursor: grab;
+    margin-right: .5em;
+    opacity: .6;
+    user-select: none;
+}
+
+.sec-griff:hover {
+    opacity: 1;
+}
+
+section.sec-dragging {
+    opacity: .4;
 }
 
 /* ── Bearbeiten ──────────────────────────────────────────────────── */

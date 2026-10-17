@@ -223,6 +223,7 @@ function render(data) {
             ul.appendChild(li);
         });
 
+        section.dataset.pos0 = idx;   // Ausgangsposition der Section für den Vergleich beim Speichern
         section.appendChild(h3);
         section.appendChild(ul);
         container.appendChild(section);
@@ -1615,6 +1616,7 @@ function linksFreigeben() {
         if (li.querySelector('a') && !li.querySelector('.edit-url')) felderAnlegen(li);
     });
 
+    if (ziehbar()) sectionsSortierbar();
     document.querySelectorAll('ul.group').forEach(function (ul) {
         if (ziehbar()) sortierbar(ul);
         if (ul.querySelector('.btn-add')) return;
@@ -1748,6 +1750,52 @@ function sortierbar(ul) {
     ul.addEventListener('drop', function (e) { e.preventDefault(); });
 }
 
+// Sections untereinander umsortieren (wie in der Ansicht: senkrecht): Griff am Titel, Ziehen über eine andere Section
+// verschiebt die gezogene davor oder dahinter, je nach Zeigerhälfte. Die Reihenfolge im DOM wird gespeichert (collectData).
+var gezogeneSection = null;
+
+function sectionsSortierbar() {
+    var c = document.getElementById('container');
+    if (c.dataset.secSortierbar) return;
+    c.dataset.secSortierbar = '1';
+    c.querySelectorAll('section').forEach(function (sec) {
+        var h3 = sec.querySelector('h3.name');
+        if (!h3) return;
+        var griff = document.createElement('span');
+        griff.className = 'sec-griff';
+        griff.textContent = '⠿';
+        griff.title = 'Section verschieben';
+        h3.insertBefore(griff, h3.firstChild);
+        // erst mit dem Griff wird die Section ziehbar, sonst zöge jeder Klick im Inhalt sie mit
+        griff.addEventListener('mousedown', function () { sec.draggable = true; });
+        sec.addEventListener('dragstart', function (e) {
+            if (e.target !== sec) return;   // Kachel-Züge steigen hier nur auf
+            gezogeneSection = sec;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', '');   // Firefox startet sonst keinen Zug
+            e.dataTransfer.setDragImage(h3, 16, 16);   // nur der Titel fliegt mit, nicht die ganze Section
+            setTimeout(function () { if (gezogeneSection === sec) sec.classList.add('sec-dragging'); });
+        });
+        sec.addEventListener('dragend', function (e) {
+            if (e.target !== sec) return;
+            sec.draggable = false;
+            sec.classList.remove('sec-dragging');
+            gezogeneSection = null;
+        });
+    });
+    c.addEventListener('dragover', function (e) {
+        if (!gezogeneSection) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        var ziel = e.target.closest && e.target.closest('#container section');
+        if (!ziel || ziel === gezogeneSection) return;
+        var r = ziel.getBoundingClientRect();
+        var vor = e.clientY < r.top + r.height / 2 ? ziel : ziel.nextElementSibling;
+        if (vor !== gezogeneSection && vor !== gezogeneSection.nextElementSibling) c.insertBefore(gezogeneSection, vor);
+    });
+    c.addEventListener('drop', function (e) { if (gezogeneSection) e.preventDefault(); });
+}
+
 // ── Collect & Save ────────────────────────────────────────────────
 function collectData() {
     var data = [];
@@ -1819,6 +1867,15 @@ function aenderungen() {
         var titel = section.querySelector('h3.name a');
         if (umgestellt) verschoben.push('· ' + (titel ? titel.textContent : ''));
     });
+
+    // Reihenfolge der Sections selbst: die Ausgangspositionen steigen nicht mehr an
+    var letzteSec = -1, secUmgestellt = false;
+    document.querySelectorAll('#container section').forEach(function (section) {
+        if (section.dataset.pos0 === undefined) return;
+        if (+section.dataset.pos0 < letzteSec) secUmgestellt = true;
+        letzteSec = +section.dataset.pos0;
+    });
+    if (secUmgestellt) verschoben.push('· Reihenfolge der Sections');
 
     return { geloescht: geloescht, geaendert: geaendert, verschoben: verschoben, neu: neu };
 }

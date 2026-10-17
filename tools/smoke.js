@@ -63,6 +63,23 @@ const dann = (fn, ms) => new Promise(r => setTimeout(() => { fn(); r(); }, ms));
     }, 0);
     // Edit-Mode einschalten und die Beobachter (Microtasks) laufen lassen: hier hing die Seite einmal
     await dann(() => { d.body.classList.add('edit-mode'); w.raster(); w.linksFreigeben(); w.settingsAnzeige(); }, 0);
+    // Sections umsortieren: Griff am Titel, Ziehen über die zweite Section setzt die erste dahinter, der Vergleich meldet es
+    await dann(() => {
+        const secs = () => [...d.querySelectorAll('#container section')].map(s => s.querySelector('h3.name').id);
+        const vorher = secs(), erste = d.querySelector('#container section');
+        prüfe(d.querySelectorAll('.sec-griff').length === vorher.length, 'nicht in jeder Section ein Griff');
+        const dt = { setData() { }, setDragImage() { } };
+        const dragEv = (typ, o) => { const e = new w.Event(typ, Object.assign({ bubbles: true, cancelable: true }, o)); e.dataTransfer = dt; e.clientY = 5; return e; };
+        erste.querySelector('.sec-griff').dispatchEvent(ev('mousedown'));
+        prüfe(erste.draggable === true, 'Section nicht ziehbar nach Griff');
+        erste.dispatchEvent(dragEv('dragstart'));
+        d.querySelectorAll('#container section')[1].dispatchEvent(dragEv('dragover'));
+        const nachher = secs();
+        prüfe(nachher[0] === vorher[1] && nachher[1] === vorher[0], 'Reihenfolge nicht umgestellt');
+        erste.dispatchEvent(dragEv('dragend'));
+        prüfe(erste.draggable === false, 'Section bleibt ziehbar nach dem Zug');
+        prüfe(w.aenderungsText().includes('Reihenfolge der Sections'), 'Umstellung nicht im Änderungstext');
+    }, 0);
     await dann(() => {
         d.querySelector('a.secname').dispatchEvent(ev('pointerdown'));
         prüfe(!d.body.classList.contains('gesperrt'), 'Sperre im Edit-Mode');
