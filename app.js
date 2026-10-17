@@ -652,7 +652,7 @@ function geistSprung(sec) {
 
 function geistSection() {
     var c = fenster.container;
-    var h = c && c.querySelector('.name.mit-hover:not(.active)');
+    var h = c && !document.body.classList.contains('tastatur') && c.querySelector('.name.mit-hover:not(.active)');
     return (h && h.closest('section')) || geist.sprung;
 }
 
@@ -991,7 +991,7 @@ window.addEventListener('resize', function () {
 var strich = { el: null, secEl: null, x: 0, y: 0, ziel: null, raf: 0, an: false };
 
 function strichZiel(t) {
-    if (!t || !t.closest || document.body.classList.contains('edit-mode')) return null;
+    if (!t || !t.closest || document.body.classList.contains('edit-mode') || document.body.classList.contains('tastatur')) return null;   // Tastatur: ruhender Zeiger zählt nicht
     var z = { sec: t.closest('#container section'), fest: null, hide: false, kopf: !!t.closest('#container .name') };
     // gesperrt: auf Nav-Chips und außerhalb der angeklickten Section der normale Punkt-Zeiger, bis die Maus sich bewegt
     if (sperre.sec && (t.closest('a.secname') || z.sec !== sperre.sec)) return { sec: null, fest: null, hide: false, kopf: false, std: true };
@@ -1592,7 +1592,10 @@ document.addEventListener('keydown', function (e) {
 
 // ── Maus oder Tastatur: nur das zuletzt benutzte Gerät hebt eine Kachel hervor ──
 document.addEventListener('keydown', function (e) {
-    if (e.key === 'Tab' || e.key.indexOf('Arrow') === 0) document.body.classList.add('tastatur');
+    if (e.key === 'Tab' || e.key.indexOf('Arrow') === 0) {
+        document.body.classList.add('tastatur');
+        if (strich.el) strichPlanen();   // Strich/Chevron unter dem ruhenden Zeiger ausblenden
+    }
 });
 document.addEventListener('mousemove', function (e) {
     document.body.classList.remove('tastatur');
