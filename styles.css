@@ -1804,6 +1804,6 @@ html.wischt a.sec-btn:not(.active) {
 
 /* Touch: weder Tap-Aufhellung noch Druck-Zustand beim Berühren (ein Wisch darf nichts zeigen) */
 a.sec-btn,
-#container section .name a {
+#container section a {
     -webkit-tap-highlight-color: transparent;
 }
