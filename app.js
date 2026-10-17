@@ -801,11 +801,10 @@ function ghostHeaderRender() {
         clearTimeout(ghostHeader.followTimer);
         ghostHeader.followTimer = setTimeout(ghostHeaderRender, ghostHeader.free - performance.now() + 10);
     }
-    var curve = 'transform ' + ghostHeaderDuration() + 'ms cubic-bezier(.55, .085, .68, .19)';
-    // hinaus: ease-out (schnell am Anfang, langsam am Ende), herein: ease-in
-    var curveOut = 'transform ' + ghostHeaderDuration() + 'ms cubic-bezier(.215, .61, .355, 1)';
+    // ein- und hinausgleiten: ease-out (schnell am Anfang, langsam am Ende)
+    var curve = 'transform ' + ghostHeaderDuration() + 'ms cubic-bezier(.215, .61, .355, 1)';
     function slideOut(g) {   // gleitet samt Schatten und Linie hinaus und wird danach entfernt
-        g.el.style.transition = curveOut;
+        g.el.style.transition = curve;
         g.el.style.transform = ghostHeaderOffscreen(g.edge);
         ghostHeader.leaving.push(g);
     }
