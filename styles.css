@@ -1139,6 +1139,7 @@ body:not(.nav-icons) .settings-btn .secicon {
 #section-jumper {
     -webkit-appearance: none;
     appearance: none;
+    flex: 0 0 auto;   /* wächst nicht mit den Chips */
     width: 3rem;
     margin: 0;
     padding: 0;
