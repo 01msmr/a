@@ -249,6 +249,11 @@ function render(data) {
         titleLink.appendChild(document.createTextNode(sec.title));
         h3.appendChild(titleLink);
         koppleHover([chipOf[sec.id], eintragOf[sec.id], h3]);
+        // die Maus irgendwo in der Section (Titel, Hintergrund, Kachel): ihr Chip zeigt die weiche Hover-Fläche (nur Maus)
+        (function (chip) {
+            section.addEventListener('pointerenter', function (ev) { if (ev.pointerType === 'mouse') chip.classList.add('sec-hover'); });
+            section.addEventListener('pointerleave', function () { chip.classList.remove('sec-hover'); });
+        })(chipOf[sec.id]);
 
         var ul = document.createElement('ul');
         ul.className = 'group';
@@ -315,15 +320,9 @@ function trackActiveSection() {
                 aktiv = h3;
             }
         });
-        // Maus zuletzt benutzt und über einer Section (nicht über einem Titel): deren Chip leuchtet, sonst die oberste.
-        // Über dem Titel einer nicht aktiven Section bleibt der aktive Chip aktiv, und ihr Chip zeigt die weiche Hover-Fläche (.mit-hover, koppleHover)
+        // Der aktive Chip folgt nur der Scrollposition, nie der Maus: über einer Section, einem Titel oder einer Kachel zeigt ihr Chip
+        // die weiche Hover-Fläche (.sec-hover bzw. .mit-hover), der aktive Chip bleibt unverändert
         var nav = active;
-        if (mausPos && !document.body.classList.contains('tastatur') && !istTouch()) {
-            var unterMaus = document.elementFromPoint(mausPos.x, mausPos.y);
-            var sec = unterMaus && unterMaus.closest && unterMaus.closest('#container section');
-            var kopf = sec && sec.querySelector('h3.name');
-            if (kopf && !unterMaus.closest('.name')) nav = '#' + kopf.id;
-        }
         // nach dem Klick auf Titel oder Chip bleibt dessen Chip aktiv, bis Maus oder Tastatur sich rühren
         var gesperrt = sperre.sec && !document.body.classList.contains('tastatur') && sperre.sec.querySelector('h3.name');
         if (gesperrt) nav = '#' + gesperrt.id;
@@ -343,17 +342,6 @@ function trackActiveSection() {
         jumpTarget = null;   // Scrollen zur Ruhe gekommen
     };
 
-    // Chip folgt der Maus; Verlassen des Inhalts (Leiste, Rand) → wieder die oberste Section
-    var mausPos = null, wartet = false;
-    container.addEventListener('mousemove', function (e) {
-        mausPos = { x: e.clientX, y: e.clientY };
-        // nach dem Umschalten auf Maus (document-Handler läuft nach diesem)
-        if (!wartet) { wartet = true; setTimeout(function () { wartet = false; syncActive(); }); }
-    });
-    container.addEventListener('mouseleave', function () {
-        mausPos = null;
-        syncActive();
-    });
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Tab' || e.key.indexOf('Arrow') === 0) setTimeout(syncActive);
     });
