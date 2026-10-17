@@ -389,6 +389,8 @@ function istTouch() { return zeigerArt !== 'mouse'; }
 function zeigerArtSetzen(art) {
     zeigerArt = art;
     document.body.classList.toggle('touch', art !== 'mouse');
+    // Touch hat keinen Zeiger: das Kachel-Licht darf nicht an der Berührungsstelle auf dem Bildschirm hängenbleiben, während darunter gescrollt wird
+    if (art !== 'mouse') { lichtMaus = null; mausPunkt = null; lichtHart(); }
 }
 
 // Nach dem Klick auf einen Titel, Nav-Chip oder Listeneintrag scrollt die Section nach oben, und der ruhende Zeiger liegt danach über einer anderen.
@@ -604,12 +606,12 @@ function fensterScroll() {
         top = a.y + (b.y - a.y) * p;
         bot = a.y + a.h + (b.y + b.h - a.y - a.h) * p;
     }
-    // Übergang vom Tap-Ziel (oder einer Animation) in die Kopplung: der Abstand zum Rahmen der Scrollposition klingt ab (Zeitkonstante 110 ms),
+    // Übergang vom Tap-Ziel (oder einer Animation) in die Kopplung: der Abstand zum Rahmen der Scrollposition klingt in 280 ms ab (Smoothstep),
     // statt dass das Fenster dorthin springt (das ließ die Unterkante nach dem Tippen und Scrollen ruckeln)
     var jetzt = performance.now();
     if (!f.imScroll) { f.imScroll = true; f.versatz = { top: f.top - top, bot: f.bot - bot, t0: jetzt }; }
-    var v = f.versatz, k = v ? Math.exp(-(jetzt - v.t0) / 110) : 0;
-    if (v && Math.abs(v.top) * k < 0.5 && Math.abs(v.bot) * k < 0.5) { f.versatz = v = null; k = 0; }
+    var v = f.versatz, t = v ? Math.min(1, (jetzt - v.t0) / 280) : 1, k = v ? 1 - t * t * (3 - 2 * t) : 0;   // Smoothstep: ohne Ruck am Anfang und am Ende
+    if (v && t >= 1) { f.versatz = v = null; k = 0; }
     fensterMalen(top + (v ? v.top * k : 0), bot + (v ? v.bot * k : 0));
     if (v) f.raf = requestAnimationFrame(fensterScroll);   // weiter abklingen, auch wenn das Scrollen kurz ruht
 }
@@ -1145,7 +1147,7 @@ function lichtInit() {
 }
 
 document.addEventListener('mouseover', function (e) {
-    if (document.body.classList.contains('tastatur')) return;
+    if (document.body.classList.contains('tastatur') || istTouch()) return;   // Touch: von iOS nachgeschobene Mausereignisse zählen nicht
     var li = e.target.closest && e.target.closest('#container li');
     if (li) lichtZu(li, e.clientX, e.clientY); else lichtAus({ x: e.clientX, y: e.clientY });
 });
@@ -1159,7 +1161,7 @@ document.documentElement.addEventListener('mouseleave', function (e) {
 var lichtMaus = null, lichtPlanRaf = 0;
 function lichtSync() {
     lichtPlanRaf = 0;
-    if (!lichtMaus || document.body.classList.contains('tastatur')) return;
+    if (!lichtMaus || document.body.classList.contains('tastatur') || istTouch()) return;
     if (sperre.sec) { lichtHart(); return; }
     var t = document.elementFromPoint(lichtMaus.x, lichtMaus.y);
     var li = t && t.closest && t.closest('#container li');
@@ -1167,6 +1169,7 @@ function lichtSync() {
 }
 function lichtPlan() { if (!lichtPlanRaf) lichtPlanRaf = requestAnimationFrame(lichtSync); }
 document.addEventListener('mousemove', function (e) {
+    if (istTouch()) return;
     lichtMaus = { x: e.clientX, y: e.clientY };
     if (licht.modus === 'ein' && licht.tile) lichtStrich(licht.tile, e.clientX);
     lichtPlan();
@@ -1809,6 +1812,7 @@ document.addEventListener('keydown', function (e) {
     }
 });
 document.addEventListener('mousemove', function (e) {
+    if (istTouch()) return;
     document.body.classList.remove('tastatur');
     mausPunkt = { x: e.clientX, y: e.clientY };
     mausBewegt = true;
