@@ -145,7 +145,8 @@ Liegt der Titel der Ziel-Section (Nav-Chip unter der Maus oder Sprung nach Klick
 Pfeiltasten) außerhalb der Ansicht, klebt eine Kopie (`#geist-ebene`, `geistRender`) am oberen
 bzw. unteren Rand, bis der echte Titel dort ankommt und weiterläuft; sie bleibt, bis das Fenster
 die Titelzeile ganz deckt, und blendet dann 60 ms aus. Ein neues Ziel gleitet über die vorige
-Kopie: diese wird grau und wirft keinen Schatten mehr. Die Kopie wirft einen weichen Schatten von
+Kopie (oben, wenn es weiter vorn liegt; am unteren Rand, wenn es weiter hinten liegt): diese wird grau und wirft
+keinen Schatten mehr. Im umgekehrten Fall weicht die vorige Kopie zurück und die neue liegt darunter. Die Kopie wirft einen weichen Schatten von
 66 % einer Kachelhöhe auf den Inhalt. Nach einem Klick läuft er aus, je näher der echte Titel
 seiner Stelle kommt. Im Edit-Mode gibt es keine Kopie.
 
@@ -171,7 +172,7 @@ Inhalt, das Licht scrollt mit und folgt bei Bewegung und Scrollen der Kachel unt
   (SVG-Data-URI, 25 px, je Thema in `--curs-auf` und `--curs-ab`; `app.js` setzt nur
   `data-pfeil` auf `html`), also immer über allem, auch über Popovers.
 - In Feldern, Dropdown-Liste, Einstellungen und im Edit-Mode bleibt der Systemzeiger; Touch bleibt ohne Zeiger.
-- Im Titel zeigt nur der Chevron die Position (kein Section-Strich); bei Tastaturnavigation (`body.tastatur`) bleiben Strich, Chevron und Geist-Titel unter dem ruhenden Mauszeiger aus.
+- Im Titel zeigt nur der Chevron die Position (kein Section-Strich); im obersten, aktiven Titel gelten stattdessen Punkt und Strich; bei Tastaturnavigation (`body.tastatur`) bleiben Strich, Chevron und Geist-Titel unter dem ruhenden Mauszeiger aus.
 
 ### Nav und Sections-Dropdown
 

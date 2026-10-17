@@ -19,8 +19,9 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 - **Fehler behoben:** Die Wisch-Klasse lag am `body`; deren Klassenwechsel löste die Neuvermessung (`layout()`) aus und störte den Scroll-Auslauf. Jetzt am `html`.
 - iPhone hochkant: kein `scroll-snap-stop: always`, ein Wisch darf mehrere Sections überspringen; gerastet wird am Ende.
 
-**Zeiger und Tastatur**
-- Im Titel nur der Chevron, kein schwacher Section-Strich; der Strich bleibt in der Section.
+**Zeiger, Tastatur und Geist-Titel**
+- Im Titel nur der Chevron, kein schwacher Section-Strich; der Strich bleibt in der Section. Im obersten (aktiven) Titel gelten Punkt und Strich, kein Chevron.
+- Geist-Titel überlagern sich nach Reihenfolge: oben weicht die vorige zurück und die neue liegt darunter, wenn das Ziel weiter hinten liegt (weiter vorn: die neue gleitet darüber); am unteren Rand umgekehrt.
 - Bei Tastaturnavigation löst ein ruhender Mauszeiger über Nav-Chips oder Titeln weder Strich/Chevron noch Geist-Titel aus.
 
 ---
