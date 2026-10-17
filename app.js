@@ -447,7 +447,23 @@ document.addEventListener('pointermove', function (e) {
     if (e.pointerType === 'mouse' && document.body.classList.contains('touch')) { letzterZeiger = 'mouse'; document.body.classList.remove('touch'); }
 }, true);
 
+// Wischbeginn: das Fenster geht sofort zur nächsten Section in Wischrichtung, nicht erst beim Einrasten
+var wischVon = null, wischVor = null, wischTop = 0;
+function wischStart() {
+    var c = fenster.container;
+    if (!c) return;
+    var d = c.scrollTop - wischTop, cur = c.querySelector('section.aktuell');
+    wischVon = cur;
+    wischVor = null;
+    if (!cur || Math.abs(d) < 1) return;
+    var l = Array.prototype.slice.call(c.querySelectorAll('section')), i = l.indexOf(cur);
+    wischVor = l[i + (d > 0 ? 1 : -1)] || null;
+}
+document.addEventListener('pointerdown', function (e) { if (e.pointerType !== 'mouse' && fenster.container) wischTop = fenster.container.scrollTop; }, true);
+
 function wischEnde() {
+    wischVon = wischVor = null;
+    if (fenster.container) wischTop = fenster.container.scrollTop;
     wischt = false;
     document.documentElement.classList.remove('wischt');
     fensterSync();
@@ -457,7 +473,7 @@ document.addEventListener('scrollend', function () { if (wischt) { clearTimeout(
 document.addEventListener('touchmove', function () { if (sperre.sec) sperreAus(); }, { passive: true });
 document.addEventListener('scroll', function () {
     if (letzterZeiger === 'mouse' || document.body.classList.contains('gesperrt')) return;
-    wischt = true;
+    if (!wischt) { wischt = true; wischStart(); fensterSync(); }
     document.documentElement.classList.add('wischt')   // nicht am body: dessen Klassenwechsel löst eine Neuvermessung aus und stört den Auslauf;
     clearTimeout(wischT);
     bisRuhe(wischEnde);
@@ -478,7 +494,7 @@ function fensterZiel() {
         }
     }
     // beim Wischen bleibt die Hintergrundfläche bei der aktuellen Section, nur ohne Hover-Zustand (sonst flackert sie)
-    if (wischt && !document.body.classList.contains('tastatur')) { s = null; }
+    if (wischt && !document.body.classList.contains('tastatur')) { s = wischVor && c.querySelector('section.aktuell') === wischVon ? wischVor : null; heiss = false; }
     if (!s) { s = c.querySelector('section.aktuell'); heiss = false; }
     return s ? { sec: s, heiss: heiss } : null;
 }
