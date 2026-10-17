@@ -845,11 +845,17 @@ function ghostHeaderRender() {
         return;
     }
     ghostHeader.free = jetzt + ghostHeaderDuration();
-    // anderer Rand: die bisherigen Kopien gleiten hinaus, der Stapel beginnt neu
-    if (cur && cur.edge !== edge) {
-        ghostHeader.stack.forEach(slideOut);
-        ghostHeader.stack = []; cur = ghostHeader.cur = null;
+    // Erst muss der ganze Stapel davor hinaus sein, dann erscheint die Kopie des Ziels (Schritt 2 folgt nach dem Hinausgleiten)
+    function erstHinaus(liste) {
+        liste.forEach(slideOut);
+        ghostHeader.stack = ghostHeader.stack.filter(function (g) { return liste.indexOf(g) < 0; });
+        ghostHeader.cur = ghostHeader.stack[ghostHeader.stack.length - 1] || null;
+        scheduleRemoval();
+        clearTimeout(ghostHeader.followTimer);
+        ghostHeader.followTimer = setTimeout(ghostHeaderRender, ghostHeader.free - performance.now() + 10);
     }
+    // anderer Rand: die bisherigen Kopien gleiten hinaus, der Stapel beginnt neu
+    if (cur && cur.edge !== edge) { erstHinaus(ghostHeader.stack.slice()); return; }
     // das Ziel liegt schon im Stapel: die Kopien darüber gleiten hinaus, sie ist wieder frei
     var pos = ghostHeader.stack.findIndex(function (g) { return g.sec === sec; });
     if (pos >= 0) {
@@ -861,6 +867,10 @@ function ghostHeaderRender() {
         scheduleRemoval();
         return;
     }
+    // Kopien früherer (oben) bzw. späterer (unten) Sections als das Ziel gleiten zuerst hinaus, die übrigen bleiben darunter
+    var idx = ghostHeaderIndex(sec);
+    var receding = ghostHeader.stack.filter(function (g) { return edge === 'top' ? ghostHeaderIndex(g.sec) < idx : ghostHeaderIndex(g.sec) > idx; });
+    if (receding.length) { erstHinaus(receding); return; }
     // neue Kopie über die vorige
     var el = document.createElement('div');
     el.className = 'ghost-header ' + edge;
@@ -873,24 +883,19 @@ function ghostHeaderRender() {
     klon.querySelectorAll('a').forEach(function (a) { a.tabIndex = -1; });
     el.appendChild(klon);
     el.style.top = (edge === 'top' ? 0 : hoch - hoehe) + 'px';
-    // Kopien früherer (oben) bzw. späterer (unten) Sections als das Ziel gleiten hinaus, die übrigen bleiben darunter
-    var idx = ghostHeaderIndex(sec);
-    var receding = ghostHeader.stack.filter(function (g) { return edge === 'top' ? ghostHeaderIndex(g.sec) < idx : ghostHeaderIndex(g.sec) > idx; });
-    ghostHeader.stack = ghostHeader.stack.filter(function (g) { return receding.indexOf(g) < 0; });
     // darunter: kein zweiter Schatten und keine zweite Linie (sonst wird es immer dunkler); erst wenn die neue Kopie da ist, damit keine Lücke entsteht
     var beneath = ghostHeader.stack.slice();
     clearTimeout(ghostHeader.underTimer);
     ghostHeader.underTimer = setTimeout(function () {
         beneath.forEach(function (g) { if (g !== ghostHeader.cur && ghostHeader.stack.indexOf(g) >= 0) g.el.classList.add('under'); });
     }, ghostHeaderDuration());
-    // die neue Kopie gleitet immer ein, samt Schatten und Linie; weichende liegen darüber
+    // die neue Kopie gleitet ein, samt Schatten und Linie
     el.style.transform = ghostHeaderOffscreen(edge);
-    if (receding.length) ebene.insertBefore(el, receding[0].el); else ebene.appendChild(el);
+    ebene.appendChild(el);
     el.getBoundingClientRect();   // Ausgangslage festschreiben
     // beschleunigt und endet hart, wie das Fenster
     el.style.transition = curve + ', filter ' + ghostHeaderDuration() + 'ms linear';
     el.style.transform = 'none';
-    receding.forEach(slideOut);
     var neu = { sec: sec, el: el, edge: edge };
     ghostHeader.stack.push(neu);
     ghostHeader.cur = neu;
