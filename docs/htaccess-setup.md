@@ -51,7 +51,7 @@ If saving shows "Not signed in — open /edit/ once directly in the browser and 
 
 ## URL check (dead links)
 
-`https://a.msmr.co/edit/check.php` checks all URLs in `edit/links.json` and reports which ones are dead (404/410 or domain gone), unclear (401, 403, 429, 5xx: bot blocks and server moods) or skipped (own network, all IP addresses and the hosts in `never-dead.json`). Without parameters it only reports; `?write=1` writes `"dead": true` to the dead ones (and removes old marks) and saves the previous version as `links.bak.json`. It sits behind the same basic auth as `save.php`.
+`https://a.msmr.co/edit/check.php` checks all URLs in `edit/links.json` and reports which ones are dead (404/410 or domain gone), unclear (401, 403, 429, 5xx: bot blocks and server moods) or skipped (own network, all IP addresses and the hosts in `never-dead.json`). Without parameters it only reports; `?write=1` writes `"dead": true` to the dead ones (and removes old marks) and saves the previous version as `links.bak.json`. It sits behind the same basic auth as `save.php`. It checks in parallel batches and prints its progress while it runs; a full run takes about a minute and a half. After the rename from `tot` to `dead` the page ignores old `"tot"` marks, so run it once with `?write=1`.
 
 ## Changing the password
 

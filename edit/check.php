@@ -52,22 +52,29 @@ foreach ($data as $si => $sec) {
     }
 }
 
-function checkBatch($batch, $UA)
+// Checks a batch of entries in parallel. HEAD first; with $get = true a GET that stops after the first bytes.
+function checkBatch($batch, $UA, $get = false)
 {
     $mh = curl_multi_init();
     $handles = [];
     foreach ($batch as $i => $e) {
         $ch = curl_init($e['url']);
-        curl_setopt_array($ch, [
-            CURLOPT_NOBODY => true,          // HEAD first
+        $opts = [
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS => 5,
-            CURLOPT_TIMEOUT => 15,
-            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_TIMEOUT => 12,
+            CURLOPT_CONNECTTIMEOUT => 6,
             CURLOPT_USERAGENT => $UA,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_RETURNTRANSFER => true,
-        ]);
+        ];
+        if ($get) {
+            // servers do not always like HEAD: ask with GET, but abort after the first chunk (the status line is enough)
+            $opts[CURLOPT_WRITEFUNCTION] = function ($ch, $chunk) { return 0; };
+        } else {
+            $opts[CURLOPT_NOBODY] = true;
+        }
+        curl_setopt_array($ch, $opts);
         curl_multi_add_handle($mh, $ch);
         $handles[$i] = $ch;
     }
@@ -78,8 +85,10 @@ function checkBatch($batch, $UA)
 
     $result = [];
     foreach ($handles as $i => $ch) {
-        $result[$i] = ['code' => (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE),
-                       'error' => curl_error($ch)];
+        $code = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        // an aborted GET reports a write error although the status code arrived
+        $error = $code ? '' : curl_error($ch);
+        $result[$i] = ['code' => $code, 'error' => $error];
         curl_multi_remove_handle($mh, $ch);
         curl_close($ch);
     }
@@ -87,29 +96,18 @@ function checkBatch($batch, $UA)
     return $result;
 }
 
-// Servers do not always like HEAD — retry such cases individually with GET
-function retryWithGet($url, $UA)
-{
-    $ch = curl_init($url);
-    curl_setopt_array($ch, [
-        CURLOPT_FOLLOWLOCATION => true, CURLOPT_MAXREDIRS => 5,
-        CURLOPT_TIMEOUT => 20, CURLOPT_CONNECTTIMEOUT => 10,
-        CURLOPT_USERAGENT => $UA, CURLOPT_SSL_VERIFYPEER => false,
-        CURLOPT_RETURNTRANSFER => true,
-    ]);
-    curl_exec($ch);
-    $code = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-    $error = curl_error($ch);
-    curl_close($ch);
-    return ['code' => $code, 'error' => $error];
-}
-
 $dead = [];
 $unclear = [];
 $ok = [];
 $skipped = [];
 
-foreach (array_chunk($entries, 12, true) as $batch) {
+// Show progress while checking (the check takes a while): send the page head first and flush after every batch
+header('X-Accel-Buffering: no');
+while (ob_get_level()) ob_end_flush();
+ob_implicit_flush(true);
+echo '<!doctype html><meta charset="utf-8"><title>URL check</title><h1>URL check</h1><p>Checking ' . count($entries) . ' entries …</p><pre>';
+$done = 0;
+foreach (array_chunk($entries, 40, true) as $batch) {
     $checkable = [];
     foreach ($batch as $i => $e) {
         if ($e['url'] === '' || internal($e['url'])) {
@@ -118,26 +116,34 @@ foreach (array_chunk($entries, 12, true) as $batch) {
             $checkable[$i] = $e;
         }
     }
-    if (!$checkable) continue;
-
-    foreach (checkBatch($checkable, $UA) as $i => $r) {
-        $e = $checkable[$i];
-        if (in_array($r['code'], [403, 405, 501], true) || $r['code'] === 0) {
-            $r = retryWithGet($e['url'], $UA);   // HEAD rejected or failed
+    $done += count($batch);
+    if ($checkable) {
+        $results = checkBatch($checkable, $UA);
+        // HEAD rejected or failed: ask those again with GET, also in parallel
+        $again = [];
+        foreach ($results as $i => $r) {
+            if (in_array($r['code'], [403, 405, 501], true) || $r['code'] === 0) $again[$i] = $checkable[$i];
         }
-        $e['code'] = $r['code'];
-        $e['error'] = $r['error'];
-
-        if ($r['code'] >= 200 && $r['code'] < 400) {
-            $ok[] = $e;
-        } elseif (in_array($r['code'], [404, 410], true)
-            || ($r['code'] === 0 && preg_match('/resolve|refused|not connect|timed out/i', $r['error']))) {
-            $dead[] = $e;
-        } else {
-            $unclear[] = $e;   // 401, 403, 429, 5xx: bot blocks and server moods
+        if ($again) {
+            foreach (checkBatch($again, $UA, true) as $i => $r) $results[$i] = $r;
+        }
+        foreach ($results as $i => $r) {
+            $e = $checkable[$i];
+            $e['code'] = $r['code'];
+            $e['error'] = $r['error'];
+            if ($r['code'] >= 200 && $r['code'] < 400) {
+                $ok[] = $e;
+            } elseif (in_array($r['code'], [404, 410], true)
+                || ($r['code'] === 0 && preg_match('/resolve|refused|not connect|timed out/i', $r['error']))) {
+                $dead[] = $e;
+            } else {
+                $unclear[] = $e;   // 401, 403, 429, 5xx: bot blocks and server moods
+            }
         }
     }
+    echo $done . ' / ' . count($entries) . "\n";
 }
+echo '</pre>';
 
 if ($write) {
     foreach ($data as $si => $sec) {
@@ -160,19 +166,18 @@ function row($e)
 {
     return '<tr><td>' . htmlspecialchars($e['sec']) . '</td><td>'
         . htmlspecialchars($e['name']) . '</td><td>'
-        . ($e['code'] ?: htmlspecialchars(substr($e['error'] ?? '', 0, 60)))
+        . (($e['code'] ?? 0) ?: htmlspecialchars(substr($e['error'] ?? '', 0, 60)))
         . '</td><td><a href="' . htmlspecialchars($e['url']) . '">'
         . htmlspecialchars($e['url']) . '</a></td></tr>';
 }
 
-echo '<!doctype html><meta charset="utf-8"><title>URL check</title>';
 echo '<style>body{font:14px/1.5 system-ui,sans-serif;margin:2em;max-width:60em}'
     . 'table{border-collapse:collapse;width:100%;margin:.5em 0 2em}'
     . 'td,th{border-bottom:1px solid #ddd;padding:4px 8px;text-align:left;'
     . 'vertical-align:top;font-size:13px}a{word-break:break-all}'
     . 'h2{margin-top:1.5em}.dead{color:#c00}</style>';
 
-echo '<h1>URL check</h1><p>Checked: ' . count($entries) . ' · reachable: '
+echo '<h1>Result</h1><p>Checked: ' . count($entries) . ' · reachable: '
     . count($ok) . ' · <span class="dead">dead: ' . count($dead) . '</span> · unclear: '
     . count($unclear) . ' · skipped: ' . count($skipped) . '</p>';
 
