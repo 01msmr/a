@@ -460,16 +460,16 @@ body:not(.edit-mode) section h3.name a::after {
     justify-content: flex-end;
 }
 
-a.secname:visited {
+a.sec-btn:visited {
     color: var(--sect-col);
 }
 
 /* Chip-Inhalt (Kürzel, Icon samt ::before) schaltet ebenfalls sofort */
-a.secname *,
-a.secname *::before,
-a.secname *::after,
-a.secname::before,
-a.secname::after {
+a.sec-btn *,
+a.sec-btn *::before,
+a.sec-btn *::after,
+a.sec-btn::before,
+a.sec-btn::after {
     transition: none;
 }
 
@@ -480,7 +480,7 @@ section {
     --c-text: oklch(from var(--c, var(--sect-col)) clamp(var(--text-l-min), l, var(--text-l-max)) c h);
 }
 
-a.secname,
+a.sec-btn,
 #container section .name {
     --c-hov: color-mix(in srgb, var(--c, var(--sect-col)) 28%, transparent);
 }
@@ -489,18 +489,18 @@ body:not(.tastatur) #container section .name.gedeckt:hover {
     background-color: var(--c-hov);
 }
 
-body:not(.tastatur):not(.gesperrt) a.secname:not(.active):is(:hover, .mit-hover) {
+body:not(.tastatur):not(.gesperrt) a.sec-btn:not(.active):is(:hover, .mit-hover) {
     color: var(--sect-col);
 }
 
-a.secname.active {
+a.sec-btn.active {
     background-color: var(--c, var(--sect-col));
 }
 
 /* Knöpfe über die volle Höhe: flach in Ruhe, erhaben bei Hover (auch gekoppelt),
    eingedrückt wenn aktiv oder gedrückt. Der Titel der Section spiegelt Hover und Druck
    des Chips — und umgekehrt */
-body:not(.tastatur):not(.gesperrt) a.secname:not(.active):is(:hover, .mit-hover) {
+body:not(.tastatur):not(.gesperrt) a.sec-btn:not(.active):is(:hover, .mit-hover) {
     z-index: 1;
     background-color: color-mix(in srgb, var(--c, var(--sect-col)) 30%, var(--front-body));
     background-image: linear-gradient(rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, .15));
@@ -511,13 +511,13 @@ body:not(.tastatur):not(.gesperrt) a.secname:not(.active):is(:hover, .mit-hover)
 }
 
 /* aktiv: Chip und Titel sind eine durchgehende Fläche — keine Kante, kein Schatten dazwischen */
-a.secname.active {
+a.sec-btn.active {
     /* keine Seitenkanten: sonst bleibt neben dem Innenschatten ein farbiger Strich */
     border-width: 0;
     padding: 1px 9px 0;
 }
 
-a.secname.active {
+a.sec-btn.active {
     z-index: 0;
     background-color: var(--c, var(--sect-col));
     background-image: none;
@@ -527,7 +527,7 @@ a.secname.active {
 
 /* aktiver Knopf: Innenschatten links, oben, rechts. Die Seitenschatten laufen bis unten durch
    und werden dabei schmaler (Spitze unten); unten liegt kein Schatten */
-a.secname.active {
+a.sec-btn.active {
     background-image: linear-gradient(rgba(70, 70, 70, .4) 0.1562rem, rgba(70, 70, 70, 0) 0.1562rem);   /* hart, graue Deckkraft */
     /* nur zwischen den Seitenstreifen, sonst werden die oberen Ecken doppelt dunkel */
     background-repeat: no-repeat;
@@ -535,8 +535,8 @@ a.secname.active {
     background-position: 0.1875rem 0;
 }
 
-a.secname.active::before,
-a.secname.active::after {
+a.sec-btn.active::before,
+a.sec-btn.active::after {
     content: "";
     position: absolute;
     top: 0;
@@ -546,22 +546,22 @@ a.secname.active::after {
     pointer-events: none;
 }
 
-a.secname.active::before {
+a.sec-btn.active::before {
     left: 0;
     /* volle Breite bis kurz vor Schluss, nur die letzten ~5px runden sich ein */
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 0.3125rem), 85% calc(100% - 0.1875rem), 55% calc(100% - 0.0938rem), 25% calc(100% - 0.0312rem), 0 100%);
 }
 
-a.secname.active::after {
+a.sec-btn.active::after {
     right: 0;
     clip-path: polygon(100% 0, 0 0, 0 calc(100% - 0.3125rem), 15% calc(100% - 0.1875rem), 45% calc(100% - 0.0938rem), 75% calc(100% - 0.0312rem), 100% 100%);
 }
 
-a.secname:has(+ .active) {
+a.sec-btn:has(+ .active) {
     border-right-color: transparent;
 }
 
-a.secname.active + a.secname {
+a.sec-btn.active + a.sec-btn {
     border-left-color: transparent;
 }
 
@@ -574,7 +574,7 @@ a.secname.active + a.secname {
 }
 
 /* Klick: der Knopf sinkt in die Tiefe (kleiner), keine Bewegung nach unten; Titel gibt leicht nach */
-a.secname:is(:active, .mit-druck):not(.active) {
+a.sec-btn:is(:active, .mit-druck):not(.active) {
     transform: scale(.96);
     box-shadow: 0 -0.125rem 0.25rem -0.0625rem rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .6);
 }
@@ -583,7 +583,7 @@ a.secname:is(:active, .mit-druck):not(.active) {
     box-shadow: inset 0 0.0625rem 0.1875rem rgba(0, 0, 0, .3);
 }
 
-a.secname.active {
+a.sec-btn.active {
     color: var(--on-c);
 }
 
@@ -1601,6 +1601,8 @@ body.tastatur .set-btn:focus-visible .mit-t::after {
 }
 
 .jumper-pop a {
+    position: relative;   /* wie die Chips (Innenschatten der aktiven Section) */
+    border: 1px solid transparent;
     flex: none;   /* beim Schrumpfen behalten die Einträge ihre Höhe */
     display: flex;
     align-items: center;
@@ -1626,26 +1628,9 @@ body:not(.nav-icons) .jumper-pop .secicon {
     line-height: 1;
 }
 
-/* die aktive Section trägt ihre Farbe (wie der aktive Chip) */
-.jumper-pop a.aktiv {
-    background-color: var(--c, var(--sect-col));
-    color: var(--on-c);
-}
-
-.jumper-pop a.aktiv .secshort {
-    font-weight: bold;
-}
-
 /* Dropdown offen: der Chevron zeigt nach oben */
 #section-jumper[aria-expanded="true"] .secicon {
     transform: rotate(180deg);
-}
-
-/* Hover und Tastaturfokus kehren um */
-body:not(.tastatur) .jumper-pop a:hover,
-body.tastatur .jumper-pop a:focus-visible {
-    background: var(--sect-col);
-    color: var(--front-body);
 }
 
 /* ── Geist-Titel (app.js): Kopie des Ziel-Titels am Rand der Ansicht ── */

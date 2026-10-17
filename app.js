@@ -24,7 +24,7 @@ applyPrefs();
 
 // ── Render ────────────────────────────────────────────────────────
 var syncActive = function () { };
-var sperre = { sec: null, x: 0, y: 0 };   // nach Titel- oder Chip-Klick gesperrte Section (s. fensterZiel)
+var sperre = { sec: null, x: 0, y: 0, art: '' };   // nach Titel- oder Chip-Klick gesperrte Section (s. fensterZiel); art: 'titel' oder 'chip'
 var jumperWert = '';   // Hash der aktiven Section (oder des Sprungziels); die Liste markiert ihn
 var selSprung = null;   // Ziel eines Sprungs über das Dropdown: es zeigt bis zur Ankunft diese Section
 
@@ -56,6 +56,22 @@ function koppleHover(a, b) {
     });
 }
 
+// Knopf einer Section (Nav-Chip und Eintrag der Sections-Liste): gleiche Gestalt, gleiche Effekte (a.sec-btn in styles.css)
+function secKnopf(sec, idx, ohneEndung) {
+    var a = document.createElement('a');
+    a.className = 'sec-btn';
+    a.style.setProperty('--c', secFarbe(idx));
+    a.href = '#' + sec.id;
+    a.target = '_self';
+    a.title = sec.title;
+    a.appendChild(makeIcon(sec.icon));
+    var t = document.createElement('span');
+    t.className = 'secshort';
+    t.textContent = ohneEndung ? sec.title.replace(/\..*$/, '') : sec.title;   // „tbx.li“ → „tbx“: passt in die schmale Liste
+    a.appendChild(t);
+    return a;
+}
+
 // Sprung zu einer Section (Dropdown-Liste)
 function springeZu(hash) {
     selSprung = hash;
@@ -73,16 +89,7 @@ function jumperListe(data) {
     var pop = document.getElementById('jumper-pop');
     pop.innerHTML = '';
     data.forEach(function (sec, idx) {
-        var a = document.createElement('a');
-        a.style.setProperty('--c', secFarbe(idx));   // die aktive Section trägt ihre Farbe
-        a.href = '#' + sec.id;
-        a.target = '_self';
-        a.appendChild(makeIcon(sec.icon));
-        var t = document.createElement('span');
-        t.className = 'secshort';
-        t.textContent = sec.title.replace(/\..*$/, '');   // „tbx.li“ → „tbx“: passt in die schmale Liste
-        a.appendChild(t);
-        a.title = sec.title;
+        var a = secKnopf(sec, idx, true);
         a.addEventListener('click', function (ev) {
             ev.preventDefault();
             pop.hidePopover();
@@ -106,10 +113,10 @@ function jumperListe(data) {
         pop.style.maxHeight = (oben ? r.top : window.innerHeight - r.bottom) - 8 + 'px';
         pop.classList.toggle('nach-oben', oben);
         pop.querySelectorAll('a').forEach(function (a) {
-            a.classList.toggle('aktiv', a.getAttribute('href') === jumperWert);
+            a.classList.toggle('active', a.getAttribute('href') === jumperWert);
         });
         pop.showPopover();
-        var ak = pop.querySelector('a.aktiv');
+        var ak = pop.querySelector('a.active');
         if (ak) ak.scrollIntoView({ block: 'nearest' });   // die aktive Section ist beim Öffnen sichtbar
     }
     function eintragUnter(ev) {
@@ -136,7 +143,7 @@ function jumperListe(data) {
         if (!(ev.key === 'Enter' || ev.key === ' ' || ev.key === 'ArrowDown' || ev.key === 'ArrowUp')) return;
         ev.preventDefault();
         oeffnen();
-        var ak = pop.querySelector('a.aktiv');
+        var ak = pop.querySelector('a.active');
         if (ak) { ak.scrollIntoView({ block: 'nearest' }); ak.focus(); }
     });
     pop.addEventListener('keydown', function (ev) {
@@ -160,17 +167,8 @@ function render(data) {
     nav.querySelectorAll('.secname').forEach(function (a) { a.remove(); });
 
     data.forEach(function (sec, idx) {
-        var a = document.createElement('a');
-        a.style.setProperty('--c', secFarbe(idx));
-        a.className = 'secname';
-        a.href = '#' + sec.id;
-        a.target = '_self';
-        a.title = sec.title;
-        a.appendChild(makeIcon(sec.icon));
-        var short = document.createElement('span');
-        short.className = 'secshort';
-        short.textContent = sec.title;
-        a.appendChild(short);
+        var a = secKnopf(sec, idx);
+        a.classList.add('secname');
         // gewickelt, damit nicht das Event als Fokusziel ankommt
         a.addEventListener('click', function () { focusContent(); });
         nav.insertBefore(a, zahnrad);
@@ -324,11 +322,12 @@ var fenster = {
 };
 
 // Nach dem Klick auf einen Titel oder Nav-Chip scrollt die Section nach oben, und der ruhende Zeiger liegt danach über einer anderen.
-// Bis zur nächsten echten Mausbewegung (mehr als 4 px), einem Tastendruck oder einem anderen Klick bleibt die angeklickte Section das Ziel.
+// Bis zur nächsten echten Mausbewegung (mehr als 4 px), einem anderen Klick oder (nur nach einem Titelklick) einem Tastendruck bleibt die angeklickte Section das Ziel.
 
 function sperreAus() {
     if (!sperre.sec) return;
     sperre.sec = null;
+    sperre.art = '';
     document.body.classList.remove('gesperrt');
     fensterSync();
     syncActive();
@@ -341,6 +340,7 @@ document.addEventListener('pointerdown', function (e) {
     var sec = ziel && (ziel.matches('a.secname') ? (document.querySelector(ziel.getAttribute('href')) || ziel).closest('section') : ziel.closest('section'));
     if (!sec) { sperreAus(); return; }
     sperre.sec = sec;
+    sperre.art = ziel.matches('a.secname') ? 'chip' : 'titel';
     document.body.classList.add('gesperrt');
     sperre.x = e.clientX; sperre.y = e.clientY;
     lichtHart();
@@ -350,7 +350,8 @@ document.addEventListener('pointerdown', function (e) {
 document.addEventListener('mousemove', function (e) {
     if (sperre.sec && Math.hypot(e.clientX - sperre.x, e.clientY - sperre.y) > 4) sperreAus();
 }, { passive: true });
-document.addEventListener('keydown', sperreAus);
+// ein Tastendruck hebt nur die Sperre nach einem Titelklick auf, nicht die nach einem Chipklick
+document.addEventListener('keydown', function () { if (sperre.art === 'titel') sperreAus(); });
 
 function fensterZiel() {
     var c = fenster.container, s = null, heiss = true;
@@ -1211,8 +1212,9 @@ document.addEventListener('keydown', function (e) {
     if (document.body.classList.contains('edit-mode')) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     var t = e.target;
-    // Inhalt, Chips und Zahnrad der Leiste; das Dropdown behält seine Pfeiltasten
+    // Inhalt, Chips und Zahnrad der Leiste; das Dropdown (Button) behält seine Pfeiltasten
     if (t !== document.body && !(t.closest && t.closest('#container, .title a, .title button'))) return;
+    if (t.closest && t.closest('#section-jumper')) return;
     if (e.key === 'ArrowDown') { e.preventDefault(); jumpBy(1); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); jumpBy(-1); }
     else if (e.key === 'ArrowRight') { e.preventDefault(); linkBy(1); }
