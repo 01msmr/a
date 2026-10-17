@@ -449,7 +449,7 @@ document.addEventListener('pointermove', function (e) {
 
 function wischEnde() {
     wischt = false;
-    document.body.classList.remove('wischt');
+    document.documentElement.classList.remove('wischt');
     fensterSync();
 }
 document.addEventListener('scrollend', function () { if (wischt) { clearTimeout(wischT); wischEnde(); } }, true);
@@ -458,7 +458,7 @@ document.addEventListener('touchmove', function () { if (sperre.sec) sperreAus()
 document.addEventListener('scroll', function () {
     if (letzterZeiger === 'mouse' || document.body.classList.contains('gesperrt')) return;
     wischt = true;
-    document.body.classList.add('wischt');
+    document.documentElement.classList.add('wischt')   // nicht am body: dessen Klassenwechsel löst eine Neuvermessung aus und stört den Auslauf;
     clearTimeout(wischT);
     bisRuhe(wischEnde);
 }, true);
