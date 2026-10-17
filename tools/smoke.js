@@ -10,16 +10,16 @@ if (process.argv[2] !== '--child') {
     const r = spawnSync(process.execPath, [__filename, '--child'], { timeout: 20000, encoding: 'utf8' });
     process.stdout.write(r.stdout || '');
     process.stderr.write(r.stderr || '');
-    if (r.error || r.status !== 0) { console.error('FEHLER: hängt oder schlägt fehl'); process.exit(1); }
+    if (r.error || r.status !== 0) { console.error('ERROR: hangs or fails'); process.exit(1); }
     console.log('OK');
     process.exit(0);
 }
 
 const { JSDOM, VirtualConsole } = require('jsdom');
-const fehler = [];
+const errors = [];
 const vc = new VirtualConsole();
-vc.on('jsdomError', e => fehler.push(e.message));
-vc.on('error', (...a) => fehler.push(a.join(' ')));
+vc.on('jsdomError', e => errors.push(e.message));
+vc.on('error', (...a) => errors.push(a.join(' ')));
 
 const html = fs.readFileSync(root + 'index.html', 'utf8')
     .replace(/<link[^>]*(googleapis|cdnjs)[^>]*>/g, '')
@@ -45,61 +45,61 @@ w.eval(fs.readFileSync(root + 'app.js', 'utf8'));
 const ev = (t, o) => new w.MouseEvent(t, Object.assign({ bubbles: true, cancelable: true, button: 0, clientX: 10, clientY: 10 }, o));
 // jsdom kennt keine PointerEvents: MouseEvent mit pointerType (Standard: Maus)
 const pev = (t, o, kind) => { const e = ev(t, o); Object.defineProperty(e, 'pointerType', { value: kind || 'mouse' }); return e; };
-const prüfe = (ok, text) => { if (!ok) fehler.push(text); };
-const dann = (fn, ms) => new Promise(r => setTimeout(() => { fn(); r(); }, ms));
+const check = (ok, text) => { if (!ok) errors.push(text); };
+const afterMs = (fn, ms) => new Promise(r => setTimeout(() => { fn(); r(); }, ms));
 (async () => {
-    await dann(() => prüfe(d.querySelectorAll('section').length > 0, 'keine Sections gerendert'), 500);
+    await afterMs(() => check(d.querySelectorAll('section').length > 0, 'no sections rendered'), 500);
     // Nav: Chips, Zahnrad und Dropdown stehen in einer Zeile (gleiche Flex-Regeln), das Dropdown zuletzt
-    await dann(() => {
-        const nav = d.getElementById('section-nav-list'), kinder = [...nav.children];
-        prüfe(kinder.length > 2 && kinder[kinder.length - 1].id === 'section-jumper', 'Dropdown nicht letzter Nav-Eintrag');
-        prüfe(kinder[kinder.length - 2].id === 'settings-btn', 'Zahnrad nicht vor dem Dropdown');
-        prüfe(d.querySelectorAll('#jumper-pop a').length === d.querySelectorAll('a.secname').length, 'Liste und Chips unterschiedlich lang');
-        prüfe(d.getElementById('section-jumper').tagName === 'BUTTON', 'Dropdown ist kein Button');
+    await afterMs(() => {
+        const nav = d.getElementById('section-nav-list'), kids = [...nav.children];
+        check(kids.length > 2 && kids[kids.length - 1].id === 'section-jumper', 'dropdown is not the last nav entry');
+        check(kids[kids.length - 2].id === 'settings-btn', 'gear is not before the dropdown');
+        check(d.querySelectorAll('#jumper-pop a').length === d.querySelectorAll('a.secname').length, 'list and chips differ in length');
+        check(d.getElementById('section-jumper').tagName === 'BUTTON', 'dropdown is not a button');
         // Hover auf einem Listeneintrag leuchtet Chip und Titel derselben Section (gekoppelte Hervorhebung)
         const entry = d.querySelectorAll('#jumper-pop a')[1], chip = d.querySelectorAll('a.secname')[1], heading = d.querySelectorAll('#container .name')[1];
         entry.dispatchEvent(pev('pointerenter'));
-        prüfe(chip.classList.contains('with-hover') && heading.classList.contains('with-hover'), 'Listeneintrag koppelt Chip und Titel nicht');
+        check(chip.classList.contains('with-hover') && heading.classList.contains('with-hover'), 'list entry does not couple chip and heading');
         entry.dispatchEvent(pev('pointerleave'));
-        prüfe(!chip.classList.contains('with-hover') && !heading.classList.contains('with-hover'), 'Kopplung wird nicht zurückgenommen');
+        check(!chip.classList.contains('with-hover') && !heading.classList.contains('with-hover'), 'coupling is not undone');
     }, 0);
     // Edit-Mode einschalten und die Beobachter (Microtasks) laufen lassen: hier hing die Seite einmal
-    await dann(() => { d.body.classList.add('edit-mode'); w.gridInit(); w.releaseLinks(); w.settingsDisplay(); }, 0);
+    await afterMs(() => { d.body.classList.add('edit-mode'); w.gridInit(); w.releaseLinks(); w.settingsDisplay(); }, 0);
     // Sections umsortieren: Griff am Titel, Ziehen über die zweite Section setzt die erste dahinter, der Vergleich meldet es
-    await dann(() => {
+    await afterMs(() => {
         const secs = () => [...d.querySelectorAll('#container section')].map(s => s.querySelector('h3.name').id);
-        const vorher = secs(), erste = d.querySelector('#container section');
-        prüfe(d.querySelectorAll('.sec-handle').length === vorher.length, 'nicht in jeder Section ein Griff');
+        const orderBefore = secs(), firstSec = d.querySelector('#container section');
+        check(d.querySelectorAll('.sec-handle').length === orderBefore.length, 'not every section has a handle');
         const dt = { setData() { }, setDragImage() { } };
-        const dragEv = (typ, o) => { const e = new w.Event(typ, Object.assign({ bubbles: true, cancelable: true }, o)); e.dataTransfer = dt; e.clientY = 5; return e; };
-        erste.querySelector('.sec-handle').dispatchEvent(ev('mousedown'));
-        prüfe(erste.draggable === true, 'Section nicht ziehbar nach Griff');
-        erste.dispatchEvent(dragEv('dragstart'));
+        const dragEv = (evType, o) => { const e = new w.Event(evType, Object.assign({ bubbles: true, cancelable: true }, o)); e.dataTransfer = dt; e.clientY = 5; return e; };
+        firstSec.querySelector('.sec-handle').dispatchEvent(ev('mousedown'));
+        check(firstSec.draggable === true, 'section not draggable after handle');
+        firstSec.dispatchEvent(dragEv('dragstart'));
         d.querySelectorAll('#container section')[1].dispatchEvent(dragEv('dragover'));
-        const nachher = secs();
-        prüfe(nachher[0] === vorher[1] && nachher[1] === vorher[0], 'Reihenfolge nicht umgestellt');
-        erste.dispatchEvent(dragEv('dragend'));
-        prüfe(erste.draggable === false, 'Section bleibt ziehbar nach dem Zug');
-        prüfe(w.changesText().includes('Reihenfolge der Sections'), 'Umstellung nicht im Änderungstext');
+        const orderAfter = secs();
+        check(orderAfter[0] === orderBefore[1] && orderAfter[1] === orderBefore[0], 'order not changed');
+        firstSec.dispatchEvent(dragEv('dragend'));
+        check(firstSec.draggable === false, 'section stays draggable after the drag');
+        check(w.changesText().includes('Order of sections'), 'reordering missing in the change text');
     }, 0);
-    await dann(() => {
+    await afterMs(() => {
         d.querySelector('a.secname').dispatchEvent(pev('pointerdown'));
-        prüfe(!d.body.classList.contains('locked'), 'Sperre im Edit-Mode');
+        check(!d.body.classList.contains('locked'), 'lock in edit mode');
         d.body.classList.remove('edit-mode');
     }, 50);
     // Klick-Sperre auf Chip, Aufheben per Mausbewegung
-    await dann(() => {
+    await afterMs(() => {
         d.querySelector('a.secname').dispatchEvent(pev('pointerdown'));
-        prüfe(d.body.classList.contains('locked'), 'Sperre fehlt nach Chip-Klick');
+        check(d.body.classList.contains('locked'), 'lock missing after chip click');
         d.dispatchEvent(ev('mousemove', { clientX: 80, clientY: 80 }));
-        prüfe(!d.body.classList.contains('locked'), 'Sperre bleibt nach Mausbewegung');
+        check(!d.body.classList.contains('locked'), 'lock stays after mouse movement');
         // Auswahl in der Sections-Liste sperrt ebenfalls (Loslassen über einem Eintrag klickt ihn ohne pointerdown)
         w.jumpTo(d.querySelectorAll('a.secname')[1].getAttribute('href'));
-        prüfe(d.body.classList.contains('locked'), 'Sperre fehlt nach Auswahl in der Liste');
+        check(d.body.classList.contains('locked'), 'lock missing after selection in the list');
         d.dispatchEvent(ev('mousemove', { clientX: 200, clientY: 200 }));
-        prüfe(!d.body.classList.contains('locked'), 'Sperre bleibt nach Mausbewegung (Liste)');
+        check(!d.body.classList.contains('locked'), 'lock stays after mouse movement (list)');
     }, 50);
-    await dann(() => { }, 200);
-    fehler.forEach(f => console.error(f));
-    process.exit(fehler.length ? 1 : 0);
+    await afterMs(() => { }, 200);
+    errors.forEach(f => console.error(f));
+    process.exit(errors.length ? 1 : 0);
 })();

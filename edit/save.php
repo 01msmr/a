@@ -16,7 +16,7 @@ if ($parsed === null) {
     exit('Invalid JSON');
 }
 
-// Datenbank und Backup bleiben im geschützten Verzeichnis
+// Database and backup stay in the protected directory
 $target = __DIR__ . '/links.json';
 
 if (file_exists($target)) {

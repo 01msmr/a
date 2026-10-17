@@ -60,7 +60,7 @@ function coupleHover(members) {
 }
 
 // Knopf einer Section (Nav-Chip und Eintrag der Sections-Liste): gleiche Gestalt, gleiche Effekte (a.sec-btn in styles.css)
-function sectionButton(sec, idx, ohneEndung) {
+function sectionButton(sec, idx, withoutSuffix) {
     var a = document.createElement('a');
     a.className = 'sec-btn';
     a.style.setProperty('--c', sectionColor(idx));
@@ -70,7 +70,7 @@ function sectionButton(sec, idx, ohneEndung) {
     a.appendChild(makeIcon(sec.icon));
     var t = document.createElement('span');
     t.className = 'secshort';
-    t.textContent = ohneEndung ? sec.title.replace(/\..*$/, '') : sec.title;   // „tbx.li“ → „tbx“: passt in die schmale Liste
+    t.textContent = withoutSuffix ? sec.title.replace(/\..*$/, '') : sec.title;   // „tbx.li“ → „tbx“: passt in die schmale Liste
     a.appendChild(t);
     return a;
 }
@@ -539,9 +539,9 @@ function glowMeasure() {
         var m = old.get(z.el), k = z.cls || '';
         z.on = m && k in m ? m[k] : null;
     });
-    var geaendert = sig !== glow.sig;
+    var modified = sig !== glow.sig;
     glow.secs = secs; glow.rows = rows; glow.sig = sig;
-    return geaendert;
+    return modified;
 }
 
 function glowPaint(top, bot) {
@@ -709,18 +709,18 @@ function glowPlan(fn) {
 
 // Beobachter mit Notbremse: ändert ein Aufruf das Beobachtete wieder (z. B. classList.remove ohne Wirkung zählt als Änderung),
 // ruft er sich in derselben Aufgabe endlos neu auf und friert die Seite ein. Nach 500 Aufrufen ohne Atempause wird er getrennt.
-function safeObserve(dest, optionen, fn) {
+function safeObserve(dest, options, fn) {
     var n = 0, reset = 0;
     var obs = new MutationObserver(function (ms) {
         if (++n > 500) {
             obs.disconnect();
-            console.error('MutationObserver abgebrochen: Endlosschleife');
+            console.error('MutationObserver aborted: infinite loop');
             return;
         }
         if (!reset) reset = setTimeout(function () { n = 0; reset = 0; }, 0);
         fn(ms);
     });
-    obs.observe(dest, optionen);
+    obs.observe(dest, options);
     return obs;
 }
 
@@ -1606,7 +1606,7 @@ var SETTINGS = [
         label: 'Theme',
         values: [['auto', 'auto'], ['light', 'light'], ['dark', 'dark']],
         schema: true,
-        alle: true,   // der Hinweis nennt alle Werte, der aktuelle in Klammern
+        all: true,   // der Hinweis nennt alle Werte, der aktuelle in Klammern
         get: function () { return window.msmrTheme.auto() ? 'auto' : window.msmrTheme.get(); },
         set: function (w) { if (w === 'auto') window.msmrTheme.setAuto(); else window.msmrTheme.set(w); }
     },
@@ -1736,7 +1736,7 @@ function settingsDisplay() {
     document.querySelectorAll('#settings-pop .set-btn').forEach(function (b, i) {
         var e = SETTINGS[i], w = e.get();
         drawIcon(b.querySelector('.set-icon'), e, w);
-        b.title = e.alle
+        b.title = e.all
             ? e.values.map(function (p) { return p[0] === w ? '[' + p[1] + ']' : p[1]; }).join(' / ')
             : valueName(e, w) + '/' + valueName(e, valueTo(e, w));   // jetzt/nächster Wert
         b.setAttribute('aria-label', e.label + ': ' + b.title);
@@ -1747,13 +1747,13 @@ function settingsDisplay() {
 // Im Raster mit voller Breite streckt sich das Zahnrad: dafür kurz mit der Leistenbreite der Chips messen
 function navButtonHeight() {
     var gearEl = document.getElementById('settings-btn'), bar = document.querySelector('.title');
-    var breite = gearEl.getBoundingClientRect().width;
+    var widthPx = gearEl.getBoundingClientRect().width;
     if (document.body.classList.contains('view-grid') && !document.body.classList.contains('align-center') && bar) {
         bar.style.maxWidth = 'calc(var(--column) + 0.12em)';
-        breite = gearEl.getBoundingClientRect().width;
+        widthPx = gearEl.getBoundingClientRect().width;
         bar.style.maxWidth = '';
     }
-    return breite;
+    return widthPx;
 }
 
 // bündig unter dem Zahnrad, gleich breit; in der unteren Leiste (Smartphone-/Kleinansicht) bündig darüber
@@ -1912,7 +1912,7 @@ fetch('never-dead.json')
     .then(render)
     .catch(function (e) {
         document.getElementById('container').innerHTML =
-            '<p style="color:red;padding:20px">links.json Ladefehler: ' + e + '</p>';
+            '<p style="color:red;padding:20px">links.json load error: ' + e + '</p>';
     });
 
 // ── Edit Mode ─────────────────────────────────────────────────────
@@ -1924,11 +1924,11 @@ function makeDelButton(li) {
     var del = document.createElement('span');
     del.className = 'btn-del';
     del.textContent = '×';
-    del.title = 'Löschen';
+    del.title = 'Delete';
     del.addEventListener('click', function () {
         var removed = li.classList.toggle('removed');
         del.textContent = removed ? '↺' : '×';
-        del.title = removed ? 'Wiederherstellen' : 'Löschen';
+        del.title = removed ? 'Restore' : 'Delete';
     });
     return del;
 }
@@ -1956,14 +1956,14 @@ function releaseLinks() {
         if (li.querySelector('a') && !li.querySelector('.edit-url')) createFields(li);
     });
 
-    if (makeDraggable()) sectionsSortierbar();
+    if (makeDraggable()) sectionsSortable();
     document.querySelectorAll('ul.group').forEach(function (ul) {
         if (makeDraggable()) sortable(ul);
         if (ul.querySelector('.btn-add')) return;
         var add = document.createElement('li');
         add.className = 'btn-add';
         add.textContent = '+';
-        add.title = 'Link hinzufügen';
+        add.title = 'Add link';
         add.addEventListener('click', function () { addLink(ul, add); });
         ul.appendChild(add);
     });
@@ -1987,7 +1987,7 @@ function createFields(li) {
 }
 
 function addLink(ul, addBtn) {
-    var li = makeLi('Neuer Link', 'https://');
+    var li = makeLi('New link', 'https://');
     createFields(li);
     ul.insertBefore(li, addBtn);
     li.querySelector('a').focus();
@@ -2028,7 +2028,7 @@ function makeMoveHandle(li) {
     var handle = document.createElement('span');
     handle.className = 'btn-move';
     handle.textContent = '⠿';
-    handle.title = 'Verschieben';
+    handle.title = 'Move';
     handle.addEventListener('mousedown', function () {
         li.draggable = true;
         // jetzt schon, denn das Zugbild ist ein Schnappschuss der Kachel
@@ -2094,7 +2094,7 @@ function sortable(ul) {
 // verschiebt die gezogene davor oder dahinter, je nach Zeigerhälfte. Die Reihenfolge im DOM wird gespeichert (collectData).
 var draggedSection = null;
 
-function sectionsSortierbar() {
+function sectionsSortable() {
     var c = document.getElementById('container');
     if (c.dataset.secSortable) return;
     c.dataset.secSortable = '1';
@@ -2104,7 +2104,7 @@ function sectionsSortierbar() {
         var handle = document.createElement('span');
         handle.className = 'sec-handle';
         handle.textContent = '⠿';
-        handle.title = 'Section verschieben';
+        handle.title = 'Move section';
         h3.insertBefore(handle, h3.firstChild);
         // erst mit dem Griff wird die Section ziehbar, sonst zöge jeder Klick im Inhalt sie mit
         handle.addEventListener('mousedown', function () { sec.draggable = true; });
@@ -2174,7 +2174,7 @@ function collectData() {
 
 // Vergleich gegen die beim Rendern gestempelten Ursprungswerte
 function changes() {
-    var deleted = [], geaendert = [], moved = [], fresh = 0;
+    var deleted = [], modified = [], moved = [], fresh = 0;
     document.querySelectorAll('ul.group li:not(.btn-add)').forEach(function (li) {
         var a = li.querySelector('a');
         if (!a) return;
@@ -2186,7 +2186,7 @@ function changes() {
         if (li.classList.contains('removed')) {
             deleted.push('· ' + li.dataset.name0 + '  ' + li.dataset.url0);
         } else if (name !== li.dataset.name0 || url !== li.dataset.url0) {
-            geaendert.push('· ' + li.dataset.name0 + '  ' + li.dataset.url0 +
+            modified.push('· ' + li.dataset.name0 + '  ' + li.dataset.url0 +
                 '\n  → ' + name + '  ' + url);
         }
     });
@@ -2215,27 +2215,27 @@ function changes() {
         if (+section.dataset.pos0 < lastSec) secReordered = true;
         lastSec = +section.dataset.pos0;
     });
-    if (secReordered) moved.push('· Reihenfolge der Sections');
+    if (secReordered) moved.push('· Order of sections');
 
-    return { deleted: deleted, geaendert: geaendert, moved: moved, fresh: fresh };
+    return { deleted: deleted, modified: modified, moved: moved, fresh: fresh };
 }
 
 // Text der Änderungen für die Rückfrage; leer, wenn nichts zu speichern ist
 function changesText() {
     var d = changes();
-    if (!d.geaendert.length && !d.deleted.length && !d.moved.length) {
-        return d.fresh ? 'Neue Einträge speichern?' : '';
+    if (!d.modified.length && !d.deleted.length && !d.moved.length) {
+        return d.fresh ? 'Save new entries?' : '';
     }
-    var text = 'Änderungen speichern?\n';
-    if (d.geaendert.length) {
-        text += '\nGeändert (' + d.geaendert.length + '):\n' + d.geaendert.join('\n') + '\n';
+    var text = 'Save changes?\n';
+    if (d.modified.length) {
+        text += '\nChanged (' + d.modified.length + '):\n' + d.modified.join('\n') + '\n';
     }
     if (d.moved.length) {
-        text += '\nReihenfolge geändert (' + d.moved.length + '):\n' +
+        text += '\nOrder changed (' + d.moved.length + '):\n' +
             d.moved.join('\n') + '\n';
     }
     if (d.deleted.length) {
-        text += '\nGelöscht (' + d.deleted.length + '):\n' + d.deleted.join('\n') + '\n';
+        text += '\nDeleted (' + d.deleted.length + '):\n' + d.deleted.join('\n') + '\n';
     }
     return text;
 }
@@ -2246,7 +2246,7 @@ function finishEditing() {
     var text = changesText();
     if (!text) { location.reload(); return; }
     if (confirm(text)) save();
-    else if (confirm('Änderungen verwerfen?')) location.reload();
+    else if (confirm('Discard changes?')) location.reload();
 }
 
 function save() {
@@ -2258,11 +2258,11 @@ function save() {
     })
     .then(function (r) {
         if (r.status === 401) {
-            throw new Error('Nicht angemeldet — /edit/ einmal direkt im Browser aufrufen und anmelden.');
+            throw new Error('Not signed in — open /edit/ once directly in the browser and sign in.');
         }
         if (!r.ok) throw new Error('HTTP ' + r.status);
         document.querySelector('.titledomain').textContent = '✓';
         setTimeout(function () { location.reload(); }, 800);
     })
-    .catch(function (err) { alert('Fehler: ' + err.message); });
+    .catch(function (err) { alert('Error: ' + err.message); });
 }
