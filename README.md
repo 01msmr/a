@@ -144,13 +144,12 @@ Inhalt, Scrollen ändert sie nicht.
 Liegt der Titel der Ziel-Section (Nav-Chip unter der Maus oder Sprung nach Klick, Dropdown,
 Pfeiltasten) außerhalb der Ansicht, klebt eine Kopie (`#ghost-header-layer`, `ghostHeaderRender`) am oberen
 bzw. unteren Rand, bis der echte Titel dort ankommt und weiterläuft; sie bleibt, bis das Fenster
-die Titelzeile ganz deckt, und blendet dann 60 ms aus. Die Kopien bilden einen Stapel, nach Entfernung von der Ansicht geordnet (oben sind die früheren Sections weiter weg, unten die
-späteren): die nächste liegt unten, das Ziel oben. Nur Kopien, die ihren Wechsel bekommen haben, liegen im Stapel. Ein Wechsel
-dauert 400 ms; das nächste Ziel wartet darauf, und nur das letzte zählt. Langsames Überfahren zeigt daher jede Kopie
-beim Hereingleiten und Hinausgleiten, schnelles lässt die Zwischenschritte aus. Liegt das Ziel schon im Stapel, gleiten die Kopien
-darüber gemeinsam hinaus, und es ist wieder frei. Sonst gleiten zuerst die Kopien hinaus, die weiter weg liegen als das Ziel,
-danach (nach einem Wechsel) gleitet seine Kopie ein; die näheren bleiben darunter. Ist das Ziel die aktive oder eine sichtbare Section,
-gleiten alle hinaus; wechselt der Rand, ebenso. Ein- und Hinausgleiten laufen mit ease-out; Schatten und Linie blenden am Ende des
+die Titelzeile ganz deckt, und blendet dann 60 ms aus. Die Kopien bilden einen Stapel aus allen Sections zwischen der Ansicht und dem Ziel, nach Entfernung geordnet: die nächste
+liegt unten, das Ziel oben (am oberen Rand sind die früheren Sections weiter weg, am unteren die späteren). Wandert das Ziel weiter
+weg, gleitet nur seine Kopie ein, die dazwischen liegen schon fertig darunter. Wandert es näher, gleiten die Kopien darüber
+nur hinaus und legen die darunter frei, ohne vorher herunterzugleiten; sprang das Ziel über mehrere, gleiten sie gemeinsam hinaus.
+Ein Wechsel dauert 400 ms; das nächste Ziel wartet darauf, und nur das letzte zählt: langsames Überfahren zeigt jeden Schritt,
+schnelles lässt Zwischenschritte aus. Ist das Ziel die aktive oder eine sichtbare Section, gleiten alle hinaus; wechselt der Rand, ebenso. Ein- und Hinausgleiten laufen mit ease-out; Schatten und Linie blenden am Ende des
 Hinausgleitens schnell aus. Darunterliegende Kopien behalten ihre Farbe, haben aber weder Schatten noch Linie (es gibt immer nur
 einen, sonst würde er mit jeder Kopie dunkler); steht der echte Titel einer solchen Kopie in der Ansicht, verschwindet sie. Die Kopie wirft einen weichen Schatten von
 66 % einer Kachelhöhe auf den Inhalt. Nach einem Klick läuft er aus, je näher der echte Titel

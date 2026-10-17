@@ -880,6 +880,21 @@ function ghostHeaderRender() {
     var rZiel = ghostHeaderRank(sec, edge);
     var weiter = ghostHeader.stack.filter(function (g) { return ghostHeaderRank(g.sec, edge) > rZiel; });
     if (weiter.length) { hinaus(weiter, false); folgeSchritt(); return; }
+    // Der Stapel enthält alle Sections zwischen der Ansicht und dem Ziel: die dazwischen liegen fertig unter dem Ziel (ohne Schatten und Linie)
+    // und werden beim Rückweg freigelegt, ohne vorher herunterzugleiten
+    function einordnen(g) {
+        var k = ghostHeader.stack.findIndex(function (x) { return ghostHeaderRank(x.sec, edge) > ghostHeaderRank(g.sec, edge); });
+        if (k < 0) { ebene.appendChild(g.el); ghostHeader.stack.push(g); }
+        else { ebene.insertBefore(g.el, ghostHeader.stack[k].el); ghostHeader.stack.splice(k, 0, g); }
+    }
+    Array.prototype.filter.call(c.querySelectorAll('section'), function (x) {
+        return x !== sec && ghostHeaderEdge(x, cr, hoch) === edge && ghostHeaderRank(x, edge) < rZiel
+            && !ghostHeader.stack.some(function (g) { return g.sec === x; });
+    }).sort(function (a, b) { return ghostHeaderRank(a, edge) - ghostHeaderRank(b, edge); }).forEach(function (x) {
+        var g = ghostHeaderMake(x, edge, hoch);
+        g.el.classList.add('under');
+        einordnen(g);
+    });
     // die bisher oberste liegt jetzt unter dem Ziel: kein zweiter Schatten und keine zweite Linie (sonst wird es immer dunkler); erst wenn das Ziel da ist, damit keine Lücke entsteht
     var beneath = ghostHeader.stack.slice();
     clearTimeout(ghostHeader.underTimer);
