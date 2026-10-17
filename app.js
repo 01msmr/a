@@ -99,7 +99,7 @@ function jumperListe(data) {
     function oeffnen() {
         var r = sel.getBoundingClientRect(), oben = r.top > window.innerHeight / 2;
         pop.style.width = r.width + 'px';   // bündig mit dem Feld, wie das Einstellungs-Overlay
-        pop.style.setProperty('--set-hoehe', r.width + 'px');   // Einträge quadratisch wie die Einstellungs-Knöpfe
+        pop.style.setProperty('--set-hoehe', navKnopfHoehe() + 'px');   // Einträge so hoch wie die Einstellungs-Knöpfe, auch im Raster mit voller Breite
         pop.style.left = r.left + 'px';
         pop.style.top = oben ? 'auto' : r.bottom + 'px';
         pop.style.bottom = oben ? (window.innerHeight - r.top) + 'px' : 'auto';
@@ -1399,7 +1399,20 @@ function settingsAnzeige() {
     });
 }
 
-// bündig unter dem Zahnrad, gleich breit; in der unteren Leiste (Telefon) bündig darüber
+// Knopfhöhe der Overlays (Einstellungen und Sections-Liste) = Breite des Zahnrads in der Chips-Ansicht.
+// Im Raster mit voller Breite streckt sich das Zahnrad: dafür kurz mit der Leistenbreite der Chips messen
+function navKnopfHoehe() {
+    var gz = document.getElementById('settings-btn'), leiste = document.querySelector('.title');
+    var breite = gz.getBoundingClientRect().width;
+    if (document.body.classList.contains('view-grid') && !document.body.classList.contains('align-center') && leiste) {
+        leiste.style.maxWidth = 'calc(var(--spalte) + 0.12em)';
+        breite = gz.getBoundingClientRect().width;
+        leiste.style.maxWidth = '';
+    }
+    return breite;
+}
+
+// bündig unter dem Zahnrad, gleich breit; in der unteren Leiste (Smartphone-/Kleinansicht) bündig darüber
 function settingsPlatzieren() {
     var pop = document.getElementById('settings-pop');
     var gz = document.getElementById('settings-btn');
@@ -1407,14 +1420,8 @@ function settingsPlatzieren() {
     var oben = r.top > window.innerHeight / 2;
     // Im Raster läuft die Leiste über die ganze Breite und das Zahnrad streckt sich: die Breite bleibt die des Zahnrads,
     // die Knopfhöhe (und damit die Höhe des Overlays) aber dieselbe wie bei Chips; dafür mit der Leistenbreite der Chips messen
-    var leiste = document.querySelector('.title'), breite = r.width;
-    if (document.body.classList.contains('view-grid') && !document.body.classList.contains('align-center') && leiste) {
-        leiste.style.maxWidth = 'calc(var(--spalte) + 0.12em)';
-        breite = gz.getBoundingClientRect().width;
-        leiste.style.maxWidth = '';
-    }
     pop.style.width = r.width + 'px';   // bündig mit dem Zahnrad, auch wenn es sich im Raster streckt
-    pop.style.setProperty('--set-hoehe', breite + 'px');   // Knopfhöhe wie bei Chips
+    pop.style.setProperty('--set-hoehe', navKnopfHoehe() + 'px');   // Knopfhöhe wie bei Chips
     pop.style.left = r.left + 'px';
     pop.style.right = 'auto';
     pop.style.top = oben ? 'auto' : r.bottom + 'px';

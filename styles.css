@@ -611,7 +611,7 @@ body.tastatur section li.gedeckt a:not([contenteditable]):focus-visible::before 
     background-color: var(--chip-inv);
 }
 
-/* Sprungtasten nur am Telefon */
+/* Sprungtasten nur in der Smartphone-/Kleinansicht */
 .stepper {
     display: none;
 }
