@@ -876,18 +876,26 @@ window.addEventListener('resize', function () {
 // ── Strich-Zeiger ─────────────────────────────────────────────────
 // Der senkrechte Strich ersetzt den Punkt: Höhe der Zeile unter dem Zeiger (Titel, Nav-Chip),
 // in der Section außerhalb von Titel und Kachel deren Höhe mit 33 % Deckkraft. Auf Kacheln zeichnet ihn die Kachel selbst.
-var strich = { el: null, secEl: null, x: 0, y: 0, ziel: null, raf: 0, an: false };
+var strich = { el: null, pfeil: null, secEl: null, x: 0, y: 0, ziel: null, raf: 0, an: false };
 
 function strichZiel(t) {
     if (!t || !t.closest || document.body.classList.contains('edit-mode')) return null;
-    var z = { sec: t.closest('#container section'), fest: null, hide: false };
+    var z = { sec: t.closest('#container section'), fest: null, hide: false, kopf: !!t.closest('#container .name') };
     if (t.closest('li a')) { z.hide = true; z.sec = null; }   // Kachel: nur ihr eigener Strich
     else {
         // Kachelrand (kein Hintergrund erkennen) bzw. Nav-Chip: Strich in der Höhe der Zeile
         var el = t.closest('#container li') || t.closest('a.secname');
-        if (el) { z.fest = el; z.sec = null; }
+        if (el) { z.fest = el; z.sec = null; z.chip = el.matches('a.secname') ? el : null; }
     }
     return z.sec || z.fest || z.hide ? z : null;
+}
+
+// Richtung, in die ein Klick auf den Nav-Chip scrollt (null: die Section liegt schon oben)
+function chipRichtung(chip) {
+    var sec = chip && document.querySelector(chip.getAttribute('href'));
+    if (!sec) return null;
+    var d = sec.getBoundingClientRect().top - document.getElementById('container').getBoundingClientRect().top;
+    return d < -2 ? 'up' : d > 2 ? 'down' : null;
 }
 
 function strichSetzen() {
@@ -895,15 +903,25 @@ function strichSetzen() {
     var s = strich.el, b = strich.secEl, z = strich.ziel;
     if (!z) {
         s.style.opacity = '0';
+        strich.pfeil.style.opacity = '0';
         if (b) b.style.opacity = '0';
         document.documentElement.classList.remove('strich-an');
         return;
     }
     document.documentElement.classList.add('strich-an');
-    // in der Section (nicht auf Chip oder Kachel) zeigt das kleine Quadrat die Zeigerposition
-    document.documentElement.classList.toggle('strich-punkt', !!z.sec);
+    // in der Section (nicht auf Chip, Kachel oder Titel) zeigt das kleine Quadrat die Zeigerposition
+    document.documentElement.classList.toggle('strich-punkt', !!z.sec && !z.kopf);
+    // im Titel zeigt ein Chevron nach oben die Zeigerposition, auf einem Nav-Chip nach oben oder unten, wohin der Klick scrollt
+    var p = strich.pfeil, richtung = z.kopf ? 'up' : chipRichtung(z.chip);
+    p.style.opacity = richtung ? '1' : '0';
+    if (richtung) {
+        p.className = 'fa-solid fa-chevron-' + richtung;
+        p.style.color = z.chip ? getComputedStyle(z.chip).color : '';
+        p.style.left = strich.x + 'px';
+        p.style.top = strich.y + 'px';
+    }
     // Zeile unter dem Zeiger (Kachelrand, Nav-Chip): fester Strich in voller Deckkraft
-    if (z.fest) {
+    if (z.fest && !(z.chip && richtung)) {
         var r = z.fest.getBoundingClientRect();
         s.style.left = strich.x + 'px';
         s.style.top = r.top + 'px';
@@ -944,6 +962,11 @@ function strichPlanen(e) {
     strich.el.id = 'strich';
     strich.el.setAttribute('aria-hidden', 'true');
     document.body.appendChild(strich.el);
+    strich.pfeil = document.createElement('i');
+    strich.pfeil.id = 'strich-pfeil';
+    strich.pfeil.className = 'fa-solid fa-chevron-up';
+    strich.pfeil.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(strich.pfeil);
     document.addEventListener('mousemove', strichPlanen, { passive: true });
     document.addEventListener('mouseover', strichPlanen, { passive: true });
     document.documentElement.addEventListener('mouseleave', function () {

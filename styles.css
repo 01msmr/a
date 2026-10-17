@@ -1738,6 +1738,17 @@ body.view-grid .geist .name {
     transition: none;   /* volle Höhe sofort, keine Skalierung */
 }
 
+/* Chevron nach oben als Zeiger im Titel, in normaler Textgröße, Farbe wie die Titelschrift */
+#strich-pfeil {
+    position: fixed;
+    z-index: 50;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    color: var(--on-c);
+    transition: none;
+}
+
 html.strich-an,
 html.strich-an * {
     cursor: none !important;
