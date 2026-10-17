@@ -1867,3 +1867,15 @@ body.touch li a,
 body.touch li a::before {
     transition: none;
 }
+
+/* Smartphone: Einrastpunkte nur an der ersten Section jeder Seite (app.js, seitenBilden): zwei aufeinanderfolgende halbhohe Sections
+   sind eine Seite, eine größere beginnt immer eine eigene */
+@media only screen and (min-device-width: 350px) and (max-device-width: 812px) {
+    body:not(.edit-mode) section {
+        scroll-snap-align: none;
+    }
+
+    body:not(.edit-mode) section.seitenstart {
+        scroll-snap-align: start;
+    }
+}

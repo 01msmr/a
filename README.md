@@ -213,6 +213,19 @@ Liste gefüllt und ins Sichtfeld gescrollt. Namen verlieren eine Endung (`tbx.li
   ohne eigene Zeit (kein Vorauseilen, Zurückbleiben oder Zucken). Nur ein Tap auf eine Section animiert es (feste Dauer). Beim Übergang vom Tap-Ziel in die Kopplung klingt der Abstand zum Rahmen der Scrollposition in 280 ms ab (Smoothstep), das Fenster springt nicht. Auf Touch ist das Kachel-Licht aus: es gibt keinen Zeiger, und von iOS nachgeschobene Mausereignisse zählen nicht (sonst blieb das Licht an der Berührungsstelle auf dem Bildschirm hängen, während darunter gescrollt wurde). Hochkant auf dem iPhone ist `scroll-snap-stop`
   normal: ein Wisch darf mehrere Sections überspringen.
 
+### Seiten auf dem Smartphone
+
+Auf dem Smartphone (`istPhone()`, `PHONE_QUERY`) rasten nicht alle Sections ein, sondern **Seiten** (`seitenBilden` in `app.js`, beim
+Messen in `fensterMessen`):
+
+- Zwei aufeinanderfolgende **halbhohe** Sections (Höhe höchstens die halbe Inhaltshöhe) bilden eine Seite: ein Einrastpunkt, beide zugleich auf dem Bildschirm.
+- Eine übrig bleibende halbhohe Section bleibt allein. Sie bekommt eine leere halbhohe Section dahinter (`margin-bottom`, auch als letzte), damit die Seite voll
+  ist und eine folgende größere Section auf einer eigenen Seite beginnt (drei halbhohe, dann eine große: Seite 1 = zwei, Seite 2 = die dritte mit leerer unterer Hälfte, Seite 3 = die große).
+- Eine größere Section beginnt immer eine eigene Seite; ist sie höher als der Bildschirm, scrollt sie darin frei (der Einrastpunkt liegt an ihrem Anfang).
+- Einrastpunkt ist die erste Section jeder Seite (`.seitenstart`, `scroll-snap-align: start`). Das Leuchtfenster deckt beim Scrollen und beim Tippen die ganze Seite
+  (`fenster.seiten`); Stepper, Pfeile und Dropdown springen von Seite zu Seite bzw. zum Anfang der Seite des Ziels (`seitenStart`, `jumpBy`).
+- Im Edit-Mode gibt es keine Seiten.
+
 ### Zentrale Variablen
 
 Im ersten `:root` von `styles.css` stehen die Stellgrößen; `app.js` liest sie einmal

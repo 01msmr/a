@@ -24,6 +24,9 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 **Home-Icon (iOS)**
 - Neue Icons `favicon/ico-light-{180,192,512}.png` und `ico-dark-{180,192,512}.png`: das „a.“ in Ubuntu (Schrift der Seite, Medium), opak gerendert (hell #eee/schwarz, dunkel #333/weiß), statt der alten Graustufen-PNGs mit Alpha, die iOS nur klein oder gar nicht zeigte. `index.html` verlinkt das helle als `apple-touch-icon` und beide als `icon` mit `prefers-color-scheme`; das Manifest listet 180, 192 und 512 px (hell). Neue Dateinamen, weil iOS Icons je URL zwischenspeichert. Der Web-App-Modus (standalone) bleibt aus.
 
+**Smartphone: Seiten aus Sections**
+- Zwei aufeinanderfolgende halbhohe Sections bilden eine Seite (ein Einrastpunkt), eine übrig bleibende bleibt allein und bekommt eine leere halbhohe Section dahinter (auch als letzte), eine größere beginnt immer eine eigene Seite und scrollt, wenn höher als der Bildschirm, darin frei. `seitenBilden` (in `fensterMessen`) setzt `.seitenstart` und den Füllraum (`margin-bottom`); das Leuchtfenster deckt die ganze Seite; Stepper, Pfeile und Dropdown springen von Seite zu Seite (`seitenStart`, `jumpBy`, `springeZu`). Im Edit-Mode keine Seiten.
+
 **Touch: Übergang nach dem Tippen**
 - Tippt man in eine Section und scrollt danach, sprang das Fenster vom Tap-Ziel auf den Rahmen der Scrollposition, die Unterkante ruckelte. Jetzt klingt der Abstand beim Übergang in 280 ms ab (Smoothstep, `f.versatz` in `fensterScroll`; zuerst als Exponentialabklang mit 110 ms, der am Anfang ruckte).
 - Auf Touch ist das Kachel-Licht aus (`zeigerArtSetzen` setzt `lichtMaus` und `mausPunkt` zurück und ruft `lichtHart()`; die `mouseover`-/`mousemove`-Handler des Lichts ignorieren von iOS nachgeschobene Mausereignisse). Vorher blieb es an der Berührungsstelle auf dem Bildschirm hängen, während darunter gescrollt wurde.

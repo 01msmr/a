@@ -82,7 +82,9 @@ function springeZu(hash) {
     // Auffangnetz: die letzte Section erreicht den oberen Rand evtl. nie
     setTimeout(function () { selSprung = null; syncActive(); }, 1500);
     var el = document.querySelector(hash);
-    if (el) el.scrollIntoView();
+    // Smartphone: der Einrastpunkt der Seite, sonst rastet das Ziel auf den Anfang der Seite zurück
+    var zielSec = el && el.closest('section');
+    if (el) (zielSec ? seitenStart(zielSec).querySelector('.name') || el : el).scrollIntoView();
     // Maus: der ruhende Zeiger wird ignoriert, bis er bewegt wird (auch beim Loslassen über einem Eintrag, ohne pointerdown darauf)
     var sec = el && el.closest('section');
     if (sec && !document.body.classList.contains('tastatur') && !document.body.classList.contains('edit-mode')) {
@@ -384,6 +386,9 @@ var fenster = {
 // ── Zeigerart ─────────────────────────────────────────────────────
 // Maus oder Finger/Stift, wie beim letzten pointerdown (Mausbewegung stellt zurück). Touch hat kein Hover: das von iOS
 // hängengelassene :hover zählt nicht, deshalb schaltet body.touch in styles.css alle Hover- und Druckeffekte ab.
+var PHONE_QUERY = 'only screen and (min-device-width: 350px) and (max-device-width: 812px)';
+function istPhone() { return matchMedia(PHONE_QUERY).matches; }
+
 var zeigerArt = 'mouse';
 function istTouch() { return zeigerArt !== 'mouse'; }
 function zeigerArtSetzen(art) {
@@ -518,6 +523,7 @@ function fensterMessen() {
             group.classList.toggle('voll', leer === 0 || getComputedStyle(group).display !== 'grid');
         }
     });
+    if (seitenBilden(c, secs)) return fensterMessen();   // Füllraum geändert: die Lage der folgenden Sections neu messen
     secs.forEach(function (s) { sig.push(s.y, s.h); });
     zeilen.forEach(function (z) { sig.push(z.y); });
     sig = sig.join(',');
@@ -562,7 +568,15 @@ function fensterMalen(top, bot) {
 function fensterRahmen(sec) {
     for (var i = 0; i < fenster.secs.length; i++) {
         var s = fenster.secs[i];
-        if (s.el === sec) return { top: s.y, bot: s.y + s.h };
+        if (s.el === sec) {
+            // Smartphone: das Fenster deckt die ganze Seite (beide Sections eines Paares)
+            var p = istPhone() && fenster.seitenIdx && fenster.seitenIdx.filter(function (q) { return q.indexOf(i) >= 0; })[0];
+            if (p && p.length > 1) {
+                var a = fenster.secs[p[0]], b = fenster.secs[p[p.length - 1]];
+                return { top: a.y, bot: b.y + b.h };
+            }
+            return { top: s.y, bot: s.y + s.h };
+        }
     }
     return { top: 0, bot: 0 };
 }
@@ -589,12 +603,53 @@ function fensterZu(ziel, animiert) {
     f.raf = requestAnimationFrame(fensterSchritt);
 }
 
+// Smartphone: Seiten aus Sections. Zwei aufeinanderfolgende halbhohe Sections bilden eine Seite (ein Einrastpunkt, beide zugleich auf dem
+// Bildschirm); eine übrig bleibende halbhohe Section bleibt allein (die untere Hälfte bleibt leer); eine größere Section beginnt immer
+// eine eigene Seite und ist, wenn höher als der Bildschirm, darin frei scrollbar. Der Einrastpunkt ist die erste Section jeder Seite
+// (.seitenstart, styles.css). Jede Seite ist ein Rahmen (y bis bot) für das Fenster; seitenIdx hält die Section-Nummern je Seite.
+function seitenBilden(c, secs) {
+    var phone = istPhone() && !document.body.classList.contains('edit-mode');
+    var H = c.clientHeight, seiten = [], i = 0;
+    var halb = function (s) { return s.h <= H * 0.5 + 3; };
+    while (i < secs.length) {
+        if (phone && halb(secs[i]) && i + 1 < secs.length && halb(secs[i + 1])) { seiten.push([i, i + 1]); i += 2; }
+        else { seiten.push([i]); i++; }
+    }
+    fenster.seitenIdx = seiten;
+    fenster.seiten = seiten.map(function (p) {
+        var a = secs[p[0]], b = secs[p[p.length - 1]];
+        return { y: a.y, h: b.y + b.h - a.y };
+    });
+    var start = {}, allein = {}, geaendert = false;
+    seiten.forEach(function (p) { start[p[0]] = true; if (p.length === 1 && halb(secs[p[0]])) allein[p[0]] = true; });
+    secs.forEach(function (s, k) {
+        var want = phone && !!start[k];
+        if (s.el.classList.contains('seitenstart') !== want) s.el.classList.toggle('seitenstart', want);
+        // eine allein stehende halbhohe Section bekommt eine leere halbhohe Section dahinter (Füllraum), auch als letzte:
+        // so bleibt die Seite voll, und eine folgende größere Section beginnt auf einer eigenen Seite
+        var fuell = phone && allein[k] ? Math.max(0, Math.round(H - s.h)) + 'px' : '';
+        if (s.el.style.marginBottom !== fuell) { s.el.style.marginBottom = fuell; geaendert = true; }
+    });
+    return geaendert;
+}
+
+// Section, die auf dem Smartphone den Einrastpunkt ihrer Seite bildet (sonst die Section selbst): dorthin springen Dropdown, Stepper und Pfeile
+function seitenStart(sec) {
+    var secs = document.querySelectorAll('#container section');
+    var idx = Array.prototype.indexOf.call(secs, sec);
+    if (idx < 0 || !fenster.seitenIdx || !istPhone() || document.body.classList.contains('edit-mode')) return sec;
+    for (var k = 0; k < fenster.seitenIdx.length; k++) {
+        if (fenster.seitenIdx[k].indexOf(idx) >= 0) return secs[fenster.seitenIdx[k][0]];
+    }
+    return sec;
+}
+
 // Touch: beim Scrollen ist das Fenster eine Funktion der Scrollposition. Zwischen zwei Section-Oberkanten geht es vom Rahmen der einen
 // zu dem der nächsten über (Oberkante = Scrollposition), am Einrastpunkt deckt es genau die Section. So läuft es mit dem Finger und dem
 // Auslauf, ohne eigene Zeit: kein Vorauseilen, Zurückbleiben oder Zucken bei Zielwechseln. Die letzte Section erreicht die Oberkante evtl. nie:
 // Ihr Übergang endet beim größten Scrollweg.
 function fensterScroll() {
-    var f = fenster, c = f.container, l = f.secs;
+    var f = fenster, c = f.container, l = f.seiten && f.seiten.length ? f.seiten : f.secs;
     if (!l.length) return;
     cancelAnimationFrame(f.raf); f.raf = 0;
     f.ziel = null;   // danach neu bestimmen
@@ -766,7 +821,7 @@ function ghostHeaderRender() {
     var c = fenster.container;
     if (!c) return;
     // Smartphone: keine Ghost headers, die Titel bleiben an ihrer Section und scrollen mit ihr aus der Ansicht
-    var phone = matchMedia('only screen and (min-device-width: 350px) and (max-device-width: 812px)').matches;
+    var phone = istPhone();
     var sec = document.body.classList.contains('edit-mode') || phone ? null : ghostHeaderSection();
     var cr = c.getBoundingClientRect(), hoch = c.clientHeight;
     var edge = null, name = sec && sec.querySelector('.name'), hoehe = 0, abstand = 0, warten = null;
@@ -1414,6 +1469,16 @@ function jumpBy(delta, umlaufen) {
         var aktiv = document.querySelector('#container section h3.name.active');
         base = 0;
         sections.forEach(function (s, i) { if (aktiv && s.contains(aktiv)) base = i; });
+    }
+    // Smartphone: von Seite zu Seite (ein Paar halbhoher Sections ist eine Seite)
+    if (istPhone() && fenster.seitenIdx && !document.body.classList.contains('edit-mode')) {
+        var seiten = fenster.seitenIdx, sp = 0;
+        seiten.forEach(function (p, k) { if (p.indexOf(base) >= 0) sp = k; });
+        var zp = umlaufen ? ((sp + delta) % seiten.length + seiten.length) % seiten.length : Math.max(0, Math.min(seiten.length - 1, sp + delta));
+        jumpTarget = seiten[zp][0];
+        sections[jumpTarget].scrollIntoView();
+        focusContent(sections[jumpTarget]);
+        return;
     }
     var ziel = base + delta;
     jumpTarget = umlaufen
