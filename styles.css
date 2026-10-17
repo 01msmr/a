@@ -1673,7 +1673,7 @@ body.view-grid .geist .name {
     border-bottom-width: 0;
 }
 
-/* weicher Schatten auf den Inhalt, 66 % einer Kachelhöhe (--schatten, von app.js gesetzt) */
+/* weicher Schatten auf den Inhalt, 66 % einer Kachelhöhe (--schatten, von app.js gesetzt); er beginnt mit einer dünnen dunklen Linie (1 px) */
 .geist::after {
     content: "";
     position: absolute;
@@ -1683,7 +1683,7 @@ body.view-grid .geist .name {
     opacity: var(--staerke, 1);
     pointer-events: none;
     background: linear-gradient(var(--richtung, to bottom),
-        rgba(0, 0, 0, .3), rgba(0, 0, 0, .22) 20%, rgba(0, 0, 0, .12) 45%, rgba(0, 0, 0, .04) 75%, rgba(0, 0, 0, 0));
+        rgba(0, 0, 0, .55), rgba(0, 0, 0, .55) 1px, rgba(0, 0, 0, .3) 1px, rgba(0, 0, 0, .22) 20%, rgba(0, 0, 0, .12) 45%, rgba(0, 0, 0, .04) 75%, rgba(0, 0, 0, 0));
 }
 
 .geist.oben::after {
