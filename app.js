@@ -1,4 +1,4 @@
-// ── Ansichts-Einstellungen ────────────────────────────────────────
+// ── View settings ─────────────────────────────────────────────────
 var PREF_DEFAULTS = { navMode: 'short', align: 'left', view: 'chips', colorMode: 'vivid' };
 
 function getPref(name) {
@@ -24,34 +24,34 @@ applyPrefs();
 
 // ── Render ────────────────────────────────────────────────────────
 var syncActive = function () { };
-var lock = { sec: null, x: 0, y: 0, kind: '' };   // nach Klick auf Titel, Chip oder Listeneintrag gesperrte Section (s. fensterZiel); art: 'titel' oder 'nav'
-var jumperValue = '';   // Hash der aktiven Section (oder des Sprungziels); die Liste markiert ihn
-var selJump = null;   // Ziel eines Sprungs über das Dropdown: es zeigt bis zur Ankunft diese Section
+var lock = { sec: null, x: 0, y: 0, kind: '' };   // section locked after a click on heading, chip or list entry (see glowTarget); kind: 'title' or 'nav'
+var jumperValue = '';   // hash of the active section (or of the jump target); the list marks it
+var selJump = null;   // target of a jump via the dropdown: until arrival it shows this section
 
-// kräftige, gesättigte Farben (ohne Grauanteil): weiße Schrift (hell) bzw. dunkle Schrift (dunkel) bleibt lesbar
+// strong, saturated colors (no gray): white text (light) or dark text (dark) stays readable
 var SEC_COLORS = ['#f85a5a', '#fb8f2a', '#e2a800', '#8ac430', '#2fc16c', '#22b59f', '#18b4d6',
     '#4a92f0', '#6c70f2', '#9a62f0', '#c456e8', '#ea4fa8', '#f4587a', '#f67a3a', '#2fae82'];
 
-// Section-Farbe: gleiche Helligkeit und Tönung, die Sättigung folgt --farb-int (styles.css, Einstellung „Farbe“)
+// Section color: same lightness and tint, saturation follows --color-intensity (styles.css, "Color" setting)
 function sectionColor(idx, intensity) {
     return 'oklch(from ' + SEC_COLORS[idx % SEC_COLORS.length] + ' l calc(c * ' + (intensity || 'var(--color-intensity, 1)') + ') h)';
 }
 
 function makeIcon(icon) {
     var i = document.createElement('i');
-    // APP-Section: Font Awesomes fa-square (nächstes Rundrechteck) statt der eigenen Squircle-Maske
+    // APP section: Font Awesome's fa-square (closest rounded rectangle) instead of our own squircle mask
     if (icon === 'icon-squircle') icon = 'fa-square';
     i.className = 'fa-solid ' + (icon || 'fa-hashtag') + ' secicon';
     i.setAttribute('aria-hidden', 'true');
     return i;
 }
 
-// Chip, Titel und Listeneintrag einer Section leuchten gemeinsam, sobald einer davon berührt wird
+// Chip, heading and list entry of a section light up together as soon as one of them is touched
 function coupleHover(members) {
     members.forEach(function (el) {
         var others = members.filter(function (x) { return x !== el; });
         var mark = function (name, on) { others.forEach(function (x) { x.classList.toggle(name, on); }); };
-        // Touch hat kein Hover: emulierte Maus-Events würden den ersten Tap als Hover verschlucken
+        // Touch has no hover: emulated mouse events would swallow the first tap as a hover
         el.addEventListener('pointerenter', function (ev) { if (ev.pointerType === 'mouse') mark('with-hover', true); });
         el.addEventListener('pointerleave', function (ev) { if (ev.pointerType === 'mouse') { mark('with-hover', false); mark('with-press', false); } });
         el.addEventListener('mousedown', function () { mark('with-press', true); });
@@ -59,7 +59,7 @@ function coupleHover(members) {
     });
 }
 
-// Knopf einer Section (Nav-Chip und Eintrag der Sections-Liste): gleiche Gestalt, gleiche Effekte (a.sec-btn in styles.css)
+// Button of a section (nav chip and entry of the sections list): same shape, same effects (a.sec-btn in styles.css)
 function sectionButton(sec, idx, withoutSuffix) {
     var a = document.createElement('a');
     a.className = 'sec-btn';
@@ -70,22 +70,22 @@ function sectionButton(sec, idx, withoutSuffix) {
     a.appendChild(makeIcon(sec.icon));
     var t = document.createElement('span');
     t.className = 'secshort';
-    t.textContent = withoutSuffix ? sec.title.replace(/\..*$/, '') : sec.title;   // „tbx.li“ → „tbx“: passt in die schmale Liste
+    t.textContent = withoutSuffix ? sec.title.replace(/\..*$/, '') : sec.title;   // "tbx.li" → "tbx": fits into the narrow list
     a.appendChild(t);
     return a;
 }
 
-// Sprung zu einer Section (Dropdown-Liste)
+// Jump to a section (dropdown list)
 function jumpTo(hash) {
     selJump = hash;
     jumperValue = hash;
-    // Auffangnetz: die letzte Section erreicht den oberen Rand evtl. nie
+    // Safety net: the last section may never reach the top edge
     setTimeout(function () { selJump = null; syncActive(); }, 1500);
     var el = document.querySelector(hash);
-    // Smartphone: der Einrastpunkt der Seite, sonst rastet das Ziel auf den Anfang der Seite zurück
+    // Smartphone: the snap point of the page, otherwise the target snaps back to the start of the page
     var destSec = el && el.closest('section');
     if (el) (destSec ? pageStart(destSec).querySelector('.name') || el : el).scrollIntoView();
-    // Maus: der ruhende Zeiger wird ignoriert, bis er bewegt wird (auch beim Loslassen über einem Eintrag, ohne pointerdown darauf)
+    // Mouse: the resting pointer is ignored until it moves (also when releasing over an entry, without a pointerdown on it)
     var sec = el && el.closest('section');
     if (sec && !document.body.classList.contains('keyboard') && !document.body.classList.contains('edit-mode')) {
         lockOn(sec, mousePoint ? mousePoint.x : 0, mousePoint ? mousePoint.y : 0, 'nav');
@@ -94,7 +94,7 @@ function jumpTo(hash) {
     focusContent(el && el.closest('section'));
 }
 
-// Sections-Liste: ein Eintrag je Section (Icon oder Name), öffnet statt des nativen Menüs
+// Sections list: one entry per section (icon or name), opens instead of the native menu
 function jumperList(data) {
     var pop = document.getElementById('jumper-pop'), entry = {};
     pop.innerHTML = '';
@@ -105,7 +105,7 @@ function jumperList(data) {
             pop.hidePopover();
             jumpTo('#' + sec.id);
         });
-        // Touch: der Tap wählt sofort, ohne auf die emulierte Maus zu warten
+        // Touch: the tap selects immediately, without waiting for the emulated mouse
         a.addEventListener('pointerup', function (ev) {
             if (ev.pointerType === 'mouse') return;
             ev.preventDefault();
@@ -114,7 +114,7 @@ function jumperList(data) {
         pop.appendChild(a);
         entry[sec.id] = a;
     });
-    return entry;   // Section-ID → Eintrag, für die gekoppelte Hervorhebung
+    return entry;   // section ID → entry, for the coupled highlight
 }
 
 (function () {
@@ -123,8 +123,8 @@ function jumperList(data) {
     function isOpen() { return pop.matches(':popover-open'); }
     function openList() {
         var r = sel.getBoundingClientRect(), upper = r.top > window.innerHeight / 2;
-        pop.style.width = r.width + 'px';   // bündig mit dem Feld, wie das Einstellungs-Overlay
-        pop.style.setProperty('--set-height', navButtonHeight() + 'px');   // Einträge so hoch wie die Einstellungs-Knöpfe, auch im Raster mit voller Breite
+        pop.style.width = r.width + 'px';   // flush with the field, like the settings overlay
+        pop.style.setProperty('--set-height', navButtonHeight() + 'px');   // entries as tall as the settings buttons, also in the full-width grid
         pop.style.left = r.left + 'px';
         pop.style.top = upper ? 'auto' : r.bottom + 'px';
         pop.style.bottom = upper ? (window.innerHeight - r.top) + 'px' : 'auto';
@@ -135,18 +135,18 @@ function jumperList(data) {
         });
         pop.showPopover();
         var ak = pop.querySelector('a.active');
-        if (ak) ak.scrollIntoView({ block: 'nearest' });   // die aktive Section ist beim Öffnen sichtbar
+        if (ak) ak.scrollIntoView({ block: 'nearest' });   // the active section is visible on opening
     }
     function entryAt(ev) {
         var el = document.elementFromPoint(ev.clientX, ev.clientY);
         return el && el.closest ? el.closest('#jumper-pop a') : null;
     }
-    // drücken, auf einen Eintrag ziehen, loslassen wählt ihn (wie beim Einstellungs-Overlay); ein einfacher Klick öffnet/schließt
+    // press, drag onto an entry, release selects it (like the settings overlay); a simple click opens/closes
     var pressed = false, wasOpen = false;
     var lastTouch = 0;
     sel.addEventListener('mousedown', function (ev) {
-        ev.preventDefault();   // kein natives Menü
-        if (Date.now() - lastTouch < 800) return;   // emulierte Maus nach Touch: schon behandelt
+        ev.preventDefault();   // no native menu
+        if (Date.now() - lastTouch < 800) return;   // emulated mouse after touch: already handled
         pressed = true;
         wasOpen = isOpen();
         if (!wasOpen) openList();
@@ -159,7 +159,7 @@ function jumperList(data) {
         else if (ev.target.closest('#section-jumper')) { if (wasOpen) pop.hidePopover(); }
         else pop.hidePopover();
     });
-    // Touch: antippen, ziehen und loslassen in einem Zug; ein einfacher Tap öffnet/schließt
+    // Touch: tap, drag and release in one go; a simple tap opens/closes
     var dragId = null, dragOpen = false, dragEntry = null;
     function dragMark(e) {
         if (e === dragEntry) return;
@@ -202,7 +202,7 @@ function jumperList(data) {
     });
     pop.addEventListener('toggle', function (ev) {
         sel.setAttribute('aria-expanded', ev.newState === 'open');
-        // schließt die Liste unter dem Zeiger, kommt kein mouseleave: die gekoppelte Hervorhebung zurücknehmen
+        // the list closes under the pointer and no mouseleave comes: undo the coupled highlight
         if (ev.newState !== 'open') document.querySelectorAll('.with-hover, .with-press').forEach(function (x) { x.classList.remove('with-hover', 'with-press'); });
     });
     document.addEventListener('pointerdown', function (ev) {
@@ -216,13 +216,13 @@ function jumperList(data) {
 function render(data) {
     var chipOf = {};
     var nav = document.getElementById('section-nav-list');
-    var gear = document.getElementById('settings-btn');   // Chips stehen vor Zahnrad und Dropdown
+    var gear = document.getElementById('settings-btn');   // chips come before gear and dropdown
     nav.querySelectorAll('.secname').forEach(function (a) { a.remove(); });
 
     data.forEach(function (sec, idx) {
         var a = sectionButton(sec, idx);
         a.classList.add('secname');
-        // gewickelt, damit nicht das Event als Fokusziel ankommt
+        // wrapped so the event does not arrive as the focus target
         a.addEventListener('click', function () { focusContent(); });
         nav.insertBefore(a, gear);
         chipOf[sec.id] = a;
@@ -235,8 +235,8 @@ function render(data) {
 
     data.forEach(function (sec, idx) {
         var section = document.createElement('section');
-        section.style.setProperty('--c', sectionColor(idx));   // erbt an Titel und Kacheln
-        section.tabIndex = -1;   // fokussierbar, aber nicht in der Tab-Reihenfolge
+        section.style.setProperty('--c', sectionColor(idx));   // inherited by heading and tiles
+        section.tabIndex = -1;   // focusable, but not in the tab order
 
         var h3 = document.createElement('h3');
         h3.id = sec.id;
@@ -251,7 +251,7 @@ function render(data) {
         titleLink.appendChild(document.createTextNode(sec.title));
         h3.appendChild(titleLink);
         coupleHover([chipOf[sec.id], entryOf[sec.id], h3]);
-        // die Maus irgendwo in der Section (Titel, Hintergrund, Kachel): ihr Chip zeigt die weiche Hover-Fläche (nur Maus)
+        // the mouse anywhere in the section (heading, background, tile): its chip shows the soft hover area (mouse only)
         (function (chip) {
             section.addEventListener('pointerenter', function (ev) { if (ev.pointerType === 'mouse') chip.classList.add('sec-hover'); });
             section.addEventListener('pointerleave', function () { chip.classList.remove('sec-hover'); });
@@ -261,14 +261,14 @@ function render(data) {
         ul.className = 'group';
         (sec.links || []).forEach(function (link, i) {
             var li = makeLi(link.name, link.url, link.dead);
-            li.dataset.name0 = link.name;   // Ursprungswerte für den Vergleich
+            li.dataset.name0 = link.name;   // original values for the comparison
             li.dataset.url0 = link.url;
             li.dataset.pos0 = i;
             li.dataset.sec0 = sec.id;
             ul.appendChild(li);
         });
 
-        section.dataset.pos0 = idx;   // Ausgangsposition der Section für den Vergleich beim Speichern
+        section.dataset.pos0 = idx;   // starting position of the section for the comparison when saving
         section.appendChild(h3);
         section.appendChild(ul);
         container.appendChild(section);
@@ -281,8 +281,8 @@ function render(data) {
     lightInit();
     cursorSecInit();
     glowInit();
-    // Reload mit #hash: der Browser springt in nachgeladenem Inhalt nicht selbst dorthin,
-    // sonst zeigt der Inhalt die erste Section, während die Markierung zur Adresse gehört
+    // Reload with #hash: the browser does not jump there on its own in content loaded later,
+    // otherwise the content shows the first section while the highlight belongs to the address
     var dest = location.hash.length > 1 && document.getElementById(location.hash.slice(1));
     if (dest) {
         dest.scrollIntoView({ behavior: 'instant' });
@@ -291,7 +291,7 @@ function render(data) {
     focusContent();
 }
 
-// Ersatz für scrollend ohne Wartezeit: ruft fn, sobald die Scrollposition zwei Frames lang stillsteht
+// Replacement for scrollend without waiting: calls fn as soon as the scroll position has been still for two frames
 var stillRaf = new Map();
 function whenStill(fn) {
     cancelAnimationFrame(stillRaf.get(fn));
@@ -305,7 +305,7 @@ function whenStill(fn) {
     })();
 }
 
-// Oberste sichtbare Section: Chip invertiert, Dropdown nachgeführt.
+// Topmost visible section: chip inverted, dropdown kept in sync.
 function trackActiveSection() {
     var container = document.getElementById('container');
     var chips = document.querySelectorAll('.secname');
@@ -317,15 +317,15 @@ function trackActiveSection() {
         var active = chips.length ? chips[0].hash : '';
         var activeEl = null;
         headings.forEach(function (h3) {
-            if (h3.getBoundingClientRect().top - top <= 24) {   // schon kurz vor dem Einrasten aktiv
+            if (h3.getBoundingClientRect().top - top <= 24) {   // active shortly before snapping
                 active = '#' + h3.id;
                 activeEl = h3;
             }
         });
-        // Der aktive Chip folgt nur der Scrollposition, nie der Maus: über einer Section, einem Titel oder einer Kachel zeigt ihr Chip
-        // die weiche Hover-Fläche (.sec-hover bzw. .mit-hover), der aktive Chip bleibt unverändert
+        // The active chip only follows the scroll position, never the mouse: over a section, a heading or a tile its chip shows
+        // the soft hover area (.sec-hover or .with-hover), the active chip stays unchanged
         var nav = active;
-        // nach dem Klick auf Titel oder Chip bleibt dessen Chip aktiv, bis Maus oder Tastatur sich rühren
+        // after a click on a heading or chip its chip stays active until the mouse or keyboard moves
         var locked = lock.sec && !document.body.classList.contains('keyboard') && lock.sec.querySelector('h3.name');
         if (locked) nav = '#' + locked.id;
         chips.forEach(function (chip) {
@@ -334,34 +334,34 @@ function trackActiveSection() {
         headings.forEach(function (h3) {
             var fits = '#' + h3.id === active;
             h3.classList.toggle('active', fits);
-            // Section markieren — greift auch beim Scrollen von Hand
+            // mark the section — also works when scrolling by hand
             h3.closest('section').classList.toggle('current', fits);
         });
-        // angedockter Header → Rahmen der Leiste mitfärben, kein heller Spalt
+        // docked header → color the bar's border too, no light gap
         document.body.classList.toggle('docked',
             !!activeEl && activeEl.getBoundingClientRect().top - top <= 1);
         if (selJump === null || selJump === active) { selJump = null; jumperValue = active; }
-        jumpTarget = null;   // Scrollen zur Ruhe gekommen
+        jumpTarget = null;   // scrolling has come to rest
     };
 
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Tab' || e.key.indexOf('Arrow') === 0) setTimeout(syncActive);
     });
 
-    // erst nach Scroll-Ruhe nachziehen
-    // während des Scrollens alle 80 ms nachziehen (auch bei sehr langsamem Wischen), am Ende (scrollend oder Ruhe) ein letztes Mal
+    // catch up only after scrolling has settled
+    // while scrolling catch up every 80 ms (even for very slow swiping), one last time at the end (scrollend or stillness)
     var last = 0;
     container.addEventListener('scroll', function () {
         clearTimeout(timer);
         var now = performance.now();
         if (now - last > 80) { last = now; syncActive(); }
-        whenStill(syncActive);   // scrollend kommt auf iOS nicht immer: Ruhe zusätzlich selbst erkennen
+        whenStill(syncActive);   // scrollend does not always come on iOS: also detect stillness ourselves
     });
     container.addEventListener('scrollend', function () { clearTimeout(timer); syncActive(); });
     syncActive();
 }
 
-// Zahlen aus den CSS-Variablen (:root in styles.css), einmal gelesen
+// Numbers from the CSS variables (:root in styles.css), read once
 var measures = {};
 function readMeasures() {
     var cs = getComputedStyle(document.documentElement);
@@ -373,19 +373,19 @@ function readMeasures() {
 function glide(t) { return Math.pow(t, measures['glide-power']); }
 readMeasures();
 
-// ── Leuchtfenster ─────────────────────────────────────────────────
-// Die leuchtende Section (Hover, Nav-Chip, Tastatur, sonst die oberste) ist ein Fenster, das zur
-// nächsten gleitet und dabei wächst bzw. schrumpft. Die Farbe wechselt hart an den Section-Kanten:
-// jede Section malt nur ihren Teil des Fensters als Hintergrund. Zeilen (Titel, Gruppe, Kacheln)
-// bekommen .gedeckt, sobald ihre Mitte im Fenster liegt. Maße liegen im Inhalt, Scrollen ändert sie nicht.
+// ── Glow window ───────────────────────────────────────────────────
+// The glowing section (hover, nav chip, keyboard, otherwise the topmost) is a window that glides to the
+// next one, growing or shrinking on the way. The color changes abruptly at the section edges:
+// each section paints only its part of the window as its background. Rows (heading, group, tiles)
+// get .covered as soon as their middle lies inside the window. Measures live in the content, scrolling does not change them.
 var glow = {
     container: null, secs: [], rows: [], sig: '', top: 0, bot: 0, dest: null,
     from: null, to: null, t0: 0, duration: 0, raf: 0, obs: []
 };
 
-// ── Zeigerart ─────────────────────────────────────────────────────
-// Maus oder Finger/Stift, wie beim letzten pointerdown (Mausbewegung stellt zurück). Touch hat kein Hover: das von iOS
-// hängengelassene :hover zählt nicht, deshalb schaltet body.touch in styles.css alle Hover- und Druckeffekte ab.
+// ── Pointer kind ──────────────────────────────────────────────────
+// Mouse or finger/pen, as of the last pointerdown (mouse movement resets it). Touch has no hover: the :hover that iOS
+// leaves hanging does not count, which is why body.touch in styles.css switches off all hover and press effects.
 var PHONE_QUERY = 'only screen and (min-device-width: 350px) and (max-device-width: 812px)';
 function isPhone() { return matchMedia(PHONE_QUERY).matches; }
 
@@ -394,14 +394,14 @@ function isTouch() { return pointerKind !== 'mouse'; }
 function setPointerKind(kind) {
     pointerKind = kind;
     document.body.classList.toggle('touch', kind !== 'mouse');
-    // Touch hat keinen Zeiger: das Kachel-Licht darf nicht an der Berührungsstelle auf dem Bildschirm hängenbleiben, während darunter gescrollt wird
+    // Touch has no pointer: the tile light must not stay stuck at the touch point on the screen while the content scrolls underneath
     if (kind !== 'mouse') { lightMouse = null; mousePoint = null; lightReset(); }
 }
 
-// Nach dem Klick auf einen Titel, Nav-Chip oder Listeneintrag scrollt die Section nach oben, und der ruhende Zeiger liegt danach über einer anderen.
-// Bis zur nächsten echten Mausbewegung (mehr als 4 px), einem anderen Klick oder (nur nach einem Titelklick) einem Tastendruck bleibt die angeklickte Section das Ziel.
+// After a click on a heading, nav chip or list entry the section scrolls to the top, and the resting pointer then lies over another one.
+// Until the next real mouse movement (more than 4 px), another click or (only after a heading click) a key press, the clicked section stays the target.
 
-// art: 'titel' (ein Tastendruck löst die Sperre) oder 'nav' (Chip oder Listeneintrag)
+// kind: 'title' (a key press releases the lock) or 'nav' (chip or list entry)
 function lockOn(sec, x, y, kind) {
     lock.sec = sec;
     lock.kind = kind;
@@ -422,12 +422,12 @@ function lockOff() {
     lightPlan();
 }
 
-// schon beim Drücken, damit der Chip sofort aktiv ist (kein Hover-/Druck-Zustand) und der Zeiger beim Hochscrollen verschwindet
-// Maus: schon beim Drücken. Touch: erst beim Klick, damit ein Wisch über die Chips oder den Titel nichts aktiviert
+// already on press, so the chip is active immediately (no hover/press state) and the pointer disappears when scrolling up
+// Mouse: already on press. Touch: only on click, so a swipe over the chips or the heading activates nothing
 function lockFromEvent(e, touch) {
     var dest = (touch || e.button === 0) && !document.body.classList.contains('edit-mode') && e.target.closest && e.target.closest('#container .name a, a.sec-btn');
     var sec = dest && (dest.matches('a.sec-btn') ? (document.querySelector(dest.getAttribute('href')) || dest).closest('section') : dest.closest('section'));
-    // Touch: auch ein Tap auf Hintergrund oder Kachel aktiviert die Section (es gibt kein Hover)
+    // Touch: a tap on the background or a tile also activates the section (there is no hover)
     if (!sec && touch && !document.body.classList.contains('edit-mode') && e.target.closest) { sec = e.target.closest('#container section'); dest = null; }
     if (!sec) { lockOff(); return; }
     lockOn(sec, e.clientX, e.clientY, dest && dest.matches('a.sec-btn') ? 'nav' : 'title');
@@ -442,17 +442,17 @@ document.addEventListener('click', function (e) {
 document.addEventListener('mousemove', function (e) {
     if (lock.sec && Math.hypot(e.clientX - lock.x, e.clientY - lock.y) > 4) lockOff();
 }, { passive: true });
-// ein Tastendruck hebt nur die Sperre nach einem Titelklick auf, nicht die nach einem Chipklick
+// a key press only releases the lock after a heading click, not the one after a chip click
 document.addEventListener('keydown', function () { if (lock.kind === 'title') lockOff(); });
 
 document.addEventListener('pointermove', function (e) {
     if (e.pointerType === 'mouse' && isTouch()) setPointerKind('mouse');
 }, true);
 
-// ── Touch-Wischen ─────────────────────────────────────────────────
-// Solange der Inhalt scrollt (samt Auslauf), ist das Fenster an die Scrollposition gekoppelt (fensterScroll) und die Chips zeigen keine Hover-Optik (html.swiping).
+// ── Touch swiping ─────────────────────────────────────────────────
+// While the content scrolls (including the coasting), the window is tied to the scroll position (glowScroll) and the chips show no hover look (html.swiping).
 var swiping = false;
-// Das Wischen endet erst, wenn der Finger oben ist: hält er beim Ziehen kurz still, ruht zwar das Scrollen, es geht aber gleich weiter
+// Swiping only ends when the finger is up: if it pauses while dragging, scrolling rests, but it goes on right away
 var fingerDown = false;
 document.addEventListener('touchstart', function () { fingerDown = true; }, { passive: true, capture: true });
 ['touchend', 'touchcancel'].forEach(function (n) {
@@ -466,12 +466,12 @@ function swipeEnd() {
     glowSync();
 }
 document.addEventListener('scrollend', function () { if (swiping) swipeEnd(); }, true);
-// Wischen mit dem Finger beendet die Klick-Sperre (die Maus tut das per Bewegung)
+// Swiping with a finger ends the click lock (the mouse does that by moving)
 document.addEventListener('touchmove', function () { if (lock.sec) lockOff(); }, { passive: true });
 document.addEventListener('scroll', function () {
     if (!isTouch()) return;
     swiping = true;
-    // nicht am body: dessen Klassenwechsel löst eine Neuvermessung aus und stört den Auslauf
+    // not on the body: its class change triggers a re-measure and disturbs the coasting
     document.documentElement.classList.add('swiping');
     whenStill(swipeEnd);
 }, true);
@@ -485,7 +485,7 @@ function glowTarget() {
     } else {
         s = isTouch() ? null : c.querySelector('section:hover');
         if (!s && !isTouch()) {
-            // auch der Chip der aktiven Section zählt: ihr Titel zeigt dieselbe Hover-Fläche wie jeder andere
+            // the chip of the active section counts too: its heading shows the same hover area as any other
             var h = c.querySelector('.name.with-hover');
             s = h && h.closest('section');
         }
@@ -494,7 +494,7 @@ function glowTarget() {
     return s ? { sec: s, hot: hot } : null;
 }
 
-// misst alle Section- und Zeilenmitten im Inhalt; true, wenn sich etwas verschoben hat
+// measures all section and row midpoints in the content; true if something has moved
 function glowMeasure() {
     var c = glow.container, cr = c.getBoundingClientRect(), st = c.scrollTop;
     var secs = [], rows = [], sig = [];
@@ -510,12 +510,12 @@ function glowMeasure() {
         var lis = el.querySelectorAll('li');
         lis.forEach(function (li, i) {
             var rl = li.getBoundingClientRect();
-            // die letzte Kachel meldet ihrer Gruppe, ob die letzte Zeile gedeckt ist (leere Rasterfelder)
+            // the last tile tells its group whether the last row is covered (empty grid cells)
             rows.push({ el: li, y: y(rl) + Math.round(rl.height / 2), on: null, end: i === lis.length - 1 ? group : null });
-            // die untere Rasterlinie schaltet an der Unterkante der Zeile, nicht in ihrer Mitte
+            // the bottom grid line switches at the bottom edge of the row, not in its middle
             rows.push({ el: li, y: y(rl) + Math.round(rl.height) - 1, on: null, cls: 'covered-bottom' });
         });
-        // leere Felder der letzten Rasterzeile (Spalten minus Rest), für ::after der Gruppe
+        // empty cells of the last grid row (columns minus remainder), for ::after of the group
         if (group) {
             var columns = getComputedStyle(group).gridTemplateColumns.split(' ').length;
             var empty = lis.length ? (columns - lis.length % columns) % columns : columns;
@@ -523,12 +523,12 @@ function glowMeasure() {
             group.classList.toggle('full', empty === 0 || getComputedStyle(group).display !== 'grid');
         }
     });
-    if (buildPages(c, secs)) return glowMeasure();   // Füllraum geändert: die Lage der folgenden Sections neu messen
+    if (buildPages(c, secs)) return glowMeasure();   // filler changed: measure the position of the following sections again
     secs.forEach(function (s) { sig.push(s.y, s.h); });
     rows.forEach(function (z) { sig.push(z.y); });
     sig = sig.join(',');
-    // Zustand der alten Zeilen mitnehmen, damit nichts flackert
-    // (eine Zeile kann zwei Zustände haben: Mitte .gedeckt, Unterkante .gedeckt-u)
+    // carry over the state of the old rows so nothing flickers
+    // (a row can have two states: middle .covered, bottom edge .covered-bottom)
     var old = new Map();
     glow.rows.forEach(function (z) {
         var m = old.get(z.el) || {};
@@ -548,7 +548,7 @@ function glowPaint(top, bot) {
     glow.top = top; glow.bot = bot;
     glow.secs.forEach(function (s) {
         var lo = Math.max(top, s.y) - s.y, hi = Math.min(bot, s.y + s.h) - s.y;
-        // bis zur Unterkante der Section gedeckt: 1 px darüber hinaus malen (der Rest wird beschnitten), sonst bleibt bei gebrochener Höhe ein Streifen
+        // covered up to the bottom edge of the section: paint 1 px beyond (the rest is clipped), otherwise a stripe remains at fractional heights
         if (bot >= s.y + s.h) hi += 1;
         var image = hi > lo
             ? 'linear-gradient(to bottom, transparent ' + lo + 'px, var(--c) ' + lo + 'px, var(--c) ' + hi + 'px, transparent ' + hi + 'px)'
@@ -569,7 +569,7 @@ function glowFrame(sec) {
     for (var i = 0; i < glow.secs.length; i++) {
         var s = glow.secs[i];
         if (s.el === sec) {
-            // Smartphone: das Fenster deckt die ganze Seite (beide Sections eines Paares)
+            // Smartphone: the window covers the whole page (both sections of a pair)
             var p = isPhone() && glow.pageIdx && glow.pageIdx.filter(function (q) { return q.indexOf(i) >= 0; })[0];
             if (p && p.length > 1) {
                 var a = glow.secs[p[0]], b = glow.secs[p[p.length - 1]];
@@ -583,19 +583,19 @@ function glowFrame(sec) {
 
 function glowStep(now) {
     var f = glow, t = Math.min(1, (now - f.t0) / f.duration);
-    // beschleunigt von Anfang an und endet hart: kein Auslaufen
+    // accelerates from the start and ends hard: no coasting
     var e = glide(t);
     glowPaint(f.from.top + (f.to.top - f.from.top) * e, f.from.bot + (f.to.bot - f.from.bot) * e);
     f.raf = t < 1 ? requestAnimationFrame(glowStep) : 0;
 }
 
-// sofort ans Ziel (Start, Layoutwechsel) oder gleitend
+// straight to the target (start, layout change) or gliding
 function glowTo(dest, animated) {
     var f = glow;
     cancelAnimationFrame(f.raf); f.raf = 0;
     var to = glowFrame(dest && dest.sec);
     if (!animated) { glowPaint(to.top, to.bot); return; }
-    // reduzierte Bewegung heißt kürzer, nicht keine
+    // reduced motion means shorter, not none
     var short = matchMedia('(prefers-reduced-motion: reduce)').matches;
     f.from = { top: f.top, bot: f.bot }; f.to = to;
     f.duration = short ? measures['glow-duration-short'] : measures['glow-duration'];
@@ -603,10 +603,10 @@ function glowTo(dest, animated) {
     f.raf = requestAnimationFrame(glowStep);
 }
 
-// Smartphone: Seiten aus Sections. Zwei aufeinanderfolgende halbhohe Sections bilden eine Seite (ein Einrastpunkt, beide zugleich auf dem
-// Bildschirm); eine übrig bleibende halbhohe Section bleibt allein (die untere Hälfte bleibt leer); eine größere Section beginnt immer
-// eine eigene Seite und ist, wenn höher als der Bildschirm, darin frei scrollbar. Der Einrastpunkt ist die erste Section jeder Seite
-// (.page-start, styles.css). Jede Seite ist ein Rahmen (y bis bot) für das Fenster; pageIdx hält die Section-Nummern je Seite.
+// Smartphone: pages made of sections. Two consecutive half-height sections form one page (one snap point, both on the
+// screen at once); a remaining half-height section stays alone (the lower half stays empty); a larger section always starts
+// its own page and, if taller than the screen, scrolls freely inside it. The snap point is the first section of each page
+// (.page-start, styles.css). Each page is a frame (y to bot) for the window; pageIdx holds the section numbers per page.
 function buildPages(c, secs) {
     var phone = isPhone() && !document.body.classList.contains('edit-mode');
     var H = c.clientHeight, pages = [], i = 0;
@@ -625,15 +625,15 @@ function buildPages(c, secs) {
     secs.forEach(function (s, k) {
         var want = phone && !!starts[k];
         if (s.el.classList.contains('page-start') !== want) s.el.classList.toggle('page-start', want);
-        // eine allein stehende halbhohe Section bekommt eine leere halbhohe Section dahinter (Füllraum), auch als letzte:
-        // so bleibt die Seite voll, und eine folgende größere Section beginnt auf einer eigenen Seite
+        // a lone half-height section gets an empty half-height section behind it (filler), also as the last one:
+        // so the page stays full, and a following larger section starts on its own page
         var filler = phone && lone[k] ? Math.max(0, Math.round(H - s.h)) + 'px' : '';
         if (s.el.style.marginBottom !== filler) { s.el.style.marginBottom = filler; changed = true; }
     });
     return changed;
 }
 
-// Section, die auf dem Smartphone den Einrastpunkt ihrer Seite bildet (sonst die Section selbst): dorthin springen Dropdown, Stepper und Pfeile
+// Section that forms the snap point of its page on the smartphone (otherwise the section itself): dropdown, steppers and arrows jump there
 function pageStart(sec) {
     var secs = document.querySelectorAll('#container section');
     var idx = Array.prototype.indexOf.call(secs, sec);
@@ -644,15 +644,15 @@ function pageStart(sec) {
     return sec;
 }
 
-// Touch: beim Scrollen ist das Fenster eine Funktion der Scrollposition. Zwischen zwei Section-Oberkanten geht es vom Rahmen der einen
-// zu dem der nächsten über (Oberkante = Scrollposition), am Einrastpunkt deckt es genau die Section. So läuft es mit dem Finger und dem
-// Auslauf, ohne eigene Zeit: kein Vorauseilen, Zurückbleiben oder Zucken bei Zielwechseln. Die letzte Section erreicht die Oberkante evtl. nie:
-// Ihr Übergang endet beim größten Scrollweg.
+// Touch: while scrolling, the window is a function of the scroll position. Between two section top edges it moves from the frame of one
+// to that of the next (top edge = scroll position), at the snap point it covers exactly the section. So it runs with the finger and the
+// coasting, without its own time: no running ahead, lagging behind or twitching on target changes. The last section may never reach the top edge:
+// its transition ends at the maximum scroll distance.
 function glowScroll() {
     var f = glow, c = f.container, l = f.pages && f.pages.length ? f.pages : f.secs;
     if (!l.length) return;
     cancelAnimationFrame(f.raf); f.raf = 0;
-    f.dest = null;   // danach neu bestimmen
+    f.dest = null;   // determine anew afterwards
     var st = c.scrollTop, max = c.scrollHeight - c.clientHeight, i = 0;
     while (i + 1 < l.length && l[i + 1].y <= st + 0.5) i++;
     var a = l[i], top = a.y, bot = a.y + a.h;
@@ -661,14 +661,14 @@ function glowScroll() {
         top = a.y + (b.y - a.y) * p;
         bot = a.y + a.h + (b.y + b.h - a.y - a.h) * p;
     }
-    // Übergang vom Tap-Ziel (oder einer Animation) in die Kopplung: der Abstand zum Rahmen der Scrollposition klingt in 280 ms ab (Smoothstep),
-    // statt dass das Fenster dorthin springt (das ließ die Unterkante nach dem Tippen und Scrollen ruckeln)
+    // Transition from the tap target (or an animation) into the coupling: the distance to the scroll position's frame fades out over 280 ms (smoothstep),
+    // instead of the window jumping there (that made the bottom edge stutter after tapping and scrolling)
     var now = performance.now();
     if (!f.inScroll) { f.inScroll = true; f.offset = { top: f.top - top, bot: f.bot - bot, t0: now }; }
-    var v = f.offset, t = v ? Math.min(1, (now - v.t0) / 280) : 1, k = v ? 1 - t * t * (3 - 2 * t) : 0;   // Smoothstep: ohne Ruck am Anfang und am Ende
+    var v = f.offset, t = v ? Math.min(1, (now - v.t0) / 280) : 1, k = v ? 1 - t * t * (3 - 2 * t) : 0;   // smoothstep: no jerk at the start and at the end
     if (v && t >= 1) { f.offset = v = null; k = 0; }
     glowPaint(top + (v ? v.top * k : 0), bot + (v ? v.bot * k : 0));
-    if (v) f.raf = requestAnimationFrame(glowScroll);   // weiter abklingen, auch wenn das Scrollen kurz ruht
+    if (v) f.raf = requestAnimationFrame(glowScroll);   // keep fading, even if scrolling pauses briefly
 }
 
 function glowSync() {
@@ -680,7 +680,7 @@ function glowSync() {
         glowScroll();
         return;
     }
-    f.inScroll = false;   // nicht an die Scrollposition gekoppelt: beim nächsten Übergang neu ansetzen
+    f.inScroll = false;   // not tied to the scroll position: start anew at the next transition
     var z = glowTarget();
     f.container.querySelectorAll('section.hot').forEach(function (s) {
         if (!z || s !== z.sec || !z.hot) s.classList.remove('hot');
@@ -695,7 +695,7 @@ function glowSync() {
 function glowLayout() {
     var f = glow;
     if (!f.container || !glowMeasure()) return;
-    f.dest = null;   // neu bestimmen und ohne Gleiten setzen
+    f.dest = null;   // determine anew and set without gliding
     glowSync();
 }
 
@@ -707,8 +707,8 @@ function glowPlan(fn) {
     };
 }
 
-// Beobachter mit Notbremse: ändert ein Aufruf das Beobachtete wieder (z. B. classList.remove ohne Wirkung zählt als Änderung),
-// ruft er sich in derselben Aufgabe endlos neu auf und friert die Seite ein. Nach 500 Aufrufen ohne Atempause wird er getrennt.
+// Observer with an emergency brake: if a call changes the observed thing again (e.g. a classList.remove without effect counts as a change),
+// it calls itself endlessly in the same task and freezes the page. After 500 calls without a break it is disconnected.
 function safeObserve(dest, options, fn) {
     var n = 0, reset = 0;
     var obs = new MutationObserver(function (ms) {
@@ -740,7 +740,7 @@ function glowInit() {
     var ro = new ResizeObserver(layout);
     ro.observe(c);
     c.querySelectorAll('section').forEach(function (s) { ro.observe(s); });
-    // Klassen (aktuell, mit-hover, tastatur) ändern das Ziel; neue Kacheln und Ansichtswechsel die Maße
+    // Classes (current, with-hover, keyboard) change the target; new tiles and view changes the measures
     var mo = safeObserve(c, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] }, function (ms) {
         var sizes = ms.some(function (m) { return m.type === 'childList'; });
         (sizes ? layout : sync)();
@@ -753,7 +753,7 @@ function glowInit() {
     f.obs.push(ro, mo, bo);
 }
 
-// Ereignisse hängen am Dokument und gelten für jeden Durchlauf von fensterInit
+// Events hang on the document and apply to every run of glowInit
 ['mouseover', 'mouseout', 'focusin', 'focusout', 'keydown'].forEach(function (n) {
     document.addEventListener(n, glowPlan(glowSync));
 });
@@ -761,22 +761,22 @@ document.addEventListener('scroll', glowPlan(glowSync), true);
 window.addEventListener('resize', glowPlan(glowLayout));
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(glowPlan(glowLayout));
 
-// ── Ghost headers (Geist-Titel) ───────────────────────────────────────────────────
-// Liegt der Titel der Ziel-Section (Nav-Chip unter der Maus oder Sprung nach Klick) außerhalb der Ansicht,
-// klebt eine Kopie am oberen bzw. unteren Rand, bis der echte Titel dort ankommt und natürlich weiterläuft.
-// Wechselt das Ziel, gleitet die neue Kopie über die vorige.
-// Die Kopien stapeln sich: stapel liegt von unten nach oben, cur ist die oberste (das aktuelle Ziel). Am oberen Rand liegt die Kopie
-// der frühesten Section oben, am unteren Rand die der spätesten: ein früheres Ziel legt sich darüber, ein späteres lässt die Kopien davor
-// hinausgleiten; kehrt das Ziel zu einer Kopie im Stapel zurück, gleiten die darüber hinaus und sie ist wieder frei.
+// ── Ghost headers ─────────────────────────────────────────────────
+// If the heading of the target section (nav chip under the mouse or jump after a click) lies outside the view,
+// a copy sticks to the top or bottom edge until the real heading arrives there and moves on naturally.
+// When the target changes, the new copy glides over the previous one.
+// The copies stack: stack runs from bottom to top, cur is the topmost (the current target). At the top edge the copy
+// of the earliest section is on top, at the bottom edge that of the latest: an earlier target lays itself over, a later one makes the copies in front
+// glide out; if the target returns to a copy in the stack, those above glide out and it is free again.
 var ghostHeader = { layer: null, cur: null, stack: [], leaving: [], jump: null, jumpTimer: 0, removeTimer: 0, underTimer: 0, free: 0, followTimer: 0 };
 
-// Lage außerhalb der Ansicht: die Kopie samt Schatten (--schatten) und Linie liegt ganz draußen
+// Position outside the view: the copy, including shadow (--shadow) and line, lies completely outside
 function ghostHeaderOffscreen(edge) {
     return edge === 'top' ? 'translateY(calc(-100% - var(--shadow, 1.5rem) - 2px))' : 'translateY(calc(100% + var(--shadow, 1.5rem) + 2px))';
 }
 
 function ghostHeaderDuration() {
-    // 400 ms, bei reduzierter Bewegung kurz wie das Fenster
+    // 400 ms, short like the window for reduced motion
     return matchMedia('(prefers-reduced-motion: reduce)').matches ? measures['glow-duration-short'] : 400;
 }
 
@@ -790,7 +790,7 @@ function ghostHeaderLayer() {
     return ghostHeader.layer;
 }
 
-// Sprung (Klick, Dropdown, Pfeiltasten): die Kopie bleibt, bis der Titel in der Ansicht ist
+// Jump (click, dropdown, arrow keys): the copy stays until the heading is in view
 function ghostHeaderJump(sec) {
     ghostHeader.jump = sec;
     clearTimeout(ghostHeader.jumpTimer);
@@ -806,7 +806,7 @@ function ghostHeaderSection() {
 
 function ghostHeaderRemove(g, gliding, pale) {
     if (!g) return;
-    if (pale) {   // Übergabe an den echten Titel: kurz ausblenden, damit ein Versatz von wenigen Pixeln nicht springt
+    if (pale) {   // hand-over to the real heading: fade out briefly so an offset of a few pixels does not jump
         g.el.style.transition = 'opacity 60ms linear';
         g.el.style.opacity = '0';
         setTimeout(function () { g.el.remove(); }, 70);
@@ -820,7 +820,7 @@ function ghostHeaderRemove(g, gliding, pale) {
 function ghostHeaderRender() {
     var c = glow.container;
     if (!c) return;
-    // Smartphone: keine Ghost headers, die Titel bleiben an ihrer Section und scrollen mit ihr aus der Ansicht
+    // Smartphone: no ghost headers, the headings stay with their section and scroll out of view with it
     var phone = isPhone();
     var sec = document.body.classList.contains('edit-mode') || phone ? null : ghostHeaderSection();
     var cr = c.getBoundingClientRect(), tall = c.clientHeight;
@@ -831,9 +831,9 @@ function ghostHeaderRender() {
         if (r.top < cr.top - 0.5) { edge = 'top'; distance = cr.top - r.top; }
         else if (r.top > cr.top + tall - heightPx + 0.5) { edge = 'bottom'; distance = r.top - (cr.top + tall - heightPx); }
         else if (sec === ghostHeader.jump) {
-            // angekommen: die Kopie liegt über dem echten Titel, bis das Fenster ihn gedeckt hat (sonst blitzt er grau auf)
+            // arrived: the copy lies over the real heading until the window has covered it (otherwise it flashes gray)
             var upper = r.top - cr.top + c.scrollTop, f = glow;
-            var covered = name.classList.contains('covered') && f.top <= upper + 0.5 && f.bot >= upper + heightPx - 0.5;   // Zeile ganz im Fenster
+            var covered = name.classList.contains('covered') && f.top <= upper + 0.5 && f.bot >= upper + heightPx - 0.5;   // row completely inside the window
             if (covered || !ghostHeader.cur || ghostHeader.cur.sec !== sec) ghostHeader.jump = null;
             else waiting = r.top - cr.top;
         }
@@ -845,24 +845,24 @@ function ghostHeaderRender() {
         return;
     }
     var now = performance.now();
-    // Wechsel laufen einzeln: läuft einer, wartet das Ziel auf dessen Ende, und nur das letzte zählt.
-    // So gleiten bei schnellem Überfahren mehrerer Chips nie mehrere Kopien gleichzeitig wie ein Fächer.
+    // Changes run one at a time: if one is running, the target waits for its end, and only the last one counts.
+    // So hovering quickly over several chips never makes several copies glide at once like a fan.
     function waitForEnd() {
         if (now >= ghostHeader.free) return false;
         clearTimeout(ghostHeader.followTimer);
         ghostHeader.followTimer = setTimeout(ghostHeaderRender, ghostHeader.free - now + 10);
         return true;
     }
-    function followStep() {   // der nächste Schritt (Stapel Stück für Stück abbauen oder aufbauen) nach diesem Wechsel
+    function followStep() {   // the next step (taking the stack down or building it up piece by piece) after this change
         clearTimeout(ghostHeader.followTimer);
         ghostHeader.followTimer = setTimeout(ghostHeaderRender, ghostHeader.free - performance.now() + 10);
     }
-    // ein- und hinausgleiten: ease-out (schnell am Anfang, langsam am Ende)
+    // glide in and out: ease-out (fast at the start, slow at the end)
     var curve = 'transform ' + ghostHeaderDuration() + 'ms cubic-bezier(.215, .61, .355, 1)';
-    function slideOut(g) {   // gleitet samt Schatten und Linie hinaus und wird danach entfernt
+    function slideOut(g) {   // glides out including shadow and line and is removed afterwards
         g.el.style.transition = curve;
         g.el.style.transform = ghostHeaderOffscreen(g.edge);
-        g.el.classList.add('out');   // Schatten und Linie blenden am Ende des Hinausgleitens schnell aus (styles.css)
+        g.el.classList.add('out');   // shadow and line fade out quickly at the end of gliding out (styles.css)
         g.el.style.setProperty('--fade-delay', Math.round(ghostHeaderDuration() * 0.75) + 'ms');
         g.el.style.setProperty('--fade-duration', Math.round(ghostHeaderDuration() * 0.25) + 'ms');
         ghostHeader.leaving.push(g);
@@ -874,7 +874,7 @@ function ghostHeaderRender() {
             ghostHeader.leaving = [];
         }, ghostHeaderDuration() + 30);
     }
-    // Die Kopien gleiten gemeinsam hinaus (ein Wechsel), die oberste der übrigen wird frei und bekommt ihren Schatten zurück
+    // The copies glide out together (one change), the topmost of the rest becomes free and gets its shadow back
     function slideOutAll(list, pale) {
         list.forEach(function (g) { if (pale && g.sec === sec) ghostHeaderRemove(g, false, true); else slideOut(g); });
         ghostHeader.stack = ghostHeader.stack.filter(function (g) { return list.indexOf(g) < 0; });
@@ -884,7 +884,7 @@ function ghostHeaderRender() {
         scheduleRemoval();
     }
     if (!edge) {
-        // Kein Ziel oder sein Titel steht in der Ansicht: alle Kopien gleiten hinaus
+        // No target, or its heading is in view: all copies glide out
         if (!ghostHeader.stack.length) return;
         if (waitForEnd()) return;
         ghostHeader.free = now + ghostHeaderDuration();
@@ -898,9 +898,9 @@ function ghostHeaderRender() {
     layer.style.height = tall + 'px';
     var tile = c.querySelector('li');
     layer.style.setProperty('--shadow', (tile ? tile.offsetHeight : heightPx) * measures['ghost-header-shadow'] + 'px');
-    // nach einem Klick läuft der Schatten aus, je näher der echte Titel seiner Stelle kommt; dort ist er weg
+    // after a click the shadow fades out the closer the real heading gets to its place; there it is gone
     var strength = sec === ghostHeader.jump ? Math.min(1, distance / (measures['ghost-header-fade'] * heightPx)) : 1;
-    // darunterliegende Kopien, deren echter Titel inzwischen in der Ansicht steht, verschwinden
+    // copies underneath whose real heading is now in view disappear
     ghostHeader.stack = ghostHeader.stack.filter(function (g) {
         if (g === cur) return true;
         if (!ghostHeaderEdge(g.sec, cr, tall)) { ghostHeaderRemove(g, false, true); return false; }
@@ -915,29 +915,29 @@ function ghostHeaderRender() {
         cur.el.style.top = (edge === 'top' ? 0 : tall - heightPx) + 'px';
         return;
     }
-    // Es wechselt etwas
+    // Something changes
     if (waitForEnd()) return;
     ghostHeader.free = now + ghostHeaderDuration();
-    // anderer Rand: erst gleitet der ganze Stapel hinaus, danach beginnt der neue
+    // other edge: first the whole stack glides out, then the new one begins
     if (cur && cur.edge !== edge) {
         slideOutAll(ghostHeader.stack.slice(), false);
         followStep();
         return;
     }
-    // das Ziel liegt schon im Stapel: die Kopien darüber gleiten gemeinsam hinaus, es ist wieder frei
+    // the target is already in the stack: the copies above glide out together, it is free again
     var pos = ghostHeader.stack.findIndex(function (g) { return g.sec === sec; });
     if (pos >= 0) {
         slideOutAll(ghostHeader.stack.slice(pos + 1), false);
         refresh(ghostHeader.stack[pos]);
         return;
     }
-    // Neues Ziel: Kopien, die weiter weg liegen als das Ziel, gleiten zuerst hinaus (Schritt 2, das Einfahren, folgt nach diesem Wechsel);
-    // die näheren bleiben darunter. Schnelles Überfahren lässt Zwischenschritte aus (nur das letzte Ziel zählt).
+    // New target: copies that lie further away than the target glide out first (step 2, gliding in, follows after this change);
+    // the nearer ones stay underneath. Hovering quickly skips intermediate steps (only the last target counts).
     var targetRank = ghostHeaderRank(sec, edge);
     var further = ghostHeader.stack.filter(function (g) { return ghostHeaderRank(g.sec, edge) > targetRank; });
     if (further.length) { slideOutAll(further, false); followStep(); return; }
-    // Der Stapel enthält alle Sections zwischen der Ansicht und dem Ziel: die dazwischen liegen fertig unter dem Ziel (ohne Schatten und Linie)
-    // und werden beim Rückweg freigelegt, ohne vorher herunterzugleiten
+    // The stack contains all sections between the view and the target: those in between lie ready under the target (without shadow and line)
+    // and are uncovered on the way back, without gliding down first
     function place(g) {
         var k = ghostHeader.stack.findIndex(function (x) { return ghostHeaderRank(x.sec, edge) > ghostHeaderRank(g.sec, edge); });
         if (k < 0) { layer.appendChild(g.el); ghostHeader.stack.push(g); }
@@ -951,7 +951,7 @@ function ghostHeaderRender() {
         g.el.classList.add('under');
         place(g);
     });
-    // die bisher oberste liegt jetzt unter dem Ziel: kein zweiter Schatten und keine zweite Linie (sonst wird es immer dunkler); erst wenn das Ziel da ist, damit keine Lücke entsteht
+    // the previous topmost now lies under the target: no second shadow and no second line (otherwise it gets darker and darker); only once the target is there, so no gap appears
     var beneath = ghostHeader.stack.slice();
     clearTimeout(ghostHeader.underTimer);
     ghostHeader.underTimer = setTimeout(function () {
@@ -962,17 +962,17 @@ function ghostHeaderRender() {
     ghostHeader.stack.push(fresh);
     fresh.el.style.setProperty('--strength', strength);
     fresh.el.classList.toggle('hot', !!sec.querySelector('.name.with-hover'));
-    // das Ziel gleitet ein, samt Schatten und Linie
+    // the target glides in, including shadow and line
     fresh.el.style.transform = ghostHeaderOffscreen(edge);
-    fresh.el.getBoundingClientRect();   // Ausgangslage festschreiben
-    // beschleunigt und endet hart, wie das Fenster
+    fresh.el.getBoundingClientRect();   // commit the starting position
+    // accelerates and ends hard, like the window
     fresh.el.style.transition = curve;
     fresh.el.style.transform = 'none';
     ghostHeader.cur = fresh;
     scheduleRemoval();
 }
 
-// Rand, an dem der Titel einer Section außerhalb der Ansicht liegt ('top', 'bottom'); null, wenn er in der Ansicht steht
+// Edge at which the heading of a section lies outside the view ('top', 'bottom'); null if it is in view
 function ghostHeaderEdge(sec, cr, tall) {
     var r = sec.querySelector('.name').getBoundingClientRect();
     if (r.top < cr.top - 0.5) return 'top';
@@ -980,12 +980,12 @@ function ghostHeaderEdge(sec, cr, tall) {
     return null;
 }
 
-// Entfernung von der Ansicht: größer heißt weiter weg (oben die früheren Sections, unten die späteren)
+// Distance from the view: larger means further away (at the top the earlier sections, at the bottom the later ones)
 function ghostHeaderRank(sec, edge) {
     return edge === 'top' ? -ghostHeaderIndex(sec) : ghostHeaderIndex(sec);
 }
 
-// Eine Kopie des Titels, am Rand ausgerichtet (Ausgangslage: an ihrem Platz)
+// A copy of the heading, aligned to the edge (starting position: at its place)
 function ghostHeaderMake(sec, edge, tall) {
     var name = sec.querySelector('.name'), el = document.createElement('div');
     el.className = 'ghost-header ' + edge;
@@ -999,7 +999,7 @@ function ghostHeaderMake(sec, edge, tall) {
     return { sec: sec, el: el, edge: edge };
 }
 
-// Position einer Section im Inhalt (Reihenfolge der Titel)
+// Position of a section in the content (order of the headings)
 function ghostHeaderIndex(sec) {
     return Array.prototype.indexOf.call(glow.container.querySelectorAll('section'), sec);
 }
@@ -1010,11 +1010,11 @@ function ghostHeaderReset() {
     ghostHeader.cur = null; ghostHeader.stack = []; ghostHeader.leaving = []; ghostHeader.jump = null;
 }
 
-// ── Kachel-Licht (Chips und Raster) ───────────────────────────────
-// Die Hover-Fläche der Kachel ist ein einzelnes Element, das von Kachel zu Kachel gleitet
-// (beschleunigt, endet hart). Aus dem Nichts kommt sie in voller Größe von außen in die Kachel
-// und verlässt sie genauso, beschnitten auf die Kachel; nichts skaliert. Sie liegt im Inhalt und scrollt mit.
-// modus: 'aus' (unsichtbar), 'ein' (auf einer Kachel oder unterwegs dorthin), 'raus' (verlässt die Kachel).
+// ── Tile light (chips and grid) ───────────────────────────────────
+// The hover area of the tile is a single element that glides from tile to tile
+// (accelerating, ends hard). Out of nowhere it comes in full size from outside into the tile
+// and leaves it the same way, clipped to the tile; nothing scales. It lies in the content and scrolls with it.
+// mode: 'off' (invisible), 'on' (on a tile or on the way there), 'out' (leaves the tile).
 var light = { el: null, mode: 'off', tile: null, old: null, inverted: new Set(), cur: null, from: null, to: null,
     clip: null, radius: 0, t0: 0, duration: 0, linear: false, raf: 0, end: null, cursor: null };
 
@@ -1032,19 +1032,19 @@ function lightPaint(r) {
     light.cur = r;
     var s = light.el.style, k = light.clip;
     s.left = r.x + 'px'; s.top = r.y + 'px'; s.width = r.w + 'px'; s.height = r.h + 'px';
-    // beschnitten auf das Rechteck der Kachel (ohne Rundung) als festes Fenster im Raum: nur der Teil des Lichts darin zeigt sich
+    // clipped to the tile's rectangle (without rounding) as a fixed window in space: only the part of the light inside it shows
     s.clipPath = k
         ? 'xywh(' + (k.x - r.x) + 'px ' + (k.y - r.y) + 'px ' + k.w + 'px ' + k.h + 'px)'
         : '';
 }
 
-// Rundung der Kachelfläche (a::before), damit Licht und Beschnitt exakt wie die Kachel gerundet sind
+// Rounding of the tile surface (a::before), so light and clip are rounded exactly like the tile
 function lightRadius(a) {
     light.radius = parseFloat(getComputedStyle(a, '::before').borderTopLeftRadius) || 0;
     light.el.style.borderRadius = light.radius + 'px';
 }
 
-// Der Strich-Cursor sitzt im Licht und gleitet mit: Lage relativ zum Licht = Zeiger relativ zur Zielkachel; Farbe der Section
+// The line cursor sits in the light and glides along: position relative to the light = pointer relative to the target tile; color of the section
 function lightLine(li, mouseX) {
     var sec = li.closest('section');
     light.el.style.setProperty('--sc', sec ? sec.style.getPropertyValue('--c') : '');
@@ -1052,7 +1052,7 @@ function lightLine(li, mouseX) {
     light.cursor.style.left = (mouseX - li.querySelector('a').getBoundingClientRect().left) + 'px';
 }
 
-// Anteil der Kachel, den das Licht deckt
+// Share of the tile that the light covers
 function lightCoverage(r, k) {
     if (!r || !k || !k.w || !k.h) return 0;
     var w = Math.max(0, Math.min(r.x + r.w, k.x + k.w) - Math.max(r.x, k.x));
@@ -1060,8 +1060,8 @@ function lightCoverage(r, k) {
     return (w * h) / (k.w * k.h);
 }
 
-// Die Schrift einer Kachel kehrt um (.da), solange das Licht sie zu mindestens 95 % deckt.
-// Geprüft werden nur die Zielkachel, die verlassene und alle bisher umgekehrten: so bleibt keine hängen.
+// The text of a tile inverts (.inverted) as long as the light covers at least 95 % of it.
+// Only the target tile, the one just left and all previously inverted ones are checked: so none stays stuck.
 function lightInverted() {
     var candidates = new Set(light.inverted);
     if (light.tile) candidates.add(light.tile);
@@ -1076,8 +1076,8 @@ function lightInverted() {
     lightCells();
 }
 
-// Die Zelle unter dem Licht (und die verlassene) trägt die Section-Farbe sofort, ohne auf das Fenster zu warten.
-// Zwei Flächen im Inhalt unter dem Licht; so liegen sie sicher hinter der hellen Kachelfläche.
+// The cell under the light (and the one just left) carries the section color immediately, without waiting for the window.
+// Two areas in the content under the light; so they safely lie behind the bright tile surface.
 function lightCells() {
     var list = light.cells || [];
     var candidates = light.mode === 'off' ? [] : [light.tile, light.old].filter(Boolean);
@@ -1110,7 +1110,7 @@ function lightRun(from, to, duration, linear, end) {
     light.raf = requestAnimationFrame(lightStep);
 }
 
-// Kante der Kachel, der der Zeiger am nächsten ist (ohne Zeiger: links)
+// Edge of the tile that the pointer is closest to (without pointer: left)
 function lightEdge(a, pos) {
     if (!pos) return 'l';
     var r = a.getBoundingClientRect();
@@ -1119,7 +1119,7 @@ function lightEdge(a, pos) {
     return m === d.l ? 'l' : m === d.r ? 'r' : m === d.t ? 't' : 'b';
 }
 
-// die Kachel um ihre eigene Größe über die Kante hinaus verschoben: das Licht "draußen"
+// the tile shifted by its own size beyond the edge: the light "outside"
 function lightOutside(n, rim) {
     var o = { x: n.x, y: n.y, w: n.w, h: n.h };
     if (rim === 'l') o.x = n.x - n.w;
@@ -1129,7 +1129,7 @@ function lightOutside(n, rim) {
     return o;
 }
 
-// sofort weg, ohne Bewegung
+// gone at once, without movement
 function lightReset() {
     cancelAnimationFrame(light.raf); light.raf = 0; light.end = null;
     light.mode = 'off'; light.tile = null; light.old = null; light.clip = null;
@@ -1139,21 +1139,21 @@ function lightReset() {
     if (!light.el) return;
     light.el.style.opacity = '0';
     light.el.style.clipPath = '';
-    // nur wenn gesetzt: classList.remove löst auch ohne Änderung den Body-Beobachter aus (Endlosschleife im Edit-Mode)
+    // only if set: classList.remove triggers the body observer even without a change (infinite loop in edit mode)
     if (document.body.classList.contains('tile-light')) document.body.classList.remove('tile-light');
 }
 
 function lightTo(li, mouseX, mouseY) {
     if (!light.el || !glow.container) return;
     var a = li && li.querySelector('a');
-    if (!a || !lightActive() || lock.sec) { lightReset(); return; }   // gesperrt: scrollende Kacheln unter dem ruhenden Zeiger leuchten nicht
+    if (!a || !lightActive() || lock.sec) { lightReset(); return; }   // locked: scrolling tiles under the resting pointer do not light up
     if (li === light.tile && light.mode === 'on') return;
     var to = lightFrame(a);
     lightRadius(a);
     lightLine(li, mouseX);
     var before = light.tile;
     if (light.mode === 'off') {
-        // aus dem Nichts: von außen über die Eintrittskante in die Kachel, beschnitten auf sie
+        // out of nowhere: from outside over the entry edge into the tile, clipped to it
         light.mode = 'on'; light.tile = li; light.old = null; light.clip = to;
         light.el.style.opacity = '1';
         document.body.classList.add('tile-light');
@@ -1163,14 +1163,14 @@ function lightTo(li, mouseX, mouseY) {
         lightRun(from, to, measures['light-edge-duration'], true, function () { light.clip = null; lightPaint(light.cur); });
         return;
     }
-    // sichtbar (auf einer Kachel oder beim Verlassen): gleitet von hier zur neuen Kachel
+    // visible (on a tile or when leaving): glides from here to the new tile
     if (before && before !== li) light.old = before;
     light.mode = 'on'; light.tile = li; light.clip = null;
     lightCells();
     lightRun(light.cur, to, measures['light-duration'], false, null);
 }
 
-// mit Zeigerposition: das Licht verlässt die Kachel über die Kante, über die der Zeiger ging (Gegenstück zum Eintritt)
+// with pointer position: the light leaves the tile over the edge the pointer crossed (counterpart to the entry)
 function lightOff(pos) {
     if (!light.el || light.mode !== 'on') return;
     var li = light.tile, a = li && li.querySelector('a');
@@ -1202,7 +1202,7 @@ function lightInit() {
 }
 
 document.addEventListener('mouseover', function (e) {
-    if (document.body.classList.contains('keyboard') || isTouch()) return;   // Touch: von iOS nachgeschobene Mausereignisse zählen nicht
+    if (document.body.classList.contains('keyboard') || isTouch()) return;   // Touch: mouse events pushed in by iOS do not count
     var li = e.target.closest && e.target.closest('#container li');
     if (li) lightTo(li, e.clientX, e.clientY); else lightOff({ x: e.clientX, y: e.clientY });
 });
@@ -1211,8 +1211,8 @@ document.documentElement.addEventListener('mouseleave', function (e) {
     lightOff({ x: e.clientX, y: e.clientY });
 });
 
-// Sicherung: das Licht folgt immer der Kachel unter dem Zeiger, auch wenn kein mouseover kam
-// (Scrollen unter ruhendem Zeiger, Wechsel von Tastatur zu Maus, Layoutwechsel)
+// Safety net: the light always follows the tile under the pointer, even if no mouseover came
+// (scrolling under a resting pointer, switch from keyboard to mouse, layout change)
 var lightMouse = null, lightPlanRaf = 0;
 function lightSync() {
     lightPlanRaf = 0;
@@ -1243,29 +1243,29 @@ window.addEventListener('resize', function () {
     lightInverted();
 });
 
-// ── Strich-Zeiger ─────────────────────────────────────────────────
-// Der senkrechte Strich ersetzt den Punkt: Höhe der Zeile unter dem Zeiger (Titel, Nav-Chip),
-// in der Section außerhalb von Titel und Kachel deren Höhe mit 33 % Deckkraft. Auf Kacheln zeichnet ihn die Kachel selbst.
+// ── Line pointer ──────────────────────────────────────────────────
+// The vertical line replaces the dot: height of the row under the pointer (heading, nav chip),
+// in the section outside heading and tile its height at 33 % opacity. On tiles the tile draws it itself.
 var cursor = { el: null, secEl: null, x: 0, y: 0, dest: null, raf: 0, on: false };
 
 function cursorTarget(t) {
-    if (!t || !t.closest || document.body.classList.contains('edit-mode') || document.body.classList.contains('keyboard')) return null;   // Tastatur: ruhender Zeiger zählt nicht
+    if (!t || !t.closest || document.body.classList.contains('edit-mode') || document.body.classList.contains('keyboard')) return null;   // keyboard: a resting pointer does not count
     var z = { sec: t.closest('#container section'), fixed: null, hide: false, head: !!t.closest('#container .name') };
-    // gesperrt: auf Nav-Chips und außerhalb der angeklickten Section der normale Punkt-Zeiger, bis die Maus sich bewegt
+    // locked: on nav chips and outside the clicked section the normal dot pointer, until the mouse moves
     if (lock.sec && (t.closest('a.secname') || z.sec !== lock.sec)) return { sec: null, fixed: null, hide: false, head: false, std: true };
-    // Eintrag der Sections-Liste: derselbe Chevron wie auf dem Nav-Chip (Richtung des Klicks), ohne Strich
+    // Entry of the sections list: the same chevron as on the nav chip (direction of the click), without line
     var entry = t.closest('#jumper-pop a');
     if (entry) return { sec: null, fixed: null, hide: false, head: false, chip: entry, list: true };
-    if (t.closest('li a')) { z.hide = true; z.sec = null; }   // Kachel: nur ihr eigener Strich
+    if (t.closest('li a')) { z.hide = true; z.sec = null; }   // tile: only its own line
     else {
-        // Kachelrand (kein Hintergrund erkennen) bzw. Nav-Chip: Strich in der Höhe der Zeile
+        // Tile edge (no background detected) or nav chip: line at the height of the row
         var el = t.closest('#container li') || t.closest('a.secname');
         if (el) { z.fixed = el; z.sec = null; z.chip = el.matches('a.secname') ? el : null; }
     }
     return z.sec || z.fixed || z.hide ? z : null;
 }
 
-// Richtung, in die ein Klick auf den Nav-Chip scrollt (null: die Section liegt schon oben)
+// Direction in which a click on the nav chip scrolls (null: the section is already at the top)
 function chipDirection(chip) {
     var sec = chip && document.querySelector(chip.getAttribute('href'));
     if (!sec) return null;
@@ -1284,16 +1284,16 @@ function cursorSet() {
         return;
     }
     document.documentElement.classList.add('cursor-on');
-    // in der Section (nicht auf Chip oder Kachel) zeigt das kleine Quadrat die Zeigerposition, auch im Titel, der ganz oben steht
+    // in the section (not on chip or tile) the small square shows the pointer position, also in the heading that is at the very top
     var headerAtTop = z.head && z.sec && Math.abs(z.sec.getBoundingClientRect().top - document.getElementById('container').getBoundingClientRect().top) <= 2;
     document.documentElement.classList.toggle('cursor-dot', !!z.sec && (!z.head || headerAtTop));
-    // im Titel zeigt ein Chevron nach oben die Zeigerposition, auf einem Nav-Chip nach oben oder unten, wohin der Klick scrollt
+    // in the heading a chevron pointing up shows the pointer position, on a nav chip up or down, where the click scrolls
     var direction = z.head ? (headerAtTop ? null : 'up') : chipDirection(z.chip);
-    // normaler Punkt-Zeiger: während der Sperre, und in der Liste, wenn die Section schon oben liegt (kein Chevron)
+    // normal dot pointer: during the lock, and in the list if the section is already at the top (no chevron)
     document.documentElement.classList.toggle('cursor-std', !!z.std || (!!z.list && !direction));
     if (direction) document.documentElement.setAttribute('data-arrow', direction);
     else document.documentElement.removeAttribute('data-arrow');
-    // Zeile unter dem Zeiger (Kachelrand, Nav-Chip): fester Strich in voller Deckkraft
+    // row under the pointer (tile edge, nav chip): fixed line at full opacity
     if (z.fixed && !(z.chip && direction)) {
         var r = z.fixed.getBoundingClientRect();
         s.style.left = cursor.x + 'px';
@@ -1301,9 +1301,9 @@ function cursorSet() {
         s.style.height = r.height + 'px';
         s.style.opacity = '1';
     } else s.style.opacity = '0';
-    // ganze Section (Hintergrund, Titel, hinter den Kacheln): im Inhalt, schwach, scrollt mit
+    // whole section (background, heading, behind the tiles): in the content, faint, scrolls with it
     if (b) {
-        if (z.sec && (!z.head || headerAtTop)) {   // im Titel nur der Chevron, kein Strich; im obersten (aktiven) Titel Punkt und Strich
+        if (z.sec && (!z.head || headerAtTop)) {   // in the heading only the chevron, no line; in the topmost (active) heading dot and line
             var c = document.getElementById('container'), cr = c.getBoundingClientRect(), sr = z.sec.getBoundingClientRect();
             var upper = Math.max(sr.top, cr.top), lower = Math.min(sr.bottom, cr.bottom);
             b.style.left = (cursor.x - cr.left + c.scrollLeft) + 'px';
@@ -1314,7 +1314,7 @@ function cursorSet() {
     }
 }
 
-// Der Section-Strich liegt im Inhalt unter Kacheln und Licht (erstes Kind)
+// The section line lies in the content under tiles and light (first child)
 function cursorSecInit() {
     var c = document.getElementById('container');
     cursor.secEl = document.createElement('div');
@@ -1344,7 +1344,7 @@ function cursorPlan(e) {
     document.addEventListener('scroll', function () { if (cursor.dest) cursorPlan(); }, true);
 })();
 
-// Sections belegen ein ganzes Vielfaches eines Viertels der Inhaltshöhe
+// Sections occupy a whole multiple of a quarter of the content height
 var gridBase = 0;
 
 function gridInit(onlyOnChange) {
@@ -1355,14 +1355,14 @@ function gridInit(onlyOnChange) {
     var on = parseInt(getComputedStyle(document.documentElement)
         .getPropertyValue('--grid'), 10);
 
-    // kein Raster (Desktop) oder Edit-Mode: gesetzte Höhen lösen und raus
+    // no grid (desktop) or edit mode: release set heights and leave
     if (!on || document.body.classList.contains('edit-mode')) {
         sections.forEach(function (s) { s.style.minHeight = ''; });
         gridBase = 0;
         return;
     }
 
-    // Freiraum unten muss genau der Leistenhöhe entsprechen
+    // free space at the bottom must match the bar height exactly
     var bar = document.querySelector('.title');
     if (bar && getComputedStyle(bar).position === 'fixed') {
         container.style.paddingBottom =
@@ -1376,11 +1376,11 @@ function gridInit(onlyOnChange) {
         - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
     if (!(inner > 0)) return;
 
-    // Schwelle gegen Safaris Leistenanimation, die resize im 17-ms-Takt feuert
+    // threshold against Safari's bar animation, which fires resize at a 17 ms rhythm
     if (onlyOnChange && Math.abs(inner - gridBase) < 8) return;
     gridBase = inner;
 
-    // die Section, die gerade oben steht, nach dem Umbau wieder dorthin
+    // the section that is at the top right now, back there after the rebuild
     var upperEdge = container.getBoundingClientRect().top;
     var upper = null;
     sections.forEach(function (s) {
@@ -1390,10 +1390,10 @@ function gridInit(onlyOnChange) {
     var quarter = inner / on;
     sections.forEach(function (s) { s.style.minHeight = ''; });
 
-    // erst alles messen, dann alles setzen
+    // measure everything first, then set everything
     var places = [];
     sections.forEach(function (s) {
-        // 1px Toleranz, sonst rundet eine exakt passende Section auf zwei auf
+        // 1 px tolerance, otherwise an exactly fitting section rounds up to two
         places.push(Math.max(1, Math.ceil((s.getBoundingClientRect().height - 1) / quarter)));
     });
     sections.forEach(function (s, i) {
@@ -1408,7 +1408,7 @@ function gridInit(onlyOnChange) {
     }
 }
 
-// erst nach Ruhe neu rastern, nicht bei jedem Zwischenschritt
+// re-grid only after stillness, not at every intermediate step
 var gridTimer = null;
 
 window.addEventListener('resize', function () {
@@ -1416,24 +1416,24 @@ window.addEventListener('resize', function () {
     gridTimer = setTimeout(function () { gridInit(true); }, 250);
 });
 
-// Icon-Schrift vom CDN ändert nach dem Laden die Kopfhöhe
+// the icon font from the CDN changes the header height after loading
 if (document.fonts) document.fonts.ready.then(function () { gridInit(); });
 
-// nach einem Sprung den Inhalt fokussieren, sonst laufen die Pfeiltasten ins Leere
+// focus the content after a jump, otherwise the arrow keys go nowhere
 function focusContent(sec) {
     var c = document.getElementById('container');
 
-    // Ziel ist die angesprungene Section
+    // target is the section that was jumped to
     var fixed = sec && sec.nodeType === 1 ? sec : null;
 
-    // Ziel bei jedem Versuch neu bestimmen — beim Klick ist der Hash noch alt
+    // determine the target anew on every attempt — on click the hash is still old
     var assign = function () {
         var dest = fixed;
         if (!dest && location.hash.length > 1) {
             var el = document.getElementById(location.hash.slice(1));
             dest = el && el.closest('section');
         }
-        // sofort mitziehen, sonst leuchten bis zur Scroll-Ruhe zwei Bereiche
+        // follow immediately, otherwise two areas glow until scrolling is still
         if (dest) {
             document.querySelectorAll('#container section.current')
                 .forEach(function (s) { s.classList.remove('current'); });
@@ -1443,24 +1443,24 @@ function focusContent(sec) {
         (dest || c).focus({ preventScroll: true });
     };
 
-    // dreifach, weil jeder Zeitpunkt für sich unzuverlässig ist
+    // three times, because each point in time is unreliable on its own
     assign();
     if (document.readyState === 'complete') requestAnimationFrame(assign);
     else window.addEventListener('load', assign, { once: true });
     setTimeout(assign, 250);
 }
 
-// hashchange feuert nach der Sprungmarke — dort sitzt der Fokus zuverlässig
+// hashchange fires after the jump mark — the focus sits there reliably
 window.addEventListener('hashchange', function () { focusContent(); });
 
-// Pfeiltasten summieren sich auf ein Ziel, statt auf die Animation zu warten
+// arrow keys add up to one target instead of waiting for the animation
 var jumpTarget = null;
 
 function jumpBy(delta, wrap) {
     var sections = document.querySelectorAll('#container section');
     if (!sections.length) return;
     var base = jumpTarget;
-    // Maus seit dem letzten Tastendruck bewegt: von der Section unter der Maus aus
+    // mouse moved since the last key press: start from the section under the mouse
     var underMouse = mouseMoved ? mouseSection() : null;
     mouseMoved = false;
     if (underMouse) {
@@ -1470,7 +1470,7 @@ function jumpBy(delta, wrap) {
         base = 0;
         sections.forEach(function (s, i) { if (activeEl && s.contains(activeEl)) base = i; });
     }
-    // Smartphone: von Seite zu Seite (ein Paar halbhoher Sections ist eine Seite, Englisch: page)
+    // Smartphone: from page to page (a pair of half-height sections is one page)
     if (isPhone() && glow.pageIdx && !document.body.classList.contains('edit-mode')) {
         var pages = glow.pageIdx, cur = 0;
         pages.forEach(function (p, k) { if (p.indexOf(base) >= 0) cur = k; });
@@ -1482,27 +1482,27 @@ function jumpBy(delta, wrap) {
     }
     var dest = base + delta;
     jumpTarget = wrap
-        // von der letzten zur ersten und zurück
+        // from the last to the first and back
         ? (dest % sections.length + sections.length) % sections.length
         : Math.max(0, Math.min(sections.length - 1, dest));
     sections[jumpTarget].scrollIntoView();
     focusContent(sections[jumpTarget]);
 }
 
-// Pfeil links/rechts: von Kachel zu Kachel, über Section-Grenzen hinweg.
-// Ausgangspunkt: die zuletzt mit der Maus berührte Kachel, wenn die Maus seit dem
-// letzten Tastendruck bewegt wurde; sonst die fokussierte; sonst die erste der Section
+// Arrow left/right: from tile to tile, across section boundaries.
+// Starting point: the tile last touched with the mouse if the mouse has moved since the
+// last key press; otherwise the focused one; otherwise the first of the section
 var mouseTile = null;
 var mouseMoved = false;
 
-var mousePoint = null;   // letzte Mausposition im Fenster
+var mousePoint = null;   // last mouse position in the window
 
 function mouseSection() {
     var el = mousePoint && document.elementFromPoint(mousePoint.x, mousePoint.y);
     return el && el.closest ? el.closest('#container section') : null;
 }
 
-// erste Kachel einer Section, bei Pfeil links (delta < 0) die letzte
+// first tile of a section, for arrow left (delta < 0) the last
 function tileIn(section, delta) {
     var k = section.querySelectorAll('li a');
     return k.length ? k[delta < 0 ? k.length - 1 : 0] : null;
@@ -1517,7 +1517,7 @@ function linkBy(delta) {
         var tile = el && el.closest && el.closest('#container li a');
         if (tile) i = links.indexOf(tile);
         else {
-            // Maus in einer Section, aber nicht auf einer Kachel: deren erste Kachel
+            // mouse in a section but not on a tile: its first tile
             var below = mouseSection();
             dest = below && tileIn(below, delta);
         }
@@ -1525,11 +1525,11 @@ function linkBy(delta) {
     if (i === -1 && !dest) i = links.indexOf(document.activeElement);
     mouseMoved = false;
     if (dest) {
-        // Ausgangspunkt war die Section unter der Maus
+        // starting point was the section under the mouse
     } else if (i === -1) {
         var sec = document.querySelector('#container section.current') ||
             document.querySelector('#container section');
-        // links: die letzte Kachel der Section, rechts: die erste
+        // left: the last tile of the section, right: the first
         dest = tileIn(sec, delta) || links[0];
     } else {
         dest = links[Math.max(0, Math.min(links.length - 1, i + delta))];
@@ -1537,13 +1537,13 @@ function linkBy(delta) {
     dest.focus();
 }
 
-// Pfeiltasten: auch ohne Fokus im Inhalt (z. B. nach einem Klick in die Leiste) —
-// im Edit-Mode und in Eingabefeldern gehören sie dem Textcursor
+// Arrow keys: also without focus in the content (e.g. after a click in the bar) —
+// in edit mode and in input fields they belong to the text cursor
 document.addEventListener('keydown', function (e) {
     if (document.body.classList.contains('edit-mode')) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     var t = e.target;
-    // Inhalt, Chips und Zahnrad der Leiste; das Dropdown (Button) behält seine Pfeiltasten
+    // Content, chips and gear of the bar; the dropdown (button) keeps its arrow keys
     if (t !== document.body && !(t.closest && t.closest('#container, .title a, .title button'))) return;
     if (t.closest && t.closest('#section-jumper')) return;
     if (e.key === 'ArrowDown') { e.preventDefault(); jumpBy(1); }
@@ -1552,7 +1552,7 @@ document.addEventListener('keydown', function (e) {
     else if (e.key === 'ArrowLeft') { e.preventDefault(); linkBy(-1); }
 });
 
-// Sprungtasten der unteren Leiste
+// Jump keys of the bottom bar
 ['step-prev', 'step-next'].forEach(function (id, i) {
     var el = document.getElementById(id);
     if (el) el.addEventListener('click', function (e) {
@@ -1561,8 +1561,8 @@ document.addEventListener('keydown', function (e) {
     });
 });
 
-// Adressen, die nie als nicht erreichbar gelten (auch wenn die Daten es markieren): zentral in never-dead.json
-// (allIpAddresses: jede IP-Adresse; hosts: Rechnernamen). edit/pruefen.php liest dieselbe Datei.
+// Addresses that never count as unreachable (even if the data marks them): centrally in never-dead.json
+// (allIpAddresses: every IP address; hosts: host names). edit/check.php reads the same file.
 var neverDead = { allIpAddresses: true, hosts: [] };
 
 function isNeverDead(url) {
@@ -1574,7 +1574,7 @@ function isNeverDead(url) {
 
 function makeLi(name, url, dead) {
     var li = document.createElement('li');
-    if (dead && !isNeverDead(url)) li.classList.add('dead');   // beim letzten Test nicht erreichbar
+    if (dead && !isNeverDead(url)) li.classList.add('dead');   // unreachable at the last test
     var a = document.createElement('a');
     a.tabIndex = 0;
     a.href = url;
@@ -1583,7 +1583,7 @@ function makeLi(name, url, dead) {
     return li;
 }
 
-// ── Ausgangspunkt für die Pfeiltasten (linkBy): die Kachel unter der Maus ──
+// ── Starting point for the arrow keys (linkBy): the tile under the mouse ──
 function setMouseTile(e) {
     var a = e.target.closest('li a');
     if (a) mouseTile = a;
@@ -1591,9 +1591,9 @@ function setMouseTile(e) {
 document.getElementById('container').addEventListener('mouseover', setMouseTile);
 document.getElementById('container').addEventListener('mousemove', setMouseTile);
 
-// ── Einstellungen: Zahnrad in der Leiste, Overlay mit einem Knopf pro Einstellung ──
-// Ein Icon pro Einstellung zeigt den aktuellen Wert; jeder Klick schaltet zum anderen von zwei Werten. API für Zoom/Farbschema steht im <head>.
-// icon: Font-Awesome-Klasse oder Buchstabe (Zoom); zeigt den aktuellen Wert
+// ── Settings: gear in the bar, overlay with one button per setting ──
+// One icon per setting shows the current value; each click switches to the other of two values. The API for zoom/color scheme is in the <head>.
+// icon: Font Awesome class or letter (zoom); shows the current value
 var SETTINGS = [
     {
         label: 'Zoom',
@@ -1606,7 +1606,7 @@ var SETTINGS = [
         label: 'Theme',
         values: [['auto', 'auto'], ['light', 'light'], ['dark', 'dark']],
         schema: true,
-        all: true,   // der Hinweis nennt alle Werte, der aktuelle in Klammern
+        all: true,   // the hint names all values, the current one in brackets
         get: function () { return window.msmrTheme.auto() ? 'auto' : window.msmrTheme.get(); },
         set: function (w) { if (w === 'auto') window.msmrTheme.setAuto(); else window.msmrTheme.set(w); }
     },
@@ -1614,7 +1614,7 @@ var SETTINGS = [
         label: 'Color',
         values: [['vivid', 'color'], ['pale', 'pale']],
         text: { vivid: 'col', pale: 'pale' },
-        // Kreis in einer Section-Farbe: kräftig = bunt, fast farblos (gleiche Helligkeit) = blass
+        // Circle in a section color: strong = vivid, almost colorless (same lightness) = pale
         circle: { vivid: '1', pale: 'var(--color-pale)' },
         get: function () { return getPref('colorMode'); },
         set: function (w) { setPref('colorMode', w); }
@@ -1622,7 +1622,7 @@ var SETTINGS = [
     {
         label: 'Navigation',
         values: [['short', 'text'], ['icons', 'icons']],
-        // Text-Modus: das Wort „text“; Icon-Modus: Squircle wie bei APP
+        // Text mode: the word "text"; icon mode: squircle like APP
         squircle: true,
         get: function () { return getPref('navMode'); },
         set: function (w) { setPref('navMode', w); }
@@ -1631,14 +1631,14 @@ var SETTINGS = [
         label: 'View',
         values: [['chips', 'chips'], ['grid', 'grid']],
         text: { chips: 'chip', grid: 'grid' },
-        // vier Kacheln: gerundet und getrennt = Chips; eckig und aneinander = Raster
+        // four tiles: rounded and separate = chips; square and joined = grid
         tiles: { chips: false, grid: true },
         get: function () { return getPref('view'); },
         set: function (w) { setPref('view', w); }
     },
     {
         label: 'Align',
-        // im Raster heißt „links“ volle Breite
+        // in the grid "left" means full width
         descr: function (w) { return w === 'left' && getPref('view') === 'grid' ? 'full' : null; },
         values: [['left', 'left'], ['center', 'center']],
         text: { left: 'left', center: 'cen' },
@@ -1650,7 +1650,7 @@ var SETTINGS = [
         label: 'Edit',
         values: [['off', 'edit'], ['on', 'done']],
         text: { off: 'edit', on: 'save' },
-        // zwei Chevrons übereinander = aus; Diskette = es wird bearbeitet, Klick beendet und fragt nach dem Speichern
+        // two chevrons on top of each other = off; floppy disk = being edited, a click ends it and asks about saving
         icons: { off: ['fa-chevron-up', 'fa-chevron-down'], on: 'fa-floppy-disk' },
         get: function () { return document.body.classList.contains('edit-mode') ? 'on' : 'off'; },
         set: function (w) { if (w === 'on') enterEditMode(); else finishEditing(); },
@@ -1669,8 +1669,8 @@ function valueTo(e, w) {
     return e.values[(i + 1) % e.values.length][0];
 }
 
-// Farbschema: manuell groß hell/dunkel; auto groß „auto“ und klein das Icon des Systemwerts.
-// Text-Modus: Wörter; Icon-Modus: Sonne/Mond, „auto“ als gefüllter Kreis
+// Color scheme: manual shows large light/dark; auto shows a large "auto" and a small icon of the system value.
+// Text mode: words; icon mode: sun/moon, "auto" as a filled circle
 function drawScheme(ic, w) {
     var icons = document.body.classList.contains('nav-icons');
     var sym = { light: 'fa-sun', dark: 'fa-moon' }, word = { auto: 'aut', light: 'light', dark: 'dark' };
@@ -1695,7 +1695,7 @@ function drawScheme(ic, w) {
     }
 }
 
-// zeichnet das Icon für den Wert w
+// draws the icon for the value w
 function drawIcon(ic, e, w) {
     if (e.icon) {
         var d = e.icon(w);
@@ -1718,7 +1718,7 @@ function drawIcon(ic, e, w) {
         ic.textContent = '';
         for (var k = 0; k < 4; k++) ic.appendChild(document.createElement('i'));
     } else if (Array.isArray(e.icons[w])) {
-        // mehrere Symbole als ein Icon, senkrecht gestapelt
+        // several symbols as one icon, stacked vertically
         ic.className = 'set-icon set-stack';
         ic.textContent = '';
         e.icons[w].forEach(function (k) {
@@ -1738,13 +1738,13 @@ function settingsDisplay() {
         drawIcon(b.querySelector('.set-icon'), e, w);
         b.title = e.all
             ? e.values.map(function (p) { return p[0] === w ? '[' + p[1] + ']' : p[1]; }).join(' / ')
-            : valueName(e, w) + '/' + valueName(e, valueTo(e, w));   // jetzt/nächster Wert
+            : valueName(e, w) + '/' + valueName(e, valueTo(e, w));   // now/next value
         b.setAttribute('aria-label', e.label + ': ' + b.title);
     });
 }
 
-// Knopfhöhe der Overlays (Einstellungen und Sections-Liste) = Breite des Zahnrads in der Chips-Ansicht.
-// Im Raster mit voller Breite streckt sich das Zahnrad: dafür kurz mit der Leistenbreite der Chips messen
+// Button height of the overlays (settings and sections list) = width of the gear in the chips view.
+// In the full-width grid the gear stretches: measure it briefly with the bar width of the chips
 function navButtonHeight() {
     var gearEl = document.getElementById('settings-btn'), bar = document.querySelector('.title');
     var widthPx = gearEl.getBoundingClientRect().width;
@@ -1756,16 +1756,16 @@ function navButtonHeight() {
     return widthPx;
 }
 
-// bündig unter dem Zahnrad, gleich breit; in der unteren Leiste (Smartphone-/Kleinansicht) bündig darüber
+// flush below the gear, same width; in the bottom bar (smartphone/small view) flush above it
 function settingsPlace() {
     var pop = document.getElementById('settings-pop');
     var gearEl = document.getElementById('settings-btn');
     var r = gearEl.getBoundingClientRect();
     var upper = r.top > window.innerHeight / 2;
-    // Im Raster läuft die Leiste über die ganze Breite und das Zahnrad streckt sich: die Breite bleibt die des Zahnrads,
-    // die Knopfhöhe (und damit die Höhe des Overlays) aber dieselbe wie bei Chips; dafür mit der Leistenbreite der Chips messen
-    pop.style.width = r.width + 'px';   // bündig mit dem Zahnrad, auch wenn es sich im Raster streckt
-    pop.style.setProperty('--set-height', navButtonHeight() + 'px');   // Knopfhöhe wie bei Chips
+    // In the grid the bar runs across the whole width and the gear stretches: the width stays that of the gear,
+    // the button height (and with it the overlay height) the same as for chips; measure it briefly with the bar width of the chips
+    pop.style.width = r.width + 'px';   // flush with the gear, even if it stretches in the grid
+    pop.style.setProperty('--set-height', navButtonHeight() + 'px');   // button height as for chips
     pop.style.left = r.left + 'px';
     pop.style.right = 'auto';
     pop.style.top = upper ? 'auto' : r.bottom + 'px';
@@ -1784,12 +1784,12 @@ function settingsPlace() {
             e.set(valueTo(e, e.get()));
             settingsDisplay();
             if (e.closes) { pop.hidePopover(); return; }
-            settingsPlace();   // der Zoom verschiebt das Zahnrad
+            settingsPlace();   // zoom moves the gear
         });
         pop.appendChild(b);
     });
-    // Zahnrad: Klick schaltet das Overlay um; mit der Maus geht auch drücken, auf einen Knopf ziehen
-    // und loslassen — das schaltet nur diesen Knopf weiter und schließt das Overlay (wie ein Menü)
+    // Gear: a click toggles the overlay; with the mouse you can also press, drag onto a button
+    // and release — that only advances this button and closes the overlay (like a menu)
     var gearZone = document.getElementById('settings-btn');
     var mouse = false, wasOpen = false;
     function isOpen() { return pop.matches(':popover-open'); }
@@ -1807,17 +1807,17 @@ function settingsPlace() {
         if (!mouse) return;
         var button = buttonAt(ev);
         var onGear = ev.target.closest && ev.target.closest('#settings-btn');
-        if (button) { button.click(); if (isOpen()) pop.hidePopover(); }   // gezogen und losgelassen: schalten, schließen
-        else if (onGear) { if (wasOpen) pop.hidePopover(); }   // einfacher Klick: umschalten
-        else pop.hidePopover();   // woanders losgelassen
-        mouse = !!onGear;   // nach dem Loslassen auf dem Zahnrad folgt noch der click, den der Handler unten überspringt
+        if (button) { button.click(); if (isOpen()) pop.hidePopover(); }   // dragged and released: switch, close
+        else if (onGear) { if (wasOpen) pop.hidePopover(); }   // simple click: toggle
+        else pop.hidePopover();   // released elsewhere
+        mouse = !!onGear;   // after releasing on the gear the click still follows, which the handler below skips
     });
-    // Tastatur und Touch: normaler Klick; ein Mausklick wurde oben schon behandelt
+    // Keyboard and touch: normal click; a mouse click was already handled above
     gearZone.addEventListener('click', function () {
         if (mouse) { mouse = false; return; }
         if (isOpen()) pop.hidePopover(); else pop.showPopover();
     });
-    // Klick außerhalb und Esc schließen (manuelles Popover kennt beides nicht)
+    // A click outside and Esc close (a manual popover knows neither)
     document.addEventListener('pointerdown', function (ev) {
         if (isOpen() && !ev.target.closest('#settings-pop, #settings-btn')) pop.hidePopover();
     });
@@ -1830,7 +1830,7 @@ function settingsPlace() {
     });
     window.addEventListener('resize', function () { if (pop.matches(':popover-open')) settingsPlace(); });
 
-    // Mit Maus: schließt sich 3 s nach dem Verlassen von Overlay und Zahnrad (Touch/ohne Zeiger: nie)
+    // With a mouse: closes 3 s after leaving overlay and gear (touch/without pointer: never)
     var pointer = matchMedia('(hover: hover) and (pointer: fine)');
     var closeTimer = null;
     function autoCloseStop() { clearTimeout(closeTimer); closeTimer = null; }
@@ -1844,12 +1844,12 @@ function settingsPlace() {
         el.addEventListener('mouseenter', autoCloseStop);
         el.addEventListener('mouseleave', autoCloseStart);
     });
-    // Tastaturbedienung im Overlay hält es offen
+    // Keyboard use in the overlay keeps it open
     pop.addEventListener('focusin', autoCloseStop);
     pop.addEventListener('focusout', autoCloseStart);
     pop.addEventListener('toggle', function (ev) {
         var on = ev.newState === 'open';
-        // Zahnrad kehrt um, solange das Overlay offen ist; zurück erst, wenn es eingezogen ist
+        // The gear inverts as long as the overlay is open; back only once it has retracted
         clearTimeout(gearTo);
         if (on) gear.classList.add('open');
         else gearTo = setTimeout(function () { gear.classList.remove('open'); },
@@ -1863,17 +1863,17 @@ function settingsPlace() {
 })();
 
 document.addEventListener('keydown', function (e) {
-    if (e.ctrlKey || e.metaKey || e.altKey) return;   // Browser-Zoom bleibt unberührt
+    if (e.ctrlKey || e.metaKey || e.altKey) return;   // browser zoom stays untouched
     if (e.target.closest('input, select, textarea, [contenteditable]')) return;
     if (e.key === '+' || e.key === '=') window.msmrZoom.set('m');
     else if (e.key === '-' || e.key === '0') window.msmrZoom.set('s');
 });
 
-// ── Maus oder Tastatur: nur das zuletzt benutzte Gerät hebt eine Kachel hervor ──
+// ── Mouse or keyboard: only the most recently used device highlights a tile ──
 document.addEventListener('keydown', function (e) {
     if (e.key === 'Tab' || e.key.indexOf('Arrow') === 0) {
         document.body.classList.add('keyboard');
-        if (cursor.el) cursorPlan();   // Strich/Chevron unter dem ruhenden Zeiger ausblenden
+        if (cursor.el) cursorPlan();   // hide line/chevron under the resting pointer
     }
 });
 document.addEventListener('mousemove', function (e) {
@@ -1883,22 +1883,22 @@ document.addEventListener('mousemove', function (e) {
     mouseMoved = true;
 });
 
-// APP gehört als 3. Section in die Reihe; fehlt sie in den gespeicherten Daten, kommt sie leer dazu
+// APP belongs as the 3rd section in the row; if it is missing in the saved data, it is added empty
 function withApp(data) {
     var app = data.filter(function (s) { return s.id === 'app'; })[0];
     if (!app) {
         data.splice(2, 0, { id: 'app', title: 'app', icon: 'icon-squircle', links: [] });
     } else if (app.title === 'APP') {
-        app.title = 'app';   // kleingeschrieben wie die anderen; die Großbuchstaben macht das CSS
+        app.title = 'app';   // lowercase like the others; CSS makes the capitals
     }
     if (app && app.icon === 'fa-mobile-screen') {
-        app.icon = 'icon-squircle';   // vorher gespeichertes Handy-Icon ersetzen
+        app.icon = 'icon-squircle';   // replace previously saved phone icon
     }
     return data;
 }
 
 // ── Load ──────────────────────────────────────────────────────────
-// Ausnahmen zuerst (fehlt die Datei, gelten nur die Standardwerte), dann die Links
+// Exceptions first (if the file is missing, only the defaults apply), then the links
 fetch('never-dead.json')
     .then(function (r) { return r.json(); })
     .then(function (d) {
@@ -1919,7 +1919,7 @@ fetch('never-dead.json')
 
 function preventEnter(e) { if (e.key === 'Enter') e.preventDefault(); }
 
-// Löschen ist bis zum Speichern umkehrbar
+// Deleting can be undone until saving
 function makeDelButton(li) {
     var del = document.createElement('span');
     del.className = 'btn-del';
@@ -1933,19 +1933,19 @@ function makeDelButton(li) {
     return del;
 }
 
-// GET beantwortet save.php mit 405, ohne etwas anzufassen; 401 kommt vom Server davor
+// save.php answers GET with 405 without touching anything; 401 comes from the server in front
 function canSave() {
     return fetch('edit/save.php')
         .then(function (r) { return r.status !== 401; })
-        .catch(function () { return false; });   // im Zweifel nichts freigeben
+        .catch(function () { return false; });   // when in doubt release nothing
 }
 
-// Ohne Anmeldung (401 vom Server) passiert nichts — der Edit Mode bleibt zu
+// Without sign-in (401 from the server) nothing happens — edit mode stays closed
 function enterEditMode() {
     canSave().then(function (may) {
         if (!may) return;
         document.body.classList.add('edit-mode');
-        gridInit();   // gesetzte Rasterhöhen lösen, sonst schlagen sie die Edit-Regeln
+        gridInit();   // release set grid heights, otherwise they beat the edit rules
         releaseLinks();
         settingsDisplay();
     });
@@ -1969,7 +1969,7 @@ function releaseLinks() {
     });
 }
 
-// Name und URL bearbeitbar machen, Anfasser und Löschknopf anhängen
+// make name and URL editable, attach handle and delete button
 function createFields(li) {
     var a = li.querySelector('a');
     a.contentEditable = 'true';
@@ -1993,17 +1993,17 @@ function addLink(ul, addBtn) {
     li.querySelector('a').focus();
 }
 
-// ── Sortieren ─────────────────────────────────────────────────────
+// ── Sorting ───────────────────────────────────────────────────────
 
-// Ziehen braucht eine Maus; am Finger bliebe der Anfasser wirkungslos
+// Dragging needs a mouse; with a finger the handle would be ineffective
 function makeDraggable() { return matchMedia('(pointer: fine)').matches; }
 
-var dragged = null;      // Kachel, die gerade zieht
-var prepared = null;  // Kachel, deren Anfasser gedrückt ist
-var startPlace = null;   // Nachbar beim Zugbeginn, für die Rückkehr beim Abbruch
-var startList = null;   // Liste beim Zugbeginn: eine Kachel darf in jede Section wandern
+var dragged = null;      // tile that is being dragged
+var prepared = null;  // tile whose handle is pressed
+var startPlace = null;   // neighbor at the start of the drag, for the return on abort
+var startList = null;   // list at the start of the drag: a tile may move into any section
 
-// ein Klick ohne Zug muss die Kachel wieder festsetzen
+// a click without a drag must fix the tile in place again
 document.addEventListener('mouseup', function () {
     if (prepared) {
         prepared.draggable = false;
@@ -2012,8 +2012,8 @@ document.addEventListener('mouseup', function () {
     }
 });
 
-// außerhalb jeder Liste: Kachel kehrt an den Start zurück und zeigt den Abbruch —
-// was man sieht, ist immer das Ergebnis des Loslassens
+// outside any list: the tile returns to the start and shows the abort —
+// what you see is always the result of the release
 document.addEventListener('dragover', function (e) {
     if (!dragged) return;
     var inside = !!(e.target.closest && e.target.closest('ul.group'));
@@ -2023,7 +2023,7 @@ document.addEventListener('dragover', function (e) {
     }
 });
 
-// draggable erst beim Griff setzen, sonst zieht jede Textauswahl die Kachel mit
+// set draggable only on the handle, otherwise every text selection drags the tile along
 function makeMoveHandle(li) {
     var handle = document.createElement('span');
     handle.className = 'btn-move';
@@ -2031,8 +2031,8 @@ function makeMoveHandle(li) {
     handle.title = 'Move';
     handle.addEventListener('mousedown', function () {
         li.draggable = true;
-        // jetzt schon, denn das Zugbild ist ein Schnappschuss der Kachel
-        // beim Zugbeginn — erst dann wäre der Hintergrund nicht mit drauf
+        // now, because the drag image is a snapshot of the tile
+        // at the start of the drag — only then would the background not be on it
         li.classList.add('grabbed');
         prepared = li;
     });
@@ -2041,15 +2041,15 @@ function makeMoveHandle(li) {
         dragged = li;
         startPlace = li.nextSibling;
         startList = li.parentNode;
-        // erst nach dem Schnappschuss des Zugbilds, sonst trägt auch das
-        // mitfliegende Bild das Ziel-Highlight
+        // only after the snapshot of the drag image, otherwise the flying
+        // image carries the target highlight too
         setTimeout(function () { if (dragged === li) li.classList.add('dragging'); });
         e.dataTransfer.effectAllowed = 'move';
-        // Firefox startet ohne gesetzte Daten gar keinen Zug
+        // Firefox does not start a drag at all without data set
         e.dataTransfer.setData('text/plain', '');
     });
     li.addEventListener('dragend', function () {
-        // Loslassen im Aus, ohne dass der Abbruch-Handler noch feuerte
+        // release off target, without the abort handler firing any more
         if (li.classList.contains('cancel') &&
             (li.parentNode !== startList || li.nextSibling !== startPlace)) {
             startList.insertBefore(li, startPlace);
@@ -2073,25 +2073,25 @@ function sortable(ul) {
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
 
-        // Ziel ist die ganze Kachel unterm Zeiger, keine Lückenrechnerei:
-        // sie gibt ihren Platz her, die Zugrichtung entscheidet die Seite.
-        // Über Lücken (auch der eigenen Kachel) bleibt die Vorschau stehen.
+        // The target is the whole tile under the pointer, no gap arithmetic:
+        // it gives up its place, the drag direction decides the side.
+        // Over gaps (also the own tile) the preview stays.
         var dest = e.target.closest ? e.target.closest('li') : null;
-        if (!dest || dest === dragged || dest.parentNode !== ul) return;   // Lücken: Vorschau bleibt
+        if (!dest || dest === dragged || dest.parentNode !== ul) return;   // gaps: preview stays
         var before = dest.classList.contains('btn-add') ? dest
-            // Ziel liegt vor der Zugkachel → davor, sonst dahinter
+            // target lies before the dragged tile → before it, otherwise after it
             : (dest.compareDocumentPosition(dragged) & Node.DOCUMENT_POSITION_FOLLOWING)
                 ? dest : dest.nextSibling;
         if (before !== dragged && before !== dragged.nextSibling) ul.insertBefore(dragged, before);
     });
 
-    // die Kachel steht schon am Ziel; preventDefault hält den Browser nur
-    // davon ab, den Zugtext in das contentEditable darunter zu setzen
+    // the tile is already at the target; preventDefault only keeps the browser
+    // from putting the drag text into the contentEditable underneath
     ul.addEventListener('drop', function (e) { e.preventDefault(); });
 }
 
-// Sections untereinander umsortieren (wie in der Ansicht: senkrecht): Griff am Titel, Ziehen über eine andere Section
-// verschiebt die gezogene davor oder dahinter, je nach Zeigerhälfte. Die Reihenfolge im DOM wird gespeichert (collectData).
+// Re-sort sections among each other (as in the view: vertically): handle on the heading, dragging over another section
+// moves the dragged one before or after it, depending on the half of the pointer. The order in the DOM is saved (collectData).
 var draggedSection = null;
 
 function sectionsSortable() {
@@ -2106,14 +2106,14 @@ function sectionsSortable() {
         handle.textContent = '⠿';
         handle.title = 'Move section';
         h3.insertBefore(handle, h3.firstChild);
-        // erst mit dem Griff wird die Section ziehbar, sonst zöge jeder Klick im Inhalt sie mit
+        // only with the handle the section becomes draggable, otherwise every click in the content would drag it along
         handle.addEventListener('mousedown', function () { sec.draggable = true; });
         sec.addEventListener('dragstart', function (e) {
-            if (e.target !== sec) return;   // Kachel-Züge steigen hier nur auf
+            if (e.target !== sec) return;   // tile drags only rise here
             draggedSection = sec;
             e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', '');   // Firefox startet sonst keinen Zug
-            e.dataTransfer.setDragImage(h3, 16, 16);   // nur der Titel fliegt mit, nicht die ganze Section
+            e.dataTransfer.setData('text/plain', '');   // Firefox does not start a drag otherwise
+            e.dataTransfer.setDragImage(h3, 16, 16);   // only the heading flies along, not the whole section
             setTimeout(function () { if (draggedSection === sec) sec.classList.add('sec-dragging'); });
         });
         sec.addEventListener('dragend', function (e) {
@@ -2153,7 +2153,7 @@ function collectData() {
             var url = urlField ? urlField.textContent.trim() : a.getAttribute('href');
             if (!name || !url) return;
             var entry = { name: name, url: url };
-            // Tot-Markierung mitschreiben; eine geänderte URL hebt sie auf
+            // write the dead mark along; a changed URL clears it
             if (li.classList.contains('dead') && url === li.dataset.url0) entry.dead = true;
             links.push(entry);
         });
@@ -2172,7 +2172,7 @@ function collectData() {
     return data;
 }
 
-// Vergleich gegen die beim Rendern gestempelten Ursprungswerte
+// Comparison against the original values stamped during rendering
 function changes() {
     var deleted = [], modified = [], moved = [], fresh = 0;
     document.querySelectorAll('ul.group li:not(.btn-add)').forEach(function (li) {
@@ -2191,15 +2191,15 @@ function changes() {
         }
     });
 
-    // Umgestellt heißt: die Ausgangspositionen steigen nicht mehr an
+    // Reordered means: the starting positions no longer rise
     document.querySelectorAll('#container section').forEach(function (section) {
         var ul = section.querySelector('ul.group');
         if (!ul) return;
         var secId = (section.querySelector('h3.name') || {}).id;
         var last = -1, reordered = false;
         ul.querySelectorAll('li:not(.btn-add):not(.removed)').forEach(function (li) {
-            if (li.dataset.pos0 === undefined) return;   // neu, hat keine Ausgangsposition
-            if (li.dataset.sec0 !== secId) reordered = true;   // aus einer anderen Section herübergezogen
+            if (li.dataset.pos0 === undefined) return;   // new, has no starting position
+            if (li.dataset.sec0 !== secId) reordered = true;   // dragged over from another section
             var pos = +li.dataset.pos0;
             if (pos < last) reordered = true;
             last = pos;
@@ -2208,7 +2208,7 @@ function changes() {
         if (reordered) moved.push('· ' + (heading ? heading.textContent : ''));
     });
 
-    // Reihenfolge der Sections selbst: die Ausgangspositionen steigen nicht mehr an
+    // Order of the sections themselves: the starting positions no longer rise
     var lastSec = -1, secReordered = false;
     document.querySelectorAll('#container section').forEach(function (section) {
         if (section.dataset.pos0 === undefined) return;
@@ -2220,7 +2220,7 @@ function changes() {
     return { deleted: deleted, modified: modified, moved: moved, fresh: fresh };
 }
 
-// Text der Änderungen für die Rückfrage; leer, wenn nichts zu speichern ist
+// Text of the changes for the confirmation; empty if there is nothing to save
 function changesText() {
     var d = changes();
     if (!d.modified.length && !d.deleted.length && !d.moved.length) {
@@ -2240,8 +2240,8 @@ function changesText() {
     return text;
 }
 
-// Bearbeiten beenden: nichts geändert → einfach zu; sonst fragen, ob gespeichert wird,
-// bei „Nein“ ob verworfen wird; bei erneutem „Nein“ bleibt der Edit Mode offen
+// Finish editing: nothing changed → simply close; otherwise ask whether to save,
+// on "No" whether to discard; on another "No" edit mode stays open
 function finishEditing() {
     var text = changesText();
     if (!text) { location.reload(); return; }
