@@ -16,6 +16,7 @@ Gebaut für Maus und Tastatur am Desktop, iPad und iPhone und für den Browser a
 | `edit/save.php` | schreibt die Daten (Basic-Auth) |
 | `links.default.json` | Saat, nur beim allerersten Aufruf |
 | `tools/dev-router.php` | Demo-Server mit `no-store`, nur lokal |
+| `tools/smoke.js` | Rauchtest ohne Browser (jsdom): lädt die Seite, schaltet den Edit-Mode ein, prüft die Klick-Sperre; bricht bei Endlosschleifen ab. `npm install --no-save jsdom && node tools/smoke.js` |
 | `favicon/` | Icons und Manifest |
 | `docs/` | Server, Schreibschutz, Deploy; Entwurf zu Icons und Einstellungen |
 | `CHANGELOG.md` | was wann und warum geändert wurde |

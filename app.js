@@ -439,6 +439,8 @@ function fensterMalen(top, bot) {
     fenster.top = top; fenster.bot = bot;
     fenster.secs.forEach(function (s) {
         var lo = Math.max(top, s.y) - s.y, hi = Math.min(bot, s.y + s.h) - s.y;
+        // bis zur Unterkante der Section gedeckt: 1 px darüber hinaus malen (der Rest wird beschnitten), sonst bleibt bei gebrochener Höhe ein Streifen
+        if (bot >= s.y + s.h) hi += 1;
         var bild = hi > lo
             ? 'linear-gradient(to bottom, transparent ' + lo + 'px, var(--c) ' + lo + 'px, var(--c) ' + hi + 'px, transparent ' + hi + 'px)'
             : '';
@@ -513,6 +515,23 @@ function fensterPlan(fn) {
     };
 }
 
+// Beobachter mit Notbremse: ändert ein Aufruf das Beobachtete wieder (z. B. classList.remove ohne Wirkung zählt als Änderung),
+// ruft er sich in derselben Aufgabe endlos neu auf und friert die Seite ein. Nach 500 Aufrufen ohne Atempause wird er getrennt.
+function sicherBeobachten(ziel, optionen, fn) {
+    var n = 0, reset = 0;
+    var obs = new MutationObserver(function (ms) {
+        if (++n > 500) {
+            obs.disconnect();
+            console.error('MutationObserver abgebrochen: Endlosschleife');
+            return;
+        }
+        if (!reset) reset = setTimeout(function () { n = 0; reset = 0; }, 0);
+        fn(ms);
+    });
+    obs.observe(ziel, optionen);
+    return obs;
+}
+
 function fensterInit() {
     var f = fenster, c = document.getElementById('container');
     f.obs.forEach(function (o) { o.disconnect(); });
@@ -520,7 +539,7 @@ function fensterInit() {
     cancelAnimationFrame(f.raf); f.raf = 0;
     geistZuruecksetzen();
     sperre.sec = null;
-    document.body.classList.remove('gesperrt');
+    document.body.classList.toggle('gesperrt', false);
     f.container = c; f.zeilen = []; f.secs = []; f.sig = ''; f.ziel = null; f.top = f.bot = 0;
     fensterMessen();
     fensterSync();
@@ -530,17 +549,15 @@ function fensterInit() {
     ro.observe(c);
     c.querySelectorAll('section').forEach(function (s) { ro.observe(s); });
     // Klassen (aktuell, mit-hover, tastatur) ändern das Ziel; neue Kacheln und Ansichtswechsel die Maße
-    var mo = new MutationObserver(function (ms) {
+    var mo = sicherBeobachten(c, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] }, function (ms) {
         var maße = ms.some(function (m) { return m.type === 'childList'; });
         (maße ? layout : sync)();
     });
-    mo.observe(c, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
-    var bo = new MutationObserver(function () {
+    var bo = sicherBeobachten(document.body, { attributes: true, attributeFilter: ['class'] }, function () {
         layout(); sync();
         if (document.body.classList.contains('edit-mode')) lichtHart();
         lichtPlan();
     });
-    bo.observe(document.body, { attributes: true, attributeFilter: ['class'] });
     f.obs.push(ro, mo, bo);
 }
 
