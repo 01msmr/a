@@ -909,14 +909,14 @@ function strichSetzen() {
         return;
     }
     document.documentElement.classList.add('strich-an');
-    // in der Section (nicht auf Chip, Kachel oder Titel) zeigt das kleine Quadrat die Zeigerposition
-    document.documentElement.classList.toggle('strich-punkt', !!z.sec && !z.kopf);
+    // in der Section (nicht auf Chip oder Kachel) zeigt das kleine Quadrat die Zeigerposition, auch im Titel, der ganz oben steht
+    var kopfOben = z.kopf && z.sec && Math.abs(z.sec.getBoundingClientRect().top - document.getElementById('container').getBoundingClientRect().top) <= 2;
+    document.documentElement.classList.toggle('strich-punkt', !!z.sec && (!z.kopf || kopfOben));
     // im Titel zeigt ein Chevron nach oben die Zeigerposition, auf einem Nav-Chip nach oben oder unten, wohin der Klick scrollt
-    var p = strich.pfeil, richtung = z.kopf ? 'up' : chipRichtung(z.chip);
+    var p = strich.pfeil, richtung = z.kopf ? (kopfOben ? null : 'up') : chipRichtung(z.chip);
     p.style.opacity = richtung ? '1' : '0';
     if (richtung) {
         p.className = 'fa-solid fa-chevron-' + richtung;
-        p.style.color = z.chip ? getComputedStyle(z.chip).color : '';
         p.style.left = strich.x + 'px';
         p.style.top = strich.y + 'px';
     }
