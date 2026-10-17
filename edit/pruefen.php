@@ -22,17 +22,15 @@ $schreiben = isset($_GET['schreiben']) && $_GET['schreiben'] === '1';
 $UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 '
     . '(KHTML, like Gecko) Version/17.0 Safari/605.1.15';
 
-// Adressen im eigenen Netz sind von außen nicht erreichbar und nie "tot"
+// Diese Adressen gelten nie als "tot": das eigene Netz, alle IP-Adressen, http://orderbox und kitchen.toolbox-bodensee.de
 function intern($url)
 {
     $host = parse_url($url, PHP_URL_HOST);
     if (!$host) return true;
+    $host = strtolower(trim($host, '[]'));
     if (preg_match('/\.(local|fritz\.box|lan|home)$/i', $host)) return true;
-    if (filter_var($host, FILTER_VALIDATE_IP)) {
-        return !filter_var($host, FILTER_VALIDATE_IP,
-            FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
-    }
-    return false;
+    if (filter_var($host, FILTER_VALIDATE_IP)) return true;
+    return $host === 'orderbox' || $host === 'kitchen.toolbox-bodensee.de';
 }
 
 // alle Einträge einsammeln, mit Rückverweis auf ihren Platz in $daten

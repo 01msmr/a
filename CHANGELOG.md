@@ -24,6 +24,12 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 **Home-Icon (iOS)**
 - Neue Icons `favicon/ico-light-{180,192,512}.png` und `ico-dark-{180,192,512}.png`: das „a.“ in Ubuntu (Schrift der Seite, Medium), opak gerendert (hell #eee/schwarz, dunkel #333/weiß), statt der alten Graustufen-PNGs mit Alpha, die iOS nur klein oder gar nicht zeigte. `index.html` verlinkt das helle als `apple-touch-icon` und beide als `icon` mit `prefers-color-scheme`; das Manifest listet 180, 192 und 512 px (hell). Neue Dateinamen, weil iOS Icons je URL zwischenspeichert. Der Web-App-Modus (standalone) bleibt aus.
 
+**Smartphone und nicht erreichbare Links**
+- Smartphone: Die Titel kleben (`position: sticky`) an ihrer Section; der Titel der aktuellen Section liegt deckend in ihrer Farbe über den Kacheln. `fensterMessen` misst die Zeilen dazu kurz am natürlichen Platz (`html.messen`).
+- Touch: Die Hover-Farbe der Kacheln erscheint sofort, ohne Übergang.
+- Raster am Desktop: Das „nicht erreichbar“-Zeichen ist ein Dreieck in der oberen rechten Ecke mit 4 px Katheten.
+- Alle Geräte: IP-Adressen, `http://orderbox` und `kitchen.toolbox-bodensee.de` gelten nie als nicht erreichbar (`intern()` in `edit/pruefen.php`, `nieTot()` in `app.js`).
+
 **Raster auf dem Smartphone**
 - Im Raster-Modus stehen mindestens zwei Kacheln nebeneinander (Spaltenbreite höchstens `50 % - 1px`), bei mehr Platz mehr, höchstens 6; vorher ergab ein schmales Telefon eine Spalte, wenn zwei Kacheln à 11,875 rem nicht ganz passten.
 

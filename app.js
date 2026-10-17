@@ -500,6 +500,12 @@ function fensterZiel() {
 
 // misst alle Section- und Zeilenmitten im Inhalt; true, wenn sich etwas verschoben hat
 function fensterMessen() {
+    // Smartphone: die Titel kleben (position: sticky) und stehen beim Scrollen nicht an ihrem Platz; zum Messen kurz an den natürlichen Platz
+    document.documentElement.classList.add('messen');
+    try { return fensterMessenRoh(); } finally { document.documentElement.classList.remove('messen'); }
+}
+
+function fensterMessenRoh() {
     var c = fenster.container, cr = c.getBoundingClientRect(), st = c.scrollTop;
     var secs = [], zeilen = [], sig = [];
     var y = function (r) { return Math.round(r.top - cr.top + st); };
@@ -1496,9 +1502,16 @@ document.addEventListener('keydown', function (e) {
     });
 });
 
+// Diese Adressen gelten nie als nicht erreichbar (auch wenn die Daten es markieren): IP-Adressen, http://orderbox und kitchen.toolbox-bodensee.de
+function nieTot(url) {
+    var h;
+    try { h = new URL(url).hostname; } catch (e) { return false; }
+    return /^\d{1,3}(\.\d{1,3}){3}$/.test(h) || h.charAt(0) === '[' || h === 'orderbox' || h === 'kitchen.toolbox-bodensee.de';
+}
+
 function makeLi(name, url, tot) {
     var li = document.createElement('li');
-    if (tot) li.classList.add('tot');   // beim letzten Test nicht erreichbar
+    if (tot && !nieTot(url)) li.classList.add('tot');   // beim letzten Test nicht erreichbar
     var a = document.createElement('a');
     a.tabIndex = 0;
     a.href = url;
