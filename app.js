@@ -827,7 +827,7 @@ function geistRender() {
     el.style.transform = 'none';
     if (weicht) {
         cur.el.style.transition = kurve;
-        cur.el.style.transform = cur.geistWeg(lage);
+        cur.el.style.transform = geistWeg(cur.lage);
     }
     var neu = { sec: sec, el: el, lage: lage };
     if (cur) { cur.el.classList.add('alt'); geist.alt.push(cur); }   // vorige: behält die Farbe, ohne Schatten (nur die dünne Linie)
