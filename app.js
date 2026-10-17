@@ -348,6 +348,7 @@ function sperreAus() {
     document.body.classList.remove('gesperrt');
     fensterSync();
     syncActive();
+    lichtPlan();
 }
 
 // schon beim Drücken, damit der Chip sofort aktiv ist (kein Hover-/Druck-Zustand) und der Zeiger beim Hochscrollen verschwindet
@@ -358,6 +359,7 @@ document.addEventListener('pointerdown', function (e) {
     sperre.sec = sec;
     document.body.classList.add('gesperrt');
     sperre.x = e.clientX; sperre.y = e.clientY;
+    lichtHart();
     fensterSync();
     syncActive();
 }, true);
@@ -816,7 +818,7 @@ function lichtHart() {
 function lichtZu(li, mausX, mausY) {
     if (!licht.el || !fenster.container) return;
     var a = li && li.querySelector('a');
-    if (!a || !lichtAktiv()) { lichtHart(); return; }
+    if (!a || !lichtAktiv() || sperre.sec) { lichtHart(); return; }   // gesperrt: scrollende Kacheln unter dem ruhenden Zeiger leuchten nicht
     if (li === licht.tile && licht.modus === 'ein') return;
     var nach = lichtRahmen(a);
     lichtRadius(a);
@@ -887,6 +889,7 @@ var lichtMaus = null, lichtPlanRaf = 0;
 function lichtSync() {
     lichtPlanRaf = 0;
     if (!lichtMaus || document.body.classList.contains('tastatur')) return;
+    if (sperre.sec) { lichtHart(); return; }
     var t = document.elementFromPoint(lichtMaus.x, lichtMaus.y);
     var li = t && t.closest && t.closest('#container li');
     if (li) lichtZu(li, lichtMaus.x, lichtMaus.y); else lichtAus(lichtMaus);
