@@ -46,13 +46,15 @@ function makeIcon(icon) {
     return i;
 }
 
-// Chip und Titel einer Section leuchten gemeinsam, sobald einer von beiden berührt wird
-function koppleHover(a, b) {
-    [[a, b], [b, a]].forEach(function (p) {
-        p[0].addEventListener('mouseenter', function () { p[1].classList.add('mit-hover'); });
-        p[0].addEventListener('mouseleave', function () { p[1].classList.remove('mit-hover', 'mit-druck'); });
-        p[0].addEventListener('mousedown', function () { p[1].classList.add('mit-druck'); });
-        p[0].addEventListener('mouseup', function () { p[1].classList.remove('mit-druck'); });
+// Chip, Titel und Listeneintrag einer Section leuchten gemeinsam, sobald einer davon berührt wird
+function koppleHover(gruppe) {
+    gruppe.forEach(function (el) {
+        var andere = gruppe.filter(function (x) { return x !== el; });
+        var setze = function (name, an) { andere.forEach(function (x) { x.classList.toggle(name, an); }); };
+        el.addEventListener('mouseenter', function () { setze('mit-hover', true); });
+        el.addEventListener('mouseleave', function () { setze('mit-hover', false); setze('mit-druck', false); });
+        el.addEventListener('mousedown', function () { setze('mit-druck', true); });
+        el.addEventListener('mouseup', function () { setze('mit-druck', false); });
     });
 }
 
@@ -86,7 +88,7 @@ function springeZu(hash) {
 
 // Sections-Liste: ein Eintrag je Section (Icon oder Name), öffnet statt des nativen Menüs
 function jumperListe(data) {
-    var pop = document.getElementById('jumper-pop');
+    var pop = document.getElementById('jumper-pop'), eintrag = {};
     pop.innerHTML = '';
     data.forEach(function (sec, idx) {
         var a = secKnopf(sec, idx, true);
@@ -96,7 +98,9 @@ function jumperListe(data) {
             springeZu('#' + sec.id);
         });
         pop.appendChild(a);
+        eintrag[sec.id] = a;
     });
+    return eintrag;   // Section-ID → Eintrag, für die gekoppelte Hervorhebung
 }
 
 (function () {
@@ -151,7 +155,11 @@ function jumperListe(data) {
         if (ev.key === 'ArrowDown') { ev.preventDefault(); l[Math.min(i + 1, l.length - 1)].focus(); }
         else if (ev.key === 'ArrowUp') { ev.preventDefault(); l[Math.max(i - 1, 0)].focus(); }
     });
-    pop.addEventListener('toggle', function (ev) { sel.setAttribute('aria-expanded', ev.newState === 'open'); });
+    pop.addEventListener('toggle', function (ev) {
+        sel.setAttribute('aria-expanded', ev.newState === 'open');
+        // schließt die Liste unter dem Zeiger, kommt kein mouseleave: die gekoppelte Hervorhebung zurücknehmen
+        if (ev.newState !== 'open') document.querySelectorAll('.mit-hover, .mit-druck').forEach(function (x) { x.classList.remove('mit-hover', 'mit-druck'); });
+    });
     document.addEventListener('pointerdown', function (ev) {
         if (offen() && !ev.target.closest('#jumper-pop, #section-jumper')) pop.hidePopover();
     });
@@ -174,7 +182,7 @@ function render(data) {
         nav.insertBefore(a, zahnrad);
         chipOf[sec.id] = a;
     });
-    jumperListe(data);
+    var eintragOf = jumperListe(data);
 
     var container = document.getElementById('container');
     container.tabIndex = -1;
@@ -197,7 +205,7 @@ function render(data) {
         titleLink.appendChild(makeIcon(sec.icon));
         titleLink.appendChild(document.createTextNode(sec.title));
         h3.appendChild(titleLink);
-        koppleHover(chipOf[sec.id], h3);
+        koppleHover([chipOf[sec.id], eintragOf[sec.id], h3]);
 
         var ul = document.createElement('ul');
         ul.className = 'group';

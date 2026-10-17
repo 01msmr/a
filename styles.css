@@ -508,7 +508,7 @@ body:not(.tastatur):not(.gesperrt) a.sec-btn:not(.active):is(:hover, .mit-hover)
     border-color: rgba(255, 255, 255, .85) rgba(0, 0, 0, .5) color-mix(in srgb, var(--c, var(--sect-col)) 30%, var(--front-body)) rgba(255, 255, 255, .75);
     background-origin: border-box;
     /* Schein nur oben und seitlich: unten (zum Titel) kein Schatten */
-    box-shadow: 0 -0.1875rem 0.4375rem -0.0625rem rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .6);
+    box-shadow: var(--sb-hover-schatten, 0 -0.1875rem 0.4375rem -0.0625rem rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .6));
 }
 
 /* aktiv: Chip und Titel sind eine durchgehende Fläche — keine Kante, kein Schatten dazwischen */
@@ -529,7 +529,7 @@ a.sec-btn.active {
 /* aktiver Knopf: Innenschatten links, oben, rechts. Die Seitenschatten laufen bis unten durch
    und werden dabei schmaler (Spitze unten); unten liegt kein Schatten */
 a.sec-btn.active {
-    background-image: linear-gradient(rgba(70, 70, 70, .4) 0.1562rem, rgba(70, 70, 70, 0) 0.1562rem);   /* hart, graue Deckkraft */
+    background-image: var(--sb-aktiv-bild, linear-gradient(rgba(70, 70, 70, .4) 0.1562rem, rgba(70, 70, 70, 0) 0.1562rem));   /* hart, graue Deckkraft */
     /* nur zwischen den Seitenstreifen, sonst werden die oberen Ecken doppelt dunkel */
     background-repeat: no-repeat;
     background-size: calc(100% - 0.375rem) 100%;
@@ -544,6 +544,7 @@ a.sec-btn.active::after {
     bottom: 0;
     width: 0.2188rem;
     background: rgba(70, 70, 70, .4);
+    opacity: var(--sb-innen, 1);
     pointer-events: none;
 }
 
@@ -577,7 +578,7 @@ a.sec-btn.active + a.sec-btn {
 /* Klick: der Knopf sinkt in die Tiefe (kleiner), keine Bewegung nach unten; Titel gibt leicht nach */
 a.sec-btn:is(:active, .mit-druck):not(.active) {
     transform: scale(.96);
-    box-shadow: 0 -0.125rem 0.25rem -0.0625rem rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .6);
+    box-shadow: var(--sb-druck-schatten, 0 -0.125rem 0.25rem -0.0625rem rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .6));
 }
 
 #container section .name.mit-druck {
@@ -1601,8 +1602,13 @@ body.tastatur .set-btn:focus-visible .mit-t::after {
     overflow-y: auto;
 }
 
-/* Gestalt, Kanten und Effekte kommen von a.sec-btn (s. dort); hier nur, was die Liste anders macht */
+/* Gestalt, Kanten und Effekte kommen von a.sec-btn (s. dort); hier nur, was die Liste anders macht:
+   flach, ohne Schatten (die --sb-*-Variablen schalten sie dort ab) */
 .jumper-pop a {
+    --sb-hover-schatten: none;
+    --sb-druck-schatten: none;
+    --sb-aktiv-bild: none;
+    --sb-innen: 0;
     flex: none;   /* beim Schrumpfen behalten die Einträge ihre Höhe */
     width: 100%;
     height: var(--set-hoehe, auto);   /* Höhe wie die Knöpfe der Einstellungen */

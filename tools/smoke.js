@@ -53,6 +53,12 @@ const dann = (fn, ms) => new Promise(r => setTimeout(() => { fn(); r(); }, ms));
         prüfe(kinder[kinder.length - 2].id === 'settings-btn', 'Zahnrad nicht vor dem Dropdown');
         prüfe(d.querySelectorAll('#jumper-pop a').length === d.querySelectorAll('a.secname').length, 'Liste und Chips unterschiedlich lang');
         prüfe(d.getElementById('section-jumper').tagName === 'BUTTON', 'Dropdown ist kein Button');
+        // Hover auf einem Listeneintrag leuchtet Chip und Titel derselben Section (gekoppelte Hervorhebung)
+        const eintrag = d.querySelectorAll('#jumper-pop a')[1], chip = d.querySelectorAll('a.secname')[1], titel = d.querySelectorAll('#container .name')[1];
+        eintrag.dispatchEvent(new w.MouseEvent('mouseenter'));
+        prüfe(chip.classList.contains('mit-hover') && titel.classList.contains('mit-hover'), 'Listeneintrag koppelt Chip und Titel nicht');
+        eintrag.dispatchEvent(new w.MouseEvent('mouseleave'));
+        prüfe(!chip.classList.contains('mit-hover') && !titel.classList.contains('mit-hover'), 'Kopplung wird nicht zurückgenommen');
     }, 0);
     // Edit-Mode einschalten und die Beobachter (Microtasks) laufen lassen: hier hing die Seite einmal
     await dann(() => { d.body.classList.add('edit-mode'); w.raster(); w.linksFreigeben(); w.settingsAnzeige(); }, 0);
