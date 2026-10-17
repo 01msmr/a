@@ -22,7 +22,7 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 - iPhone hochkant: kein `scroll-snap-stop: always`, ein Wisch darf mehrere Sections überspringen; gerastet wird am Ende.
 
 **Home-Icon (iOS)**
-- Opake RGB-Icons `favicon/touch-180.png`, `touch-192.png` und `touch-512.png` (das 512er aus dem 192er hochgerechnet und nachgeschärft; ein größeres Original gibt es nicht) statt der Graustufen-PNGs mit Alpha, die iOS nur klein oder gar nicht zeigte. `index.html` verlinkt `touch-180.png` als `icon` und `apple-touch-icon`, das Manifest listet 180, 192 und 512 px. Neue Dateinamen, weil iOS Icons je URL zwischenspeichert; Web-App-Modus (standalone) bleibt bewusst aus.
+- Neue Icons `favicon/ico-light-{180,192,512}.png` und `ico-dark-{180,192,512}.png`: das „a.“ in Ubuntu (Schrift der Seite, Medium), opak gerendert (hell #eee/schwarz, dunkel #333/weiß), statt der alten Graustufen-PNGs mit Alpha, die iOS nur klein oder gar nicht zeigte. `index.html` verlinkt das helle als `apple-touch-icon` und beide als `icon` mit `prefers-color-scheme`; das Manifest listet 180, 192 und 512 px (hell). Neue Dateinamen, weil iOS Icons je URL zwischenspeichert. Der Web-App-Modus (standalone) bleibt aus.
 
 **Leiste auf dem Smartphone**
 - Smartphone: Ghost headers sind so breit wie der echte Titel (Seitenpolster des Inhalts) statt vollbreit; sie schrumpfen beim Übergang nicht mehr.
