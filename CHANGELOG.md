@@ -25,7 +25,7 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 - Neue Icons `favicon/ico-light-{180,192,512}.png` und `ico-dark-{180,192,512}.png`: das „a.“ in Ubuntu (Schrift der Seite, Medium), opak gerendert (hell #eee/schwarz, dunkel #333/weiß), statt der alten Graustufen-PNGs mit Alpha, die iOS nur klein oder gar nicht zeigte. `index.html` verlinkt das helle als `apple-touch-icon` und beide als `icon` mit `prefers-color-scheme`; das Manifest listet 180, 192 und 512 px (hell). Neue Dateinamen, weil iOS Icons je URL zwischenspeichert. Der Web-App-Modus (standalone) bleibt aus.
 
 **Smartphone und nicht erreichbare Links**
-- Smartphone: Die Titel kleben (`position: sticky`) an ihrer Section; der Titel der aktuellen Section liegt deckend in ihrer Farbe über den Kacheln. `fensterMessen` misst die Zeilen dazu kurz am natürlichen Platz (`html.messen`).
+- Smartphone: keine Ghost headers mehr; die Titel bleiben an ihrer Section und scrollen mit ihr aus der Ansicht (kein Kleben am Rand der Ansicht).
 - Touch: Die Hover-Farbe der Kacheln erscheint sofort, ohne Übergang.
 - Raster am Desktop: Das „nicht erreichbar“-Zeichen ist ein Dreieck in der oberen rechten Ecke mit 4 px Katheten.
 - Alle Geräte: IP-Adressen, `http://orderbox` und `kitchen.toolbox-bodensee.de` gelten nie als nicht erreichbar (`intern()` in `edit/pruefen.php`, `nieTot()` in `app.js`).
@@ -34,7 +34,6 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 - Im Raster-Modus stehen mindestens zwei Kacheln nebeneinander (Spaltenbreite höchstens `50 % - 1px`), bei mehr Platz mehr, höchstens 6; vorher ergab ein schmales Telefon eine Spalte, wenn zwei Kacheln à 11,875 rem nicht ganz passten.
 
 **Leiste auf dem Smartphone**
-- Smartphone: Ghost headers sind so breit wie der echte Titel (Seitenpolster des Inhalts) statt vollbreit; sie schrumpfen beim Übergang nicht mehr.
 - iPhone hochkant: Dropdown und Stepper folgen dicht auf den Titel, das Zahnrad steht ganz rechts am Rand (`#section-nav-list` ist dort `display: contents`, Reihenfolge per `order`).
 
 **Aufräumen (HTML und Logik, Aussehen unverändert)**

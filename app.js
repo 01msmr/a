@@ -500,12 +500,6 @@ function fensterZiel() {
 
 // misst alle Section- und Zeilenmitten im Inhalt; true, wenn sich etwas verschoben hat
 function fensterMessen() {
-    // Smartphone: die Titel kleben (position: sticky) und stehen beim Scrollen nicht an ihrem Platz; zum Messen kurz an den natürlichen Platz
-    document.documentElement.classList.add('messen');
-    try { return fensterMessenRoh(); } finally { document.documentElement.classList.remove('messen'); }
-}
-
-function fensterMessenRoh() {
     var c = fenster.container, cr = c.getBoundingClientRect(), st = c.scrollTop;
     var secs = [], zeilen = [], sig = [];
     var y = function (r) { return Math.round(r.top - cr.top + st); };
@@ -772,7 +766,9 @@ function ghostHeaderRemove(g, gleitend, blass) {
 function ghostHeaderRender() {
     var c = fenster.container;
     if (!c) return;
-    var sec = document.body.classList.contains('edit-mode') ? null : ghostHeaderSection();
+    // Smartphone: keine Ghost headers, die Titel bleiben an ihrer Section und scrollen mit ihr aus der Ansicht
+    var phone = matchMedia('only screen and (min-device-width: 350px) and (max-device-width: 812px)').matches;
+    var sec = document.body.classList.contains('edit-mode') || phone ? null : ghostHeaderSection();
     var cr = c.getBoundingClientRect(), hoch = c.clientHeight;
     var edge = null, name = sec && sec.querySelector('.name'), hoehe = 0, abstand = 0, warten = null;
     if (name) {
@@ -842,11 +838,9 @@ function ghostHeaderRender() {
         return;
     }
     var ebene = ghostHeaderLayer();
-    // Smartphone: so breit wie der echte Titel (der Inhalt hat Seitenpolster), sonst gleitet die Kopie vollbreit ein und schrumpft beim Übergang
-    var schmal = matchMedia('only screen and (min-device-width: 350px) and (max-device-width: 812px)').matches && name;
-    ebene.style.left = (schmal ? name.getBoundingClientRect().left : cr.left) + 'px';
+    ebene.style.left = cr.left + 'px';
     ebene.style.top = cr.top + 'px';
-    ebene.style.width = (schmal ? name.getBoundingClientRect().width : c.clientWidth) + 'px';
+    ebene.style.width = c.clientWidth + 'px';
     ebene.style.height = hoch + 'px';
     var kachel = c.querySelector('li');
     ebene.style.setProperty('--schatten', (kachel ? kachel.offsetHeight : hoehe) * masz['ghost-header-shadow'] + 'px');

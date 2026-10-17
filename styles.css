@@ -1850,26 +1850,3 @@ body.touch li a,
 body.touch li a::before {
     transition: none;
 }
-
-/* Smartphone: die Titel kleben an ihrer Section; der der aktuellen Section liegt deckend in ihrer Farbe über den Kacheln.
-   Zum Messen (app.js, fensterMessen) stehen sie kurz an ihrem natürlichen Platz */
-@media only screen and (min-device-width: 350px) and (max-device-width: 812px) {
-    body:not(.edit-mode) section .name {
-        position: sticky;
-        top: 0;
-        z-index: 3;
-    }
-
-    body:not(.edit-mode) section.aktuell .name {
-        background-color: var(--c, var(--sect-col));
-    }
-
-    body:not(.edit-mode) section.aktuell .name,
-    body:not(.edit-mode) section.aktuell .name a {
-        color: var(--on-c);
-    }
-
-    html.messen section .name {
-        position: static !important;
-    }
-}

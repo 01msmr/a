@@ -153,7 +153,7 @@ schnelles lässt Zwischenschritte aus. Ist das Ziel die aktive oder eine sichtba
 Hinausgleitens schnell aus. Darunterliegende Kopien behalten ihre Farbe, haben aber weder Schatten noch Linie (es gibt immer nur
 einen, sonst würde er mit jeder Kopie dunkler); steht der echte Titel einer solchen Kopie in der Ansicht, verschwindet sie. Die Kopie wirft einen weichen Schatten von
 66 % einer Kachelhöhe auf den Inhalt. Nach einem Klick läuft er aus, je näher der echte Titel
-seiner Stelle kommt. Im Edit-Mode gibt es keine Kopie.
+seiner Stelle kommt. Im Edit-Mode und auf dem Smartphone gibt es keine Kopie: dort bleiben die Titel an ihrer Section und scrollen mit ihr aus der Ansicht.
 
 ### Kachel-Licht
 
