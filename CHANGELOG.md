@@ -23,6 +23,7 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 
 **Web-App auf dem Home-Bildschirm (iOS)**
 - Home-Icon opak: `apple-icon-180x180.png` und `android-icon-192x192.png` sind jetzt RGB auf #eee (vorher Graustufen mit Transparenz, die neuere iOS-Versionen schwarz hinterlegen oder einfärben).
+- Neuer Dateiname `favicon/home-icon-180.png` (Link und Manifest): iOS speichert Icons je URL, und die alte URL hatte kurz ein leeres Bild geliefert.
 - Manifest vollständig: `name`, `short_name` „a.“, `start_url`/`scope` auf die Seite, `display: standalone`, Farben; im `<head>` `apple-mobile-web-app-capable`, `mobile-web-app-capable`, `apple-mobile-web-app-title` und Statusleiste `default`. Ein bestehendes Home-Bildschirm-Symbol muss entfernt und neu hinzugefügt werden, iOS speichert das Icon beim Hinzufügen.
 
 **Leiste auf dem Smartphone**

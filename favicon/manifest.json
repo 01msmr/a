@@ -8,7 +8,7 @@
  "theme_color": "#ffffff",
  "icons": [
   {
-   "src": "apple-icon-180x180.png",
+   "src": "home-icon-180.png",
    "sizes": "180x180",
    "type": "image/png",
    "purpose": "any"
