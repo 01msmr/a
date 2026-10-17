@@ -345,6 +345,7 @@ var fenster = {
 function sperreAus() {
     if (!sperre.sec) return;
     sperre.sec = null;
+    document.body.classList.remove('gesperrt');
     fensterSync();
     syncActive();
 }
@@ -354,6 +355,7 @@ document.addEventListener('click', function (e) {
     var sec = ziel && (ziel.matches('a.secname') ? (document.querySelector(ziel.getAttribute('href')) || ziel).closest('section') : ziel.closest('section'));
     if (!sec) { sperreAus(); return; }
     sperre.sec = sec;
+    document.body.classList.add('gesperrt');
     sperre.x = e.clientX; sperre.y = e.clientY;
 }, true);
 document.addEventListener('mousemove', function (e) {
@@ -513,6 +515,7 @@ function fensterInit() {
     cancelAnimationFrame(f.raf); f.raf = 0;
     geistZuruecksetzen();
     sperre.sec = null;
+    document.body.classList.remove('gesperrt');
     f.container = c; f.zeilen = []; f.secs = []; f.sig = ''; f.ziel = null; f.top = f.bot = 0;
     fensterMessen();
     fensterSync();

@@ -488,7 +488,7 @@ body:not(.tastatur) #container section .name.gedeckt:hover {
     background-color: var(--c-hov);
 }
 
-body:not(.tastatur) a.secname:not(.active):is(:hover, .mit-hover) {
+body:not(.tastatur):not(.gesperrt) a.secname:not(.active):is(:hover, .mit-hover) {
     color: var(--sect-col);
 }
 
@@ -499,7 +499,7 @@ a.secname.active {
 /* Knöpfe über die volle Höhe: flach in Ruhe, erhaben bei Hover (auch gekoppelt),
    eingedrückt wenn aktiv oder gedrückt. Der Titel der Section spiegelt Hover und Druck
    des Chips — und umgekehrt */
-body:not(.tastatur) a.secname:not(.active):is(:hover, .mit-hover) {
+body:not(.tastatur):not(.gesperrt) a.secname:not(.active):is(:hover, .mit-hover) {
     z-index: 1;
     background-color: color-mix(in srgb, var(--c, var(--sect-col)) 30%, var(--front-body));
     background-image: linear-gradient(rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, .15));
