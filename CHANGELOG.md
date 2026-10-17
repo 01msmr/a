@@ -28,6 +28,7 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 
 **Zeiger, Tastatur und Geist-Titel**
 - Im Titel nur der Chevron, kein schwacher Section-Strich; der Strich bleibt in der Section. Im obersten (aktiven) Titel gelten Punkt und Strich, kein Chevron.
+- Geist-Titel: der Schatten beginnt mit einer 1 px dünnen dunklen Linie, die auch an der ausgleitenden Kopie bleibt; die vorige Kopie wird nicht mehr grau.
 - Geist-Titel überlagern sich nach Reihenfolge: oben weicht die vorige zurück und die neue liegt darunter, wenn das Ziel weiter hinten liegt (weiter vorn: die neue gleitet darüber); am unteren Rand umgekehrt.
 - Bei Tastaturnavigation löst ein ruhender Mauszeiger über Nav-Chips oder Titeln weder Strich/Chevron noch Geist-Titel aus.
 

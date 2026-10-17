@@ -826,7 +826,7 @@ function geistRender() {
         el.style.transform = 'none';
     }
     var neu = { sec: sec, el: el, lage: lage };
-    if (cur) { cur.el.classList.add('alt'); geist.alt.push(cur); }   // vorige: grau, ohne Schatten
+    if (cur) { cur.el.classList.add('alt'); geist.alt.push(cur); }   // vorige: behält die Farbe, ohne Schatten (nur die dünne Linie)
     geist.cur = neu;
     clearTimeout(geist.weg);
     geist.weg = setTimeout(function () {

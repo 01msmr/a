@@ -1695,9 +1695,9 @@ body.view-grid .geist .name {
     --richtung: to top;
 }
 
-/* die vorige Kopie wird grau und wirft keinen Schatten mehr, während die neue darüber gleitet */
+/* die vorige Kopie behält ihre Farbe und wirft keinen Schatten mehr (nur die dünne Linie), während die neue darüber gleitet */
 .geist.alt {
-    filter: grayscale(1);
+    filter: none;
 }
 
 /* nur die dünne Linie bleibt und geht mit der ausgleitenden Kopie */
