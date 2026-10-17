@@ -1209,7 +1209,8 @@ body.licht section li.da {
    im Edit-Mode gilt weiter das Kachel-Layout der Chips */
 body.view-grid:not(.edit-mode) .group {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(max(var(--kachel), calc(100% / 6)), 1fr));   /* höchstens 6 Spalten */
+    /* höchstens 6 Spalten, mindestens 2: auf schmalen Bildschirmen (Smartphone) stehen immer zwei Kacheln nebeneinander, bei mehr Platz mehr */
+    grid-template-columns: repeat(auto-fill, minmax(min(max(var(--kachel), calc(100% / 6)), calc(50% - 1px)), 1fr));
     gap: 0;
     padding-left: 0;
     border-top: 1px solid var(--linie);
