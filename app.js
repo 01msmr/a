@@ -18,6 +18,7 @@ function applyPrefs() {
     document.documentElement.dataset.farbe = getPref('farbe');
     if (typeof settingsAnzeige === 'function') settingsAnzeige();
     dropdownBeschriften();
+    dropdownBreite();
 }
 
 // Dropdown: Text-Modus das Wort „sec“, Icon-Modus der Font-Awesome-Chevron wie die anderen Nav-Icons, nach oben, solange die Liste offen ist
@@ -31,7 +32,26 @@ function dropdownBeschriften(offen) {
     });
 }
 
+// Raster in voller Breite: die Nav-Chips strecken sich, das Dropdown (außerhalb der Liste) bekommt die Breite des Zahnrads.
+// Rückkopplung (das Dropdown verkleinert die Liste und damit das Zahnrad) konvergiert; die Bremse hält sie bei Bedarf an.
+var dropBreiteN = 0, dropBreiteT = 0;
+function dropdownBreite() {
+    var sel = document.getElementById('section-jumper'), gz = document.getElementById('settings-btn');
+    if (!sel || !gz) return;
+    var b = document.body.classList;
+    if (!(b.contains('view-grid') && !b.contains('align-center'))) { sel.style.width = ''; return; }
+    var w = gz.getBoundingClientRect().width;
+    if (!w || Math.abs(w - sel.getBoundingClientRect().width) < 1) return;
+    if (++dropBreiteN > 8) return;
+    if (!dropBreiteT) dropBreiteT = setTimeout(function () { dropBreiteN = 0; dropBreiteT = 0; }, 200);
+    sel.style.width = w + 'px';
+}
+
 applyPrefs();
+dropdownBreite();
+window.addEventListener('resize', dropdownBreite);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(dropdownBreite);
+if (window.ResizeObserver && document.getElementById('settings-btn')) new ResizeObserver(dropdownBreite).observe(document.getElementById('settings-btn'));
 
 // ── Render ────────────────────────────────────────────────────────
 var syncActive = function () { };
