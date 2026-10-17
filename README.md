@@ -147,7 +147,7 @@ bzw. unteren Rand, bis der echte Titel dort ankommt und weiterläuft; sie bleibt
 die Titelzeile ganz deckt, und blendet dann 60 ms aus. Die Kopien bilden einen Stapel aus allen Sections zwischen der Ansicht und dem Ziel, nach Entfernung geordnet: die
 nächste Section liegt unten, das Ziel oben (am oberen Rand sind die früheren Sections weiter weg, am unteren die späteren).
 Wandert das Ziel weiter weg, gleitet nur seine Kopie ein; die dazwischen liegen schon fertig darunter. Wandert es zurück, wird der
-Stapel Stück für Stück abgebaut: die oberste Kopie gleitet hinaus (samt Schatten und Linie), die darunter wird frei, und erst
+Stapel Stück für Stück abgebaut: die oberste Kopie gleitet hinaus (ease-out, samt Schatten und Linie), die darunter wird frei, und erst
 nach diesem Wechsel (400 ms) folgt der nächste, bis das Ziel oben liegt. Ist das Ziel die aktive oder eine sichtbare Section,
 baut sich der ganze Stapel so ab. Wechselt der Rand, gleitet der Stapel erst ganz hinaus. Darunterliegende Kopien behalten
 ihre Farbe, haben aber weder Schatten noch Linie (es gibt immer nur einen, sonst würde er mit jeder Kopie dunkler); steht
