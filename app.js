@@ -1100,7 +1100,7 @@ function strichSetzen() {
     } else s.style.opacity = '0';
     // ganze Section (Hintergrund, Titel, hinter den Kacheln): im Inhalt, schwach, scrollt mit
     if (b) {
-        if (z.sec && !z.kopf) {   // im Titel nur der Chevron, kein Strich
+        if (z.sec && (!z.kopf || kopfOben)) {   // im Titel nur der Chevron, kein Strich; im obersten (aktiven) Titel Punkt und Strich
             var c = document.getElementById('container'), cr = c.getBoundingClientRect(), sr = z.sec.getBoundingClientRect();
             var oben = Math.max(sr.top, cr.top), unten = Math.min(sr.bottom, cr.bottom);
             b.style.left = (strich.x - cr.left + c.scrollLeft) + 'px';
