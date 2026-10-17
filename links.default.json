@@ -204,7 +204,7 @@
       {
         "name": "Tagesspiegel",
         "url": "https://www.tagesspiegel.de/medien/digitale-welt/",
-        "tot": true
+        "dead": true
       },
       {
         "name": "tageszeitung",
@@ -253,7 +253,7 @@
       {
         "name": "NZZ",
         "url": "https://www.nzz.ch/mehr/digital/",
-        "tot": true
+        "dead": true
       },
       {
         "name": "brand eins",
@@ -438,7 +438,7 @@
       {
         "name": "ZDF",
         "url": "https://www.zdf.de/zdfmediathek/",
-        "tot": true
+        "dead": true
       },
       {
         "name": "arte",
@@ -447,7 +447,7 @@
       {
         "name": "3sat",
         "url": "https://www.3sat.de/mediathek/",
-        "tot": true
+        "dead": true
       },
       {
         "name": "WDR",
@@ -468,7 +468,7 @@
       {
         "name": "MUBI",
         "url": "https://mubi.com/films/showing",
-        "tot": true
+        "dead": true
       },
       {
         "name": "MediaSteak",
@@ -489,7 +489,7 @@
       {
         "name": "► DLF Live",
         "url": "https://srv.deutschlandradio.de/themes/dradio/script/aod/index.html?audioMode=4&audioID=3&state=",
-        "tot": true
+        "dead": true
       },
       {
         "name": "DLF Nova",
@@ -530,12 +530,12 @@
       {
         "name": "Aha!",
         "url": "https://aha.atelier522.com/index.php?title=admin:Hauptseite#admin-Seiten",
-        "tot": true
+        "dead": true
       },
       {
         "name": "Ha!",
         "url": "https://aha.atelier522.com/index.php?title=Hauptseite",
-        "tot": true
+        "dead": true
       }
     ]
   },
@@ -556,7 +556,7 @@
       {
         "name": "KR Community",
         "url": "https://community.krautreporter.de",
-        "tot": true
+        "dead": true
       },
       {
         "name": "Rhino Mac — ?",
@@ -657,12 +657,12 @@
       {
         "name": "Schwab-Express",
         "url": "https://schwabenexpress.store/friedrichshafen",
-        "tot": true
+        "dead": true
       },
       {
         "name": "Pasta & Burger a.E.",
         "url": "https://www.pastaburgerameckmarkdorf.de",
-        "tot": true
+        "dead": true
       },
       {
         "name": "[TBX] • Str/chliste",
@@ -743,7 +743,7 @@
       {
         "name": "Parteiarbeit",
         "url": "https://shop.spd.de/mein-spd-shop/de/shop/parteiarbeit/",
-        "tot": true
+        "dead": true
       },
       {
         "name": "🤓 Schnellfinder",
@@ -752,7 +752,7 @@
       {
         "name": "Gestaltungsportal",
         "url": "https://shop.spd.de/mein-spd-shop/de/shop/gestaltungsportal/ba-wue/",
-        "tot": true
+        "dead": true
       },
       {
         "name": "adfc",

@@ -44,7 +44,7 @@ w.eval(fs.readFileSync(root + 'app.js', 'utf8'));
 
 const ev = (t, o) => new w.MouseEvent(t, Object.assign({ bubbles: true, cancelable: true, button: 0, clientX: 10, clientY: 10 }, o));
 // jsdom kennt keine PointerEvents: MouseEvent mit pointerType (Standard: Maus)
-const pev = (t, o, art) => { const e = ev(t, o); Object.defineProperty(e, 'pointerType', { value: art || 'mouse' }); return e; };
+const pev = (t, o, kind) => { const e = ev(t, o); Object.defineProperty(e, 'pointerType', { value: kind || 'mouse' }); return e; };
 const prüfe = (ok, text) => { if (!ok) fehler.push(text); };
 const dann = (fn, ms) => new Promise(r => setTimeout(() => { fn(); r(); }, ms));
 (async () => {
@@ -57,22 +57,22 @@ const dann = (fn, ms) => new Promise(r => setTimeout(() => { fn(); r(); }, ms));
         prüfe(d.querySelectorAll('#jumper-pop a').length === d.querySelectorAll('a.secname').length, 'Liste und Chips unterschiedlich lang');
         prüfe(d.getElementById('section-jumper').tagName === 'BUTTON', 'Dropdown ist kein Button');
         // Hover auf einem Listeneintrag leuchtet Chip und Titel derselben Section (gekoppelte Hervorhebung)
-        const eintrag = d.querySelectorAll('#jumper-pop a')[1], chip = d.querySelectorAll('a.secname')[1], titel = d.querySelectorAll('#container .name')[1];
-        eintrag.dispatchEvent(pev('pointerenter'));
-        prüfe(chip.classList.contains('mit-hover') && titel.classList.contains('mit-hover'), 'Listeneintrag koppelt Chip und Titel nicht');
-        eintrag.dispatchEvent(pev('pointerleave'));
-        prüfe(!chip.classList.contains('mit-hover') && !titel.classList.contains('mit-hover'), 'Kopplung wird nicht zurückgenommen');
+        const entry = d.querySelectorAll('#jumper-pop a')[1], chip = d.querySelectorAll('a.secname')[1], heading = d.querySelectorAll('#container .name')[1];
+        entry.dispatchEvent(pev('pointerenter'));
+        prüfe(chip.classList.contains('with-hover') && heading.classList.contains('with-hover'), 'Listeneintrag koppelt Chip und Titel nicht');
+        entry.dispatchEvent(pev('pointerleave'));
+        prüfe(!chip.classList.contains('with-hover') && !heading.classList.contains('with-hover'), 'Kopplung wird nicht zurückgenommen');
     }, 0);
     // Edit-Mode einschalten und die Beobachter (Microtasks) laufen lassen: hier hing die Seite einmal
-    await dann(() => { d.body.classList.add('edit-mode'); w.raster(); w.linksFreigeben(); w.settingsAnzeige(); }, 0);
+    await dann(() => { d.body.classList.add('edit-mode'); w.gridInit(); w.releaseLinks(); w.settingsDisplay(); }, 0);
     // Sections umsortieren: Griff am Titel, Ziehen über die zweite Section setzt die erste dahinter, der Vergleich meldet es
     await dann(() => {
         const secs = () => [...d.querySelectorAll('#container section')].map(s => s.querySelector('h3.name').id);
         const vorher = secs(), erste = d.querySelector('#container section');
-        prüfe(d.querySelectorAll('.sec-griff').length === vorher.length, 'nicht in jeder Section ein Griff');
+        prüfe(d.querySelectorAll('.sec-handle').length === vorher.length, 'nicht in jeder Section ein Griff');
         const dt = { setData() { }, setDragImage() { } };
         const dragEv = (typ, o) => { const e = new w.Event(typ, Object.assign({ bubbles: true, cancelable: true }, o)); e.dataTransfer = dt; e.clientY = 5; return e; };
-        erste.querySelector('.sec-griff').dispatchEvent(ev('mousedown'));
+        erste.querySelector('.sec-handle').dispatchEvent(ev('mousedown'));
         prüfe(erste.draggable === true, 'Section nicht ziehbar nach Griff');
         erste.dispatchEvent(dragEv('dragstart'));
         d.querySelectorAll('#container section')[1].dispatchEvent(dragEv('dragover'));
@@ -80,24 +80,24 @@ const dann = (fn, ms) => new Promise(r => setTimeout(() => { fn(); r(); }, ms));
         prüfe(nachher[0] === vorher[1] && nachher[1] === vorher[0], 'Reihenfolge nicht umgestellt');
         erste.dispatchEvent(dragEv('dragend'));
         prüfe(erste.draggable === false, 'Section bleibt ziehbar nach dem Zug');
-        prüfe(w.aenderungsText().includes('Reihenfolge der Sections'), 'Umstellung nicht im Änderungstext');
+        prüfe(w.changesText().includes('Reihenfolge der Sections'), 'Umstellung nicht im Änderungstext');
     }, 0);
     await dann(() => {
         d.querySelector('a.secname').dispatchEvent(pev('pointerdown'));
-        prüfe(!d.body.classList.contains('gesperrt'), 'Sperre im Edit-Mode');
+        prüfe(!d.body.classList.contains('locked'), 'Sperre im Edit-Mode');
         d.body.classList.remove('edit-mode');
     }, 50);
     // Klick-Sperre auf Chip, Aufheben per Mausbewegung
     await dann(() => {
         d.querySelector('a.secname').dispatchEvent(pev('pointerdown'));
-        prüfe(d.body.classList.contains('gesperrt'), 'Sperre fehlt nach Chip-Klick');
+        prüfe(d.body.classList.contains('locked'), 'Sperre fehlt nach Chip-Klick');
         d.dispatchEvent(ev('mousemove', { clientX: 80, clientY: 80 }));
-        prüfe(!d.body.classList.contains('gesperrt'), 'Sperre bleibt nach Mausbewegung');
+        prüfe(!d.body.classList.contains('locked'), 'Sperre bleibt nach Mausbewegung');
         // Auswahl in der Sections-Liste sperrt ebenfalls (Loslassen über einem Eintrag klickt ihn ohne pointerdown)
-        w.springeZu(d.querySelectorAll('a.secname')[1].getAttribute('href'));
-        prüfe(d.body.classList.contains('gesperrt'), 'Sperre fehlt nach Auswahl in der Liste');
+        w.jumpTo(d.querySelectorAll('a.secname')[1].getAttribute('href'));
+        prüfe(d.body.classList.contains('locked'), 'Sperre fehlt nach Auswahl in der Liste');
         d.dispatchEvent(ev('mousemove', { clientX: 200, clientY: 200 }));
-        prüfe(!d.body.classList.contains('gesperrt'), 'Sperre bleibt nach Mausbewegung (Liste)');
+        prüfe(!d.body.classList.contains('locked'), 'Sperre bleibt nach Mausbewegung (Liste)');
     }, 50);
     await dann(() => { }, 200);
     fehler.forEach(f => console.error(f));

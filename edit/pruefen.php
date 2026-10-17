@@ -142,11 +142,11 @@ foreach (array_chunk($eintraege, 12, true) as $stapel) {
 if ($schreiben) {
     foreach ($daten as $si => $sec) {
         foreach (($sec['links'] ?? []) as $li => $link) {
-            unset($daten[$si]['links'][$li]['tot']);
+            unset($daten[$si]['links'][$li]['dead']);
         }
     }
     foreach ($tot as $e) {
-        $daten[$e['si']]['links'][$e['li']]['tot'] = true;
+        $daten[$e['si']]['links'][$e['li']]['dead'] = true;
     }
     copy($datei, __DIR__ . '/links.bak.json');
     $json = json_encode($daten, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
