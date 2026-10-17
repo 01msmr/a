@@ -1747,6 +1747,11 @@ body.view-grid .geist .name {
     pointer-events: none;
     transform: translate(-50%, -50%);
     color: var(--on-c);
+}
+
+/* auch das Glyph (::before) ohne Übergang: seine Farbe erbt den Wechsel zwischen Chip und Titel sonst mit 0,3 s */
+#strich-pfeil,
+#strich-pfeil::before {
     transition: none;
 }
 
