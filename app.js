@@ -102,6 +102,7 @@ function jumperListe(data) {
     function oeffnen() {
         var r = sel.getBoundingClientRect(), oben = r.top > window.innerHeight / 2;
         pop.style.width = r.width + 'px';   // bündig mit dem Feld, wie das Einstellungs-Overlay
+        pop.style.setProperty('--set-hoehe', r.width + 'px');   // Einträge quadratisch wie die Einstellungs-Knöpfe
         pop.style.left = r.left + 'px';
         pop.style.top = oben ? 'auto' : r.bottom + 'px';
         pop.style.bottom = oben ? (window.innerHeight - r.top) + 'px' : 'auto';
@@ -1198,16 +1199,15 @@ var EINSTELLUNGEN = [
         set: function (w) { window.msmrZoom.set(w); }
     },
     {
-        label: 'Farbschema',
-        werte: [['auto', 'auto'], ['light', 'hell'], ['dark', 'dunkel']],
+        label: 'Theme',
+        werte: [['auto', 'auto'], ['light', 'light'], ['dark', 'dark']],
         schema: true,
         get: function () { return window.msmrTheme.auto() ? 'auto' : window.msmrTheme.get(); },
         set: function (w) { if (w === 'auto') window.msmrTheme.setAuto(); else window.msmrTheme.set(w); }
     },
     {
-        label: 'Farbe',
-        werte: [['bunt', 'bunt'], ['blass', 'blass']],
-        text: { bunt: 'bunt', blass: 'blass' },
+        label: 'Color',
+        werte: [['bunt', 'color'], ['blass', 'pale']],
         // Kreis in einer Section-Farbe: kräftig = bunt, fast farblos (gleiche Helligkeit) = blass
         kreis: { bunt: '1', blass: 'var(--farbe-blass)' },
         get: function () { return getPref('farbe'); },
@@ -1215,36 +1215,32 @@ var EINSTELLUNGEN = [
     },
     {
         label: 'Navigation',
-        werte: [['short', 'Text'], ['icons', 'Icons']],
+        werte: [['short', 'text'], ['icons', 'icons']],
         // Text-Modus: das Wort „text“; Icon-Modus: Squircle wie bei APP
-        text: { short: 'text', icons: 'icons' },
         squircle: true,
         get: function () { return getPref('navMode'); },
         set: function (w) { setPref('navMode', w); }
     },
     {
-        label: 'Ansicht',
-        werte: [['chips', 'Chips'], ['grid', 'Raster']],
-        text: { chips: 'chips', grid: 'raster' },
+        label: 'View',
+        werte: [['chips', 'chips'], ['grid', 'grid']],
         // vier Kacheln: gerundet und getrennt = Chips; eckig und aneinander = Raster
         kacheln: { chips: false, grid: true },
         get: function () { return getPref('view'); },
         set: function (w) { setPref('view', w); }
     },
     {
-        label: 'Ausrichtung',
+        label: 'Align',
         // im Raster heißt „links“ volle Breite
-        beschr: function (w) { return w === 'left' && getPref('view') === 'grid' ? 'volle Breite' : null; },
-        werte: [['left', 'links'], ['center', 'Mitte']],
-        text: { left: 'links', center: 'mitte' },
+        beschr: function (w) { return w === 'left' && getPref('view') === 'grid' ? 'full' : null; },
+        werte: [['left', 'left'], ['center', 'center']],
         icons: { left: 'fa-align-left', center: 'fa-align-center' },
         get: function () { return getPref('align'); },
         set: function (w) { setPref('align', w); }
     },
     {
-        label: 'Bearbeiten',
-        werte: [['aus', 'aus'], ['an', 'an']],
-        text: { aus: 'edit', an: 'fertig' },
+        label: 'Edit',
+        werte: [['aus', 'edit'], ['an', 'done']],
         // zwei Chevrons übereinander = aus; Diskette = es wird bearbeitet, Klick beendet und fragt nach dem Speichern
         icons: { aus: ['fa-chevron-up', 'fa-chevron-down'], an: 'fa-floppy-disk' },
         get: function () { return document.body.classList.contains('edit-mode') ? 'an' : 'aus'; },
@@ -1268,7 +1264,7 @@ function wertNach(e, w) {
 // Text-Modus: Wörter; Icon-Modus: Sonne/Mond, „auto“ als Kreis (leer = aus, gefüllt = an)
 function zeichneSchema(ic, w) {
     var icons = document.body.classList.contains('nav-icons');
-    var sym = { light: 'fa-sun', dark: 'fa-moon' }, wort = { auto: 'auto', light: 'hell', dark: 'dunkel' };
+    var sym = { light: 'fa-sun', dark: 'fa-moon' }, wort = { auto: 'auto', light: 'light', dark: 'dark' };
     function glyph(klasse, extra) {
         var g = document.createElement('i');
         g.className = klasse + (extra ? ' ' + extra : '');
@@ -1299,9 +1295,9 @@ function zeichneIcon(ic, e, w) {
         ic.textContent = d.text;
     } else if (e.schema) {
         zeichneSchema(ic, w);
-    } else if (e.text && !document.body.classList.contains('nav-icons')) {
+    } else if (!document.body.classList.contains('nav-icons')) {
         ic.className = 'set-icon set-letter set-text';
-        ic.textContent = e.text[w];
+        ic.textContent = wertName(e, w);
     } else if (e.kreis) {
         ic.className = 'set-icon set-kreis';
         ic.textContent = '';
@@ -1332,8 +1328,8 @@ function settingsAnzeige() {
     document.querySelectorAll('#settings-pop .set-btn').forEach(function (b, i) {
         var e = EINSTELLUNGEN[i], w = e.get();
         zeichneIcon(b.querySelector('.set-icon'), e, w);
-        b.title = e.label + ': ' + wertName(e, w);
-        b.setAttribute('aria-label', b.title);
+        b.title = wertName(e, w) + '/' + wertName(e, wertNach(e, w));   // jetzt/nächster Wert
+        b.setAttribute('aria-label', e.label + ': ' + b.title);
     });
 }
 
