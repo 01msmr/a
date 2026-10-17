@@ -164,7 +164,7 @@ Die Einstellung „Farbe“ skaliert die Sättigung aller Section-Farben (`oklch
 Setzt eine Anmeldung voraus: einmal pro Browser `https://a.msmr.co/edit/` aufrufen
 (siehe [docs/htaccess-setup.md](docs/htaccess-setup.md)).
 
-- Einstieg: Zahnrad → unterster Knopf, oder Doppelklick auf die Leiste.
+- Einstieg: Zahnrad → unterster Knopf.
 - Name und URL der Kacheln sind direkt bearbeitbar, `×` löscht (umkehrbar bis zum Speichern),
   `+` fügt hinzu.
 - Der Griff `⠿` zieht eine Kachel, auch **in eine andere Section** (nur mit Maus).

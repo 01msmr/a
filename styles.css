@@ -839,9 +839,17 @@ li.tot::after {
         padding: 4px 6px;
     }
 
+    /* die Chips weichen dem Dropdown; das Zahnrad bleibt, in seiner eigenen Breite */
     #section-nav-list {
+        flex: 0 0 auto;
+    }
+
+    #section-nav-list .secname {
         display: none;
-        visibility: hidden;
+    }
+
+    #section-nav-list .settings-btn {
+        flex: 0 0 auto;
     }
 }
 
@@ -1141,7 +1149,7 @@ body:not(.nav-icons) .settings-btn .secicon {
     appearance: none;
     flex: 0 0 auto;   /* wächst nicht mit den Chips */
     width: 3rem;
-    margin: 0;
+    margin-left: -0.375rem;   /* hebt den Spaltenabstand der Leiste (.title) zu den Chips auf */
     padding: 0;
     border-radius: 0;
     background: transparent;
@@ -1264,11 +1272,6 @@ body.view-grid:not(.edit-mode) #container section .name {
 
 body.view-grid:not(.edit-mode) .group {
     padding-bottom: 0;
-}
-
-/* Hover (Maus) bzw. Fokus (Tastatur): der Titel hebt sich mit der bekannten Deckkraft (28 %) in der Schriftfarbe von der Fläche ab */
-body:not(.edit-mode) #container section.heiss .name.gedeckt {
-    background-color: color-mix(in srgb, var(--on-c) 28%, transparent);
 }
 
 /* toter Link im Raster: roter Punkt wird ein Quadrat gleicher Größe, bündig in der oberen rechten Ecke innen */
@@ -1743,11 +1746,6 @@ html.strich-an * {
 html.strich-an.strich-punkt,
 html.strich-an.strich-punkt * {
     cursor: var(--curs-sec) 1 1, auto !important;
-}
-
-/* wie der echte Titel bei Hover auf den Chip: derselbe Schleier, damit die Übernahme nicht blitzt */
-.geist.heiss .name {
-    background-color: color-mix(in srgb, var(--on-c) 28%, transparent);
 }
 
 /* Raster: leere Felder der letzten Zeile (eine Fläche bis zum Zeilenende, --leer setzt app.js) tragen die Linien der Kacheln */

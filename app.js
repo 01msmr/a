@@ -1479,12 +1479,6 @@ fetch('links.php?t=' + Date.now())
 
 // ── Edit Mode ─────────────────────────────────────────────────────
 
-// Doppelklick auf Titel-Bereich → Edit Mode
-document.querySelector('.title').addEventListener('dblclick', function (e) {
-    if (e.target.closest('a') || e.target.tagName === 'SELECT') return;
-    enterEditMode();
-});
-
 function preventEnter(e) { if (e.key === 'Enter') e.preventDefault(); }
 
 // Löschen ist bis zum Speichern umkehrbar
