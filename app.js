@@ -812,7 +812,8 @@ function lichtHart() {
     if (!licht.el) return;
     licht.el.style.opacity = '0';
     licht.el.style.clipPath = '';
-    document.body.classList.remove('licht');
+    // nur wenn gesetzt: classList.remove löst auch ohne Änderung den Body-Beobachter aus (Endlosschleife im Edit-Mode)
+    if (document.body.classList.contains('licht')) document.body.classList.remove('licht');
 }
 
 function lichtZu(li, mausX, mausY) {
