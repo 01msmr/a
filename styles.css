@@ -1322,6 +1322,7 @@ body.licht:not(.edit-mode).tastatur #container li a:not([contenteditable]):focus
     background: var(--sc, var(--sect-col));
     -webkit-mask: var(--curs-hov) no-repeat 0 0 / 100% 100%;
     mask: var(--curs-hov) no-repeat 0 0 / 100% 100%;
+    transition: none;   /* Cursor wechselt Farbe und Lage sofort */
 }
 
 body.tastatur .licht-strich {
