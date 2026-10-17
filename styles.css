@@ -1143,7 +1143,7 @@ body:not(.nav-icons) .settings-btn .secicon {
     display: none;
 }
 
-/* das Dropdown zeigt einen dünnen Chevron (zwei Diagonalen, 1,5 px, in der Schriftfarbe), mittig; nach oben, solange die Liste offen ist */
+/* das Dropdown zeigt im Text-Modus das Wort „sec“, im Icon-Modus einen dünnen Chevron (zwei Diagonalen, 1,5 px, in der Schriftfarbe), mittig; nach oben, solange die Liste offen ist */
 #section-jumper {
     -webkit-appearance: none;
     appearance: none;
@@ -1153,6 +1153,14 @@ body:not(.nav-icons) .settings-btn .secicon {
     padding: 0;
     border-radius: 0;
     background-color: transparent;
+    font: inherit;
+    font-size: .9em;   /* wie die Chips */
+    text-align: center;
+    text-align-last: center;
+    cursor: inherit;
+}
+
+body.nav-icons #section-jumper {
     background-repeat: no-repeat;
     background-size: .5rem .5rem;
     background-position: calc(50% - .25rem) 50%, calc(50% + .25rem) 50%;
@@ -1160,10 +1168,9 @@ body:not(.nav-icons) .settings-btn .secicon {
     background-image:
         linear-gradient(to top right, transparent calc(50% - .75px), currentColor calc(50% - .75px), currentColor calc(50% + .75px), transparent calc(50% + .75px)),
         linear-gradient(to top left, transparent calc(50% - .75px), currentColor calc(50% - .75px), currentColor calc(50% + .75px), transparent calc(50% + .75px));
-    cursor: inherit;
 }
 
-#section-jumper.offen {
+body.nav-icons #section-jumper.offen {
     background-image:
         linear-gradient(to top left, transparent calc(50% - .75px), currentColor calc(50% - .75px), currentColor calc(50% + .75px), transparent calc(50% + .75px)),
         linear-gradient(to top right, transparent calc(50% - .75px), currentColor calc(50% - .75px), currentColor calc(50% + .75px), transparent calc(50% + .75px));

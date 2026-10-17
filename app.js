@@ -17,13 +17,15 @@ function applyPrefs() {
     document.body.classList.toggle('view-grid', getPref('view') === 'grid');
     document.documentElement.dataset.farbe = getPref('farbe');
     if (typeof settingsAnzeige === 'function') settingsAnzeige();
+    dropdownBeschriften();
 }
 
-// Dropdown: nur ein dünner Chevron (styles.css, #section-jumper), nach oben, solange die Liste offen ist
+// Dropdown: Text-Modus das Wort „sec“, Icon-Modus nur ein dünner Chevron (styles.css, #section-jumper), nach oben, solange die Liste offen ist
 function dropdownBeschriften(offen) {
-    document.getElementById('section-jumper').classList.toggle('offen', !!offen);
+    if (offen !== undefined) document.getElementById('section-jumper').classList.toggle('offen', offen);
+    var icons = document.body.classList.contains('nav-icons');
     document.querySelectorAll('#section-jumper option').forEach(function (o) {
-        o.textContent = '';
+        o.textContent = icons ? '' : 'sec';
         o.title = o.dataset.titel;
     });
 }
