@@ -1,5 +1,5 @@
-/* Kachel: 190px reichen für alle Namen bis 183px Text (li a hat rechts kein Polster).
-   Spalte: 6 Kacheln — eine siebte passte auch in die alten 1250px nicht */
+/* Tile: 190px is enough for all names up to 183px of text (li a has no padding on the right).
+   Column: 6 tiles — a seventh did not fit into the old 1250px either */
 html {
     --zoom: 1;
     font-size: calc(100% * var(--zoom));
@@ -13,26 +13,26 @@ html[data-zoom="m"] {
     --tile: 11.875rem;
     --column: calc(6 * var(--tile));
 
-    /* Bewegung (app.js liest die Zahlen; Zeiten in ms) */
-    --glow-duration: 200;        /* Leuchtfenster und Geist-Titel gleiten */
-    --glow-duration-short: 60;    /* dasselbe bei reduzierter Bewegung */
-    --glide-power: 2;         /* beschleunigt von Anfang an, endet hart (t hoch n) */
-    --light-duration: 90;           /* Kachel-Licht von Kachel zu Kachel */
-    --light-power: 1.4;         /* dessen Kurve: sanfter als das Fenster, endet ebenfalls hart */
-    --light-edge-duration: 90;      /* Kachel-Licht füllt bzw. räumt von der Kante */
-    --light-coverage: .95;        /* Anteil, ab dem die Kachelschrift umkehrt */
-    --ghost-header-shadow: .66;       /* Schattenlänge als Anteil einer Kachelhöhe */
-    --ghost-header-fade: 2;          /* Schatten läuft über so viele Titelhöhen aus */
-    --ghost-header-hold: 2500;         /* so lange wartet ein Sprung höchstens auf den Titel */
-    --cursor-line-faint: .33;       /* Deckkraft des Strichs auf Titel und Section */
+    /* Motion (app.js reads the numbers; times in ms) */
+    --glow-duration: 200;        /* Glow window and ghost headers glide */
+    --glow-duration-short: 60;    /* the same for reduced motion */
+    --glide-power: 2;         /* accelerates from the start, ends hard (t to the power n) */
+    --light-duration: 90;           /* Tile light from tile to tile */
+    --light-power: 1.4;         /* its curve: softer than the window, also ends hard */
+    --light-edge-duration: 90;      /* Tile light fills from / clears to the edge */
+    --light-coverage: .95;        /* Share at which the tile text inverts */
+    --ghost-header-shadow: .66;       /* Shadow length as a share of a tile height */
+    --ghost-header-fade: 2;          /* Shadow fades out over this many heading heights */
+    --ghost-header-hold: 2500;         /* how long a jump waits at most for the heading */
+    --cursor-line-faint: .33;       /* Opacity of the line on heading and section */
     --cursor-line-width: 3px;
-    --pop-duration: 125;            /* Einstellungs-Overlay und Dropdown wachsen auf und schrumpfen zu (ms) */
-    --pop-curve: cubic-bezier(.55, .085, .68, .19);   /* beschleunigt, endet hart */
+    --pop-duration: 125;            /* Settings overlay and dropdown grow and shrink (ms) */
+    --pop-curve: cubic-bezier(.55, .085, .68, .19);   /* accelerates, ends hard */
     --pop-t: calc(var(--pop-duration) * 1ms);
     --pop-transition: height var(--pop-t) var(--pop-curve), overlay var(--pop-t) allow-discrete, display var(--pop-t) allow-discrete;
-    /* Schließen: erst schrumpfen, die Farben springen am Ende um (Öffnen: erst umschalten, dann wachsen) */
+    /* Closing: first shrink, the colors jump at the end (opening: first switch, then grow) */
     --pop-closed: var(--pop-transition), background-color 0s linear var(--pop-t), color 0s linear var(--pop-t);
-    --color-intensity: 1;               /* Sättigung der Section-Farben, bei Einstellung „blass“ s. u. */
+    --color-intensity: 1;               /* Saturation of the section colors, for the "pale" setting see below */
     --color-pale: .4;
 }
 
@@ -50,18 +50,18 @@ html[data-zoom="m"] {
     --on-c: #fff;
     --chip-inv: #fff;
     --gloss: 1;
-    /* Regel für Schrift in Sektionsfarbe: gleiche Farbe, Helligkeit (OKLCH-L) auf diesen Bereich begrenzt.
-       Helle Farben werden dunkler, dunkle bleiben wie sie sind */
+    /* Rule for text in section color: same color, lightness (OKLCH-L) limited to this range.
+       Light colors get darker, dark ones stay as they are */
     --text-l-min: 0;
     --text-l-max: .64;
     --curs-img: url(c-point-light.png);
-    --curs-sec: url(c-point.png);   /* Quadrat in der Section: weiß, im Dunkeln invertiert */
+    --curs-sec: url(c-point.png);   /* Square in the section: white, inverted in the dark */
     --curs-auf: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='25' height='25'%3E%3Cpath d='M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z' fill='white' stroke='rgba(0,0,0,.45)' stroke-width='30' paint-order='stroke'/%3E%3C/svg%3E") 12 12, auto;
     --curs-ab: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='25' height='25'%3E%3Cpath d='M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z' fill='white' stroke='rgba(0,0,0,.45)' stroke-width='30' paint-order='stroke'/%3E%3C/svg%3E") 12 12, auto;
     --curs-hov: url(c-line-light.png);
 }
 
-/* dunkel: ein Block für Systemvorgabe und ausdrückliche Wahl — das Skript im <head> setzt data-theme immer (auto = Wert des Systems) */
+/* dark: one block for the system default and the explicit choice — the script in the <head> always sets data-theme (auto = system value) */
 :root[data-theme="dark"] {
     color-scheme: dark;
     --front-body: #333;
@@ -74,9 +74,9 @@ html[data-zoom="m"] {
     --title-dom: #999;
     --on-c: #111;
     --chip-inv: var(--front-body);
-    /* im Dunkeln etwas weniger Glanz auf den Kacheln */
+    /* a little less gloss on the tiles in the dark */
     --gloss: .6;
-    /* im Dunkeln umgekehrt: nie dunkler als dieser Wert */
+    /* inverted in the dark: never darker than this value */
     --text-l-min: .72;
     --text-l-max: 1;
     --curs-img: url(c-point.png);
@@ -94,33 +94,33 @@ body {
     cursor: var(--curs-img) 1 1, auto;
 }
 
-/* kein Gummiband auf Dokumentebene */
+/* no rubber band at document level */
 html,
 body {
     overscroll-behavior: none;
     height: 100%;
     margin: 0;
-    /* div.seite ist fixiert und scrollt selbst */
+    /* div.app-frame is fixed and scrolls itself */
     overflow: hidden;
 }
 
 .title {
     color: var(--title-col);
-    /* Schrift wie früher als h3 (jetzt header), damit alle em-Maße darin gleich bleiben */
+    /* Text as before when this was an h3 (now header), so all em measures inside stay the same */
     font-size: 1.17em;
     font-weight: bold;
     margin: 0;
     box-sizing: border-box;
     padding: 0 0 0 1em;
     height: 3.125rem;
-    /* Außenkante bündig mit der Kachelreihe: Spalte + linkes Polster von .group */
+    /* Outer edge flush with the tile row: column + left padding of .group */
     max-width: calc(var(--column) + 0.12em);
-    /* als Flex-Element sonst zusammengedrückt */
+    /* otherwise squeezed as a flex item */
     flex-shrink: 0;
     position: sticky;
     display: flex;
     align-items: center;
-    /* Dropdown hinter den Chips, bricht bei Platzmangel um */
+    /* Dropdown behind the chips, wraps when space is short */
     flex-wrap: wrap;
     column-gap: 0.375rem;
     overflow-x: auto;
@@ -140,14 +140,14 @@ body {
     padding-right: 0.3em;
 }
 
-/* nimmt den Rest unter der Titelleiste, statt ihn mit 94% zu schätzen */
+/* takes the rest below the title bar instead of estimating it at 94% */
 .container {
     scroll-behavior: smooth;
     flex: 1 1 auto;
     min-height: 0;
     overflow-y: scroll;
     overflow-x: hidden;
-    /* der Überzug bleibt hier und wandert nicht nach außen */
+    /* the overscroll stays here and does not travel outward */
     overscroll-behavior: contain;
     scroll-snap-type: y mandatory;
 }
@@ -157,7 +157,7 @@ section {
     height: auto;
 }
 
-/* Leerraum als Element — eine Marge zählt nicht zum scrollbaren Bereich */
+/* Empty space as an element — a margin does not count as scrollable area */
 #container::after {
     content: "";
     display: block;
@@ -168,8 +168,8 @@ section {
     color: var(--text-col);
 }
 
-/* kontrastreich bei Hover, Tastatur-Fokus oder als oberste Section — ein Mausklick-Fokus zählt nicht,
-   sonst wirkt die Section nach der Rückkehr von einem Link noch gehovert */
+/* high contrast on hover, keyboard focus or as the topmost section — mouse-click focus does not count,
+   otherwise the section still looks hovered after returning from a link */
 body section .name.covered a {
     color: var(--sect-col);
 }
@@ -183,30 +183,30 @@ li,
     font-family: "Ubuntu", "Helvetica neue", Helvetica, Arial, sans-serif;
 }
 
-/* lange Namen werden hart abgeschnitten statt umgebrochen — keine Auslassungspunkte */
+/* long names are cut off hard instead of wrapped — no ellipsis */
 li a {
     display: flex;
-    align-items: center;   /* Text mittig in der Fläche */
-    /* füllt die Kachel ganz aus — der Cursor trifft auch die Ecken */
+    align-items: center;   /* text centered in the area */
+    /* fills the tile completely — the cursor also hits the corners */
     height: 100%;
     box-sizing: border-box;
-    /* rechts kein Polster: so passen 16 Zeichen in die 190px-Kachel */
-    /* Schrift optisch mittig: Tinte von Oberlänge (l, d) bis Unterlänge (q, g) sitzt
-       in Ubuntu ca. .068em tiefer als die Mitte der Zeilenbox — oben weniger, unten mehr Polster */
+    /* no padding on the right: so 16 characters fit into the 190px tile */
+    /* text optically centered: ink from ascender (l, d) to descender (q, g) sits
+       in Ubuntu about .068em lower than the middle of the line box — less padding above, more below */
     padding: .352em 0 .488em 0.3em;
     margin: 0;
     text-decoration: none;
-    cursor: var(--curs-hov) 1 30, auto;   /* Rückfall ohne Hover-Medium; sonst gezeichnet, s. .licht-strich */
+    cursor: var(--curs-hov) 1 30, auto;   /* fallback without a hover medium; otherwise drawn, see .tile-light-line */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: clip;
-    /* eigener Stapel, damit die Fläche (::before) hinter dem Text liegt */
+    /* own stack so the area (::before) lies behind the text */
     position: relative;
     z-index: 0;
 }
 
-/* Der Link bleibt eckig (Trefferfläche), nur die Hover-Fläche ist gerundet:
-   der Browser beschneidet die Trefferfläche sonst auf die Rundung */
+/* The link stays square (hit area), only the hover area is rounded:
+   otherwise the browser clips the hit area to the rounding */
 li a::before {
     content: "";
     position: absolute;
@@ -215,9 +215,9 @@ li a::before {
     border-radius: .35em;
 }
 
-/* nach section:hover a, damit die eigene Kachel gewinnt.
-   Tastatur (Tab, Pfeil links/rechts) zeigt dieselbe Fläche; beim Bearbeiten nicht.
-   Es leuchtet nur eine Kachel: body.tastatur (app.js) schaltet zwischen Maus und Tastatur um */
+/* after section:hover a, so the own tile wins.
+   Keyboard (Tab, arrow left/right) shows the same area; not while editing.
+   Only one tile lights up: body.keyboard (app.js) switches between mouse and keyboard */
 body:not(.touch):not(.keyboard):not(.tile-light):not(.locked) li a:hover,
 body.keyboard:not(.tile-light) li a:not([contenteditable]):focus-visible {
     color: var(--text-hov);
@@ -232,7 +232,7 @@ body.keyboard li a:not([contenteditable]):focus-visible::before {
     background-color: var(--back-hov);
 }
 
-/* Der Strich-Cursor der Kachel sitzt im Licht (.licht-strich, app.js) und gleitet mit ihm; hier nur der Systemzeiger */
+/* The line cursor of the tile sits in the light (.tile-light-line, app.js) and glides along with it; here only the system pointer */
 @media (hover: hover) {
     li a {
         cursor: none;
@@ -243,11 +243,11 @@ section a {
     color: var(--text-col);
 }
 
-/* gemeinsame Grundgestalt aller Nav-Knöpfe: Chips, Einträge der Sections-Liste (a.sec-btn), Zahnrad und Dropdown (.nav-btn) */
+/* common base shape of all nav buttons: chips, entries of the sections list (a.sec-btn), gear and dropdown (.nav-btn) */
 a.sec-btn,
 .nav-btn {
     box-sizing: border-box;
-    /* volle Höhe der Leiste, volle Breite: die Chips teilen sich den Platz */
+    /* full height of the bar, full width: the chips share the space */
     align-self: stretch;
     flex: 1 1 auto;
     text-align: center;
@@ -259,12 +259,12 @@ a.sec-btn,
     min-width: 2.1875rem;
     color: var(--sect-col);
     text-decoration: none;
-    /* Kanten wie ein echter Knopf: links Licht, rechts Schatten; oben/unten erst bei Hover sichtbar */
+    /* edges like a real button: light on the left, shadow on the right; top/bottom only visible on hover */
     border: 1px solid transparent;
     border-left-color: rgba(255, 255, 255, .35);
     border-right-color: rgba(0, 0, 0, .15);
     position: relative;
-    transition: none;   /* Knöpfe reagieren sofort */
+    transition: none;   /* buttons react immediately */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -272,14 +272,14 @@ a.sec-btn,
     line-height: 1.4em;
 }
 
-/* alles blendet schnell um; die Kachelfläche noch schneller (0 Spezifität, Einzelregeln gewinnen) */
+/* everything fades quickly; the tile area even faster (0 specificity, single rules win) */
 *,
 ::before,
 ::after {
     transition: color .3s ease, background-color .3s ease, border-color .3s ease, box-shadow .3s ease, transform .3s ease;
 }
 
-/* URL-Kachel: Text sofort, nur die Fläche blendet kurz ein (--hl = Stärke des Glanzes) */
+/* URL tile: text immediately, only the area fades in briefly (--hl = strength of the gloss) */
 @property --hl {
     syntax: '<number>';
     inherits: false;
@@ -310,10 +310,10 @@ body {
 }
 
 div.app-frame {
-    inset: 0;   /* füllt das ganze Fenster, kein Streifen vom Hintergrund */
+    inset: 0;   /* fills the whole window, no stripe of the background */
     width: 100%;
     height: 100%;
-    /* Spalte: Leiste oben, Container füllt den Rest genau aus */
+    /* Column: bar on top, container fills the rest exactly */
     display: flex;
     flex-direction: column;
     overscroll-behavior: none;
@@ -330,12 +330,12 @@ div.app-frame::-webkit-scrollbar {
     display: none;
 }
 
-/* feste Breite: 6 Kacheln = eine Spalte */
+/* fixed width: 6 tiles = one column */
 li {
     margin: 0;
     width: var(--tile);
     height: 2.25rem;
-    /* oben statt Grundlinie: sonst bleibt unter jeder Reihe der Unterlängen-Spalt (5px) */
+    /* top instead of baseline: otherwise the descender gap (5px) remains under every row */
     vertical-align: top;
     overflow: hidden;
     clear: both;
@@ -346,7 +346,7 @@ li {
     box-sizing: border-box;
     width: 100%;
     padding-top: 0.25em;
-    padding-bottom: .1em;   /* die andere Hälfte (.1em × 1.4 des Titels) liegt unter der Kachelgruppe */
+    padding-bottom: .1em;   /* the other half (.1em × 1.4 of the heading) lies below the tile group */
     margin-top: 0px;
     margin-bottom: 0px;
     font-family: "Helvetica Neue", helvetica, arial, sans-serif;
@@ -360,7 +360,7 @@ li {
 .group {
     width: 100%;
     max-width: var(--column);
-    /* kein Abstand zwischen Titel, Kacheln und nächster Section */
+    /* no gap between heading, tiles and next section */
     margin-top: 0;
     margin-bottom: 0;
     padding-left: 0.12em;
@@ -379,7 +379,7 @@ body section .group.covered {
     cursor: var(--curs-img) 1 1, auto;
 }
 
-/* Unterkante der gedeckten Titelzeile: verschmilzt mit der Fläche */
+/* Bottom edge of the covered heading row: merges with the area */
 body #container section .name.covered {
     border-bottom-color: color-mix(in srgb, var(--c, var(--sect-col)) 75%, var(--front-body));
 }
@@ -397,7 +397,7 @@ body #container section .name.covered {
     margin: 0;
 }
 
-/* Der Link füllt die Restbreite neben dem Icon */
+/* The link fills the remaining width next to the icon */
 .name {
     display: flex;
     align-items: baseline;
@@ -410,7 +410,7 @@ section h3 a {
     min-width: 0;
 }
 
-/* ganze Titelzeile ist der Link (auch Polster oben/unten) */
+/* the whole heading row is the link (also padding above/below) */
 body:not(.edit-mode) section h3.name {
     position: relative;
 }
@@ -429,7 +429,7 @@ body:not(.edit-mode) section h3.name a::after {
     line-height: 1.4em;
 }
 
-/* behält seine Inhaltsbreite; der Leerraum landet rechts davon */
+/* keeps its content width; the free space ends up to the right of it */
 #section-nav-list {
     display: flex;
     margin-right: 0;
@@ -438,9 +438,9 @@ body:not(.edit-mode) section h3.name a::after {
     min-width: 0;
     font-size: 0.9em;
     align-self: stretch;
-    /* Basis 0: die Chips teilen sich den Rest und brechen auch bei großem Zoom nicht in eine zweite Zeile */
+    /* Basis 0: the chips share the rest and do not wrap to a second row even at large zoom */
     flex: 1 1 0;
-    /* reicht der Platz nicht, läuft die Zeile nach links über: Zahnrad und Dropdown am Ende bleiben erreichbar */
+    /* if space is short, the row overflows to the left: gear and dropdown at the end stay reachable */
     justify-content: flex-end;
 }
 
@@ -448,7 +448,7 @@ a.sec-btn:visited {
     color: var(--sect-col);
 }
 
-/* Chip-Inhalt (Kürzel, Icon samt ::before) schaltet ebenfalls sofort */
+/* Chip content (abbreviation, icon including ::before) also switches immediately */
 a.sec-btn *,
 a.sec-btn *::before,
 a.sec-btn *::after,
@@ -457,9 +457,9 @@ a.sec-btn::after {
     transition: none;
 }
 
-/* Jede Section hat eine eigene Farbe (--c, von app.js gesetzt):
-   Hover = Fläche mit Deckkraft, aktiv = volle Deckkraft mit Kontrastschrift.
-   .mit-hover koppelt Chip und Titel: der eine leuchtet, wenn die Maus auf dem anderen liegt */
+/* Every section has its own color (--c, set by app.js):
+   hover = area with opacity, active = full opacity with contrast text.
+   .with-hover couples chip and heading: one lights up when the mouse is on the other */
 section {
     --c-text: oklch(from var(--c, var(--sect-col)) clamp(var(--text-l-min), l, var(--text-l-max)) c h);
 }
@@ -481,22 +481,22 @@ a.sec-btn.active {
     background-color: var(--c, var(--sect-col));
 }
 
-/* Knöpfe über die volle Höhe: flach in Ruhe, erhaben bei Hover (auch gekoppelt),
-   eingedrückt wenn aktiv oder gedrückt. Der Titel der Section spiegelt Hover und Druck
-   des Chips — und umgekehrt */
+/* Buttons over the full height: flat at rest, raised on hover (also coupled),
+   pressed in when active or pressed. The heading of the section mirrors hover and press
+   of the chip — and vice versa */
 body:not(.touch):not(.keyboard):not(.locked) a.sec-btn:not(.active):is(:hover, .with-hover, .sec-hover) {
     z-index: 1;
     background-color: color-mix(in srgb, var(--c, var(--sect-col)) 30%, var(--front-body));
     background-image: linear-gradient(rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, .15));
     border-color: rgba(255, 255, 255, .85) rgba(0, 0, 0, .5) color-mix(in srgb, var(--c, var(--sect-col)) 30%, var(--front-body)) rgba(255, 255, 255, .75);
     background-origin: border-box;
-    /* Schein nur oben und seitlich: unten (zum Titel) kein Schatten */
+    /* Glow only at the top and sides: no shadow at the bottom (towards the heading) */
     box-shadow: var(--sb-hover-shadow, 0 -0.1875rem 0.4375rem -0.0625rem rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .6));
 }
 
-/* aktiv: Chip und Titel sind eine durchgehende Fläche — keine Kante, kein Schatten dazwischen */
+/* active: chip and heading are one continuous area — no edge, no shadow in between */
 a.sec-btn.active {
-    /* keine Seitenkanten: sonst bleibt neben dem Innenschatten ein farbiger Strich */
+    /* no side edges: otherwise a colored line remains next to the inner shadow */
     border-width: 0;
     padding: 1px 9px 0;
 }
@@ -509,11 +509,11 @@ a.sec-btn.active {
     box-shadow: none;
 }
 
-/* aktiver Knopf: Innenschatten links, oben, rechts. Die Seitenschatten laufen bis unten durch
-   und werden dabei schmaler (Spitze unten); unten liegt kein Schatten */
+/* active button: inner shadow left, top, right. The side shadows run all the way down
+   and get narrower (tip at the bottom); there is no shadow at the bottom */
 a.sec-btn.active {
-    background-image: var(--sb-active-image, linear-gradient(rgba(70, 70, 70, .4) 0.1562rem, rgba(70, 70, 70, 0) 0.1562rem));   /* hart, graue Deckkraft */
-    /* nur zwischen den Seitenstreifen, sonst werden die oberen Ecken doppelt dunkel */
+    background-image: var(--sb-active-image, linear-gradient(rgba(70, 70, 70, .4) 0.1562rem, rgba(70, 70, 70, 0) 0.1562rem));   /* hard, gray opacity */
+    /* only between the side strips, otherwise the upper corners get dark twice */
     background-repeat: no-repeat;
     background-size: calc(100% - 0.375rem) 100%;
     background-position: 0.1875rem 0;
@@ -533,7 +533,7 @@ a.sec-btn.active::after {
 
 a.sec-btn.active::before {
     left: 0;
-    /* volle Breite bis kurz vor Schluss, nur die letzten ~5px runden sich ein */
+    /* full width until shortly before the end, only the last ~5px curve in */
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 0.3125rem), 85% calc(100% - 0.1875rem), 55% calc(100% - 0.0938rem), 25% calc(100% - 0.0312rem), 0 100%);
 }
 
@@ -550,15 +550,15 @@ a.sec-btn.active + a.sec-btn {
     border-left-color: transparent;
 }
 
-/* Section, Titel und Gruppe schalten bei Hover/Aktiv immer sofort — kein Überblenden, kein Flackern */
+/* Section, heading and group always switch immediately on hover/active — no cross-fade, no flicker */
 #container section,
 #container section *,
 #container section .name *::before,
-#container section .name *::after {   /* Font-Awesome-Icon sitzt im ::before */
+#container section .name *::after {   /* the Font Awesome icon sits in ::before */
     transition: none;
 }
 
-/* Klick: der Knopf sinkt in die Tiefe (kleiner), keine Bewegung nach unten; Titel gibt leicht nach */
+/* Click: the button sinks into depth (smaller), no movement downward; the heading yields slightly */
 body:not(.touch) a.sec-btn:is(:active, .with-press):not(.active) {
     transform: scale(.96);
     box-shadow: var(--sb-press-shadow, 0 -0.125rem 0.25rem -0.0625rem rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .6));
@@ -572,13 +572,13 @@ a.sec-btn.active {
     color: var(--on-c);
 }
 
-/* kein heller Spalt zwischen Leiste und angedocktem Header */
+/* no light gap between bar and docked header */
 body.docked .title {
     border-bottom-color: var(--sect-col);
 }
 
-/* gedeckte Zeilen (app.js: das Fenster der leuchtenden Section, die Fläche malt app.js als Section-Hintergrund):
-   Text weiß; nur die Kachel unter dem Cursor kehrt um: helle Fläche, Text in Sektionsfarbe */
+/* covered rows (app.js: the window of the glowing section, app.js paints the area as the section background):
+   text white; only the tile under the cursor inverts: light area, text in section color */
 body #container section .name.covered,
 body #container section .name.covered a,
 body section li.covered a {
@@ -596,14 +596,14 @@ body.keyboard section li.covered a:not([contenteditable]):focus-visible::before 
     background-color: var(--chip-inv);
 }
 
-/* Sprungtasten nur in der Smartphone-/Kleinansicht */
+/* jump keys only in the smartphone/small view */
 .stepper {
     display: none;
 }
 
-/* ── Nicht erreichbare Links ─────────────────────────────────────── */
+/* ── Unreachable links ───────────────────────────────────────────── */
 
-/* tote Links sehen aus wie alle, nur ein roter Punkt (5px) oben rechts, konzentrisch in der Eckrundung */
+/* dead links look like all the others, just a red dot (5px) at the top right, concentric in the corner rounding */
 li.dead {
     position: relative;
 }
@@ -611,7 +611,7 @@ li.dead {
 li.dead::after {
     content: "";
     position: absolute;
-    /* Mittelpunkt = Mittelpunkt der Eckrundung der Kachel (.35em, s. li a::before) */
+    /* center = center of the tile's corner rounding (.35em, see li a::before) */
     top: calc(.35em - .15625rem);
     right: calc(.35em - .15625rem);
     width: .3125rem;
@@ -625,12 +625,12 @@ li.dead::after {
 /* iPad */
 @media only screen and (max-device-width: 1024px) {
 
-    /* Rastereinheit: ein Viertel der Inhaltshöhe */
+    /* Grid unit: a quarter of the content height */
     :root {
         --grid: 4;
     }
 
-    /* 54px auf 35px. Bringt keine zusätzliche Kachelreihe */
+    /* 54px to 35px. Does not bring an additional tile row */
     .name {
         font-size: 0.9em;
     }
@@ -642,14 +642,14 @@ li.dead::after {
         margin: 0;
     }
 
-    /* Spaltenzahl folgt der Breite: hoch vier, quer sechs */
+    /* The number of columns follows the width: four in portrait, six in landscape */
     .group {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(var(--tile), 1fr));
         gap: 0;
     }
 
-    /* Genau vier Sections pro Bildschirm, nie eine angeschnittene fünfte */
+    /* Exactly four sections per screen, never a cut-off fifth */
     section {
         min-height: 25%;
         scroll-snap-align: start;
@@ -659,7 +659,7 @@ li.dead::after {
 /* Smartphone combined */
 @media only screen and (min-device-width: 350px) and (max-device-width: 812px) {
 
-    /* Rastereinheit: ein halber Bildschirm */
+    /* Grid unit: half a screen */
     :root {
         --grid: 2;
     }
@@ -668,12 +668,12 @@ li.dead::after {
         font-size: 0.9em;
     }
 
-    /* wie am iPad nur "a." — in der schmalen Leiste zählt jeder Pixel */
+    /* like on the iPad only "a." — in the narrow bar every pixel counts */
     .titledomain {
         display: none;
     }
 
-    /* Boden, keine Decke — sonst überläuft langer Inhalt die nächste Section */
+    /* floor, no ceiling — otherwise long content overflows into the next section */
     section {
         min-height: 50%;
     }
@@ -720,7 +720,7 @@ li.dead::after {
         display: none;
     }
 
-    /* nur seitlich polstern, sonst wird die Leiste zu hoch */
+    /* pad only at the sides, otherwise the bar gets too tall */
     .home-link,
     #section-nav-list,
     .secname,
@@ -730,19 +730,19 @@ li.dead::after {
         padding: 0 0.8em;
     }
 
-    /* niedriger: der 48px-Chip gab bisher die Leistenhöhe vor */
+    /* lower: the 48px chip used to dictate the bar height */
     a.secname,
     .nav-btn,
     .stepper {
         height: 2.375rem;
     }
 
-    /* reicht mit viewport-fit=cover bis an den Bildschirmrand */
+    /* reaches to the screen edge with viewport-fit=cover */
     .title {
         padding-bottom: env(safe-area-inset-bottom, 0px);
     }
 
-    /* je eine eigene Umrandung */
+    /* each with its own border */
     .stepper {
         display: inline-flex;
         align-items: center;
@@ -751,7 +751,7 @@ li.dead::after {
         min-width: 2.375rem;
         padding: 0 0.5em;
         margin-left: 5px;
-        /* gefüllt: Fläche in Rahmenfarbe, Chevron in Flächenfarbe */
+        /* filled: area in border color, chevron in area color */
         background-color: var(--text-col);
         color: var(--front-body);
         text-decoration: none;
@@ -798,17 +798,17 @@ li.dead::after {
 /* iPhone portrait */
 @media only screen and (min-device-width: 375px) and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: portrait) {
     section {
-        scroll-snap-stop: normal;   /* ein Wisch darf mehrere Sections überspringen, gerastet wird erst am Ende */
+        scroll-snap-stop: normal;   /* a swipe may skip several sections, snapping only happens at the end */
     }
 
     .group {
         display: flex;
         flex-wrap: wrap;
-        /* trägt: schlägt margin-inline: auto der zentrierten Darstellung */
+        /* holds: beats margin-inline: auto of the centered layout */
         margin: 0 !important;
     }
 
-    /* ohne height: auto bleiben die Kacheln gleich hoch */
+    /* without height: auto the tiles stay equally tall */
     li {
         width: calc(50% - 4px);
         font-size: 0.9em;
@@ -823,7 +823,7 @@ li.dead::after {
         padding: 4px 6px;
     }
 
-    /* die Chips weichen; Zahnrad und Dropdown bleiben, in ihrer eigenen Breite */
+    /* the chips give way; gear and dropdown stay, in their own width */
     #section-nav-list {
         flex: 0 0 auto;
     }
@@ -836,8 +836,8 @@ li.dead::after {
         flex: 0 0 auto;
     }
 
-    /* Dropdown direkt hinter dem Titel, die Stepper dicht dahinter; das Zahnrad ganz rechts am Rand.
-       display: contents hebt Dropdown und Zahnrad in die Leiste, damit order und margin-left: auto wirken */
+    /* Dropdown right behind the title, the steppers close behind it; the gear at the very right edge.
+       display: contents lifts dropdown and gear into the bar so that order and margin-left: auto take effect */
     #section-nav-list {
         display: contents;
     }
@@ -877,11 +877,11 @@ body.edit-mode #container::after {
 body.edit-mode li {
     height: auto;
     min-height: 2.25rem;
-    /* die URL-Zeile darf beim Bearbeiten aus der Kachel ragen */
+    /* the URL row may stick out of the tile while editing */
     overflow: visible;
 }
 
-/* ungekürzt, sonst lässt sich ein langer Name nicht bearbeiten */
+/* untruncated, otherwise a long name cannot be edited */
 body.edit-mode li a[contenteditable] {
     cursor: text;
     outline: none;
@@ -939,7 +939,7 @@ body.edit-mode .btn-del:hover {
     color: #fff;
 }
 
-/* vorgemerkt zum Löschen — bis zum Speichern umkehrbar */
+/* marked for deletion — can be undone until saving */
 body.edit-mode li.removed a,
 body.edit-mode li.removed .edit-url {
     text-decoration: line-through;
@@ -975,14 +975,14 @@ body.edit-mode .btn-move:hover {
     opacity: 1;
 }
 
-/* leicht durchscheinende Fläche unter der gepackten Kachel — sie ist das
-   Zugbild, sonst schweben Name und URL als nackter Text überm Inhalt */
+/* slightly translucent area under the grabbed tile — it is the
+   drag image, otherwise name and URL float as bare text above the content */
 body.edit-mode li.grabbed {
     background: color-mix(in srgb, var(--front-body) 92%, transparent);
     border-radius: 6px;
 }
 
-/* die Kachel an der Zielstelle: kräftig markiert, hier landet das Loslassen */
+/* the tile at the target spot: strongly marked, this is where the release lands */
 body.edit-mode li.dragging {
     outline: 2px solid var(--sect-col);
     outline-offset: -2px;
@@ -990,7 +990,7 @@ body.edit-mode li.dragging {
     background: color-mix(in srgb, var(--sect-col) 22%, var(--front-body));
 }
 
-/* Zeiger außerhalb der eigenen Liste: Loslassen würde den Zug verwerfen */
+/* pointer outside its own list: releasing would discard the drag */
 body.edit-mode li.dragging.cancel {
     opacity: .25;
     outline: 2px dashed #c00;
@@ -1013,28 +1013,28 @@ body.edit-mode li.btn-add {
     min-width: 0;
 }
 
-/* Desktop-Bearbeitung: Anfasser, Name und × in eine Zeile, URL darunter über
-   die ganze Kachel. inline-grid, damit die Spaltenbildung erhalten bleibt —
-   sie ist beim Sortieren gerade das, worauf man schaut. */
+/* Desktop editing: handle, name and × in one row, URL below across
+   the whole tile. inline-grid, so the column layout is preserved —
+   it is exactly what you look at while sorting. */
 @media only screen and (min-device-width: 1025px) {
     body.edit-mode li:not(.btn-add) {
         display: inline-grid;
         vertical-align: top;
-        /* breiter Griff innerhalb der festen Kachelbreite — die Zeilen bleiben */
+        /* wide handle within the fixed tile width — the rows stay */
         grid-template-columns: 2.4375rem minmax(0, 1fr) 1.25rem;
         align-items: center;
-        /* Lesebreite — sonst richtet sich die Kachel nach dem URL-Text
-           und die Zeilenbildung entspricht nicht mehr der Leseansicht */
+        /* reading width — otherwise the tile adapts to the URL text
+           and the row layout no longer matches the reading view */
         width: var(--tile);
         min-height: 3.25rem;
         padding: 2px 0;
         box-sizing: border-box;
-        /* Lücke, sonst klebt das × am Anfasser der Nachbarkachel */
+        /* gap, otherwise the × sticks to the handle of the neighboring tile */
         margin-right: 0.5rem;
     }
 
-    /* volle Kachelhöhe als Griffleiste — ein 15px-Pünktchen verfehlt man.
-       Statt des ⠿-Zeichens zwei Punktspalten über die ganze Höhe */
+    /* full tile height as a handle strip — a 15px dot is easy to miss.
+       Instead of the ⠿ character two columns of dots over the full height */
     body.edit-mode li .btn-move {
         grid-area: 1 / 1 / 3 / 2;
         align-self: stretch;
@@ -1044,11 +1044,11 @@ body.edit-mode li.btn-add {
         border-radius: 4px;
         padding: 0.3125rem 0.375rem;
         box-sizing: border-box;
-        /* zwei Spalten größerer Punkte mit Luft dazwischen */
+        /* two columns of larger dots with air in between */
         background-image: radial-gradient(circle, var(--sect-col) 1.7px, transparent 2.1px);
-        /* Inhalt 27 × 42px → 3 Spalten × 5 Reihen */
+        /* content 27 × 42px → 3 columns × 5 rows */
         background-size: 9px 8.4px;
-        /* round: der Rapport wird eingepasst, kein Punkt wird angeschnitten */
+        /* round: the pattern is fitted, no dot is cut off */
         background-repeat: round;
         background-clip: content-box;
         background-origin: content-box;
@@ -1060,7 +1060,7 @@ body.edit-mode li.btn-add {
 
     body.edit-mode li a[contenteditable] {
         grid-area: 1 / 2 / 2 / 3;
-        /* in der festen Breite abgeschnitten; zum Bearbeiten wächst er beim Fokus */
+        /* cut off in the fixed width; for editing it grows on focus */
         white-space: nowrap;
         overflow: hidden;
         text-overflow: clip;
@@ -1082,7 +1082,7 @@ body.edit-mode li.btn-add {
         justify-self: center;
     }
 
-    /* beginnt bündig mit dem Namen, sonst bleiben von der Adresse 150px übrig */
+    /* starts flush with the name, otherwise only 150px of the address are left */
     body.edit-mode li .edit-url {
         grid-area: 2 / 2 / 3 / 4;
         max-width: none;
@@ -1090,7 +1090,7 @@ body.edit-mode li.btn-add {
         padding-left: 0.25rem;
     }
 
-    /* gleich groß wie eine Kachel, das + mittig — kein Zielen auf 28px nötig */
+    /* as large as a tile, the + centered — no aiming at 28px needed */
     body.edit-mode li.btn-add {
         display: inline-flex;
         align-items: center;
@@ -1098,7 +1098,7 @@ body.edit-mode li.btn-add {
         vertical-align: top;
         width: var(--tile);
         height: auto;
-        /* Kachelhöhe = Namenszeile + URL-Zeile, nicht deren min-height */
+        /* tile height = name row + URL row, not their min-height */
         min-height: 3.5rem;
         line-height: normal;
         margin: 0 0.5rem 0 0;
@@ -1113,9 +1113,9 @@ body.edit-mode li.btn-add {
     }
 }
 
-/* ── Section-Icons ───────────────────────────────────────────────── */
+/* ── Section icons ───────────────────────────────────────────────── */
 
-/* Nav-Chips: Icon oder Kürzel, nie beides */
+/* Nav chips: icon or abbreviation, never both */
 .secname .secicon {
     display: none;
 }
@@ -1125,12 +1125,12 @@ body.nav-icons .secname .secicon {
     font-size: 1.5625rem;
 }
 
-/* quadratischer Chip, Icon horizontal mittig */
+/* square chip, icon horizontally centered */
 body.nav-icons a.secname,
 body.nav-icons .nav-btn {
     width: 3rem;
     text-align: center;
-    /* kein seitliches Polster — sonst wird das größere Icon beschnitten */
+    /* no side padding — otherwise the larger icon is clipped */
     padding-left: 0;
     padding-right: 0;
 }
@@ -1141,8 +1141,8 @@ body:not(.nav-icons) .nav-btn .secicon {
     display: none;
 }
 
-/* Squircle wie Apples App-Icons: Superellipse |x|^5 + |y|^5 = 1 (n ≈ 5; ein mathematisches Squircle hat n = 4).
-   Font Awesome hat keine solche Form (fa-square ist ein Quadrat mit kleinen Ecken). Gefüllt, folgt der Textfarbe */
+/* Squircle like Apple's app icons: superellipse |x|^5 + |y|^5 = 1 (n ≈ 5; a mathematical squircle has n = 4).
+   Font Awesome has no such shape (fa-square is a square with small corners). Filled, follows the text color */
 .icon-squircle::before {
     content: "";
     display: inline-block;
@@ -1154,29 +1154,29 @@ body:not(.nav-icons) .nav-btn .secicon {
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M23.00 12.00 22.98 16.14 22.93 17.46 22.85 18.41 22.73 19.16 22.58 19.79 22.38 20.34 22.16 20.81 21.89 21.22 21.58 21.58 21.22 21.89 20.81 22.16 20.34 22.38 19.79 22.58 19.16 22.73 18.41 22.85 17.46 22.93 16.14 22.98 12.00 23.00 7.86 22.98 6.54 22.93 5.59 22.85 4.84 22.73 4.21 22.58 3.66 22.38 3.19 22.16 2.78 21.89 2.42 21.58 2.11 21.22 1.84 20.81 1.62 20.34 1.42 19.79 1.27 19.16 1.15 18.41 1.07 17.46 1.02 16.14 1.00 12.00 1.02 7.86 1.07 6.54 1.15 5.59 1.27 4.84 1.42 4.21 1.62 3.66 1.84 3.19 2.11 2.78 2.42 2.42 2.78 2.11 3.19 1.84 3.66 1.62 4.21 1.42 4.84 1.27 5.59 1.15 6.54 1.07 7.86 1.02 12.00 1.00 16.14 1.02 17.46 1.07 18.41 1.15 19.16 1.27 19.79 1.42 20.34 1.62 20.81 1.84 21.22 2.11 21.58 2.42 21.89 2.78 22.16 3.19 22.38 3.66 22.58 4.21 22.73 4.84 22.85 5.59 22.93 6.54 22.98 7.86Z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
-/* Section-Header: immer Icon + Titel */
+/* Section header: always icon + title */
 .name .secicon {
     display: inline-block;
     flex: 0 0 auto;
     width: 1.3em;
     margin-right: .3em;
     font-size: .7em;
-    /* im Flex-Container wirkt vertical-align nicht mehr */
+    /* in a flex container vertical-align no longer has an effect */
     position: relative;
     top: -.14em;
     text-align: center;
 }
 
-/* ── Seitenausrichtung ───────────────────────────────────────────── */
+/* ── Page alignment ──────────────────────────────────────────────── */
 
-/* ── Titelzeile ──────────────────────────────────────────────────── */
+/* ── Title bar ───────────────────────────────────────────────────── */
 
-/* display, flex-wrap und column-gap stehen jetzt in der .title-Regel ganz oben */
+/* display, flex-wrap and column-gap are now in the .title rule at the very top */
 
-/* Zentriert wird der Inhalt, nicht #container */
+/* The content is centered, not #container */
 body.align-center .title {
     max-width: calc(var(--column) + 0.12em);
-    /* als Flex-Element verhindern auto-Margen sonst das Strecken */
+    /* as a flex item, auto margins would otherwise prevent stretching */
     width: 100%;
     margin-left: auto;
     margin-right: auto;
@@ -1193,9 +1193,9 @@ body.align-center .group {
     margin-right: auto;
 }
 
-/* ── Raster-Ansicht ──────────────────────────────────────────────── */
+/* ── Grid view ───────────────────────────────────────────────────── */
 
-/* Die Linien sind grau (25 % Deckkraft); auf eingefärbter Section die Schriftfarbe darauf */
+/* The lines are gray (25 % opacity); on a colored section the text color on it */
 section {
     --line: color-mix(in srgb, var(--sect-col) 25%, transparent);
 }
@@ -1205,11 +1205,11 @@ body.tile-light section li.inverted {
     --line: color-mix(in srgb, var(--on-c) 25%, transparent);
 }
 
-/* Spalten füllen die Breite (volle Breite) bzw. bleiben bei Mitte in der festen Spaltenbreite;
-   im Edit-Mode gilt weiter das Kachel-Layout der Chips */
+/* Columns fill the width (full width) or, when centered, stay in the fixed column width;
+   in edit mode the tile layout of the chips still applies */
 body.view-grid:not(.edit-mode) .group {
     display: grid;
-    /* höchstens 6 Spalten, mindestens 2: auf schmalen Bildschirmen (Smartphone) stehen immer zwei Kacheln nebeneinander, bei mehr Platz mehr */
+    /* at most 6 columns, at least 2: on narrow screens (smartphone) there are always two tiles side by side, more when there is room */
     grid-template-columns: repeat(auto-fill, minmax(min(max(var(--tile), calc(100% / 6)), calc(50% - 1px)), 1fr));
     gap: 0;
     padding-left: 0;
@@ -1217,7 +1217,7 @@ body.view-grid:not(.edit-mode) .group {
     border-left: 1px solid var(--line);
 }
 
-/* die Linien der Gruppe gewinnen gegen die allgemeine Randfarbe der aktiven Section */
+/* the lines of the group win against the general border color of the active section */
 body.view-grid:not(.edit-mode) #container section .group {
     border-top-color: var(--line);
     border-left-color: var(--line);
@@ -1235,7 +1235,7 @@ body.view-grid:not(.edit-mode) li {
     border-bottom: 1px solid var(--line);
 }
 
-/* untere Rasterlinie: schaltet mit dem Fenster an der Unterkante der Zeile (.gedeckt-u, app.js) */
+/* bottom grid line: switches with the window at the bottom edge of the row (.covered-bottom, app.js) */
 body.view-grid:not(.edit-mode) li {
     border-bottom-color: color-mix(in srgb, var(--sect-col) 25%, transparent);
 }
@@ -1244,8 +1244,8 @@ body.view-grid:not(.edit-mode) li.covered-bottom {
     border-bottom-color: color-mix(in srgb, var(--on-c) 25%, transparent);
 }
 
-/* kein zusätzlicher Strich zwischen Titel und Raster (die Oberkante der Gruppe ist schon eine Linie),
-   kein Polster unter der Gruppe */
+/* no extra line between heading and grid (the top edge of the group is already a line),
+   no padding below the group */
 body.view-grid:not(.edit-mode) #container section .name {
     border-bottom-width: 0;
 }
@@ -1254,15 +1254,15 @@ body.view-grid:not(.edit-mode) .group {
     padding-bottom: 0;
 }
 
-/* toter Link im Raster: roter Punkt wird ein Quadrat gleicher Größe, bündig in der oberen rechten Ecke innen */
+/* dead link in the grid: the red dot becomes a square of the same size, flush in the top right corner inside */
 body.view-grid:not(.edit-mode) li.dead::after {
     top: 0;
     right: 0;
     border-radius: 0;
 }
 
-/* Desktop: ein gleichschenklig-rechtwinkliges Dreieck in der oberen rechten Ecke, Katheten 6 px (x und y), 1 px nach innen gerückt;
-   darunter ein größeres weißes Dreieck als 1-px-Rand, damit es auf farbigen Sections kontrastiert */
+/* Desktop: an isosceles right triangle in the top right corner, legs 6 px (x and y), moved 1 px inward;
+   below it a larger white triangle as a 1 px border, so it contrasts on colored sections */
 body.view-grid:not(.edit-mode):not(.touch) li.dead::after {
     top: 1px;
     right: 1px;
@@ -1277,7 +1277,7 @@ body.view-grid:not(.edit-mode):not(.touch) li.dead::before {
     position: absolute;
     top: 0;
     right: 0;
-    width: 9.42px;   /* 6 px + 2 × 1 px Rand an den Katheten und 1 px an der Schräge (6 + 1,42 + 2) */
+    width: 9.42px;   /* 6 px + 2 × 1 px border on the legs and 1 px on the hypotenuse (6 + 1.42 + 2) */
     height: 9.42px;
     clip-path: polygon(0 0, 100% 0, 100% 100%);
     background: #fff;
@@ -1285,19 +1285,19 @@ body.view-grid:not(.edit-mode):not(.touch) li.dead::before {
     z-index: 2;
 }
 
-/* volle Breite (Raster, nicht zentriert): auch die Leiste läuft über die ganze Seite */
+/* full width (grid, not centered): the bar also runs across the whole page */
 body.view-grid:not(.align-center) .title {
     max-width: none;
 }
 
-/* eckig, ohne Glanz */
+/* square, without gloss */
 body.view-grid:not(.edit-mode) li a::before {
     border-radius: 0;
     background-image: none;
 }
 
-/* Hover-Fläche der Kachel als eigenes Element (#kachel-licht, app.js), das von Kachel zu Kachel gleitet;
-   der Text kehrt um (.da), sobald das Licht zu 95 % unter der Kachel liegt */
+/* Hover area of the tile as its own element (#tile-light, app.js) that glides from tile to tile;
+   the text inverts (.inverted) as soon as the light covers 95 % of the tile */
 #container {
     position: relative;
 }
@@ -1307,7 +1307,7 @@ body.view-grid:not(.edit-mode) li a::before {
     z-index: 0;
     pointer-events: none;
     opacity: 0;
-    background-color: var(--chip-inv);   /* der Zeiger liegt immer in der leuchtenden Section */
+    background-color: var(--chip-inv);   /* the pointer always lies in the glowing section */
 }
 
 body:not(.touch).tile-light:not(.edit-mode) #container li a:hover::before,
@@ -1316,7 +1316,7 @@ body.tile-light:not(.edit-mode).keyboard #container li a:not([contenteditable]):
     background-image: none;
 }
 
-/* Strich-Cursor im Licht: Farbe der Section (das Strich-Bild dient als Maske), volle Höhe; nur mit Maus */
+/* Line cursor in the light: color of the section (the line image serves as a mask), full height; mouse only */
 .tile-light-line {
     position: absolute;
     top: 0;
@@ -1326,21 +1326,21 @@ body.tile-light:not(.edit-mode).keyboard #container li a:not([contenteditable]):
     background: var(--sc, var(--sect-col));
     -webkit-mask: var(--curs-hov) no-repeat 0 0 / 100% 100%;
     mask: var(--curs-hov) no-repeat 0 0 / 100% 100%;
-    transition: none;   /* Cursor wechselt Farbe und Lage sofort */
+    transition: none;   /* cursor changes color and position immediately */
 }
 
 body.keyboard .tile-light-line {
     display: none;
 }
 
-/* Chips: das Licht ist gerundet und glänzt wie die Hover-Fläche der Kachel (--hl: 1) */
+/* Chips: the light is rounded and glossy like the hover area of the tile (--hl: 1) */
 body:not(.view-grid) #tile-light {
     --hl: 1;
     border-radius: .35em;
     background-image: linear-gradient(rgba(255, 255, 255, calc(.46 * var(--hl) * var(--gloss))), rgba(255, 255, 255, calc(.12 * var(--hl) * var(--gloss))) 36%, rgba(255, 255, 255, 0) 38%, rgba(0, 0, 0, calc(.2 * var(--hl) * var(--gloss))));
 }
 
-/* ── Sections umsortieren (Edit-Mode, app.js: sectionsSortierbar) ── */
+/* ── Re-sorting sections (edit mode, app.js: sectionsSortable) ── */
 .sec-handle {
     cursor: grab;
     margin-right: .5em;
@@ -1356,19 +1356,19 @@ section.sec-dragging {
     opacity: .4;
 }
 
-/* ── Bearbeiten ──────────────────────────────────────────────────── */
+/* ── Editing ─────────────────────────────────────────────────────── */
 
-/* sonst rastet der Container die bearbeitete Section wieder aus dem Bild */
+/* otherwise the container snaps the edited section out of view again */
 body.edit-mode #container {
     scroll-snap-type: none;
 }
 
-/* ── iPad: alle 15 Chips in eine Reihe ───────────────────────────── */
+/* ── iPad: all 15 chips in one row ───────────────────────────────── */
 
-/* muss nach body.nav-icons a.secname stehen — gleiche Spezifität */
+/* must come after body.nav-icons a.secname — same specificity */
 @media only screen and (min-device-width: 813px) and (max-device-width: 1024px) {
 
-    /* "a.msmr.co" → "a." — spart 107px, die die Chips brauchen */
+    /* "a.msmr.co" → "a." — saves 107px that the chips need */
     .titledomain {
         display: none;
     }
@@ -1384,7 +1384,7 @@ body.edit-mode #container {
         font-size: 0.75em;
     }
 
-    /* Icon bleibt 25px, nur die Tippfläche schrumpft */
+    /* the icon stays 25px, only the tap area shrinks */
     body.nav-icons a.secname,
     body.nav-icons .nav-btn {
         width: 2.5rem;
@@ -1393,16 +1393,16 @@ body.edit-mode #container {
     }
 }
 
-/* quer ist Platz für die volle Adresse */
+/* in landscape there is room for the full address */
 @media only screen and (min-device-width: 813px) and (max-device-width: 1024px) and (orientation: landscape) {
     .titledomain {
         display: inline-block;
     }
 }
-/* ── Einstellungen: Zahnrad in der Leiste + Overlay ─────────────── */
+/* ── Settings: gear in the bar + overlay ─────────────────────────── */
 
 .nav-btn {
-    /* Breite, Polster und Kanten kommen von den Nav-Chips (s. a.secname) */
+    /* Width, padding and edges come from the nav chips (see a.secname) */
     background: transparent;
     font-family: inherit;
     cursor: inherit;
@@ -1415,12 +1415,12 @@ body:not(.touch):not(.keyboard) .nav-btn:hover,
     outline: none;
 }
 
-/* gedrückt oder Overlay offen: umgekehrt, bündig mit dem Overlay darunter; der Wechsel schaltet sofort */
+/* pressed or overlay open: inverted, flush with the overlay below; the change switches immediately */
 .nav-btn,
 .nav-btn *,
 .nav-btn *::before,
 .nav-btn *::after {
-    transition: none;   /* auch die Kinder (Icon, Wort): ihre Farbe erbt den Wechsel sonst mit Übergang */
+    transition: none;   /* also the children (icon, word): their color would otherwise inherit the change with a transition */
 }
 
 .nav-btn:active,
@@ -1431,7 +1431,7 @@ body:not(.keyboard) .nav-btn.open {
     background-color: var(--sect-col);
 }
 
-/* senkrechter Stapel aus Knöpfen: jeder zeigt den Zustand einer Einstellung, Klick schaltet reihum */
+/* vertical stack of buttons: each shows the state of a setting, a click cycles through */
 .settings-pop,
 .jumper-pop {
     position: fixed;
@@ -1440,12 +1440,12 @@ body:not(.keyboard) .nav-btn.open {
     padding: 0;
     box-sizing: border-box;
     border: 0;
-    /* hängt am Zahnrad: oben bündig, nur die freien Ecken unten sind gerundet */
-    border-radius: 0 0 .49rem .49rem;   /* wie die Kacheln: .35em bei 1.4rem Schrift */
+    /* attached to the gear: flush at the top, only the free corners at the bottom are rounded */
+    border-radius: 0 0 .49rem .49rem;   /* like the tiles: .35em at 1.4rem text */
     overflow: hidden;
-    /* zu: Farben der Leiste; offen = umgekehrt: Fläche in Schriftfarbe, Icons in Flächenfarbe.
-       Beim Öffnen wächst das Overlay vom Zahnrad weg auf seine Höhe, beim Schließen (auch automatisch) schrumpft es dorthin zurück;
-       die Knöpfe bleiben am Zahnrad stehen, die Farben wechseln unterwegs */
+    /* closed: colors of the bar; open = inverted: area in text color, icons in area color.
+       On opening the overlay grows away from the gear to its height, on closing (also automatic) it shrinks back to it;
+       the buttons stay at the gear, the colors change on the way */
     interpolate-size: allow-keywords;
     height: 0;
     background: var(--front-body);
@@ -1457,7 +1457,7 @@ body:not(.keyboard) .nav-btn.open {
 .settings-pop.upward,
 .jumper-pop.upward {
     border-radius: .49rem .49rem 0 0;
-    justify-content: flex-end;   /* unten am Zahnrad verankert */
+    justify-content: flex-end;   /* anchored at the bottom of the gear */
 }
 
 .settings-pop:popover-open,
@@ -1473,7 +1473,7 @@ body:not(.keyboard) .nav-btn.open {
     color: var(--front-body);
 }
 
-/* Ausgangslage beim Öffnen = zugeklappt */
+/* Starting state on opening = folded shut */
 @starting-style {
     .settings-pop:popover-open,
     .jumper-pop:popover-open {
@@ -1482,12 +1482,12 @@ body:not(.keyboard) .nav-btn.open {
 }
 
 .set-btn {
-    flex: none;   /* beim Schrumpfen des Overlays behalten die Knöpfe ihre Höhe */
+    flex: none;   /* when the overlay shrinks, the buttons keep their height */
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: var(--set-height, auto);   /* ohne Wert quadratisch */
+    height: var(--set-height, auto);   /* square without a value */
     aspect-ratio: 1;
     padding: 0;
     border: 0;
@@ -1507,7 +1507,7 @@ body:not(.keyboard) .nav-btn.open {
     line-height: 1;
 }
 
-/* Farbschema: groß der aktive Wert (hell/dunkel bzw. auto), klein unten rechts der andere Teil (auto bzw. der Systemwert) */
+/* Color scheme: large the active value (light/dark or auto), small at the bottom right the other part (auto or the system value) */
 .set-corner {
     position: absolute;
     right: .35rem;
@@ -1522,16 +1522,16 @@ body:not(.keyboard) .nav-btn.open {
     font-weight: bold;
 }
 
-/* Text-Modus: jede Einstellung zeigt ein kurzes Wort */
+/* Text mode: each setting shows a short word */
 .set-btn {
     container-type: inline-size;
 }
 
 .set-text {
-    font-size: clamp(1rem, 30cqw, 1.7rem);   /* nutzt die Breite des Knopfs */
+    font-size: clamp(1rem, 30cqw, 1.7rem);   /* uses the width of the button */
 }
 
-/* Ansicht: vier Kacheln. Chips = gefüllt, gerundet, mit Abstand; Raster = Umriss, eckig, aneinander */
+/* View: four tiles. Chips = filled, rounded, with gap; grid = outline, square, joined */
 .set-tiles {
     display: grid;
     grid-template: 1fr 1fr / 1fr 1fr;
@@ -1553,10 +1553,10 @@ body:not(.keyboard) .nav-btn.open {
     background: none;
     border: 1.5px solid currentColor;
     border-radius: 0;
-    margin: 0 -.75px -.75px 0;   /* Nachbarränder fallen zusammen */
+    margin: 0 -.75px -.75px 0;   /* neighboring edges coincide */
 }
 
-/* mehrere Symbole übereinander als ein Icon */
+/* several symbols on top of each other as one icon */
 .set-stack {
     display: flex;
     flex-direction: column;
@@ -1568,7 +1568,7 @@ body:not(.keyboard) .nav-btn.open {
     line-height: .85;
 }
 
-/* Navigation (Icon-Modus): Squircle wie bei APP */
+/* Navigation (icon mode): squircle like APP */
 .set-icon.icon-squircle {
     position: relative;
     display: inline-block;
@@ -1580,7 +1580,7 @@ body:not(.keyboard) .nav-btn.open {
     vertical-align: top;
 }
 
-/* Umschalten und Hover ohne Übergang (das Overlay selbst wächst und schrumpft) */
+/* Switching and hover without transition (the overlay itself grows and shrinks) */
 .settings-pop *,
 .settings-pop *::before,
 .settings-pop *::after,
@@ -1590,7 +1590,7 @@ body:not(.keyboard) .nav-btn.open {
     transition: none;
 }
 
-/* Hover und Tastaturfokus kehren wieder um: Fläche in Flächenfarbe, Icon in Schriftfarbe */
+/* Hover and keyboard focus invert again: area in area color, icon in text color */
 body:not(.touch):not(.keyboard) .set-btn:hover,
 body.keyboard .set-btn:focus-visible {
     background-color: var(--front-body);
@@ -1604,7 +1604,7 @@ body.keyboard .set-btn:focus-visible {
     outline: none;
 }
 
-/* das „t“ im Squircle bleibt in der Farbe, die die Fläche gerade hat */
+/* the "t" in the squircle keeps the color the area currently has */
 body:not(.touch):not(.keyboard) .set-btn:hover .with-t::after,
 body.keyboard .set-btn:focus-visible .with-t::after {
     color: var(--front-body);
@@ -1620,7 +1620,7 @@ body.keyboard .set-btn:focus-visible .with-t::after {
     }
 }
 
-/* reduziert heißt kürzer, nicht keine: das Einstellungs-Overlay gleitet weiter, nur schneller */
+/* reduced means shorter, not none: the settings overlay keeps gliding, just faster */
 @media (prefers-reduced-motion: reduce) {
     :root {
         --pop-duration: 90;
@@ -1639,27 +1639,27 @@ body.keyboard .set-btn:focus-visible .with-t::after {
 
 
 
-/* Sections-Liste: gleiche Gestalt und Technik wie das Einstellungs-Overlay (s. dort), aber nicht umgekehrt;
-   Icon-Modus zeigt nur Icons, Text-Modus nur Namen in der normalen Schriftgröße */
+/* Sections list: same shape and technique as the settings overlay (see there), but not inverted;
+   icon mode shows only icons, text mode only names in the normal font size */
 .jumper-pop {
     overflow-y: auto;
 }
 
-/* Gestalt, Kanten und Effekte kommen von a.sec-btn (s. dort); hier nur, was die Liste anders macht:
-   flach, ohne Schatten (die --sb-*-Variablen schalten sie dort ab) */
+/* Shape, edges and effects come from a.sec-btn (see there); here only what the list does differently:
+   flat, without shadow (the --sb-* variables switch them off there) */
 .jumper-pop a {
     --sb-hover-shadow: none;
     --sb-press-shadow: none;
     --sb-active-image: none;
     --sb-inner: 0;
-    flex: none;   /* beim Schrumpfen behalten die Einträge ihre Höhe */
+    flex: none;   /* when shrinking, the entries keep their height */
     width: 100%;
-    height: var(--set-height, auto);   /* Höhe wie die Knöpfe der Einstellungen */
+    height: var(--set-height, auto);   /* Height like the buttons of the settings */
     padding: 0 .15rem;
     outline: none;
 }
 
-/* Touch: kein Hover-Zustand, kompaktere Einträge */
+/* Touch: no hover state, more compact entries */
 @media (hover: none) {
     .jumper-pop a {
         height: 2.75rem;
@@ -1680,12 +1680,12 @@ body:not(.nav-icons) .jumper-pop .secicon {
     line-height: 1;
 }
 
-/* Dropdown offen: der Chevron zeigt nach oben */
+/* Dropdown open: the chevron points up */
 #section-jumper[aria-expanded="true"] .secicon {
     transform: rotate(180deg);
 }
 
-/* ── Geist-Titel (app.js): Kopie des Ziel-Titels am Rand der Ansicht ── */
+/* ── Ghost headers (app.js): copy of the target heading at the edge of the view ── */
 #ghost-header-layer {
     position: fixed;
     z-index: 1;
@@ -1717,7 +1717,7 @@ body.view-grid .ghost-header .name {
     border-bottom-width: 0;
 }
 
-/* weicher Schatten auf den Inhalt, 66 % einer Kachelhöhe (--schatten, von app.js gesetzt); er beginnt mit einer dünnen dunklen Linie (1 px) */
+/* soft shadow onto the content, 66 % of a tile height (--shadow, set by app.js); it starts with a thin dark line (1 px) */
 .ghost-header::after {
     content: "";
     position: absolute;
@@ -1739,23 +1739,23 @@ body.view-grid .ghost-header .name {
     --direction: to top;
 }
 
-/* eine Kopie unter einer anderen behält ihre Farbe, wirft aber keinen Schatten und hat keine Linie mehr */
+/* a copy under another one keeps its color, but casts no shadow and has no line any more */
 .ghost-header.under {
     filter: none;
 }
 
-/* hinausgleitende Kopie: Schatten und Linie blenden im letzten Viertel der Bewegung schnell auf 0 aus */
+/* copy gliding out: shadow and line fade quickly to 0 during the last quarter of the movement */
 .ghost-header.out::after {
     opacity: 0;
     transition: opacity var(--fade-duration, 100ms) linear var(--fade-delay, 300ms);
 }
 
-/* darunterliegende Kopie: weder Schatten noch Linie, damit es bei mehreren nicht immer dunkler wird */
+/* copy underneath: neither shadow nor line, so it does not get darker and darker with several */
 .ghost-header.under::after {
     display: none;
 }
 
-/* ── Strich-Zeiger (app.js): senkrechter Strich statt des Punkts ── */
+/* ── Line pointer (app.js): vertical line instead of the dot ── */
 #cursor {
     position: fixed;
     z-index: 50;
@@ -1765,7 +1765,7 @@ body.view-grid .ghost-header .name {
     pointer-events: none;
     background: var(--curs-hov) no-repeat;
     background-size: 100% 100%;
-    transition: none;   /* volle Höhe sofort, keine Skalierung */
+    transition: none;   /* full height immediately, no scaling */
 }
 
 html.cursor-on,
@@ -1773,7 +1773,7 @@ html.cursor-on * {
     cursor: none !important;
 }
 
-/* Chevron als echter Bildzeiger (Titel, Nav-Chip, Sections-Liste): zeigt, wohin ein Klick scrollt (app.js setzt data-pfeil) */
+/* Chevron as a real image pointer (heading, nav chip, sections list): shows where a click scrolls (app.js sets data-arrow) */
 html.cursor-on[data-arrow="up"],
 html.cursor-on[data-arrow="up"] * {
     cursor: var(--curs-auf) !important;
@@ -1794,7 +1794,7 @@ html.cursor-on.cursor-dot * {
     cursor: var(--curs-sec) 1 1, auto !important;
 }
 
-/* Raster: leere Felder der letzten Zeile (eine Fläche bis zum Zeilenende, --leer setzt app.js) tragen die Linien der Kacheln */
+/* Grid: empty cells of the last row (one area up to the end of the row, --empty is set by app.js) carry the lines of the tiles */
 body.view-grid:not(.edit-mode) .group::after {
     content: "";
     grid-column: span var(--empty, 1);
@@ -1810,7 +1810,7 @@ body.view-grid:not(.edit-mode) .group.end-covered::after {
     border-color: color-mix(in srgb, var(--on-c) 25%, transparent);
 }
 
-/* Strich der ganzen Section: im Inhalt hinter Titel, Kacheln und Licht, scrollt mit */
+/* Line of the whole section: in the content behind heading, tiles and light, scrolls along */
 #cursor-sec {
     position: absolute;
     z-index: 0;
@@ -1820,10 +1820,10 @@ body.view-grid:not(.edit-mode) .group.end-covered::after {
     pointer-events: none;
     background: var(--curs-hov) no-repeat;
     background-size: 100% 100%;
-    transition: none;   /* volle Höhe sofort, keine Skalierung */
+    transition: none;   /* full height immediately, no scaling */
 }
 
-/* Einstellung „Farbe“: blass = fast farblos bei gleicher Helligkeit */
+/* "Color" setting: pale = almost colorless at the same lightness */
 :root[data-color-mode="pale"] {
     --color-intensity: var(--color-pale);
 }
@@ -1836,7 +1836,7 @@ body.view-grid:not(.edit-mode) .group.end-covered::after {
     background: var(--k);
 }
 
-/* die Zelle unter dem Kachel-Licht trägt die Section-Farbe sofort (Flächen im Inhalt hinter dem Licht, app.js) */
+/* the cell under the tile light carries the section color immediately (areas in the content behind the light, app.js) */
 .tile-cell {
     position: absolute;
     z-index: 0;
@@ -1844,32 +1844,32 @@ body.view-grid:not(.edit-mode) .group.end-covered::after {
     pointer-events: none;
 }
 
-/* Touch-Ziehen vom Feld in die Liste: kein Scrollen/Zoomen dazwischen */
+/* Touch dragging from the field into the list: no scrolling/zooming in between */
 #section-jumper {
     touch-action: none;
 }
 
-/* Wischen mit dem Finger: Chips und Einträge zeigen keinen Hover-/Druck-Zustand */
+/* Swiping with a finger: chips and entries show no hover/press state */
 html.swiping a.sec-btn:not(.active) {
     background-color: transparent;
     background-image: none;
     box-shadow: none;
 }
 
-/* Touch: weder Tap-Aufhellung noch Druck-Zustand beim Berühren (ein Wisch darf nichts zeigen) */
+/* Touch: neither tap highlight nor press state on touch (a swipe must show nothing) */
 a.sec-btn,
 #container section a {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Touch (Smartphone, Tablet): die Hover-Farbe der Kachel erscheint sofort, ohne Übergang */
+/* Touch (smartphone, tablet): the hover color of the tile appears immediately, without transition */
 body.touch li a,
 body.touch li a::before {
     transition: none;
 }
 
-/* Smartphone: Einrastpunkte nur an der ersten Section jeder Seite (app.js, buildPages): zwei aufeinanderfolgende halbhohe Sections
-   sind eine Seite, eine größere beginnt immer eine eigene */
+/* Smartphone: snap points only at the first section of each page (app.js, buildPages): two consecutive half-height sections
+   are one page, a larger one always starts its own */
 @media only screen and (min-device-width: 350px) and (max-device-width: 812px) {
     body:not(.edit-mode) section {
         scroll-snap-align: none;

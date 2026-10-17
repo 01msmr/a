@@ -3,37 +3,37 @@
 
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <!-- viewport-fit=cover: sonst endet die Seite über dem Home-Indikator
-         und die untere Leiste kann den Platz dort nicht nutzen -->
+    <!-- viewport-fit=cover: otherwise the page ends above the home indicator
+         and the bottom bar cannot use the space there -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="color-scheme" content="light dark" />
     <title>a.msmr.co</title>
     <base target="_blank" />
 
-    <!-- Farbschema hell/dunkel: vor dem ersten Paint setzen; ohne gespeicherte Wahl folgt es dem System (Automatik) -->
+    <!-- Color scheme light/dark: set before the first paint; without a saved choice it follows the system (automatic) -->
     <script>
         (() => {
             const KEY = 'msmr.theme', MODES = ['light', 'dark'];
-            const dunkel = matchMedia('(prefers-color-scheme: dark)');
+            const darkQuery = matchMedia('(prefers-color-scheme: dark)');
             const read = () => { try { const v = localStorage.getItem(KEY); return MODES.includes(v) ? v : null; } catch { return null; } };
             const apply = () => {
                 const v = read(), el = document.documentElement;
-                el.dataset.theme = v || (dunkel.matches ? 'dark' : 'light');   // auto folgt dem System; CSS kennt nur light und dark
+                el.dataset.theme = v || (darkQuery.matches ? 'dark' : 'light');   // auto follows the system; CSS only knows light and dark
                 document.dispatchEvent(new Event('msmrtheme'));
             };
             window.msmrTheme = {
-                get: () => read() || (dunkel.matches ? 'dark' : 'light'),
+                get: () => read() || (darkQuery.matches ? 'dark' : 'light'),
                 auto: () => !read(),
                 set(m) { try { localStorage.setItem(KEY, m); } catch { } apply(); },
                 setAuto() { try { localStorage.removeItem(KEY); } catch { } apply(); },
             };
             apply();
             addEventListener('storage', e => e.key === KEY && apply());
-            dunkel.addEventListener('change', apply);
+            darkQuery.addEventListener('change', apply);
         })();
     </script>
 
-    <!-- Zoom s/m: vor dem ersten Paint setzen; Wahl pro Gerät in localStorage, sonst s -->
+    <!-- Zoom s/m: set before the first paint; choice per device in localStorage, otherwise s -->
     <script>
         (() => {
             const KEY = 'msmr.zoom', LEVELS = ['s', 'm'];
@@ -54,8 +54,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300&display=swap" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet" />
 
-    <!-- Icons aus der Schrift der Seite (Ubuntu) gerendert, opak (die alten Graustufen-PNGs mit Alpha zeigte iOS nur klein oder gar nicht), hell und dunkel;
-         neue Dateinamen, weil iOS Icons je URL zwischenspeichert. Das Home-Symbol von iOS nimmt das helle (apple-touch-icon) -->
+    <!-- Icons rendered from the page's font (Ubuntu), opaque (iOS showed the old grayscale PNGs with alpha only small or not at all), light and dark;
+         new file names, because iOS caches icons per URL. The iOS home icon takes the light one (apple-touch-icon) -->
     <link rel="icon" href="./favicon/ico-light-180.png" sizes="180x180" type="image/png" media="(prefers-color-scheme: light)">
     <link rel="icon" href="./favicon/ico-dark-180.png" sizes="180x180" type="image/png" media="(prefers-color-scheme: dark)">
     <link rel="apple-touch-icon" href="./favicon/ico-light-180.png">
@@ -77,13 +77,13 @@
                 aria-label="Settings" title="Settings">
                 <i class="fa-solid fa-gear secicon" aria-hidden="true"></i><span class="secshort">set</span>
             </button>
-                <!-- Sections-Liste: Zahnrad und Dropdown teilen sich mit den Chips eine Flex-Zeile (gleiche Regeln, gleiche Breiten) -->
+                <!-- Sections list: gear and dropdown share a flex row with the chips (same rules, same widths) -->
                 <button type="button" id="section-jumper" class="nav-btn" aria-haspopup="true" aria-expanded="false"
                 aria-controls="jumper-pop" aria-label="Sections" title="Sections">
                 <i class="fa-solid fa-chevron-down secicon" aria-hidden="true"></i><span class="secshort">sec</span>
             </button>
             </nav>
-            <!-- nur in der Smartphone-/Kleinansicht sichtbar, siehe styles.css -->
+            <!-- only visible in the smartphone/small view, see styles.css -->
             <a href="#" id="step-prev" class="stepper" target="_self" aria-label="previous section">
                 <i class="fa-solid fa-chevron-up" aria-hidden="true"></i>
             </a>
@@ -92,8 +92,8 @@
             </a>
         </header>
         <article id="container" class="container"></article>
-        <!-- ein Knopf pro Einstellung, schaltet reihum; Inhalt baut app.js -->
-        <!-- Sections-Liste im Icon-Modus: das native Menü kann keine Icons zeigen -->
+        <!-- one button per setting, cycles through the values; app.js builds the content -->
+        <!-- Sections list in icon mode: the native menu cannot show icons -->
         <div id="jumper-pop" class="jumper-pop" popover="manual"></div>
         <div id="settings-pop" class="settings-pop" popover="manual"></div>
     </div>

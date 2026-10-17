@@ -1,6 +1,6 @@
-// Rauchtest ohne Browser: lädt index.html und app.js in jsdom, schaltet den Edit-Mode ein und simuliert Klick-Sperre.
-// Friert die Seite ein (Endlosschleife), bricht der Test nach 20 s ab; meldet die Seite „Endlosschleife“, schlägt er fehl.
-// Aufruf: npm install --no-save jsdom && node tools/smoke.js
+// Smoke test without a browser: loads index.html and app.js in jsdom, switches edit mode on and simulates the click lock.
+// If the page freezes (infinite loop), the test aborts after 20 s; if the page reports an "infinite loop", it fails.
+// Usage: npm install --no-save jsdom && node tools/smoke.js
 const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -30,8 +30,8 @@ const dom = new JSDOM(html, {
         w.matchMedia = q => ({ matches: /hover: hover|pointer: fine/.test(q), addEventListener() { }, addListener() { } });
         w.ResizeObserver = class { observe() { } disconnect() { } };
         w.CSS = { supports: () => true };
-        w.document.elementFromPoint = () => null;   // jsdom hat kein Layout
-        w.Element.prototype.scrollIntoView = function () { };   // ebenso
+        w.document.elementFromPoint = () => null;   // jsdom has no layout
+        w.Element.prototype.scrollIntoView = function () { };   // likewise
         w.HTMLElement.prototype.showPopover = function () { };
         w.HTMLElement.prototype.hidePopover = function () { };
         w.fetch = async u => /links/.test(u)
@@ -43,29 +43,29 @@ const w = dom.window, d = w.document;
 w.eval(fs.readFileSync(root + 'app.js', 'utf8'));
 
 const ev = (t, o) => new w.MouseEvent(t, Object.assign({ bubbles: true, cancelable: true, button: 0, clientX: 10, clientY: 10 }, o));
-// jsdom kennt keine PointerEvents: MouseEvent mit pointerType (Standard: Maus)
+// jsdom has no PointerEvents: MouseEvent with pointerType (default: mouse)
 const pev = (t, o, kind) => { const e = ev(t, o); Object.defineProperty(e, 'pointerType', { value: kind || 'mouse' }); return e; };
 const check = (ok, text) => { if (!ok) errors.push(text); };
 const afterMs = (fn, ms) => new Promise(r => setTimeout(() => { fn(); r(); }, ms));
 (async () => {
     await afterMs(() => check(d.querySelectorAll('section').length > 0, 'no sections rendered'), 500);
-    // Nav: Chips, Zahnrad und Dropdown stehen in einer Zeile (gleiche Flex-Regeln), das Dropdown zuletzt
+    // Nav: chips, gear and dropdown are in one row (same flex rules), the dropdown last
     await afterMs(() => {
         const nav = d.getElementById('section-nav-list'), kids = [...nav.children];
         check(kids.length > 2 && kids[kids.length - 1].id === 'section-jumper', 'dropdown is not the last nav entry');
         check(kids[kids.length - 2].id === 'settings-btn', 'gear is not before the dropdown');
         check(d.querySelectorAll('#jumper-pop a').length === d.querySelectorAll('a.secname').length, 'list and chips differ in length');
         check(d.getElementById('section-jumper').tagName === 'BUTTON', 'dropdown is not a button');
-        // Hover auf einem Listeneintrag leuchtet Chip und Titel derselben Section (gekoppelte Hervorhebung)
+        // Hover on a list entry lights chip and heading of the same section (coupled highlight)
         const entry = d.querySelectorAll('#jumper-pop a')[1], chip = d.querySelectorAll('a.secname')[1], heading = d.querySelectorAll('#container .name')[1];
         entry.dispatchEvent(pev('pointerenter'));
         check(chip.classList.contains('with-hover') && heading.classList.contains('with-hover'), 'list entry does not couple chip and heading');
         entry.dispatchEvent(pev('pointerleave'));
         check(!chip.classList.contains('with-hover') && !heading.classList.contains('with-hover'), 'coupling is not undone');
     }, 0);
-    // Edit-Mode einschalten und die Beobachter (Microtasks) laufen lassen: hier hing die Seite einmal
+    // Switch edit mode on and let the observers (microtasks) run: the page once hung here
     await afterMs(() => { d.body.classList.add('edit-mode'); w.gridInit(); w.releaseLinks(); w.settingsDisplay(); }, 0);
-    // Sections umsortieren: Griff am Titel, Ziehen über die zweite Section setzt die erste dahinter, der Vergleich meldet es
+    // Re-sort sections: handle on the heading, dragging over the second section puts the first behind it, the comparison reports it
     await afterMs(() => {
         const secs = () => [...d.querySelectorAll('#container section')].map(s => s.querySelector('h3.name').id);
         const orderBefore = secs(), firstSec = d.querySelector('#container section');
@@ -87,13 +87,13 @@ const afterMs = (fn, ms) => new Promise(r => setTimeout(() => { fn(); r(); }, ms
         check(!d.body.classList.contains('locked'), 'lock in edit mode');
         d.body.classList.remove('edit-mode');
     }, 50);
-    // Klick-Sperre auf Chip, Aufheben per Mausbewegung
+    // Click lock on chip, release by mouse movement
     await afterMs(() => {
         d.querySelector('a.secname').dispatchEvent(pev('pointerdown'));
         check(d.body.classList.contains('locked'), 'lock missing after chip click');
         d.dispatchEvent(ev('mousemove', { clientX: 80, clientY: 80 }));
         check(!d.body.classList.contains('locked'), 'lock stays after mouse movement');
-        // Auswahl in der Sections-Liste sperrt ebenfalls (Loslassen über einem Eintrag klickt ihn ohne pointerdown)
+        // Selection in the sections list locks as well (releasing over an entry clicks it without a pointerdown)
         w.jumpTo(d.querySelectorAll('a.secname')[1].getAttribute('href'));
         check(d.body.classList.contains('locked'), 'lock missing after selection in the list');
         d.dispatchEvent(ev('mousemove', { clientX: 200, clientY: 200 }));
