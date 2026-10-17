@@ -836,9 +836,11 @@ function ghostHeaderRender() {
         return;
     }
     var ebene = ghostHeaderLayer();
-    ebene.style.left = cr.left + 'px';
+    // Smartphone: so breit wie der echte Titel (der Inhalt hat Seitenpolster), sonst gleitet die Kopie vollbreit ein und schrumpft beim Übergang
+    var schmal = matchMedia('only screen and (min-device-width: 350px) and (max-device-width: 812px)').matches && name;
+    ebene.style.left = (schmal ? name.getBoundingClientRect().left : cr.left) + 'px';
     ebene.style.top = cr.top + 'px';
-    ebene.style.width = c.clientWidth + 'px';
+    ebene.style.width = (schmal ? name.getBoundingClientRect().width : c.clientWidth) + 'px';
     ebene.style.height = hoch + 'px';
     var kachel = c.querySelector('li');
     ebene.style.setProperty('--schatten', (kachel ? kachel.offsetHeight : hoehe) * masz['ghost-header-shadow'] + 'px');

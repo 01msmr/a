@@ -22,6 +22,7 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 - iPhone hochkant: kein `scroll-snap-stop: always`, ein Wisch darf mehrere Sections überspringen; gerastet wird am Ende.
 
 **Leiste auf dem Smartphone**
+- Smartphone: Ghost headers sind so breit wie der echte Titel (Seitenpolster des Inhalts) statt vollbreit; sie schrumpfen beim Übergang nicht mehr.
 - iPhone hochkant: Dropdown und Zahnrad stehen ganz rechts, das Zahnrad am Rand; die Stepper bleiben links neben dem Titel (`#section-nav-list` ist dort `display: contents`, Reihenfolge per `order`).
 
 **Aufräumen (HTML und Logik, Aussehen unverändert)**
