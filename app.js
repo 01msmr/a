@@ -162,7 +162,6 @@ function jumperListe(data) {
     });
     pop.addEventListener('toggle', function (ev) {
         sel.setAttribute('aria-expanded', ev.newState === 'open');
-        if (ev.newState === 'open') pfeilZeigen(false);   // beim nächsten Zeigen liegt er über der Liste
         // schließt die Liste unter dem Zeiger, kommt kein mouseleave: die gekoppelte Hervorhebung zurücknehmen
         if (ev.newState !== 'open') document.querySelectorAll('.mit-hover, .mit-druck').forEach(function (x) { x.classList.remove('mit-hover', 'mit-druck'); });
     });
@@ -939,7 +938,7 @@ window.addEventListener('resize', function () {
 // ── Strich-Zeiger ─────────────────────────────────────────────────
 // Der senkrechte Strich ersetzt den Punkt: Höhe der Zeile unter dem Zeiger (Titel, Nav-Chip),
 // in der Section außerhalb von Titel und Kachel deren Höhe mit 33 % Deckkraft. Auf Kacheln zeichnet ihn die Kachel selbst.
-var strich = { el: null, pfeil: null, pfeilOffen: false, secEl: null, x: 0, y: 0, ziel: null, raf: 0, an: false };
+var strich = { el: null, secEl: null, x: 0, y: 0, ziel: null, raf: 0, an: false };
 
 function strichZiel(t) {
     if (!t || !t.closest || document.body.classList.contains('edit-mode')) return null;
@@ -966,20 +965,12 @@ function chipRichtung(chip) {
     return d < -2 ? 'up' : d > 2 ? 'down' : null;
 }
 
-// Der Chevron ist ein Popover (oberste Ebene), sonst liegt er hinter der Sections-Liste, die selbst in der obersten Ebene steht
-function pfeilZeigen(an) {
-    var p = strich.pfeil;
-    if (an === strich.pfeilOffen) return;
-    strich.pfeilOffen = an;
-    if (an) p.showPopover(); else p.hidePopover();
-}
-
 function strichSetzen() {
     strich.raf = 0;
     var s = strich.el, b = strich.secEl, z = strich.ziel;
     if (!z) {
         s.style.opacity = '0';
-        pfeilZeigen(false);
+        document.documentElement.removeAttribute('data-pfeil');
         if (b) b.style.opacity = '0';
         document.documentElement.classList.remove('strich-an');
         return;
@@ -989,15 +980,11 @@ function strichSetzen() {
     var kopfOben = z.kopf && z.sec && Math.abs(z.sec.getBoundingClientRect().top - document.getElementById('container').getBoundingClientRect().top) <= 2;
     document.documentElement.classList.toggle('strich-punkt', !!z.sec && (!z.kopf || kopfOben));
     // im Titel zeigt ein Chevron nach oben die Zeigerposition, auf einem Nav-Chip nach oben oder unten, wohin der Klick scrollt
-    var p = strich.pfeil, richtung = z.kopf ? (kopfOben ? null : 'up') : chipRichtung(z.chip);
+    var richtung = z.kopf ? (kopfOben ? null : 'up') : chipRichtung(z.chip);
     // normaler Punkt-Zeiger: während der Sperre, und in der Liste, wenn die Section schon oben liegt (kein Chevron)
     document.documentElement.classList.toggle('strich-std', !!z.std || (!!z.liste && !richtung));
-    if (richtung) {
-        p.className = 'fa-solid fa-chevron-' + richtung;
-        p.style.left = strich.x + 'px';
-        p.style.top = strich.y + 'px';
-    }
-    pfeilZeigen(!!richtung);
+    if (richtung) document.documentElement.setAttribute('data-pfeil', richtung);
+    else document.documentElement.removeAttribute('data-pfeil');
     // Zeile unter dem Zeiger (Kachelrand, Nav-Chip): fester Strich in voller Deckkraft
     if (z.fest && !(z.chip && richtung)) {
         var r = z.fest.getBoundingClientRect();
@@ -1040,12 +1027,6 @@ function strichPlanen(e) {
     strich.el.id = 'strich';
     strich.el.setAttribute('aria-hidden', 'true');
     document.body.appendChild(strich.el);
-    strich.pfeil = document.createElement('i');
-    strich.pfeil.id = 'strich-pfeil';
-    strich.pfeil.className = 'fa-solid fa-chevron-up';
-    strich.pfeil.setAttribute('popover', 'manual');
-    strich.pfeil.setAttribute('aria-hidden', 'true');
-    document.body.appendChild(strich.pfeil);
     document.addEventListener('mousemove', strichPlanen, { passive: true });
     document.addEventListener('mouseover', strichPlanen, { passive: true });
     document.documentElement.addEventListener('mouseleave', function () {

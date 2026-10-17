@@ -56,6 +56,8 @@ html[data-zoom="m"] {
     --text-l-max: .64;
     --curs-img: url(c-point-light.png);
     --curs-sec: url(c-point.png);   /* Quadrat in der Section: weiß, im Dunkeln invertiert */
+    --curs-auf: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='32' height='32'%3E%3Cpath d='M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z' fill='white' stroke='rgba(0,0,0,.45)' stroke-width='30' paint-order='stroke'/%3E%3C/svg%3E") 16 16, auto;
+    --curs-ab: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='32' height='32'%3E%3Cpath d='M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z' fill='white' stroke='rgba(0,0,0,.45)' stroke-width='30' paint-order='stroke'/%3E%3C/svg%3E") 16 16, auto;
     --curs-hov: url(c-line-light.png);
 }
 
@@ -80,6 +82,8 @@ html[data-zoom="m"] {
         --text-l-max: 1;
         --curs-img: url(c-point.png);
         --curs-sec: url(c-point-light.png);
+        --curs-auf: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='32' height='32'%3E%3Cpath d='M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z' fill='%23111' stroke='rgba(255,255,255,.45)' stroke-width='30' paint-order='stroke'/%3E%3C/svg%3E") 16 16, auto;
+        --curs-ab: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='32' height='32'%3E%3Cpath d='M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z' fill='%23111' stroke='rgba(255,255,255,.45)' stroke-width='30' paint-order='stroke'/%3E%3C/svg%3E") 16 16, auto;
         --curs-hov: url(c-line.png);
     }
 }
@@ -103,6 +107,8 @@ html[data-zoom="m"] {
     --text-l-max: 1;
     --curs-img: url(c-point.png);
     --curs-sec: url(c-point-light.png);
+    --curs-auf: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='32' height='32'%3E%3Cpath d='M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z' fill='%23111' stroke='rgba(255,255,255,.45)' stroke-width='30' paint-order='stroke'/%3E%3C/svg%3E") 16 16, auto;
+    --curs-ab: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='32' height='32'%3E%3Cpath d='M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z' fill='%23111' stroke='rgba(255,255,255,.45)' stroke-width='30' paint-order='stroke'/%3E%3C/svg%3E") 16 16, auto;
     --curs-hov: url(c-line.png);
 }
 
@@ -1707,33 +1713,20 @@ body.view-grid .geist .name {
     transition: none;   /* volle Höhe sofort, keine Skalierung */
 }
 
-/* Chevron nach oben als Zeiger im Titel, in normaler Textgröße, Farbe wie die Titelschrift */
-#strich-pfeil {
-    /* Popover: oberste Ebene, über der Sections-Liste; die Standardformate eines Popovers zurücknehmen */
-    position: fixed;
-    inset: auto;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    overflow: visible;
-    width: auto;
-    height: auto;
-    pointer-events: none;
-    transform: translate(-50%, -50%);
-    font-size: 1.5em;   /* größer als die Textgröße des Titels, damit der Zeiger auffällt */
-    color: var(--on-c);
-}
-
-/* auch das Glyph (::before) ohne Übergang: seine Farbe erbt den Wechsel zwischen Chip und Titel sonst mit 0,3 s */
-#strich-pfeil,
-#strich-pfeil::before {
-    transition: none;
-}
-
 html.strich-an,
 html.strich-an * {
     cursor: none !important;
+}
+
+/* Chevron als echter Bildzeiger (Titel, Nav-Chip, Sections-Liste): zeigt, wohin ein Klick scrollt (app.js setzt data-pfeil) */
+html.strich-an[data-pfeil="up"],
+html.strich-an[data-pfeil="up"] * {
+    cursor: var(--curs-auf) !important;
+}
+
+html.strich-an[data-pfeil="down"],
+html.strich-an[data-pfeil="down"] * {
+    cursor: var(--curs-ab) !important;
 }
 
 html.strich-an.strich-std,
