@@ -1199,10 +1199,10 @@ var EINSTELLUNGEN = [
     },
     {
         label: 'Farbschema',
-        werte: [['light', 'hell'], ['dark', 'dunkel']],
-        icons: { light: 'fa-sun', dark: 'fa-moon' },
-        get: function () { return window.msmrTheme.get(); },
-        set: function (w) { window.msmrTheme.set(w); }
+        werte: [['auto', 'auto'], ['light', 'hell'], ['dark', 'dunkel']],
+        schema: true,
+        get: function () { return window.msmrTheme.auto() ? 'auto' : window.msmrTheme.get(); },
+        set: function (w) { if (w === 'auto') window.msmrTheme.setAuto(); else window.msmrTheme.set(w); }
     },
     {
         label: 'Farbe',
@@ -1260,12 +1260,41 @@ function wertNach(e, w) {
     return e.werte[(i + 1) % e.werte.length][0];
 }
 
+// Farbschema: manuell groß Sonne/Mond und klein „auto“; auto groß „auto“ und klein der Systemwert.
+// „auto“ ist im Text-Modus ein Wort, im Icon-Modus ein Kreis (leer = aus, gefüllt = an)
+function zeichneSchema(ic, w) {
+    var icons = document.body.classList.contains('nav-icons');
+    var sym = { light: 'fa-sun', dark: 'fa-moon' };
+    function glyph(klasse, extra) {
+        var g = document.createElement('i');
+        g.className = klasse + (extra ? ' ' + extra : '');
+        return g;
+    }
+    function wort(extra) {
+        var t = document.createElement('span');
+        t.className = extra;
+        t.textContent = 'auto';
+        return t;
+    }
+    ic.className = 'set-icon set-schema';
+    ic.textContent = '';
+    if (w === 'auto') {
+        ic.appendChild(icons ? glyph('fa-solid fa-circle') : wort('set-letter set-auto'));
+        ic.appendChild(glyph('fa-solid ' + sym[window.msmrTheme.get()], 'set-ecke'));
+    } else {
+        ic.appendChild(glyph('fa-solid ' + sym[w]));
+        ic.appendChild(icons ? glyph('fa-regular fa-circle', 'set-ecke') : wort('set-ecke'));
+    }
+}
+
 // zeichnet das Icon für den Wert w
 function zeichneIcon(ic, e, w) {
     if (e.icon) {
         var d = e.icon(w);
         ic.className = 'set-icon set-letter';
         ic.textContent = d.text;
+    } else if (e.schema) {
+        zeichneSchema(ic, w);
     } else if (e.kreis) {
         ic.className = 'set-icon set-kreis';
         ic.textContent = '';
@@ -1302,12 +1331,6 @@ function settingsAnzeige() {
         b.title = e.label + ': ' + wertName(e, w) + ' → ' + wertName(e, nach);
         b.setAttribute('aria-label', e.label + ': ' + wertName(e, w) + ' — zum Umschalten drücken (' + wertName(e, nach) + ')');
     });
-    // Automatik: Kreis leer = aus, gefüllt = Farbschema folgt dem System
-    var auto = window.msmrTheme.auto(), ab = document.getElementById('auto-btn');
-    ab.querySelector('i').className = (auto ? 'fa-solid' : 'fa-regular') + ' fa-circle secicon';
-    ab.setAttribute('aria-pressed', auto);
-    ab.title = 'Farbschema automatisch (System): ' + (auto ? 'an' : 'aus');
-    ab.setAttribute('aria-label', ab.title);
 }
 
 // bündig unter dem Zahnrad, gleich breit; in der unteren Leiste (Telefon) bündig darüber
@@ -1412,9 +1435,6 @@ function settingsPlatzieren() {
         zahnrad.classList.toggle('offen', an);   // Zahnrad kehrt um, solange das Overlay offen ist
         zahnrad.setAttribute('aria-expanded', an);
         if (an) zuStarten(); else zuStoppen();
-    });
-    document.getElementById('auto-btn').addEventListener('click', function () {
-        if (window.msmrTheme.auto()) window.msmrTheme.set(window.msmrTheme.get()); else window.msmrTheme.setAuto();
     });
     document.addEventListener('msmrzoom', settingsAnzeige);
     document.addEventListener('msmrtheme', settingsAnzeige);

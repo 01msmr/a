@@ -18,7 +18,7 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 - Senkrechter Strich statt des Punkts: auf Nav-Chips und Kachelrändern in Zeilenhöhe, auf Section-Hintergrund und Titel in Section-Höhe mit 33 % Deckkraft (`#strich-sec` im Inhalt, hinter Titel, Kacheln und Licht; nicht beim Hover auf einer Kachel, dort zeichnet die Kachel ihren eigenen Strich). Systemzeiger bleibt in Feldern, Dropdown, Einstellungen und im Edit-Mode. Farbe schaltet sofort.
 
 **Einstellungen**
-- **Farbe:** Neue Einstellung bunt/blass: die Sättigung aller Section-Farben sinkt bei gleicher Helligkeit (`--farbe-blass`, 0,3); Icon ein Kreis in einer Section-Farbe. Gespeichert als `a.farbe`.
+- **Farbe:** Neue Einstellung bunt/blass: die Sättigung aller Section-Farben sinkt bei gleicher Helligkeit (`--farbe-blass`, 0,4); Icon ein Kreis in einer Section-Farbe. Gespeichert als `a.farbe`.
 - **Overlay:** Gleitet beim Öffnen unter dem Zahnrad herunter und beim Schließen hinauf (am Telefon umgekehrt), die Farben wechseln unterwegs (200 ms, bei reduzierter Bewegung 90 ms). Breite bündig mit dem Zahnrad; im Raster behalten die Knöpfe die Höhe wie bei Chips.
 
 **Raster**

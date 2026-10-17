@@ -9,7 +9,7 @@ Gebaut für Maus und Tastatur am Desktop, iPad und iPhone und für den Browser a
 
 | Datei | Aufgabe |
 |---|---|
-| `index.html` | Gerüst: Leiste mit Nav-Chips, Zahnrad, Automatik-Kreis und Sections-Dropdown, Inhalt, Overlay. Im `<head>` stehen die Skripte für Zoom und Farbschema (laufen vor dem ersten Paint) |
+| `index.html` | Gerüst: Leiste mit Nav-Chips, Zahnrad und Sections-Dropdown, Inhalt, Overlay. Im `<head>` stehen die Skripte für Zoom und Farbschema (laufen vor dem ersten Paint) |
 | `app.js` | Rendern, Navigation, Einstellungen, Edit-Mode |
 | `styles.css` | alles Aussehen; Farbschemata, Zoom und Raster hängen an Variablen und Klassen |
 | `links.php` | liefert `edit/links.json` aus (öffentlich) |
@@ -156,7 +156,7 @@ Im ersten `:root` von `styles.css` stehen die Stellgrößen; `app.js` liest sie 
 (`maszLesen`): `--fenster-dauer` (200), `--fenster-dauer-kurz` (60), `--gleiten-potenz` (2),
 `--licht-dauer` (90), `--licht-potenz` (1,4), `--licht-rand-dauer` (90), `--licht-deckung` (.95),
 `--geist-schatten` (.66), `--geist-auslauf` (2), `--geist-haelt` (2500), `--strich-schwach` (.33),
-`--strich-breite`, `--farbe-blass` (.3), `--pop-dauer` (200). Zeiten in ms.
+`--strich-breite`, `--farbe-blass` (.4), `--pop-dauer` (200). Zeiten in ms.
 Die Einstellung „Farbe“ skaliert die Sättigung aller Section-Farben (`oklch`) über `--farb-int`.
 
 ## Bearbeiten
@@ -188,6 +188,6 @@ Welche Dateien nicht ins Webverzeichnis gehören, steht in
 
 GNU GPL v3, siehe [LICENSE](LICENSE).
 
-Am Ende der Leiste (hinter dem Zahnrad) schaltet ein Kreis die Farbschema-Automatik: leer = feste Wahl, gefüllt = folgt dem System. Der Farbschema-Knopf im Overlay stellt dann hell/dunkel fest ein.
+Der Farbschema-Knopf im Overlay schaltet durch auto, hell und dunkel: manuell groß Sonne bzw. Mond und klein unten rechts „auto“ (Icon-Modus: leerer Kreis), in auto groß „auto“ (Icon-Modus: gefüllter Kreis) und klein der Systemwert.
 
-Im Text-Modus heißen Zahnrad und Automatik-Knopf „set“ und „auto“. Das Sections-Dropdown öffnet in beiden Modi eine eigene Liste (Namen bzw. Icons); drücken, ziehen, loslassen wählt. In `index.html` hängt an `styles.css` und `app.js` eine Version (`?v=…`): bei Änderungen hochzählen, sonst mischen Browser alte und neue Dateien.
+Im Text-Modus heißt das Zahnrad „set“. Das Sections-Dropdown öffnet in beiden Modi eine eigene Liste (Namen bzw. Icons); drücken, ziehen, loslassen wählt. In `index.html` hängt an `styles.css` und `app.js` eine Version (`?v=…`): bei Änderungen hochzählen, sonst mischen Browser alte und neue Dateien.

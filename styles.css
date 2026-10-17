@@ -33,7 +33,7 @@ html[data-zoom="m"] {
         background-color var(--pop-t) var(--pop-kurve), color var(--pop-t) var(--pop-kurve),
         overlay var(--pop-t) allow-discrete, display var(--pop-t) allow-discrete;
     --farb-int: 1;               /* Sättigung der Section-Farben, bei Einstellung „blass“ s. u. */
-    --farbe-blass: .3;
+    --farbe-blass: .4;
 }
 
 :root,
@@ -1143,12 +1143,6 @@ body:not(.nav-icons) .settings-btn .secicon {
     display: none;
 }
 
-/* Text-Modus: „auto“ aktiv = umgekehrt (im Icon-Modus zeigt der gefüllte Kreis das) */
-body:not(.nav-icons) .auto-btn[aria-pressed="true"] {
-    color: var(--front-body);
-    background-color: var(--sect-col);
-}
-
 /* Icon-Modus: das Dropdown zeigt die Icons als Font-Awesome-Zeichen */
 body.nav-icons #section-jumper {
     font-family: "Font Awesome 6 Free", sans-serif;
@@ -1475,8 +1469,26 @@ body:not(.tastatur) .settings-btn.offen {
     cursor: inherit;
 }
 
+.set-btn {
+    position: relative;
+}
+
 .set-icon {
     font-size: 1.25rem;
+    line-height: 1;
+}
+
+/* Farbschema: groß der aktive Wert (hell/dunkel bzw. auto), klein unten rechts der andere Teil (auto bzw. der Systemwert) */
+.set-schema .set-auto {
+    font-size: .95rem;
+}
+
+.set-ecke {
+    position: absolute;
+    right: .35rem;
+    bottom: .3rem;
+    font-size: .55rem;
+    font-weight: bold;
     line-height: 1;
 }
 
