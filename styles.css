@@ -1850,7 +1850,7 @@ body.view-grid:not(.edit-mode) .group.ende-gedeckt::after {
 }
 
 /* Wischen mit dem Finger: Chips und Einträge zeigen keinen Hover-/Druck-Zustand */
-html.wischt a.sec-btn:not(.active) {
+html.swiping a.sec-btn:not(.active) {
     background-color: transparent;
     background-image: none;
     box-shadow: none;
@@ -1868,14 +1868,14 @@ body.touch li a::before {
     transition: none;
 }
 
-/* Smartphone: Einrastpunkte nur an der ersten Section jeder Seite (app.js, seitenBilden): zwei aufeinanderfolgende halbhohe Sections
+/* Smartphone: Einrastpunkte nur an der ersten Section jeder Seite (app.js, buildPages): zwei aufeinanderfolgende halbhohe Sections
    sind eine Seite, eine größere beginnt immer eine eigene */
 @media only screen and (min-device-width: 350px) and (max-device-width: 812px) {
     body:not(.edit-mode) section {
         scroll-snap-align: none;
     }
 
-    body:not(.edit-mode) section.seitenstart {
+    body:not(.edit-mode) section.page-start {
         scroll-snap-align: start;
     }
 }

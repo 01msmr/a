@@ -198,15 +198,15 @@ Liste gefüllt und ins Sichtfeld gescrollt. Namen verlieren eine Endung (`tbx.li
 
 ### Touch (Smartphone)
 
-- **Kein Hover:** die Zeigerart (`zeigerArt`, `istTouch()`) wird beim `pointerdown` gesetzt, echte Mausbewegung stellt zurück; `body.touch` spiegelt sie ins CSS schaltet alle
+- **Kein Hover:** die Zeigerart (`pointerKind`, `isTouch()`) wird beim `pointerdown` gesetzt, echte Mausbewegung stellt zurück; `body.touch` spiegelt sie ins CSS schaltet alle
   `:hover`- und `:active`-Effekte ab, die iOS sonst nach einem Tap hängen lässt; `koppleHover` und das
   Leuchtfenster ignorieren Touch-Hover. Ein Tap wirkt wie ein Klick: er aktiviert die Section
   (Chip, Titel, Hintergrund, Kachel; `sperreAn` beim Klick), ein Wisch aktiviert nichts und hebt die Sperre auf.
 - **Sections-Dropdown:** Einträge 2,75 rem hoch, Tap wählt sofort; Antippen, Ziehen und Loslassen öffnet die Liste
   und wählt den Eintrag unter dem Finger in einem Zug (`touch-action: none` am Feld).
 - **Scrollen:** die aktive Section wird während des Wischens alle 80 ms nachgezogen und am Ende über `scrollend`
-  und `bisRuhe` (zwei stille Frames) bestätigt; sie gilt 24 px vor dem Einrasten als aktiv. Während des Wischens
-  (`html.wischt`, endet erst mit dem Finger oben; nicht am `body`: dessen Klassenwechsel löst die Neuvermessung aus)
+  und `whenStill` (zwei stille Frames) bestätigt; sie gilt 24 px vor dem Einrasten als aktiv. Während des Wischens
+  (`html.swiping`, endet erst mit dem Finger oben; nicht am `body`: dessen Klassenwechsel löst die Neuvermessung aus)
   haben die Chips keine Hover-Optik. Das Leuchtfenster ist beim Scrollen eine Funktion der Scrollposition
   (`fensterScroll`): zwischen zwei Section-Oberkanten geht es vom Rahmen der einen zu dem der nächsten über (Oberkante =
   Scrollposition), am Einrastpunkt deckt es genau die Section. Es läuft so mit Finger, Auslauf, Stepper- und Chip-Sprüngen,
@@ -215,15 +215,15 @@ Liste gefüllt und ins Sichtfeld gescrollt. Namen verlieren eine Endung (`tbx.li
 
 ### Seiten auf dem Smartphone
 
-Auf dem Smartphone (`istPhone()`, `PHONE_QUERY`) rasten nicht alle Sections ein, sondern **Seiten** (`seitenBilden` in `app.js`, beim
+Auf dem Smartphone (`isPhone()`, `PHONE_QUERY`) rasten nicht alle Sections ein, sondern **Seiten** (`buildPages` in `app.js`, beim
 Messen in `fensterMessen`):
 
 - Zwei aufeinanderfolgende **halbhohe** Sections (Höhe höchstens die halbe Inhaltshöhe) bilden eine Seite: ein Einrastpunkt, beide zugleich auf dem Bildschirm.
 - Eine übrig bleibende halbhohe Section bleibt allein. Sie bekommt eine leere halbhohe Section dahinter (`margin-bottom`, auch als letzte), damit die Seite voll
   ist und eine folgende größere Section auf einer eigenen Seite beginnt (drei halbhohe, dann eine große: Seite 1 = zwei, Seite 2 = die dritte mit leerer unterer Hälfte, Seite 3 = die große).
 - Eine größere Section beginnt immer eine eigene Seite; ist sie höher als der Bildschirm, scrollt sie darin frei (der Einrastpunkt liegt an ihrem Anfang).
-- Einrastpunkt ist die erste Section jeder Seite (`.seitenstart`, `scroll-snap-align: start`). Das Leuchtfenster deckt beim Scrollen und beim Tippen die ganze Seite
-  (`fenster.seiten`); Stepper, Pfeile und Dropdown springen von Seite zu Seite bzw. zum Anfang der Seite des Ziels (`seitenStart`, `jumpBy`).
+- Einrastpunkt ist die erste Section jeder Seite (`.page-start`, `scroll-snap-align: start`). Das Leuchtfenster deckt beim Scrollen und beim Tippen die ganze Seite
+  (`fenster.pages`); Stepper, Pfeile und Dropdown springen von Seite zu Seite bzw. zum Anfang der Seite des Ziels (`pageStart`, `jumpBy`).
 - Im Edit-Mode gibt es keine Seiten.
 
 ### Zentrale Variablen

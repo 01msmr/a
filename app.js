@@ -84,7 +84,7 @@ function springeZu(hash) {
     var el = document.querySelector(hash);
     // Smartphone: der Einrastpunkt der Seite, sonst rastet das Ziel auf den Anfang der Seite zurück
     var zielSec = el && el.closest('section');
-    if (el) (zielSec ? seitenStart(zielSec).querySelector('.name') || el : el).scrollIntoView();
+    if (el) (zielSec ? pageStart(zielSec).querySelector('.name') || el : el).scrollIntoView();
     // Maus: der ruhende Zeiger wird ignoriert, bis er bewegt wird (auch beim Loslassen über einem Eintrag, ohne pointerdown darauf)
     var sec = el && el.closest('section');
     if (sec && !document.body.classList.contains('tastatur') && !document.body.classList.contains('edit-mode')) {
@@ -292,16 +292,16 @@ function render(data) {
 }
 
 // Ersatz für scrollend ohne Wartezeit: ruft fn, sobald die Scrollposition zwei Frames lang stillsteht
-var ruheRaf = new Map();
-function bisRuhe(fn) {
-    cancelAnimationFrame(ruheRaf.get(fn));
+var stillRaf = new Map();
+function whenStill(fn) {
+    cancelAnimationFrame(stillRaf.get(fn));
     var c = document.getElementById('container'), pos = null, still = 0;
     (function schritt() {
         var p = c.scrollTop + ',' + window.scrollY;
         still = p === pos ? still + 1 : 0;
         pos = p;
-        if (still >= 2) { ruheRaf.delete(fn); fn(); return; }
-        ruheRaf.set(fn, requestAnimationFrame(schritt));
+        if (still >= 2) { stillRaf.delete(fn); fn(); return; }
+        stillRaf.set(fn, requestAnimationFrame(schritt));
     })();
 }
 
@@ -355,7 +355,7 @@ function trackActiveSection() {
         clearTimeout(timer);
         var jetzt = performance.now();
         if (jetzt - letzte > 80) { letzte = jetzt; syncActive(); }
-        bisRuhe(syncActive);   // scrollend kommt auf iOS nicht immer: Ruhe zusätzlich selbst erkennen
+        whenStill(syncActive);   // scrollend kommt auf iOS nicht immer: Ruhe zusätzlich selbst erkennen
     });
     container.addEventListener('scrollend', function () { clearTimeout(timer); syncActive(); });
     syncActive();
@@ -387,12 +387,12 @@ var fenster = {
 // Maus oder Finger/Stift, wie beim letzten pointerdown (Mausbewegung stellt zurück). Touch hat kein Hover: das von iOS
 // hängengelassene :hover zählt nicht, deshalb schaltet body.touch in styles.css alle Hover- und Druckeffekte ab.
 var PHONE_QUERY = 'only screen and (min-device-width: 350px) and (max-device-width: 812px)';
-function istPhone() { return matchMedia(PHONE_QUERY).matches; }
+function isPhone() { return matchMedia(PHONE_QUERY).matches; }
 
-var zeigerArt = 'mouse';
-function istTouch() { return zeigerArt !== 'mouse'; }
-function zeigerArtSetzen(art) {
-    zeigerArt = art;
+var pointerKind = 'mouse';
+function isTouch() { return pointerKind !== 'mouse'; }
+function setPointerKind(art) {
+    pointerKind = art;
     document.body.classList.toggle('touch', art !== 'mouse');
     // Touch hat keinen Zeiger: das Kachel-Licht darf nicht an der Berührungsstelle auf dem Bildschirm hängenbleiben, während darunter gescrollt wird
     if (art !== 'mouse') { lichtMaus = null; mausPunkt = null; lichtHart(); }
@@ -433,11 +433,11 @@ function sperreAusEreignis(e, touch) {
     sperreAn(sec, e.clientX, e.clientY, ziel && ziel.matches('a.sec-btn') ? 'nav' : 'titel');
 }
 document.addEventListener('pointerdown', function (e) {
-    zeigerArtSetzen(e.pointerType);
-    if (!istTouch()) sperreAusEreignis(e, false);
+    setPointerKind(e.pointerType);
+    if (!isTouch()) sperreAusEreignis(e, false);
 }, true);
 document.addEventListener('click', function (e) {
-    if (istTouch() && e.detail !== undefined) sperreAusEreignis(e, true);
+    if (isTouch() && e.detail !== undefined) sperreAusEreignis(e, true);
 }, true);
 document.addEventListener('mousemove', function (e) {
     if (sperre.sec && Math.hypot(e.clientX - sperre.x, e.clientY - sperre.y) > 4) sperreAus();
@@ -446,34 +446,34 @@ document.addEventListener('mousemove', function (e) {
 document.addEventListener('keydown', function () { if (sperre.art === 'titel') sperreAus(); });
 
 document.addEventListener('pointermove', function (e) {
-    if (e.pointerType === 'mouse' && istTouch()) zeigerArtSetzen('mouse');
+    if (e.pointerType === 'mouse' && isTouch()) setPointerKind('mouse');
 }, true);
 
 // ── Touch-Wischen ─────────────────────────────────────────────────
-// Solange der Inhalt scrollt (samt Auslauf), ist das Fenster an die Scrollposition gekoppelt (fensterScroll) und die Chips zeigen keine Hover-Optik (html.wischt).
-var wischt = false;
+// Solange der Inhalt scrollt (samt Auslauf), ist das Fenster an die Scrollposition gekoppelt (fensterScroll) und die Chips zeigen keine Hover-Optik (html.swiping).
+var swiping = false;
 // Das Wischen endet erst, wenn der Finger oben ist: hält er beim Ziehen kurz still, ruht zwar das Scrollen, es geht aber gleich weiter
-var fingerDa = false;
-document.addEventListener('touchstart', function () { fingerDa = true; }, { passive: true, capture: true });
+var fingerDown = false;
+document.addEventListener('touchstart', function () { fingerDown = true; }, { passive: true, capture: true });
 ['touchend', 'touchcancel'].forEach(function (n) {
-    document.addEventListener(n, function () { fingerDa = false; if (wischt) bisRuhe(wischEnde); }, { passive: true, capture: true });
+    document.addEventListener(n, function () { fingerDown = false; if (swiping) whenStill(swipeEnd); }, { passive: true, capture: true });
 });
 
-function wischEnde() {
-    if (fingerDa) return;
-    wischt = false;
-    document.documentElement.classList.remove('wischt');
+function swipeEnd() {
+    if (fingerDown) return;
+    swiping = false;
+    document.documentElement.classList.remove('swiping');
     fensterSync();
 }
-document.addEventListener('scrollend', function () { if (wischt) wischEnde(); }, true);
+document.addEventListener('scrollend', function () { if (swiping) swipeEnd(); }, true);
 // Wischen mit dem Finger beendet die Klick-Sperre (die Maus tut das per Bewegung)
 document.addEventListener('touchmove', function () { if (sperre.sec) sperreAus(); }, { passive: true });
 document.addEventListener('scroll', function () {
-    if (!istTouch()) return;
-    wischt = true;
+    if (!isTouch()) return;
+    swiping = true;
     // nicht am body: dessen Klassenwechsel löst eine Neuvermessung aus und stört den Auslauf
-    document.documentElement.classList.add('wischt');
-    bisRuhe(wischEnde);
+    document.documentElement.classList.add('swiping');
+    whenStill(swipeEnd);
 }, true);
 
 function fensterZiel() {
@@ -483,8 +483,8 @@ function fensterZiel() {
     } else if (sperre.sec) {
         s = sperre.sec;
     } else {
-        s = istTouch() ? null : c.querySelector('section:hover');
-        if (!s && !istTouch()) {
+        s = isTouch() ? null : c.querySelector('section:hover');
+        if (!s && !isTouch()) {
             // auch der Chip der aktiven Section zählt: ihr Titel zeigt dieselbe Hover-Fläche wie jeder andere
             var h = c.querySelector('.name.mit-hover');
             s = h && h.closest('section');
@@ -523,7 +523,7 @@ function fensterMessen() {
             group.classList.toggle('voll', leer === 0 || getComputedStyle(group).display !== 'grid');
         }
     });
-    if (seitenBilden(c, secs)) return fensterMessen();   // Füllraum geändert: die Lage der folgenden Sections neu messen
+    if (buildPages(c, secs)) return fensterMessen();   // Füllraum geändert: die Lage der folgenden Sections neu messen
     secs.forEach(function (s) { sig.push(s.y, s.h); });
     zeilen.forEach(function (z) { sig.push(z.y); });
     sig = sig.join(',');
@@ -570,7 +570,7 @@ function fensterRahmen(sec) {
         var s = fenster.secs[i];
         if (s.el === sec) {
             // Smartphone: das Fenster deckt die ganze Seite (beide Sections eines Paares)
-            var p = istPhone() && fenster.seitenIdx && fenster.seitenIdx.filter(function (q) { return q.indexOf(i) >= 0; })[0];
+            var p = isPhone() && fenster.pageIdx && fenster.pageIdx.filter(function (q) { return q.indexOf(i) >= 0; })[0];
             if (p && p.length > 1) {
                 var a = fenster.secs[p[0]], b = fenster.secs[p[p.length - 1]];
                 return { top: a.y, bot: b.y + b.h };
@@ -606,40 +606,40 @@ function fensterZu(ziel, animiert) {
 // Smartphone: Seiten aus Sections. Zwei aufeinanderfolgende halbhohe Sections bilden eine Seite (ein Einrastpunkt, beide zugleich auf dem
 // Bildschirm); eine übrig bleibende halbhohe Section bleibt allein (die untere Hälfte bleibt leer); eine größere Section beginnt immer
 // eine eigene Seite und ist, wenn höher als der Bildschirm, darin frei scrollbar. Der Einrastpunkt ist die erste Section jeder Seite
-// (.seitenstart, styles.css). Jede Seite ist ein Rahmen (y bis bot) für das Fenster; seitenIdx hält die Section-Nummern je Seite.
-function seitenBilden(c, secs) {
-    var phone = istPhone() && !document.body.classList.contains('edit-mode');
-    var H = c.clientHeight, seiten = [], i = 0;
-    var halb = function (s) { return s.h <= H * 0.5 + 3; };
+// (.page-start, styles.css). Jede Seite ist ein Rahmen (y bis bot) für das Fenster; pageIdx hält die Section-Nummern je Seite.
+function buildPages(c, secs) {
+    var phone = isPhone() && !document.body.classList.contains('edit-mode');
+    var H = c.clientHeight, pages = [], i = 0;
+    var isHalf = function (s) { return s.h <= H * 0.5 + 3; };
     while (i < secs.length) {
-        if (phone && halb(secs[i]) && i + 1 < secs.length && halb(secs[i + 1])) { seiten.push([i, i + 1]); i += 2; }
-        else { seiten.push([i]); i++; }
+        if (phone && isHalf(secs[i]) && i + 1 < secs.length && isHalf(secs[i + 1])) { pages.push([i, i + 1]); i += 2; }
+        else { pages.push([i]); i++; }
     }
-    fenster.seitenIdx = seiten;
-    fenster.seiten = seiten.map(function (p) {
+    fenster.pageIdx = pages;
+    fenster.pages = pages.map(function (p) {
         var a = secs[p[0]], b = secs[p[p.length - 1]];
         return { y: a.y, h: b.y + b.h - a.y };
     });
-    var start = {}, allein = {}, geaendert = false;
-    seiten.forEach(function (p) { start[p[0]] = true; if (p.length === 1 && halb(secs[p[0]])) allein[p[0]] = true; });
+    var starts = {}, lone = {}, changed = false;
+    pages.forEach(function (p) { starts[p[0]] = true; if (p.length === 1 && isHalf(secs[p[0]])) lone[p[0]] = true; });
     secs.forEach(function (s, k) {
-        var want = phone && !!start[k];
-        if (s.el.classList.contains('seitenstart') !== want) s.el.classList.toggle('seitenstart', want);
+        var want = phone && !!starts[k];
+        if (s.el.classList.contains('page-start') !== want) s.el.classList.toggle('page-start', want);
         // eine allein stehende halbhohe Section bekommt eine leere halbhohe Section dahinter (Füllraum), auch als letzte:
         // so bleibt die Seite voll, und eine folgende größere Section beginnt auf einer eigenen Seite
-        var fuell = phone && allein[k] ? Math.max(0, Math.round(H - s.h)) + 'px' : '';
-        if (s.el.style.marginBottom !== fuell) { s.el.style.marginBottom = fuell; geaendert = true; }
+        var filler = phone && lone[k] ? Math.max(0, Math.round(H - s.h)) + 'px' : '';
+        if (s.el.style.marginBottom !== filler) { s.el.style.marginBottom = filler; changed = true; }
     });
-    return geaendert;
+    return changed;
 }
 
 // Section, die auf dem Smartphone den Einrastpunkt ihrer Seite bildet (sonst die Section selbst): dorthin springen Dropdown, Stepper und Pfeile
-function seitenStart(sec) {
+function pageStart(sec) {
     var secs = document.querySelectorAll('#container section');
     var idx = Array.prototype.indexOf.call(secs, sec);
-    if (idx < 0 || !fenster.seitenIdx || !istPhone() || document.body.classList.contains('edit-mode')) return sec;
-    for (var k = 0; k < fenster.seitenIdx.length; k++) {
-        if (fenster.seitenIdx[k].indexOf(idx) >= 0) return secs[fenster.seitenIdx[k][0]];
+    if (idx < 0 || !fenster.pageIdx || !isPhone() || document.body.classList.contains('edit-mode')) return sec;
+    for (var k = 0; k < fenster.pageIdx.length; k++) {
+        if (fenster.pageIdx[k].indexOf(idx) >= 0) return secs[fenster.pageIdx[k][0]];
     }
     return sec;
 }
@@ -649,7 +649,7 @@ function seitenStart(sec) {
 // Auslauf, ohne eigene Zeit: kein Vorauseilen, Zurückbleiben oder Zucken bei Zielwechseln. Die letzte Section erreicht die Oberkante evtl. nie:
 // Ihr Übergang endet beim größten Scrollweg.
 function fensterScroll() {
-    var f = fenster, c = f.container, l = f.seiten && f.seiten.length ? f.seiten : f.secs;
+    var f = fenster, c = f.container, l = f.pages && f.pages.length ? f.pages : f.secs;
     if (!l.length) return;
     cancelAnimationFrame(f.raf); f.raf = 0;
     f.ziel = null;   // danach neu bestimmen
@@ -664,9 +664,9 @@ function fensterScroll() {
     // Übergang vom Tap-Ziel (oder einer Animation) in die Kopplung: der Abstand zum Rahmen der Scrollposition klingt in 280 ms ab (Smoothstep),
     // statt dass das Fenster dorthin springt (das ließ die Unterkante nach dem Tippen und Scrollen ruckeln)
     var jetzt = performance.now();
-    if (!f.imScroll) { f.imScroll = true; f.versatz = { top: f.top - top, bot: f.bot - bot, t0: jetzt }; }
-    var v = f.versatz, t = v ? Math.min(1, (jetzt - v.t0) / 280) : 1, k = v ? 1 - t * t * (3 - 2 * t) : 0;   // Smoothstep: ohne Ruck am Anfang und am Ende
-    if (v && t >= 1) { f.versatz = v = null; k = 0; }
+    if (!f.inScroll) { f.inScroll = true; f.offset = { top: f.top - top, bot: f.bot - bot, t0: jetzt }; }
+    var v = f.offset, t = v ? Math.min(1, (jetzt - v.t0) / 280) : 1, k = v ? 1 - t * t * (3 - 2 * t) : 0;   // Smoothstep: ohne Ruck am Anfang und am Ende
+    if (v && t >= 1) { f.offset = v = null; k = 0; }
     fensterMalen(top + (v ? v.top * k : 0), bot + (v ? v.bot * k : 0));
     if (v) f.raf = requestAnimationFrame(fensterScroll);   // weiter abklingen, auch wenn das Scrollen kurz ruht
 }
@@ -675,12 +675,12 @@ function fensterSync() {
     var f = fenster;
     if (!f.container) return;
     ghostHeaderRender();
-    if (istTouch() && !document.body.classList.contains('tastatur') && (wischt || !sperre.sec)) {
+    if (isTouch() && !document.body.classList.contains('tastatur') && (swiping || !sperre.sec)) {
         f.container.querySelectorAll('section.heiss').forEach(function (s) { s.classList.remove('heiss'); });
         fensterScroll();
         return;
     }
-    f.imScroll = false;   // nicht an die Scrollposition gekoppelt: beim nächsten Übergang neu ansetzen
+    f.inScroll = false;   // nicht an die Scrollposition gekoppelt: beim nächsten Übergang neu ansetzen
     var z = fensterZiel();
     f.container.querySelectorAll('section.heiss').forEach(function (s) {
         if (!z || s !== z.sec || !z.heiss) s.classList.remove('heiss');
@@ -821,7 +821,7 @@ function ghostHeaderRender() {
     var c = fenster.container;
     if (!c) return;
     // Smartphone: keine Ghost headers, die Titel bleiben an ihrer Section und scrollen mit ihr aus der Ansicht
-    var phone = istPhone();
+    var phone = isPhone();
     var sec = document.body.classList.contains('edit-mode') || phone ? null : ghostHeaderSection();
     var cr = c.getBoundingClientRect(), hoch = c.clientHeight;
     var edge = null, name = sec && sec.querySelector('.name'), hoehe = 0, abstand = 0, warten = null;
@@ -1202,7 +1202,7 @@ function lichtInit() {
 }
 
 document.addEventListener('mouseover', function (e) {
-    if (document.body.classList.contains('tastatur') || istTouch()) return;   // Touch: von iOS nachgeschobene Mausereignisse zählen nicht
+    if (document.body.classList.contains('tastatur') || isTouch()) return;   // Touch: von iOS nachgeschobene Mausereignisse zählen nicht
     var li = e.target.closest && e.target.closest('#container li');
     if (li) lichtZu(li, e.clientX, e.clientY); else lichtAus({ x: e.clientX, y: e.clientY });
 });
@@ -1216,7 +1216,7 @@ document.documentElement.addEventListener('mouseleave', function (e) {
 var lichtMaus = null, lichtPlanRaf = 0;
 function lichtSync() {
     lichtPlanRaf = 0;
-    if (!lichtMaus || document.body.classList.contains('tastatur') || istTouch()) return;
+    if (!lichtMaus || document.body.classList.contains('tastatur') || isTouch()) return;
     if (sperre.sec) { lichtHart(); return; }
     var t = document.elementFromPoint(lichtMaus.x, lichtMaus.y);
     var li = t && t.closest && t.closest('#container li');
@@ -1224,7 +1224,7 @@ function lichtSync() {
 }
 function lichtPlan() { if (!lichtPlanRaf) lichtPlanRaf = requestAnimationFrame(lichtSync); }
 document.addEventListener('mousemove', function (e) {
-    if (istTouch()) return;
+    if (isTouch()) return;
     lichtMaus = { x: e.clientX, y: e.clientY };
     if (licht.modus === 'ein' && licht.tile) lichtStrich(licht.tile, e.clientX);
     lichtPlan();
@@ -1470,12 +1470,12 @@ function jumpBy(delta, umlaufen) {
         base = 0;
         sections.forEach(function (s, i) { if (aktiv && s.contains(aktiv)) base = i; });
     }
-    // Smartphone: von Seite zu Seite (ein Paar halbhoher Sections ist eine Seite)
-    if (istPhone() && fenster.seitenIdx && !document.body.classList.contains('edit-mode')) {
-        var seiten = fenster.seitenIdx, sp = 0;
-        seiten.forEach(function (p, k) { if (p.indexOf(base) >= 0) sp = k; });
-        var zp = umlaufen ? ((sp + delta) % seiten.length + seiten.length) % seiten.length : Math.max(0, Math.min(seiten.length - 1, sp + delta));
-        jumpTarget = seiten[zp][0];
+    // Smartphone: von Seite zu Seite (ein Paar halbhoher Sections ist eine Seite, Englisch: page)
+    if (isPhone() && fenster.pageIdx && !document.body.classList.contains('edit-mode')) {
+        var pages = fenster.pageIdx, cur = 0;
+        pages.forEach(function (p, k) { if (p.indexOf(base) >= 0) cur = k; });
+        var next = umlaufen ? ((cur + delta) % pages.length + pages.length) % pages.length : Math.max(0, Math.min(pages.length - 1, cur + delta));
+        jumpTarget = pages[next][0];
         sections[jumpTarget].scrollIntoView();
         focusContent(sections[jumpTarget]);
         return;
@@ -1877,7 +1877,7 @@ document.addEventListener('keydown', function (e) {
     }
 });
 document.addEventListener('mousemove', function (e) {
-    if (istTouch()) return;
+    if (isTouch()) return;
     document.body.classList.remove('tastatur');
     mausPunkt = { x: e.clientX, y: e.clientY };
     mausBewegt = true;
