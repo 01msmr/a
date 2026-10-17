@@ -17,7 +17,7 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 - Aktivierung auch bei langsamem Wischen: Nachziehen alle 80 ms während des Scrollens, am Ende per `scrollend` und zusätzlich per eigener Ruhe-Erkennung (`bisRuhe`, zwei stille Frames, ohne Wartezeit). Eine Section gilt 24 px vor dem Einrasten als aktiv (vorher 8 px).
 - Beim Wischen zeigt das Leuchtfenster keinen Hover-Zustand, bleibt aber bei der aktuellen Section (kein Flackern des Hintergrunds); die Chips verlieren ihre Hover-Optik (`html.wischt`).
 - **Fehler behoben:** Die Wisch-Klasse lag am `body`; deren Klassenwechsel löste die Neuvermessung (`layout()`) aus und störte den Scroll-Auslauf. Jetzt am `html`.
-- Das Leuchtfenster geht beim Wischbeginn schon zur nächsten Section in Wischrichtung (nach 12 px Fingerweg, der Richtung folgend, solange die aktive Section noch die vom Start ist) und gleitet auf Touch 1,6-mal so langsam (320 ms).
+- Das Leuchtfenster geht beim Wischbeginn schon zur nächsten Section in Wischrichtung (nach 12 px Fingerweg, der Richtung folgend, solange die aktive Section noch die vom Start ist) und gleitet auf Touch schnell (0,6-mal so lang wie mit der Maus, 120 ms; zuvor 1,6-mal, 320 ms).
 - iPhone hochkant: kein `scroll-snap-stop: always`, ein Wisch darf mehrere Sections überspringen; gerastet wird am Ende.
 
 **Aufräumen (HTML und Logik, Aussehen unverändert)**
