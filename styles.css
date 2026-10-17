@@ -215,7 +215,7 @@ li a::before {
 /* nach section:hover a, damit die eigene Kachel gewinnt.
    Tastatur (Tab, Pfeil links/rechts) zeigt dieselbe Fläche; beim Bearbeiten nicht.
    Es leuchtet nur eine Kachel: body.tastatur (app.js) schaltet zwischen Maus und Tastatur um */
-body:not(.tastatur):not(.licht):not(.gesperrt) li a:hover,
+body:not(.touch):not(.tastatur):not(.licht):not(.gesperrt) li a:hover,
 body.tastatur:not(.licht) li a:not([contenteditable]):focus-visible {
     color: var(--text-hov);
 }
@@ -224,7 +224,7 @@ li a:focus-visible {
     outline: none;
 }
 
-body:not(.tastatur):not(.gesperrt) li a:hover::before,
+body:not(.touch):not(.tastatur):not(.gesperrt) li a:hover::before,
 body.tastatur li a:not([contenteditable]):focus-visible::before {
     background-color: var(--back-hov);
 }
@@ -292,7 +292,7 @@ li a::before {
     transition: background-color .12s ease, --hl .12s ease;
 }
 
-body:not(.tastatur):not(.gesperrt) li a:hover::before,
+body:not(.touch):not(.tastatur):not(.gesperrt) li a:hover::before,
 body.tastatur li a:not([contenteditable]):focus-visible::before {
     --hl: 1;
 }
@@ -466,11 +466,11 @@ a.sec-btn,
     --c-hov: color-mix(in srgb, var(--c, var(--sect-col)) 28%, transparent);
 }
 
-body:not(.tastatur) #container section .name.gedeckt:hover {
+body:not(.touch):not(.tastatur) #container section .name.gedeckt:hover {
     background-color: var(--c-hov);
 }
 
-body:not(.tastatur):not(.gesperrt) a.sec-btn:not(.active):is(:hover, .mit-hover) {
+body:not(.touch):not(.tastatur):not(.gesperrt) a.sec-btn:not(.active):is(:hover, .mit-hover) {
     color: var(--sect-col);
 }
 
@@ -481,7 +481,7 @@ a.sec-btn.active {
 /* Knöpfe über die volle Höhe: flach in Ruhe, erhaben bei Hover (auch gekoppelt),
    eingedrückt wenn aktiv oder gedrückt. Der Titel der Section spiegelt Hover und Druck
    des Chips — und umgekehrt */
-body:not(.tastatur):not(.gesperrt) a.sec-btn:not(.active):is(:hover, .mit-hover) {
+body:not(.touch):not(.tastatur):not(.gesperrt) a.sec-btn:not(.active):is(:hover, .mit-hover) {
     z-index: 1;
     background-color: color-mix(in srgb, var(--c, var(--sect-col)) 30%, var(--front-body));
     background-image: linear-gradient(rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, .15));
@@ -582,13 +582,13 @@ body section li.gedeckt a {
     color: var(--on-c);
 }
 
-body:not(.tastatur):not(.licht):not(.gesperrt) section li.gedeckt a:hover,
+body:not(.touch):not(.tastatur):not(.licht):not(.gesperrt) section li.gedeckt a:hover,
 body.tastatur:not(.licht) section li.gedeckt a:not([contenteditable]):focus-visible,
 body.licht section li.da a {
     color: var(--c-text, var(--sect-col));
 }
 
-body:not(.tastatur):not(.gesperrt) section li.gedeckt a:hover::before,
+body:not(.touch):not(.tastatur):not(.gesperrt) section li.gedeckt a:hover::before,
 body.tastatur section li.gedeckt a:not([contenteditable]):focus-visible::before {
     background-color: var(--chip-inv);
 }
@@ -1263,7 +1263,7 @@ body.view-grid:not(.edit-mode) li a::before {
     background-color: var(--chip-inv);   /* der Zeiger liegt immer in der leuchtenden Section */
 }
 
-body.licht:not(.edit-mode) #container li a:hover::before,
+body:not(.touch).licht:not(.edit-mode) #container li a:hover::before,
 body.licht:not(.edit-mode).tastatur #container li a:not([contenteditable]):focus-visible::before {
     background-color: transparent;
     background-image: none;
@@ -1361,7 +1361,7 @@ body.edit-mode #container {
     cursor: inherit;
 }
 
-body:not(.tastatur) .nav-btn:hover,
+body:not(.touch):not(.tastatur) .nav-btn:hover,
 .nav-btn:focus-visible {
     color: var(--title-col);
     background-color: color-mix(in srgb, var(--sect-col) 15%, transparent);
@@ -1544,7 +1544,7 @@ body:not(.tastatur) .nav-btn.offen {
 }
 
 /* Hover und Tastaturfokus kehren wieder um: Fläche in Flächenfarbe, Icon in Schriftfarbe */
-body:not(.tastatur) .set-btn:hover,
+body:not(.touch):not(.tastatur) .set-btn:hover,
 body.tastatur .set-btn:focus-visible {
     background-color: var(--front-body);
     color: var(--sect-col);
@@ -1558,7 +1558,7 @@ body.tastatur .set-btn:focus-visible {
 }
 
 /* das „t“ im Squircle bleibt in der Farbe, die die Fläche gerade hat */
-body:not(.tastatur) .set-btn:hover .mit-t::after,
+body:not(.touch):not(.tastatur) .set-btn:hover .mit-t::after,
 body.tastatur .set-btn:focus-visible .mit-t::after {
     color: var(--front-body);
 }

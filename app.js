@@ -317,7 +317,7 @@ function trackActiveSection() {
         });
         // Maus zuletzt benutzt und über einer Section: deren Chip leuchtet, sonst die oberste
         var nav = active;
-        if (mausPos && !document.body.classList.contains('tastatur')) {
+        if (mausPos && !document.body.classList.contains('tastatur') && !document.body.classList.contains('touch')) {
             var unterMaus = document.elementFromPoint(mausPos.x, mausPos.y);
             var sec = unterMaus && unterMaus.closest && unterMaus.closest('#container section');
             var kopf = sec && sec.querySelector('h3.name');
@@ -364,7 +364,7 @@ function trackActiveSection() {
         clearTimeout(timer);
         var jetzt = performance.now();
         if (jetzt - letzte > 80) { letzte = jetzt; syncActive(); }
-        if (!('onscrollend' in window)) bisRuhe(syncActive);   // nur Ersatz ohne scrollend
+        bisRuhe(syncActive);   // scrollend kommt auf iOS nicht immer: Ruhe zusätzlich selbst erkennen
     });
     container.addEventListener('scrollend', function () { clearTimeout(timer); syncActive(); });
     syncActive();
@@ -421,6 +421,7 @@ function sperreAus() {
 // schon beim Drücken, damit der Chip sofort aktiv ist (kein Hover-/Druck-Zustand) und der Zeiger beim Hochscrollen verschwindet
 document.addEventListener('pointerdown', function (e) {
     letzterZeiger = e.pointerType;
+    document.body.classList.toggle('touch', e.pointerType !== 'mouse');   // Touch hat kein Hover: das hängende :hover von iOS zählt nicht
     var ziel = e.button === 0 && !document.body.classList.contains('edit-mode') && e.target.closest && e.target.closest('#container .name a, a.sec-btn');
     var sec = ziel && (ziel.matches('a.sec-btn') ? (document.querySelector(ziel.getAttribute('href')) || ziel).closest('section') : ziel.closest('section'));
     if (!sec) { sperreAus(); return; }
@@ -433,6 +434,10 @@ document.addEventListener('mousemove', function (e) {
 document.addEventListener('keydown', function () { if (sperre.art === 'titel') sperreAus(); });
 
 // Touch-Wischen: solange der Inhalt per Finger scrollt (samt Auslauf), zeigt das Fenster kein Ziel, auch nicht die aktive Section oben
+document.addEventListener('pointermove', function (e) {
+    if (e.pointerType === 'mouse' && document.body.classList.contains('touch')) { letzterZeiger = 'mouse'; document.body.classList.remove('touch'); }
+}, true);
+
 function wischEnde() {
     wischt = false;
     document.body.classList.remove('wischt');
@@ -446,7 +451,7 @@ document.addEventListener('scroll', function () {
     wischt = true;
     document.body.classList.add('wischt');
     clearTimeout(wischT);
-    if (!('onscrollend' in window)) bisRuhe(wischEnde);   // nur Ersatz ohne scrollend
+    bisRuhe(wischEnde);
 }, true);
 
 function fensterZiel() {
@@ -457,8 +462,8 @@ function fensterZiel() {
     } else if (sperre.sec) {
         s = sperre.sec;
     } else {
-        s = c.querySelector('section:hover');
-        if (!s) {
+        s = document.body.classList.contains('touch') ? null : c.querySelector('section:hover');
+        if (!s && !document.body.classList.contains('touch')) {
             // auch der Chip der aktiven Section zählt: ihr Titel zeigt dieselbe Hover-Fläche wie jeder andere
             var h = c.querySelector('.name.mit-hover');
             s = h && h.closest('section');
