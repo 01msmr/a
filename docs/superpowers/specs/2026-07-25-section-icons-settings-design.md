@@ -1,5 +1,11 @@
 # Section-Icons, Edit-Mode-Einstieg und Ansichts-Einstellungen
 
+> **Stand 2026-10-17:** Dies ist der ursprüngliche Entwurf vom 25. Juli 2026 und bleibt als Verlauf stehen. Die
+> Umsetzung ist seither davon abgewichen: Der Edit-Mode startet nur noch über das Zahnrad (der Doppelklick auf die
+> Titelzeile ist entfallen). Die Einstellungen liegen in einem Overlay am Zahnrad, nicht in einem Bereich nur im
+> Edit-Mode, und es gibt mehr davon (Zoom, Theme mit auto, Color, Navigation, View, Align, Edit). Das Section-Dropdown
+> ist ein Button mit eigener Liste. Maßgeblich sind [README](../../../README.md) und [CHANGELOG](../../../CHANGELOG.md).
+
 Datum: 2026-07-25
 
 ## Ziel
