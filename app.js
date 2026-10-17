@@ -789,10 +789,10 @@ function ghostHeaderRender() {
         return;
     }
     if (!edge) {
-        // kein Ziel: gleitet hinaus; Titel in der Ansicht: der echte Titel übernimmt sofort
-        ghostHeader.stack.forEach(function (g) { ghostHeaderRemove(g, !sec, !!sec); });
-        ghostHeader.leaving.forEach(function (g) { ghostHeaderRemove(g, false); });
-        ghostHeader.stack = []; ghostHeader.leaving = []; ghostHeader.cur = null;
+        // Alle Kopien gleiten hinaus, auch wenn das Ziel keine eigene Kopie braucht (sein Titel steht in der Ansicht, oder es gibt keines).
+        // Nur die Kopie der Ziel-Section selbst blendet kurz aus: der echte Titel übernimmt. Schon hinausgleitende laufen zu Ende.
+        ghostHeader.stack.forEach(function (g) { ghostHeaderRemove(g, true, g.sec === sec); });
+        ghostHeader.stack = []; ghostHeader.cur = null;
         return;
     }
     var ebene = ghostHeaderLayer();
