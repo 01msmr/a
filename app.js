@@ -705,6 +705,11 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(fensterPla
 // Wechselt das Ziel, gleitet die neue Kopie über die vorige.
 var geist = { ebene: null, cur: null, alt: [], sprung: null, sprungT: 0, weg: 0 };
 
+// Lage außerhalb der Ansicht: die Kopie samt Schatten (--schatten) und Linie liegt ganz draußen
+function geistWeg(lage) {
+    return lage === 'oben' ? 'translateY(calc(-100% - var(--schatten, 1.5rem) - 2px))' : 'translateY(calc(100% + var(--schatten, 1.5rem) + 2px))';
+}
+
 function geistDauer() {
     return matchMedia('(prefers-reduced-motion: reduce)').matches ? masz['fenster-dauer-kurz'] : masz['fenster-dauer'];
 }
@@ -742,7 +747,7 @@ function geistEntfernen(g, gleitend, blass) {
         return;
     }
     if (!gleitend) { g.el.remove(); return; }
-    g.el.style.transform = g.lage === 'oben' ? 'translateY(-100%)' : 'translateY(100%)';
+    g.el.style.transform = geistWeg(g.lage);
     setTimeout(function () { g.el.remove(); }, geistDauer() + 30);
 }
 
@@ -814,7 +819,7 @@ function geistRender() {
     var weicht = cur && (lage === 'oben' ? spaeter : !spaeter);
     var kurve = 'transform ' + geistDauer() + 'ms cubic-bezier(.55, .085, .68, .19), filter ' + geistDauer() + 'ms linear';
     // die neue Kopie gleitet immer ein, samt Schatten und Linie; weicht die vorige, liegt sie darunter und gleitet gleichzeitig hinaus
-    el.style.transform = lage === 'oben' ? 'translateY(-100%)' : 'translateY(100%)';
+    el.style.transform = geistWeg(lage);
     if (weicht) ebene.insertBefore(el, cur.el); else ebene.appendChild(el);
     el.getBoundingClientRect();   // Ausgangslage festschreiben
     // beschleunigt und endet hart, wie das Fenster
@@ -822,7 +827,7 @@ function geistRender() {
     el.style.transform = 'none';
     if (weicht) {
         cur.el.style.transition = kurve;
-        cur.el.style.transform = cur.lage === 'oben' ? 'translateY(-100%)' : 'translateY(100%)';
+        cur.el.style.transform = cur.geistWeg(lage);
     }
     var neu = { sec: sec, el: el, lage: lage };
     if (cur) { cur.el.classList.add('alt'); geist.alt.push(cur); }   // vorige: behält die Farbe, ohne Schatten (nur die dünne Linie)
