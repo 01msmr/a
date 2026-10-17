@@ -1749,6 +1749,7 @@ body.view-grid .geist .name {
     border: 0 solid var(--on-c);
     opacity: 0;
     pointer-events: none;
+    filter: drop-shadow(0 0 1px rgba(0, 0, 0, .5));   /* die dünne helle Linie bleibt auch auf blassen Flächen sichtbar */
     transition: none;   /* Farbe wechselt sofort */
 }
 

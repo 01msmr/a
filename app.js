@@ -31,6 +31,7 @@ applyPrefs();
 
 // ── Render ────────────────────────────────────────────────────────
 var syncActive = function () { };
+var sperre = { sec: null, x: 0, y: 0 };   // nach Titel- oder Chip-Klick gesperrte Section (s. fensterZiel)
 var selSprung = null;   // Ziel eines Sprungs über das Dropdown: es zeigt bis zur Ankunft diese Section
 
 // kräftige, gesättigte Farben (ohne Grauanteil): weiße Schrift (hell) bzw. dunkle Schrift (dunkel) bleibt lesbar
@@ -271,6 +272,9 @@ function trackActiveSection() {
             var kopf = sec && sec.querySelector('h3.name');
             if (kopf) nav = '#' + kopf.id;
         }
+        // nach dem Klick auf Titel oder Chip bleibt dessen Chip aktiv, bis Maus oder Tastatur sich rühren
+        var gesperrt = sperre.sec && !document.body.classList.contains('tastatur') && sperre.sec.querySelector('h3.name');
+        if (gesperrt) nav = '#' + gesperrt.id;
         chips.forEach(function (chip) {
             chip.classList.toggle('active', chip.hash === nav);
         });
@@ -334,12 +338,12 @@ var fenster = {
 
 // Nach dem Klick auf einen Titel oder Nav-Chip scrollt die Section nach oben, und der ruhende Zeiger liegt danach über einer anderen.
 // Bis zur nächsten echten Mausbewegung (mehr als 4 px), einem Tastendruck oder einem anderen Klick bleibt die angeklickte Section das Ziel.
-var sperre = { sec: null, x: 0, y: 0 };
 
 function sperreAus() {
     if (!sperre.sec) return;
     sperre.sec = null;
     fensterSync();
+    syncActive();
 }
 
 document.addEventListener('click', function (e) {
