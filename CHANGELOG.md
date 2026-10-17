@@ -3,6 +3,40 @@
 Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 `git log`; hier beginnt die Aufzeichnung mit der Sitzung vom 25./26. Juli 2026.
 
+## 2026-10-17 — Nav und Sections-Dropdown vereinheitlicht, Zeiger als Bildzeiger, Klick-Sperre, Sections umsortieren
+
+**Nav und Sections-Dropdown**
+- **Eine Zeile, eine Gestalt:** Chips, Zahnrad und Dropdown stehen in `#section-nav-list`; Zahnrad und Dropdown teilen sich die Klasse `.nav-btn` (vorher `.settings-btn`, dazu Sonderregeln für `#section-jumper` und eine JS-Messung der Breite). Reicht der Platz nicht, läuft die Zeile nach links über, damit Zahnrad und Dropdown erreichbar bleiben.
+- **Button statt Select:** Das Dropdown ist ein `<button>` (`aria-expanded`), Text-Modus „sec“, Icon-Modus Chevron, der sich offen nach oben dreht. Die `<option>`-Hacks (Glyphen als Text, `sel.value`) entfallen; `jumperWert` und `springeZu()` ersetzen sie.
+- **Liste wie die Chips:** Chips und Einträge teilen `a.sec-btn` (`secKnopf` baut beide): gleiche Grundgestalt, Hover-, Aktiv- und Druckeffekte; in der Liste flach (`--sb-*`-Variablen). `koppleHover` koppelt Chip, Titel und Eintrag einer Section. Die aktive Section ist in der offenen Liste gefüllt. Eintragshöhe wie die Einstellungen (`navKnopfHoehe`). Die Pfeiltasten gelten am Dropdown-Button nicht global.
+- **Overlays:** Einstellungen und Sections-Liste wachsen in der Höhe auf und schrumpfen zu (125 ms), auch beim Auto-Schließen; nur die Höhe animiert, Farben schalten vor dem Aufziehen bzw. nach dem Einziehen. Das Zahnrad schaltet ohne Übergang (auch das Glyph, ein `::before`) und kehrt erst nach dem Einziehen zurück.
+
+**Einstellungen**
+- Farbschema mit „auto“ in einem Knopf (auto, light, dark); der separate auto-Knopf der Leiste entfällt. Hover-Hinweis „jetzt/nächster Wert“ bzw. alle Werte beim Theme.
+- Text-Modus: alle Einstellungen als kurze englische Wörter (`aut`, `light`, `dark`, `col`, `pale`, `text`, `chip`, `grid`, `left`, `cen`, `edit`, `save`), größere Schrift. Ausrichtung im Icon-Modus mit `fa-align-left` und `fa-align-center`; Navigation: „text“ statt „t“ im Squircle.
+- Blasse Farbe etwas kräftiger (`--farbe-blass` .4).
+
+**Zeiger**
+- Chevron nach oben oder unten auf Titeln, Nav-Chips und Listeneinträgen, wohin ein Klick scrollt. Echter Bildzeiger (SVG, 25 px, je Thema `--curs-auf` und `--curs-ab`), `data-pfeil` auf `html`; ein DOM-Element lag hinter der Liste (oberste Ebene).
+- Das Quadrat in der Section ist weiß im Hellen, invertiert im Dunkeln; im obersten Titel gilt es statt des Chevrons.
+- Der Kachel-Strich sitzt im gleitenden Licht (`.licht-strich`) und wandert mit. Alle Zeiger ohne Übergang (die globale Regel `*` überblendete Glyphen und Farben).
+- Der Titel zeigt beim Hover keinen 28-%-Schleier mehr.
+
+**Klick-Sperre**
+- Nach einem Klick auf Titel, Chip oder Listeneintrag bleibt die Section Ziel, bis die Maus sich um mehr als 4 px bewegt oder ein anderer Klick kommt (`sperreAn`, `body.gesperrt`): Leuchtfenster, aktiver Chip, kein Kachel-Licht und kein Kachel-Hover, kein Chip-Hover, Zeiger der normale Punkt. Nach einem Titelklick hebt auch ein Tastendruck sie auf.
+
+**Bearbeiten**
+- Sections lassen sich per Griff am Titel senkrecht umsortieren (`sectionsSortierbar`); der Speicherdialog nennt die geänderte Reihenfolge. Der Doppelklick auf die Leiste startet das Bearbeiten nicht mehr.
+- **Fehler behoben:** Beim Einschalten des Edit-Modes fror die Seite ein. `lichtHart()` rief `classList.remove` auch ohne gesetzte Klasse auf, das zählt als Änderung und löste den Beobachter auf `<body>` immer wieder aus. Jetzt nur noch bei gesetzter Klasse; zusätzlich bricht `sicherBeobachten` die Beobachter nach 500 Aufrufen ohne Atempause ab.
+
+**Sonstiges**
+- Theme-Werte zentral: ein Dunkel-Block statt zweier, `data-theme` wird immer gesetzt (auto = System). Ohne JavaScript gilt das helle Thema.
+- Raster: Linie unter der gehoverten Kachel bleibt wie vorher; Section-Füllung 1 px weiter, damit bei gebrochener Höhe kein Streifen bleibt.
+- Smartphone-/Kleinansicht: das Zahnrad (mit Dropdown) bleibt auch im Hochformat, die Chips weichen.
+- `tools/smoke.js`: Rauchtest ohne Browser (jsdom).
+
+---
+
 ## 2026-10-15 bis 16 — Leuchtfenster, Geist-Titel, Kachel-Licht, Strich-Zeiger, Farbe
 
 **Leuchtfenster und Geist-Titel**

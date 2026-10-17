@@ -9,14 +9,14 @@ Gebaut für Maus und Tastatur am Desktop, iPad und iPhone und für den Browser a
 
 | Datei | Aufgabe |
 |---|---|
-| `index.html` | Gerüst: Leiste mit Nav-Chips, Zahnrad und Sections-Dropdown, Inhalt, Overlay. Im `<head>` stehen die Skripte für Zoom und Farbschema (laufen vor dem ersten Paint) |
+| `index.html` | Gerüst: Leiste mit Nav-Chips, Zahnrad und Sections-Dropdown (ein Button, alle in einer Flex-Zeile), Inhalt, Overlays. Im `<head>` stehen die Skripte für Zoom und Farbschema (laufen vor dem ersten Paint) |
 | `app.js` | Rendern, Navigation, Einstellungen, Edit-Mode |
 | `styles.css` | alles Aussehen; Farbschemata, Zoom und Raster hängen an Variablen und Klassen |
 | `links.php` | liefert `edit/links.json` aus (öffentlich) |
 | `edit/save.php` | schreibt die Daten (Basic-Auth) |
 | `links.default.json` | Saat, nur beim allerersten Aufruf |
 | `tools/dev-router.php` | Demo-Server mit `no-store`, nur lokal |
-| `tools/smoke.js` | Rauchtest ohne Browser (jsdom): lädt die Seite, schaltet den Edit-Mode ein, prüft die Klick-Sperre; bricht bei Endlosschleifen ab. `npm install --no-save jsdom && node tools/smoke.js` |
+| `tools/smoke.js` | Rauchtest ohne Browser (jsdom): lädt die Seite, schaltet den Edit-Mode ein, prüft Nav-Aufbau, Klick-Sperre, gekoppelte Hervorhebung und das Umsortieren von Sections; schlägt bei Seitenfehlern und Endlosschleifen fehl. `npm install --no-save jsdom && node tools/smoke.js` |
 | `favicon/` | Icons und Manifest |
 | `docs/` | Server, Schreibschutz, Deploy; Entwurf zu Icons und Einstellungen |
 | `CHANGELOG.md` | was wann und warum geändert wurde |
@@ -59,8 +59,15 @@ damit der Browser nie eine alte Kopie zeigt.
 
 - Section unter der Maus, ihr Titel und ihr Nav-Chip leuchten gemeinsam. Die ganze
   Section füllt sich in der Sektionsfarbe, die Kachel unter dem Cursor kehrt um
-  (Fläche weiß, Text in der Sektionsfarbe). Der Strich-Cursor wird in der Kachel gezeichnet.
+  (Fläche weiß, Text in der Sektionsfarbe). Der Strich-Cursor sitzt im gleitenden Kachel-Licht und
+  wandert mit.
 - Der Nav-Chip folgt der Section unter der Maus, sonst der obersten sichtbaren.
+- **Klick-Sperre:** Nach einem Klick auf einen Titel, einen Nav-Chip oder einen Eintrag der
+  Sections-Liste scrollt die Section nach oben, und der ruhende Zeiger liegt danach über etwas
+  anderem. Bis der Zeiger sich um mehr als 4 px bewegt oder ein anderer Klick kommt, bleibt die
+  angeklickte Section Ziel von Leuchtfenster und Chip (`sperreAn`, `body.gesperrt`), Kachel-Licht
+  und Kachel-Hover bleiben aus, andere Chips zeigen keinen Hover, und der Zeiger ist der normale
+  Punkt. Nur nach einem Titelklick hebt auch ein Tastendruck die Sperre auf.
 
 ### Tastatur
 
@@ -68,37 +75,46 @@ damit der Browser nie eine alte Kopie zeigt.
   über Section-Grenzen. Nach einem Section-Wechsel geht links auf die letzte Kachel.
 - Nach einer Mausbewegung starten die Pfeile an der Section oder Kachel unter der Maus.
 - Tab läuft durch die Kacheln. Die Pfeile gelten auch mit Fokus auf Nav-Chips und Zahnrad,
-  nicht im Dropdown und nicht im Edit-Mode.
+  nicht im Dropdown und nicht im Edit-Mode. Im geöffneten Dropdown bewegen die Pfeile den Fokus
+  zwischen den Einträgen, Enter wählt; der Fokus hat dort keine eigene Hervorhebung.
 - Es zählt immer nur die zuletzt benutzte Eingabe (Maus **oder** Tastatur), die andere
   wird für die Hervorhebung ignoriert.
 - `+` / `-` ändern den Zoom, `0` setzt ihn auf S. Strg/Cmd bleiben dem Browser-Zoom.
 
 ### Einstellungen (Zahnrad in der Leiste)
 
-Das Zahnrad ist der letzte Eintrag der Nav. Ein Klick öffnet einen schmalen senkrechten
-Stapel mit einem Knopf je Einstellung. Der Klick schaltet reihum weiter. In Ruhe zeigt das
-Icon den **Zustand**, unter dem Zeiger das **Ergebnis des Klicks**.
+Das Zahnrad ist ein Nav-Knopf (`.nav-btn`) neben dem Sections-Dropdown. Ein Klick öffnet einen
+schmalen senkrechten Stapel mit einem Knopf je Einstellung. Der Klick schaltet reihum weiter. Der Knopf zeigt den **Zustand**. Im Text-Modus ist
+das ein kurzes englisches Wort, im Icon-Modus ein Icon. Der Hover-Hinweis (`title`) nennt
+„jetzt/nächster Wert“, beim Theme alle Werte mit dem aktuellen in Klammern.
 
-| Einstellung | Werte | Icon |
-|---|---|---|
-| Zoom | S, M | `S`, `M` |
-| Farbschema | hell, dunkel | Sonne, Mond |
-| Farbe | bunt, blass | Kreis in einer Section-Farbe, kräftig bzw. fast farblos |
-| Navigation | Text, Icons | Squircle mit `t` = Text |
-| Ansicht | Chips, Raster | vier runde Kacheln bzw. vier eckige Umrisse |
-| Ausrichtung | links, Mitte | `l`, `c` (im Raster: volle Breite, Mitte) |
-| Bearbeiten | aus, an | zwei Chevrons; Diskette während der Bearbeitung |
+| Einstellung | Werte | Text-Modus | Icon-Modus |
+|---|---|---|---|
+| Zoom | S, M | `S`, `M` | `S`, `M` |
+| Theme | auto, light, dark | `aut`, `light`, `dark` | Kreis (auto), Sonne, Mond; in auto klein das Icon des Systemwerts unten rechts |
+| Color | bunt, blass | `col`, `pale` | Kreis in einer Section-Farbe |
+| Navigation | text, icons | `text` | Squircle |
+| View | chips, grid | `chip`, `grid` | vier runde Kacheln bzw. eckige Umrisse |
+| Align | left, center | `left`, `cen` (im Raster `full`) | `fa-align-left`, `fa-align-center` |
+| Edit | aus, an | `edit`, `save` | zwei Chevrons; Diskette während der Bearbeitung |
 
 Mit der Maus geht auch: Zahnrad drücken, auf einen Knopf ziehen, loslassen. Das schaltet nur
 diesen Knopf. Esc oder ein Klick daneben schließt. Mit Maus schließt sich das Overlay 3 s
-nach dem Verlassen von selbst, ohne Zeiger (Touch, TV) nie. Beim Öffnen gleitet es unter dem Zahnrad herunter, beim Schließen hinauf, die Farben wechseln unterwegs; bei reduzierter Bewegung ist das kürzer, nicht aus. Es ist so breit wie das Zahnrad; die Knopfhöhe bleibt im Raster wie bei Chips.
+nach dem Verlassen von selbst, ohne Zeiger (Touch, TV) nie.
+
+**Overlays (Einstellungen und Sections-Liste):** Sie wachsen beim Öffnen in der Höhe vom Zahnrad
+bzw. Dropdown weg und schrumpfen beim Schließen (auch beim automatischen) zurück (125 ms, bei
+reduzierter Bewegung 90 ms). Nur die Höhe animiert. Beim Öffnen schalten die Farben zuerst um, beim
+Schließen erst am Ende. Das Zahnrad schaltet ohne Übergang um und kehrt erst zurück, wenn das
+Overlay eingezogen ist. Die Breite folgt dem Zahnrad bzw. Dropdown, die Knopfhöhe ist im Raster
+dieselbe wie bei Chips (`navKnopfHoehe`).
 
 Wo die Wahl liegt (je Gerät in `localStorage`, nichts davon wird mit den Links gespeichert):
 
 | Schlüssel | Inhalt |
 |---|---|
 | `msmr.zoom` | `{"v":1,"level":"s"|"m"}`; ohne Eintrag gilt S |
-| `msmr.theme` | `light` oder `dark`; ohne Eintrag folgt die Seite dem System |
+| `msmr.theme` | `light` oder `dark`; ohne Eintrag gilt „auto“: das Skript im `<head>` setzt `data-theme` auf den Wert des Systems und folgt Änderungen |
 | `a.farbe` | `bunt` oder `blass` |
 | `a.navMode` | `short` oder `icons` |
 | `a.align` | `left` oder `center` |
@@ -123,8 +139,7 @@ reduzierter Bewegung 60 ms). Die Farbe wechselt hart an den Section-Kanten. `app
 (`fensterInit`) malt den Teil des Fensters als Hintergrund jeder Section und setzt `.gedeckt`
 auf Titel, Gruppe und Kacheln, deren Mitte im Fenster liegt (`.gedeckt-u` für die untere
 Rasterlinie an der Unterkante); das CSS färbt nur noch über diese Klassen. Die Maße liegen im
-Inhalt, Scrollen ändert sie nicht. Der Titel der gehoverten Section (auch der des aktiven
-Chips) zeigt eine 28-%-Fläche.
+Inhalt, Scrollen ändert sie nicht.
 
 Liegt der Titel der Ziel-Section (Nav-Chip unter der Maus oder Sprung nach Klick, Dropdown,
 Pfeiltasten) außerhalb der Ansicht, klebt eine Kopie (`#geist-ebene`, `geistRender`) am oberen
@@ -144,12 +159,32 @@ selbst wird nie skaliert. Die Kachelschrift kehrt um (`.da`), sobald das Licht s
 Die Zelle unter dem Licht trägt die Section-Farbe sofort (`.kachel-zelle`). Gezeichnet wird im
 Inhalt, das Licht scrollt mit und folgt bei Bewegung und Scrollen der Kachel unter dem Zeiger.
 
-### Strich-Zeiger
+### Zeiger
 
-Ein senkrechter Strich ersetzt den Punkt: auf Nav-Chips und Kachelrändern in Zeilenhöhe, auf
-Section-Hintergrund und Titel in Section-Höhe mit 33 % Deckkraft (`#strich-sec`, hinter Titel,
-Kacheln und Licht). Auf einer Kachel zeichnet nur diese ihren Strich. In Feldern, Dropdown,
-Einstellungen und im Edit-Mode bleibt der Systemzeiger; Touch bleibt ohne Strich.
+- **Strich:** auf Nav-Chips ohne Richtung (Section schon oben) und Kachelrändern in Zeilenhöhe, auf
+  Section-Hintergrund und Titel in Section-Höhe mit 33 % Deckkraft (`#strich-sec`, hinter Titel,
+  Kacheln und Licht). Auf einer Kachel sitzt der Strich im Kachel-Licht.
+- **Punkt:** in einer Section (nicht auf Chip oder Kachel) das kleine Quadrat, weiß im hellen und
+  invertiert im dunklen Modus (`--curs-sec`); auch im Titel, der ganz oben steht.
+- **Chevron:** auf Titeln, Nav-Chips und Einträgen der Sections-Liste zeigt ein Chevron nach oben oder unten,
+  wohin ein Klick scrollt (`chipRichtung`; im Titel immer nach oben). Er ist ein echter Bildzeiger
+  (SVG-Data-URI, 25 px, je Thema in `--curs-auf` und `--curs-ab`; `app.js` setzt nur
+  `data-pfeil` auf `html`), also immer über allem, auch über Popovers.
+- In Feldern, Dropdown-Liste, Einstellungen und im Edit-Mode bleibt der Systemzeiger; Touch bleibt ohne Zeiger.
+
+### Nav und Sections-Dropdown
+
+Chips (`a.secname`), Zahnrad und Dropdown (`.nav-btn`) stehen in einer Flex-Zeile
+(`#section-nav-list`), der Rest gehört allen gleichermaßen (`flex: 1 1 auto`). Reicht der Platz
+nicht, läuft die Zeile nach links über (`justify-content: flex-end`): Zahnrad und Dropdown am Ende
+bleiben erreichbar. Das Dropdown ist ein `<button>` (`aria-haspopup`, `aria-expanded`) mit Icon und
+dem Wort „sec“, der Chevron dreht sich offen nach oben.
+
+Chips und Einträge der Sections-Liste teilen sich die Klasse `a.sec-btn` (gebaut von `secKnopf`):
+gleiche Grundgestalt, gleiche Hover-, Aktiv- und Druckeffekte (flach, ohne Schatten in der Liste, gesteuert
+über `--sb-*`-Variablen). Hover auf einem Eintrag leuchtet wie Hover auf dem Chip: `koppleHover`
+koppelt Chip, Titel und Eintrag einer Section (`.mit-hover`). Die aktive Section ist in der offenen
+Liste gefüllt und ins Sichtfeld gescrollt. Namen verlieren eine Endung (`tbx.li` → `tbx`).
 
 ### Zentrale Variablen
 
@@ -160,6 +195,10 @@ Im ersten `:root` von `styles.css` stehen die Stellgrößen; `app.js` liest sie 
 `--strich-breite`, `--farbe-blass` (.4), `--pop-dauer` (125). Zeiten in ms.
 Die Einstellung „Farbe“ skaliert die Sättigung aller Section-Farben (`oklch`) über `--farb-int`.
 
+Die Farbwerte der Themen stehen je einmal im hellen Block (`:root`) und im dunklen
+(`:root[data-theme="dark"]`); das Skript im `<head>` setzt `data-theme` immer, auch bei „auto“.
+Dazu gehören auch die Zeiger (`--curs-img`, `--curs-sec`, `--curs-hov`, `--curs-auf`, `--curs-ab`).
+
 ## Bearbeiten
 
 Setzt eine Anmeldung voraus: einmal pro Browser `https://a.msmr.co/edit/` aufrufen
@@ -169,6 +208,9 @@ Setzt eine Anmeldung voraus: einmal pro Browser `https://a.msmr.co/edit/` aufruf
 - Name und URL der Kacheln sind direkt bearbeitbar, `×` löscht (umkehrbar bis zum Speichern),
   `+` fügt hinzu.
 - Der Griff `⠿` zieht eine Kachel, auch **in eine andere Section** (nur mit Maus).
+- Am Titel jeder Section sitzt ebenfalls ein Griff `⠿`: er zieht die ganze **Section** senkrecht,
+  wie sie in der Ansicht untereinander stehen (nur mit Maus). Gespeichert wird die Reihenfolge im
+  DOM; der Speicherdialog nennt „Reihenfolge der Sections“. Die Sektionsfarben folgen der Position.
 - Beenden: derselbe Knopf (jetzt eine Diskette). Ohne Änderung wird die Seite einfach neu
   geladen. Mit Änderung fragt sie, ob gespeichert wird; bei „Nein“, ob verworfen wird;
   bei erneutem „Nein“ bleibt die Bearbeitung offen.
@@ -189,6 +231,7 @@ Welche Dateien nicht ins Webverzeichnis gehören, steht in
 
 GNU GPL v3, siehe [LICENSE](LICENSE).
 
-Der Farbschema-Knopf im Overlay schaltet durch auto, light und dark: manuell groß Sonne bzw. Mond, in auto groß „auto“ (Icon-Modus: gefüllter Kreis) und klein der Systemwert.
+## Hinweis zur Version
 
-Im Text-Modus heißt das Zahnrad „set“. Das Sections-Dropdown öffnet in beiden Modi eine eigene Liste (Namen bzw. Icons); drücken, ziehen, loslassen wählt. In `index.html` hängt an `styles.css` und `app.js` eine Version (`?v=…`): bei Änderungen hochzählen, sonst mischen Browser alte und neue Dateien.
+In `index.html` hängt an `styles.css` und `app.js` eine Version (`?v=…`): bei Änderungen
+hochzählen, sonst mischen Browser alte und neue Dateien.
