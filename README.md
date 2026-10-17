@@ -190,7 +190,7 @@ Liste gefüllt und ins Sichtfeld gescrollt. Namen verlieren eine Endung (`tbx.li
 
 ### Touch (Smartphone)
 
-- **Kein Hover:** `body.touch` (`pointerdown` mit Finger/Stift; echte Mausbewegung entfernt es) schaltet alle
+- **Kein Hover:** die Zeigerart (`zeigerArt`, `istTouch()`) wird beim `pointerdown` gesetzt, echte Mausbewegung stellt zurück; `body.touch` spiegelt sie ins CSS schaltet alle
   `:hover`- und `:active`-Effekte ab, die iOS sonst nach einem Tap hängen lässt; `koppleHover` und das
   Leuchtfenster ignorieren Touch-Hover. Ein Tap wirkt wie ein Klick: er aktiviert die Section
   (Chip, Titel, Hintergrund, Kachel; `sperreAn` beim Klick), ein Wisch aktiviert nichts und hebt die Sperre auf.

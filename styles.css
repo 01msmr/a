@@ -106,6 +106,9 @@ body {
 
 .title {
     color: var(--title-col);
+    /* Schrift wie früher als h3 (jetzt header), damit alle em-Maße darin gleich bleiben */
+    font-size: 1.17em;
+    font-weight: bold;
     margin: 0;
     box-sizing: border-box;
     padding: 0 0 0 1em;

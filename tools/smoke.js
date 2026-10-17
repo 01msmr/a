@@ -43,6 +43,8 @@ const w = dom.window, d = w.document;
 w.eval(fs.readFileSync(root + 'app.js', 'utf8'));
 
 const ev = (t, o) => new w.MouseEvent(t, Object.assign({ bubbles: true, cancelable: true, button: 0, clientX: 10, clientY: 10 }, o));
+// jsdom kennt keine PointerEvents: MouseEvent mit pointerType (Standard: Maus)
+const pev = (t, o, art) => { const e = ev(t, o); Object.defineProperty(e, 'pointerType', { value: art || 'mouse' }); return e; };
 const prüfe = (ok, text) => { if (!ok) fehler.push(text); };
 const dann = (fn, ms) => new Promise(r => setTimeout(() => { fn(); r(); }, ms));
 (async () => {
@@ -56,9 +58,9 @@ const dann = (fn, ms) => new Promise(r => setTimeout(() => { fn(); r(); }, ms));
         prüfe(d.getElementById('section-jumper').tagName === 'BUTTON', 'Dropdown ist kein Button');
         // Hover auf einem Listeneintrag leuchtet Chip und Titel derselben Section (gekoppelte Hervorhebung)
         const eintrag = d.querySelectorAll('#jumper-pop a')[1], chip = d.querySelectorAll('a.secname')[1], titel = d.querySelectorAll('#container .name')[1];
-        eintrag.dispatchEvent(new w.MouseEvent('mouseenter'));
+        eintrag.dispatchEvent(pev('pointerenter'));
         prüfe(chip.classList.contains('mit-hover') && titel.classList.contains('mit-hover'), 'Listeneintrag koppelt Chip und Titel nicht');
-        eintrag.dispatchEvent(new w.MouseEvent('mouseleave'));
+        eintrag.dispatchEvent(pev('pointerleave'));
         prüfe(!chip.classList.contains('mit-hover') && !titel.classList.contains('mit-hover'), 'Kopplung wird nicht zurückgenommen');
     }, 0);
     // Edit-Mode einschalten und die Beobachter (Microtasks) laufen lassen: hier hing die Seite einmal
@@ -81,13 +83,13 @@ const dann = (fn, ms) => new Promise(r => setTimeout(() => { fn(); r(); }, ms));
         prüfe(w.aenderungsText().includes('Reihenfolge der Sections'), 'Umstellung nicht im Änderungstext');
     }, 0);
     await dann(() => {
-        d.querySelector('a.secname').dispatchEvent(ev('pointerdown'));
+        d.querySelector('a.secname').dispatchEvent(pev('pointerdown'));
         prüfe(!d.body.classList.contains('gesperrt'), 'Sperre im Edit-Mode');
         d.body.classList.remove('edit-mode');
     }, 50);
     // Klick-Sperre auf Chip, Aufheben per Mausbewegung
     await dann(() => {
-        d.querySelector('a.secname').dispatchEvent(ev('pointerdown'));
+        d.querySelector('a.secname').dispatchEvent(pev('pointerdown'));
         prüfe(d.body.classList.contains('gesperrt'), 'Sperre fehlt nach Chip-Klick');
         d.dispatchEvent(ev('mousemove', { clientX: 80, clientY: 80 }));
         prüfe(!d.body.classList.contains('gesperrt'), 'Sperre bleibt nach Mausbewegung');

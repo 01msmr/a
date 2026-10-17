@@ -20,6 +20,12 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 - Das Leuchtfenster geht beim Wischbeginn schon zur nächsten Section in Wischrichtung (nach 12 px Fingerweg, der Richtung folgend, solange die aktive Section noch die vom Start ist) und gleitet auf Touch 1,6-mal so langsam (320 ms).
 - iPhone hochkant: kein `scroll-snap-stop: always`, ein Wisch darf mehrere Sections überspringen; gerastet wird am Ende.
 
+**Aufräumen (HTML und Logik, Aussehen unverändert)**
+- **Fehler behoben:** Ein Zeilenkommentar hatte in `fensterZu` die Zeile `f.t0 = performance.now();` verschluckt (seit der Verlangsamung auf Touch). Das Leuchtfenster bekam keine Startzeit und sprang statt zu gleiten, auch auf dem Desktop.
+- Die Leiste ist ein `<header class="title">` statt `<h3>`; `font-size: 1.17em` und `font-weight: bold` stehen jetzt in `.title`, damit alle em-Maße gleich bleiben. Der leere `touchstart`-Listener im `<head>` (iOS-Kniff für `:active`) entfällt.
+- Zeigerart zentral: `zeigerArt`, `istTouch()` und `zeigerArtSetzen()` ersetzen `letzterZeiger` und sechs Direktabfragen von `body.touch`; ein gemeinsamer `pointerdown`-Handler setzt Zeigerart, Wisch-Ausgangspunkt und Klick-Sperre. Die Wisch-Zustände stehen in einem Block („Touch-Wischen“); der tote Timer `wischT` entfällt.
+- `tools/smoke.js` nutzt Pointer-Events mit `pointerType` (jsdom kennt keine); die beiden Prüfungen zu gekoppeltem Hover und Klick-Sperre schlugen vorher fehl.
+
 **Zeiger, Tastatur und Geist-Titel**
 - Im Titel nur der Chevron, kein schwacher Section-Strich; der Strich bleibt in der Section. Im obersten (aktiven) Titel gelten Punkt und Strich, kein Chevron.
 - Geist-Titel überlagern sich nach Reihenfolge: oben weicht die vorige zurück und die neue liegt darunter, wenn das Ziel weiter hinten liegt (weiter vorn: die neue gleitet darüber); am unteren Rand umgekehrt.

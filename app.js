@@ -317,7 +317,7 @@ function trackActiveSection() {
         });
         // Maus zuletzt benutzt und über einer Section: deren Chip leuchtet, sonst die oberste
         var nav = active;
-        if (mausPos && !document.body.classList.contains('tastatur') && !document.body.classList.contains('touch')) {
+        if (mausPos && !document.body.classList.contains('tastatur') && !istTouch()) {
             var unterMaus = document.elementFromPoint(mausPos.x, mausPos.y);
             var sec = unterMaus && unterMaus.closest && unterMaus.closest('#container section');
             var kopf = sec && sec.querySelector('h3.name');
@@ -392,12 +392,20 @@ var fenster = {
     von: null, nach: null, t0: 0, dauer: 0, raf: 0, obs: []
 };
 
+// ── Zeigerart ─────────────────────────────────────────────────────
+// Maus oder Finger/Stift, wie beim letzten pointerdown (Mausbewegung stellt zurück). Touch hat kein Hover: das von iOS
+// hängengelassene :hover zählt nicht, deshalb schaltet body.touch in styles.css alle Hover- und Druckeffekte ab.
+var zeigerArt = 'mouse';
+function istTouch() { return zeigerArt !== 'mouse'; }
+function zeigerArtSetzen(art) {
+    zeigerArt = art;
+    document.body.classList.toggle('touch', art !== 'mouse');
+}
+
 // Nach dem Klick auf einen Titel, Nav-Chip oder Listeneintrag scrollt die Section nach oben, und der ruhende Zeiger liegt danach über einer anderen.
 // Bis zur nächsten echten Mausbewegung (mehr als 4 px), einem anderen Klick oder (nur nach einem Titelklick) einem Tastendruck bleibt die angeklickte Section das Ziel.
 
 // art: 'titel' (ein Tastendruck löst die Sperre) oder 'nav' (Chip oder Listeneintrag)
-var wischt = false, wischT = 0, letzterZeiger = 'mouse';
-
 function sperreAn(sec, x, y, art) {
     sperre.sec = sec;
     sperre.art = art;
@@ -429,12 +437,12 @@ function sperreAusEreignis(e, touch) {
     sperreAn(sec, e.clientX, e.clientY, ziel && ziel.matches('a.sec-btn') ? 'nav' : 'titel');
 }
 document.addEventListener('pointerdown', function (e) {
-    letzterZeiger = e.pointerType;
-    document.body.classList.toggle('touch', e.pointerType !== 'mouse');   // Touch hat kein Hover: das hängende :hover von iOS zählt nicht
-    if (e.pointerType === 'mouse') sperreAusEreignis(e, false);
+    zeigerArtSetzen(e.pointerType);
+    if (istTouch()) { if (fenster.container) wischTop = fenster.container.scrollTop; }
+    else sperreAusEreignis(e, false);
 }, true);
 document.addEventListener('click', function (e) {
-    if (document.body.classList.contains('touch') && e.detail !== undefined) sperreAusEreignis(e, true);
+    if (istTouch() && e.detail !== undefined) sperreAusEreignis(e, true);
 }, true);
 document.addEventListener('mousemove', function (e) {
     if (sperre.sec && Math.hypot(e.clientX - sperre.x, e.clientY - sperre.y) > 4) sperreAus();
@@ -442,14 +450,15 @@ document.addEventListener('mousemove', function (e) {
 // ein Tastendruck hebt nur die Sperre nach einem Titelklick auf, nicht die nach einem Chipklick
 document.addEventListener('keydown', function () { if (sperre.art === 'titel') sperreAus(); });
 
-// Touch-Wischen: solange der Inhalt per Finger scrollt (samt Auslauf), zeigt das Fenster kein Ziel, auch nicht die aktive Section oben
 document.addEventListener('pointermove', function (e) {
-    if (e.pointerType === 'mouse' && document.body.classList.contains('touch')) { letzterZeiger = 'mouse'; document.body.classList.remove('touch'); }
+    if (e.pointerType === 'mouse' && istTouch()) zeigerArtSetzen('mouse');
 }, true);
 
+// ── Touch-Wischen ─────────────────────────────────────────────────
+// Solange der Inhalt per Finger scrollt (samt Auslauf), zeigt das Fenster keinen Hover-Zustand und die Chips keine Hover-Optik (html.wischt).
 // Wischbeginn: das Fenster geht zur nächsten Section in Wischrichtung, sobald der Finger 12 px gezogen hat (kein Zucken bei Kleinstbewegung),
 // und folgt der Richtung, solange die aktive Section noch die vom Start ist
-var wischVon = null, wischTop = 0, wischRicht = 0, wischGipfel = 0;
+var wischt = false, wischVon = null, wischTop = 0, wischRicht = 0, wischGipfel = 0;
 function wischStart() {
     wischVon = fenster.container && fenster.container.querySelector('section.aktuell');
     wischRicht = 0; wischGipfel = 0;
@@ -467,8 +476,6 @@ function wischVorhersage() {
     var l = Array.prototype.slice.call(c.querySelectorAll('section')), i = l.indexOf(cur);
     return l[i + wischRicht] || null;
 }
-document.addEventListener('pointerdown', function (e) { if (e.pointerType !== 'mouse' && fenster.container) wischTop = fenster.container.scrollTop; }, true);
-
 function wischEnde() {
     wischVon = null;
     if (fenster.container) wischTop = fenster.container.scrollTop;
@@ -476,14 +483,14 @@ function wischEnde() {
     document.documentElement.classList.remove('wischt');
     fensterSync();
 }
-document.addEventListener('scrollend', function () { if (wischt) { clearTimeout(wischT); wischEnde(); } }, true);
+document.addEventListener('scrollend', function () { if (wischt) wischEnde(); }, true);
 // Wischen mit dem Finger beendet die Klick-Sperre (die Maus tut das per Bewegung)
 document.addEventListener('touchmove', function () { if (sperre.sec) sperreAus(); }, { passive: true });
 document.addEventListener('scroll', function () {
-    if (letzterZeiger === 'mouse' || document.body.classList.contains('gesperrt')) return;
+    if (!istTouch() || document.body.classList.contains('gesperrt')) return;
     if (!wischt) { wischt = true; wischStart(); fensterSync(); }
-    document.documentElement.classList.add('wischt')   // nicht am body: dessen Klassenwechsel löst eine Neuvermessung aus und stört den Auslauf;
-    clearTimeout(wischT);
+    // nicht am body: dessen Klassenwechsel löst eine Neuvermessung aus und stört den Auslauf
+    document.documentElement.classList.add('wischt');
     bisRuhe(wischEnde);
 }, true);
 
@@ -494,8 +501,8 @@ function fensterZiel() {
     } else if (sperre.sec) {
         s = sperre.sec;
     } else {
-        s = document.body.classList.contains('touch') ? null : c.querySelector('section:hover');
-        if (!s && !document.body.classList.contains('touch')) {
+        s = istTouch() ? null : c.querySelector('section:hover');
+        if (!s && !istTouch()) {
             // auch der Chip der aktiven Section zählt: ihr Titel zeigt dieselbe Hover-Fläche wie jeder andere
             var h = c.querySelector('.name.mit-hover');
             s = h && h.closest('section');
@@ -602,7 +609,9 @@ function fensterZu(ziel, animiert) {
     // reduzierte Bewegung heißt kürzer, nicht keine
     var kurz = matchMedia('(prefers-reduced-motion: reduce)').matches;
     f.von = { top: f.top, bot: f.bot }; f.nach = nach;
-    f.dauer = kurz ? masz['fenster-dauer-kurz'] : masz['fenster-dauer'] * (document.body.classList.contains('touch') ? 1.6 : 1);   // Touch: langsamer, sonst eilt das Fenster dem Finger voraus f.t0 = performance.now();
+    // Touch: langsamer, sonst eilt das Fenster dem Finger voraus
+    f.dauer = kurz ? masz['fenster-dauer-kurz'] : masz['fenster-dauer'] * (istTouch() ? 1.6 : 1);
+    f.t0 = performance.now();
     f.raf = requestAnimationFrame(fensterSchritt);
 }
 
