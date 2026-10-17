@@ -21,6 +21,9 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 - **Leuchtfenster auf Touch an die Scrollposition gekoppelt (`fensterScroll`):** Aus der Bildschirmaufnahme (Stepper-Schritt) ging hervor, dass das Fenster mit eigener Zeit lief und der Scrollkurve vorauseilte (obere Reihen unbedeckt, das Fenster schrumpfte, wuchs im langen Auslauf wieder). Jetzt geht es zwischen zwei Section-Oberkanten vom Rahmen der einen zu dem der nächsten über (Oberkante = Scrollposition); am Einrastpunkt deckt es genau die Section. Entfallen sind die Wischvorhersage (`wischVorhersage`), `fensterJagd` und die Touch-Dauer; ein Tap auf eine Section animiert weiter mit fester Dauer.
 - iPhone hochkant: kein `scroll-snap-stop: always`, ein Wisch darf mehrere Sections überspringen; gerastet wird am Ende.
 
+**Home-Icon (iOS)**
+- Opake RGB-Icons `favicon/touch-180.png`, `touch-192.png` und `touch-512.png` (das 512er aus dem 192er hochgerechnet und nachgeschärft; ein größeres Original gibt es nicht) statt der Graustufen-PNGs mit Alpha, die iOS nur klein oder gar nicht zeigte. `index.html` verlinkt `touch-180.png` als `icon` und `apple-touch-icon`, das Manifest listet 180, 192 und 512 px. Neue Dateinamen, weil iOS Icons je URL zwischenspeichert; Web-App-Modus (standalone) bleibt bewusst aus.
+
 **Leiste auf dem Smartphone**
 - Smartphone: Ghost headers sind so breit wie der echte Titel (Seitenpolster des Inhalts) statt vollbreit; sie schrumpfen beim Übergang nicht mehr.
 - iPhone hochkant: Dropdown und Stepper folgen dicht auf den Titel, das Zahnrad steht ganz rechts am Rand (`#section-nav-list` ist dort `display: contents`, Reihenfolge per `order`).
