@@ -9,7 +9,7 @@ Gebaut für Maus und Tastatur am Desktop, iPad und iPhone und für den Browser a
 
 | Datei | Aufgabe |
 |---|---|
-| `index.html` | Gerüst: Leiste mit Nav-Chips, Zahnrad und Sections-Dropdown (ein Button, alle in einer Flex-Zeile), Inhalt, Overlays. Im `<head>` stehen die Skripte für Zoom und Farbschema (laufen vor dem ersten Paint). Als Web-App auf dem Home-Bildschirm (`favicon/manifest.json`: standalone, `apple-mobile-web-app-*`-Meta, opake Icons) öffnet sie im Vollbild |
+| `index.html` | Gerüst: Leiste mit Nav-Chips, Zahnrad und Sections-Dropdown (ein Button, alle in einer Flex-Zeile), Inhalt, Overlays. Im `<head>` stehen die Skripte für Zoom und Farbschema (laufen vor dem ersten Paint) |
 | `app.js` | Rendern, Navigation, Einstellungen, Edit-Mode |
 | `styles.css` | alles Aussehen; Farbschemata, Zoom und Raster hängen an Variablen und Klassen |
 | `links.php` | liefert `edit/links.json` aus (öffentlich) |
