@@ -260,7 +260,8 @@ section a {
     color: var(--text-col);
 }
 
-a.secname,
+/* gemeinsame Grundgestalt aller Nav-Knöpfe: Chips, Einträge der Sections-Liste (a.sec-btn), Zahnrad und Dropdown (.nav-btn) */
+a.sec-btn,
 .nav-btn {
     box-sizing: border-box;
     /* volle Höhe der Leiste, volle Breite: die Chips teilen sich den Platz */
@@ -1600,21 +1601,12 @@ body.tastatur .set-btn:focus-visible .mit-t::after {
     overflow-y: auto;
 }
 
+/* Gestalt, Kanten und Effekte kommen von a.sec-btn (s. dort); hier nur, was die Liste anders macht */
 .jumper-pop a {
-    position: relative;   /* wie die Chips (Innenschatten der aktiven Section) */
-    border: 1px solid transparent;
     flex: none;   /* beim Schrumpfen behalten die Einträge ihre Höhe */
-    display: flex;
-    align-items: center;
-    justify-content: center;
     width: 100%;
     height: var(--set-hoehe, auto);   /* Höhe wie die Knöpfe der Einstellungen */
     padding: 0 .15rem;
-    box-sizing: border-box;
-    overflow: hidden;
-    color: inherit;
-    text-decoration: none;
-    white-space: nowrap;
     outline: none;
 }
 
