@@ -714,8 +714,8 @@ function geistWeg(lage) {
 }
 
 function geistDauer() {
-    // 40 % langsamer als das Fenster
-    return (matchMedia('(prefers-reduced-motion: reduce)').matches ? masz['fenster-dauer-kurz'] : masz['fenster-dauer']) * 1.4;
+    // 400 ms, bei reduzierter Bewegung kurz wie das Fenster
+    return matchMedia('(prefers-reduced-motion: reduce)').matches ? masz['fenster-dauer-kurz'] : 400;
 }
 
 function geistEbene() {
