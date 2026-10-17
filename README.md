@@ -142,12 +142,12 @@ Rasterlinie an der Unterkante); das CSS färbt nur noch über diese Klassen. Die
 Inhalt, Scrollen ändert sie nicht.
 
 Liegt der Titel der Ziel-Section (Nav-Chip unter der Maus oder Sprung nach Klick, Dropdown,
-Pfeiltasten) außerhalb der Ansicht, klebt eine Kopie (`#geist-ebene`, `geistRender`) am oberen
+Pfeiltasten) außerhalb der Ansicht, klebt eine Kopie (`#ghost-header-layer`, `ghostHeaderRender`) am oberen
 bzw. unteren Rand, bis der echte Titel dort ankommt und weiterläuft; sie bleibt, bis das Fenster
 die Titelzeile ganz deckt, und blendet dann 60 ms aus. Die Kopien stapeln sich: am oberen Rand liegt die Kopie der frühesten Section oben (am unteren die der spätesten).
 Ein früheres Ziel legt sich darüber; ein späteres lässt die Kopien davor hinausgleiten, und das neue Ziel gleitet darunter
 ein. Kehrt das Ziel zu einer Kopie im Stapel zurück, gleiten die darüber hinaus und sie ist wieder frei. Darunterliegende
-Kopien behalten ihre Farbe, haben aber weder Schatten noch Linie (es gibt immer nur einen, sonst würde er mit jeder Kopie dunkler); hinausgleitende nehmen Schatten und Linie mit; steht der echte Titel einer solchen Kopie
+Kopien behalten ihre Farbe, haben aber weder Schatten noch Linie (es gibt immer nur einen, sonst würde er mit jeder Kopie dunkler); hinausgleitende nehmen Schatten und Linie mit; Wechsel laufen einzeln: Während einer läuft (400 ms), wartet das nächste Ziel, und nur das letzte zählt, damit beim schnellen Überfahren mehrerer Chips keine Kopien fächerartig zugleich gleiten. Steht der echte Titel einer solchen Kopie
 in der Ansicht, verschwindet sie. Die Kopie wirft einen weichen Schatten von
 66 % einer Kachelhöhe auf den Inhalt. Nach einem Klick läuft er aus, je näher der echte Titel
 seiner Stelle kommt. Im Edit-Mode gibt es keine Kopie.
@@ -211,7 +211,7 @@ Liste gefüllt und ins Sichtfeld gescrollt. Namen verlieren eine Endung (`tbx.li
 Im ersten `:root` von `styles.css` stehen die Stellgrößen; `app.js` liest sie einmal
 (`maszLesen`): `--fenster-dauer` (200), `--fenster-dauer-kurz` (60), `--gleiten-potenz` (2),
 `--licht-dauer` (90), `--licht-potenz` (1,4), `--licht-rand-dauer` (90), `--licht-deckung` (.95),
-`--geist-schatten` (.66), `--geist-auslauf` (2), `--geist-haelt` (2500), `--strich-schwach` (.33),
+`--ghost-header-shadow` (.66), `--ghost-header-fade` (2), `--ghost-header-hold` (2500), `--strich-schwach` (.33),
 `--strich-breite`, `--farbe-blass` (.4), `--pop-dauer` (125). Zeiten in ms.
 Die Einstellung „Farbe“ skaliert die Sättigung aller Section-Farben (`oklch`) über `--farb-int`.
 

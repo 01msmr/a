@@ -375,7 +375,7 @@ var masz = {};
 function maszLesen() {
     var cs = getComputedStyle(document.documentElement);
     ['fenster-dauer', 'fenster-dauer-kurz', 'gleiten-potenz', 'licht-dauer', 'licht-potenz', 'licht-rand-dauer', 'licht-deckung',
-        'geist-schatten', 'geist-auslauf', 'geist-haelt', 'strich-schwach'].forEach(function (n) {
+        'ghost-header-shadow', 'ghost-header-fade', 'ghost-header-hold', 'strich-schwach'].forEach(function (n) {
         masz[n] = parseFloat(cs.getPropertyValue('--' + n));
     });
 }
@@ -618,7 +618,7 @@ function fensterZu(ziel, animiert) {
 function fensterSync() {
     var f = fenster;
     if (!f.container) return;
-    geistRender();
+    ghostHeaderRender();
     var z = fensterZiel();
     f.container.querySelectorAll('section.heiss').forEach(function (s) {
         if (!z || s !== z.sec || !z.heiss) s.classList.remove('heiss');
@@ -667,7 +667,7 @@ function fensterInit() {
     f.obs.forEach(function (o) { o.disconnect(); });
     f.obs = [];
     cancelAnimationFrame(f.raf); f.raf = 0;
-    geistZuruecksetzen();
+    ghostHeaderReset();
     sperre.sec = null;
     document.body.classList.toggle('gesperrt', false);
     f.container = c; f.zeilen = []; f.secs = []; f.sig = ''; f.ziel = null; f.top = f.bot = 0;
@@ -699,50 +699,50 @@ document.addEventListener('scroll', fensterPlan(fensterSync), true);
 window.addEventListener('resize', fensterPlan(fensterLayout));
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(fensterPlan(fensterLayout));
 
-// ── Geist-Titel ───────────────────────────────────────────────────
+// ── Ghost headers (Geist-Titel) ───────────────────────────────────────────────────
 // Liegt der Titel der Ziel-Section (Nav-Chip unter der Maus oder Sprung nach Klick) außerhalb der Ansicht,
 // klebt eine Kopie am oberen bzw. unteren Rand, bis der echte Titel dort ankommt und natürlich weiterläuft.
 // Wechselt das Ziel, gleitet die neue Kopie über die vorige.
 // Die Kopien stapeln sich: stapel liegt von unten nach oben, cur ist die oberste (das aktuelle Ziel). Am oberen Rand liegt die Kopie
 // der frühesten Section oben, am unteren Rand die der spätesten: ein früheres Ziel legt sich darüber, ein späteres lässt die Kopien davor
 // hinausgleiten; kehrt das Ziel zu einer Kopie im Stapel zurück, gleiten die darüber hinaus und sie ist wieder frei.
-var geist = { ebene: null, cur: null, stapel: [], alt: [], sprung: null, sprungT: 0, weg: 0, unterT: 0 };
+var ghostHeader = { layer: null, cur: null, stack: [], leaving: [], jump: null, jumpTimer: 0, removeTimer: 0, underTimer: 0, free: 0, followTimer: 0 };
 
 // Lage außerhalb der Ansicht: die Kopie samt Schatten (--schatten) und Linie liegt ganz draußen
-function geistWeg(lage) {
-    return lage === 'oben' ? 'translateY(calc(-100% - var(--schatten, 1.5rem) - 2px))' : 'translateY(calc(100% + var(--schatten, 1.5rem) + 2px))';
+function ghostHeaderOffscreen(edge) {
+    return edge === 'top' ? 'translateY(calc(-100% - var(--schatten, 1.5rem) - 2px))' : 'translateY(calc(100% + var(--schatten, 1.5rem) + 2px))';
 }
 
-function geistDauer() {
+function ghostHeaderDuration() {
     // 400 ms, bei reduzierter Bewegung kurz wie das Fenster
     return matchMedia('(prefers-reduced-motion: reduce)').matches ? masz['fenster-dauer-kurz'] : 400;
 }
 
-function geistEbene() {
-    if (!geist.ebene) {
-        geist.ebene = document.createElement('div');
-        geist.ebene.id = 'geist-ebene';
-        geist.ebene.setAttribute('aria-hidden', 'true');
-        document.body.appendChild(geist.ebene);
+function ghostHeaderLayer() {
+    if (!ghostHeader.layer) {
+        ghostHeader.layer = document.createElement('div');
+        ghostHeader.layer.id = 'ghost-header-layer';
+        ghostHeader.layer.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(ghostHeader.layer);
     }
-    return geist.ebene;
+    return ghostHeader.layer;
 }
 
 // Sprung (Klick, Dropdown, Pfeiltasten): die Kopie bleibt, bis der Titel in der Ansicht ist
-function geistSprung(sec) {
-    geist.sprung = sec;
-    clearTimeout(geist.sprungT);
-    geist.sprungT = setTimeout(function () { geist.sprung = null; geistRender(); }, masz['geist-haelt']);
-    geistRender();
+function ghostHeaderJump(sec) {
+    ghostHeader.jump = sec;
+    clearTimeout(ghostHeader.jumpTimer);
+    ghostHeader.jumpTimer = setTimeout(function () { ghostHeader.jump = null; ghostHeaderRender(); }, masz['ghost-header-hold']);
+    ghostHeaderRender();
 }
 
-function geistSection() {
+function ghostHeaderSection() {
     var c = fenster.container;
     var h = c && !document.body.classList.contains('tastatur') && c.querySelector('.name.mit-hover:not(.active)');
-    return (h && h.closest('section')) || geist.sprung;
+    return (h && h.closest('section')) || ghostHeader.jump;
 }
 
-function geistEntfernen(g, gleitend, blass) {
+function ghostHeaderRemove(g, gleitend, blass) {
     if (!g) return;
     if (blass) {   // Übergabe an den echten Titel: kurz ausblenden, damit ein Versatz von wenigen Pixeln nicht springt
         g.el.style.transition = 'opacity 60ms linear';
@@ -751,102 +751,111 @@ function geistEntfernen(g, gleitend, blass) {
         return;
     }
     if (!gleitend) { g.el.remove(); return; }
-    g.el.style.transform = geistWeg(g.lage);
-    setTimeout(function () { g.el.remove(); }, geistDauer() + 30);
+    g.el.style.transform = ghostHeaderOffscreen(g.edge);
+    setTimeout(function () { g.el.remove(); }, ghostHeaderDuration() + 30);
 }
 
-function geistRender() {
+function ghostHeaderRender() {
     var c = fenster.container;
     if (!c) return;
-    var sec = document.body.classList.contains('edit-mode') ? null : geistSection();
+    var sec = document.body.classList.contains('edit-mode') ? null : ghostHeaderSection();
     var cr = c.getBoundingClientRect(), hoch = c.clientHeight;
-    var lage = null, name = sec && sec.querySelector('.name'), hoehe = 0, abstand = 0, warten = null;
+    var edge = null, name = sec && sec.querySelector('.name'), hoehe = 0, abstand = 0, warten = null;
     if (name) {
         var r = name.getBoundingClientRect();
         hoehe = r.height;
-        if (r.top < cr.top - 0.5) { lage = 'oben'; abstand = cr.top - r.top; }
-        else if (r.top > cr.top + hoch - hoehe + 0.5) { lage = 'unten'; abstand = r.top - (cr.top + hoch - hoehe); }
-        else if (sec === geist.sprung) {
+        if (r.top < cr.top - 0.5) { edge = 'top'; abstand = cr.top - r.top; }
+        else if (r.top > cr.top + hoch - hoehe + 0.5) { edge = 'bottom'; abstand = r.top - (cr.top + hoch - hoehe); }
+        else if (sec === ghostHeader.jump) {
             // angekommen: die Kopie liegt über dem echten Titel, bis das Fenster ihn gedeckt hat (sonst blitzt er grau auf)
             var oben = r.top - cr.top + c.scrollTop, f = fenster;
             var gedeckt = name.classList.contains('gedeckt') && f.top <= oben + 0.5 && f.bot >= oben + hoehe - 0.5;   // Zeile ganz im Fenster
-            if (gedeckt || !geist.cur || geist.cur.sec !== sec) geist.sprung = null;
+            if (gedeckt || !ghostHeader.cur || ghostHeader.cur.sec !== sec) ghostHeader.jump = null;
             else warten = r.top - cr.top;
         }
     }
-    var cur = geist.cur;
-    if (!lage && warten !== null) {
+    var cur = ghostHeader.cur;
+    if (!edge && warten !== null) {
         cur.el.style.top = warten + 'px';
         cur.el.style.setProperty('--staerke', 0);
         return;
     }
-    if (!lage) {
+    if (!edge) {
         // kein Ziel: gleitet hinaus; Titel in der Ansicht: der echte Titel übernimmt sofort
-        geist.stapel.forEach(function (g) { geistEntfernen(g, !sec, !!sec); });
-        geist.alt.forEach(function (g) { geistEntfernen(g, false); });
-        geist.stapel = []; geist.alt = []; geist.cur = null;
+        ghostHeader.stack.forEach(function (g) { ghostHeaderRemove(g, !sec, !!sec); });
+        ghostHeader.leaving.forEach(function (g) { ghostHeaderRemove(g, false); });
+        ghostHeader.stack = []; ghostHeader.leaving = []; ghostHeader.cur = null;
         return;
     }
-    var ebene = geistEbene();
+    var ebene = ghostHeaderLayer();
     ebene.style.left = cr.left + 'px';
     ebene.style.top = cr.top + 'px';
     ebene.style.width = c.clientWidth + 'px';
     ebene.style.height = hoch + 'px';
     var kachel = c.querySelector('li');
-    ebene.style.setProperty('--schatten', (kachel ? kachel.offsetHeight : hoehe) * masz['geist-schatten'] + 'px');
+    ebene.style.setProperty('--schatten', (kachel ? kachel.offsetHeight : hoehe) * masz['ghost-header-shadow'] + 'px');
     // nach einem Klick läuft der Schatten aus, je näher der echte Titel seiner Stelle kommt; dort ist er weg
-    var staerke = sec === geist.sprung ? Math.min(1, abstand / (masz['geist-auslauf'] * hoehe)) : 1;
+    var staerke = sec === ghostHeader.jump ? Math.min(1, abstand / (masz['ghost-header-fade'] * hoehe)) : 1;
     // darunterliegende Kopien, deren echter Titel inzwischen in der Ansicht steht oder am anderen Rand liegt, verschwinden
-    geist.stapel = geist.stapel.filter(function (g) {
+    ghostHeader.stack = ghostHeader.stack.filter(function (g) {
         if (g === cur) return true;
         var rn = g.sec.querySelector('.name').getBoundingClientRect();
-        if (rn.top >= cr.top - 0.5 && rn.top <= cr.top + hoch - rn.height + 0.5) { geistEntfernen(g, false, true); return false; }
+        if (rn.top >= cr.top - 0.5 && rn.top <= cr.top + hoch - rn.height + 0.5) { ghostHeaderRemove(g, false, true); return false; }
         return true;
     });
-    function auffrischen(g) {
+    function refresh(g) {
         g.el.classList.toggle('heiss', !!sec.querySelector('.name.mit-hover'));
         g.el.style.setProperty('--staerke', staerke);
-        g.lage = lage;
-        g.el.classList.remove('oben', 'unten');
-        g.el.classList.add(lage);
-        g.el.style.top = (lage === 'oben' ? 0 : hoch - hoehe) + 'px';
+        g.edge = edge;
+        g.el.classList.remove('top', 'bottom');
+        g.el.classList.add(edge);
+        g.el.style.top = (edge === 'top' ? 0 : hoch - hoehe) + 'px';
     }
-    var kurve = 'transform ' + geistDauer() + 'ms cubic-bezier(.55, .085, .68, .19)';
-    function hinaus(g) {   // gleitet samt Schatten und Linie hinaus und wird danach entfernt
-        g.el.style.transition = kurve;
-        g.el.style.transform = geistWeg(g.lage);
-        geist.alt.push(g);
+    var curve = 'transform ' + ghostHeaderDuration() + 'ms cubic-bezier(.55, .085, .68, .19)';
+    function slideOut(g) {   // gleitet samt Schatten und Linie hinaus und wird danach entfernt
+        g.el.style.transition = curve;
+        g.el.style.transform = ghostHeaderOffscreen(g.edge);
+        ghostHeader.leaving.push(g);
     }
-    function entfernenPlanen() {
-        clearTimeout(geist.weg);
-        geist.weg = setTimeout(function () {
-            geist.alt.forEach(function (g) { geistEntfernen(g, false); });
-            geist.alt = [];
-        }, geistDauer() + 30);
+    function scheduleRemoval() {
+        clearTimeout(ghostHeader.removeTimer);
+        ghostHeader.removeTimer = setTimeout(function () {
+            ghostHeader.leaving.forEach(function (g) { ghostHeaderRemove(g, false); });
+            ghostHeader.leaving = [];
+        }, ghostHeaderDuration() + 30);
     }
     if (cur && cur.sec === sec) {
-        auffrischen(cur);
+        refresh(cur);
         return;
     }
+    // Es wechselt etwas: läuft noch ein Wechsel, wartet das Ziel auf dessen Ende, und nur das letzte zählt.
+    // So gleiten bei schnellem Überfahren mehrerer Chips nie mehrere Kopien gleichzeitig wie ein Fächer.
+    var jetzt = performance.now();
+    if (jetzt < ghostHeader.free) {
+        clearTimeout(ghostHeader.followTimer);
+        ghostHeader.followTimer = setTimeout(ghostHeaderRender, ghostHeader.free - jetzt + 10);
+        return;
+    }
+    ghostHeader.free = jetzt + ghostHeaderDuration();
     // anderer Rand: die bisherigen Kopien gleiten hinaus, der Stapel beginnt neu
-    if (cur && cur.lage !== lage) {
-        geist.stapel.forEach(hinaus);
-        geist.stapel = []; cur = geist.cur = null;
+    if (cur && cur.edge !== edge) {
+        ghostHeader.stack.forEach(slideOut);
+        ghostHeader.stack = []; cur = ghostHeader.cur = null;
     }
     // das Ziel liegt schon im Stapel: die Kopien darüber gleiten hinaus, sie ist wieder frei
-    var pos = geist.stapel.findIndex(function (g) { return g.sec === sec; });
+    var pos = ghostHeader.stack.findIndex(function (g) { return g.sec === sec; });
     if (pos >= 0) {
-        geist.stapel.splice(pos + 1).forEach(hinaus);
-        var frei = geist.stapel[pos];
-        frei.el.classList.remove('alt');
-        auffrischen(frei);
-        geist.cur = frei;
-        entfernenPlanen();
+        ghostHeader.stack.splice(pos + 1).forEach(slideOut);
+        var revealed = ghostHeader.stack[pos];
+        revealed.el.classList.remove('under');
+        refresh(revealed);
+        ghostHeader.cur = revealed;
+        scheduleRemoval();
         return;
     }
     // neue Kopie über die vorige
     var el = document.createElement('div');
-    el.className = 'geist ' + lage;
+    el.className = 'ghost-header ' + edge;
     el.style.setProperty('--staerke', staerke);
     el.classList.toggle('heiss', !!sec.querySelector('.name.mit-hover'));
     el.style.setProperty('--c', sec.style.getPropertyValue('--c'));
@@ -855,40 +864,40 @@ function geistRender() {
     klon.className = 'name';
     klon.querySelectorAll('a').forEach(function (a) { a.tabIndex = -1; });
     el.appendChild(klon);
-    el.style.top = (lage === 'oben' ? 0 : hoch - hoehe) + 'px';
+    el.style.top = (edge === 'top' ? 0 : hoch - hoehe) + 'px';
     // Kopien früherer (oben) bzw. späterer (unten) Sections als das Ziel gleiten hinaus, die übrigen bleiben darunter
-    var idx = geistIndex(sec);
-    var weichen = geist.stapel.filter(function (g) { return lage === 'oben' ? geistIndex(g.sec) < idx : geistIndex(g.sec) > idx; });
-    geist.stapel = geist.stapel.filter(function (g) { return weichen.indexOf(g) < 0; });
+    var idx = ghostHeaderIndex(sec);
+    var receding = ghostHeader.stack.filter(function (g) { return edge === 'top' ? ghostHeaderIndex(g.sec) < idx : ghostHeaderIndex(g.sec) > idx; });
+    ghostHeader.stack = ghostHeader.stack.filter(function (g) { return receding.indexOf(g) < 0; });
     // darunter: kein zweiter Schatten und keine zweite Linie (sonst wird es immer dunkler); erst wenn die neue Kopie da ist, damit keine Lücke entsteht
-    var darunter = geist.stapel.slice();
-    clearTimeout(geist.unterT);
-    geist.unterT = setTimeout(function () {
-        darunter.forEach(function (g) { if (g !== geist.cur && geist.stapel.indexOf(g) >= 0) g.el.classList.add('alt'); });
-    }, geistDauer());
+    var beneath = ghostHeader.stack.slice();
+    clearTimeout(ghostHeader.underTimer);
+    ghostHeader.underTimer = setTimeout(function () {
+        beneath.forEach(function (g) { if (g !== ghostHeader.cur && ghostHeader.stack.indexOf(g) >= 0) g.el.classList.add('under'); });
+    }, ghostHeaderDuration());
     // die neue Kopie gleitet immer ein, samt Schatten und Linie; weichende liegen darüber
-    el.style.transform = geistWeg(lage);
-    if (weichen.length) ebene.insertBefore(el, weichen[0].el); else ebene.appendChild(el);
+    el.style.transform = ghostHeaderOffscreen(edge);
+    if (receding.length) ebene.insertBefore(el, receding[0].el); else ebene.appendChild(el);
     el.getBoundingClientRect();   // Ausgangslage festschreiben
     // beschleunigt und endet hart, wie das Fenster
-    el.style.transition = kurve + ', filter ' + geistDauer() + 'ms linear';
+    el.style.transition = curve + ', filter ' + ghostHeaderDuration() + 'ms linear';
     el.style.transform = 'none';
-    weichen.forEach(hinaus);
-    var neu = { sec: sec, el: el, lage: lage };
-    geist.stapel.push(neu);
-    geist.cur = neu;
-    entfernenPlanen();
+    receding.forEach(slideOut);
+    var neu = { sec: sec, el: el, edge: edge };
+    ghostHeader.stack.push(neu);
+    ghostHeader.cur = neu;
+    scheduleRemoval();
 }
 
 // Position einer Section im Inhalt (Reihenfolge der Titel)
-function geistIndex(sec) {
+function ghostHeaderIndex(sec) {
     return Array.prototype.indexOf.call(fenster.container.querySelectorAll('section'), sec);
 }
 
-function geistZuruecksetzen() {
-    clearTimeout(geist.weg); clearTimeout(geist.sprungT); clearTimeout(geist.unterT);
-    if (geist.ebene) geist.ebene.innerHTML = '';
-    geist.cur = null; geist.stapel = []; geist.alt = []; geist.sprung = null;
+function ghostHeaderReset() {
+    clearTimeout(ghostHeader.removeTimer); clearTimeout(ghostHeader.jumpTimer); clearTimeout(ghostHeader.underTimer); clearTimeout(ghostHeader.followTimer); ghostHeader.free = 0;
+    if (ghostHeader.layer) ghostHeader.layer.innerHTML = '';
+    ghostHeader.cur = null; ghostHeader.stack = []; ghostHeader.leaving = []; ghostHeader.jump = null;
 }
 
 // ── Kachel-Licht (Chips und Raster) ───────────────────────────────
@@ -1318,7 +1327,7 @@ function focusContent(sec) {
             document.querySelectorAll('#container section.aktuell')
                 .forEach(function (s) { s.classList.remove('aktuell'); });
             ziel.classList.add('aktuell');
-            geistSprung(ziel);
+            ghostHeaderJump(ziel);
         }
         (ziel || c).focus({ preventScroll: true });
     };

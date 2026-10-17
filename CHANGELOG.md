@@ -29,6 +29,8 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 **Zeiger, Tastatur und Geist-Titel**
 - Im Titel nur der Chevron, kein schwacher Section-Strich; der Strich bleibt in der Section. Im obersten (aktiven) Titel gelten Punkt und Strich, kein Chevron.
 - Geist-Titel: der Schatten beginnt mit einer 1 px dünnen dunklen Linie, die auch an der ausgleitenden Kopie bleibt; die vorige Kopie wird nicht mehr grau.
+- **Ghost headers (vorher „Geist-Titel“) umbenannt:** `ghostHeader*` statt `geist*` in `app.js` (Zustand `ghostHeader` mit `stack`, `leaving`, `layer`, …; `ghostHeaderRender`, `ghostHeaderRemove`, …), `.ghost-header`, `#ghost-header-layer` und `--ghost-header-shadow/-fade/-hold` im CSS; Rand-Klassen `top`/`bottom`, Klasse `under` statt `alt`.
+- Ghost headers wechseln nur einzeln: läuft ein Wechsel (400 ms), wartet das nächste Ziel auf dessen Ende und nur das letzte zählt (`ghostHeader.free`); beim schnellen Überfahren mehrerer Chips gleiten so nie mehrere Kopien gleichzeitig wie ein Fächer.
 - Geist-Titel stapeln sich (`geist.stapel`): oben liegt die Kopie der frühesten Section oben, unten die der spätesten. Ein früheres Ziel legt sich darüber, ein späteres lässt die Kopien davor samt Schatten und Linie hinausgleiten, die neue gleitet darunter ein; die Rückkehr zu einer Kopie im Stapel deckt sie wieder auf.
 - Bei Tastaturnavigation löst ein ruhender Mauszeiger über Nav-Chips oder Titeln weder Strich/Chevron noch Geist-Titel aus.
 

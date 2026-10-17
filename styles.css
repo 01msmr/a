@@ -21,9 +21,9 @@ html[data-zoom="m"] {
     --licht-potenz: 1.4;         /* dessen Kurve: sanfter als das Fenster, endet ebenfalls hart */
     --licht-rand-dauer: 90;      /* Kachel-Licht füllt bzw. räumt von der Kante */
     --licht-deckung: .95;        /* Anteil, ab dem die Kachelschrift umkehrt */
-    --geist-schatten: .66;       /* Schattenlänge als Anteil einer Kachelhöhe */
-    --geist-auslauf: 2;          /* Schatten läuft über so viele Titelhöhen aus */
-    --geist-haelt: 2500;         /* so lange wartet ein Sprung höchstens auf den Titel */
+    --ghost-header-shadow: .66;       /* Schattenlänge als Anteil einer Kachelhöhe */
+    --ghost-header-fade: 2;          /* Schatten läuft über so viele Titelhöhen aus */
+    --ghost-header-hold: 2500;         /* so lange wartet ein Sprung höchstens auf den Titel */
     --strich-schwach: .33;       /* Deckkraft des Strichs auf Titel und Section */
     --strich-breite: 3px;
     --pop-dauer: 125;            /* Einstellungs-Overlay und Dropdown wachsen auf und schrumpfen zu (ms) */
@@ -1642,39 +1642,39 @@ body:not(.nav-icons) .jumper-pop .secicon {
 }
 
 /* ── Geist-Titel (app.js): Kopie des Ziel-Titels am Rand der Ansicht ── */
-#geist-ebene {
+#ghost-header-layer {
     position: fixed;
     z-index: 1;
     overflow: hidden;
     pointer-events: none;
 }
 
-.geist {
+.ghost-header {
     position: absolute;
     left: 0;
     right: 0;
     background: var(--c, var(--sect-col));
 }
 
-.geist .name,
-.geist .name a {
+.ghost-header .name,
+.ghost-header .name a {
     color: var(--on-c);
 }
 
-.geist .name a {
+.ghost-header .name a {
     text-decoration: none;
 }
 
-.geist .name {
+.ghost-header .name {
     border-bottom-color: color-mix(in srgb, var(--c, var(--sect-col)) 75%, var(--front-body));
 }
 
-body.view-grid .geist .name {
+body.view-grid .ghost-header .name {
     border-bottom-width: 0;
 }
 
 /* weicher Schatten auf den Inhalt, 66 % einer Kachelhöhe (--schatten, von app.js gesetzt); er beginnt mit einer dünnen dunklen Linie (1 px) */
-.geist::after {
+.ghost-header::after {
     content: "";
     position: absolute;
     left: 0;
@@ -1686,22 +1686,22 @@ body.view-grid .geist .name {
         rgba(0, 0, 0, .55), rgba(0, 0, 0, .55) 1px, rgba(0, 0, 0, .3) 1px, rgba(0, 0, 0, .22) 20%, rgba(0, 0, 0, .12) 45%, rgba(0, 0, 0, .04) 75%, rgba(0, 0, 0, 0));
 }
 
-.geist.oben::after {
+.ghost-header.top::after {
     top: 100%;
 }
 
-.geist.unten::after {
+.ghost-header.bottom::after {
     bottom: 100%;
     --richtung: to top;
 }
 
 /* eine Kopie unter einer anderen behält ihre Farbe, wirft aber keinen Schatten und hat keine Linie mehr */
-.geist.alt {
+.ghost-header.under {
     filter: none;
 }
 
 /* darunterliegende Kopie: weder Schatten noch Linie, damit es bei mehreren nicht immer dunkler wird */
-.geist.alt::after {
+.ghost-header.under::after {
     display: none;
 }
 
