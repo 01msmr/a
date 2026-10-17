@@ -423,8 +423,10 @@ function sperreAus() {
 function sperreAusEreignis(e, touch) {
     var ziel = (touch || e.button === 0) && !document.body.classList.contains('edit-mode') && e.target.closest && e.target.closest('#container .name a, a.sec-btn');
     var sec = ziel && (ziel.matches('a.sec-btn') ? (document.querySelector(ziel.getAttribute('href')) || ziel).closest('section') : ziel.closest('section'));
+    // Touch: auch ein Tap auf Hintergrund oder Kachel aktiviert die Section (es gibt kein Hover)
+    if (!sec && touch && !document.body.classList.contains('edit-mode') && e.target.closest) { sec = e.target.closest('#container section'); ziel = null; }
     if (!sec) { sperreAus(); return; }
-    sperreAn(sec, e.clientX, e.clientY, ziel.matches('a.sec-btn') ? 'nav' : 'titel');
+    sperreAn(sec, e.clientX, e.clientY, ziel && ziel.matches('a.sec-btn') ? 'nav' : 'titel');
 }
 document.addEventListener('pointerdown', function (e) {
     letzterZeiger = e.pointerType;
@@ -463,7 +465,6 @@ document.addEventListener('scroll', function () {
 
 function fensterZiel() {
     var c = fenster.container, s = null, heiss = true;
-    if (wischt) return null;
     if (document.body.classList.contains('tastatur')) {
         s = c.querySelector('section:focus-visible') || c.querySelector('section:has(:focus-visible)');
     } else if (sperre.sec) {
@@ -476,6 +477,8 @@ function fensterZiel() {
             s = h && h.closest('section');
         }
     }
+    // beim Wischen bleibt die Hintergrundfläche bei der aktuellen Section, nur ohne Hover-Zustand (sonst flackert sie)
+    if (wischt && !document.body.classList.contains('tastatur')) { s = null; }
     if (!s) { s = c.querySelector('section.aktuell'); heiss = false; }
     return s ? { sec: s, heiss: heiss } : null;
 }
