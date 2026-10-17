@@ -332,7 +332,7 @@ var fenster = {
     von: null, nach: null, t0: 0, dauer: 0, raf: 0, obs: []
 };
 
-// Nach dem Klick auf einen Titel scrollt die Section nach oben, und der ruhende Zeiger liegt danach über einer anderen.
+// Nach dem Klick auf einen Titel oder Nav-Chip scrollt die Section nach oben, und der ruhende Zeiger liegt danach über einer anderen.
 // Bis zur nächsten echten Mausbewegung (mehr als 4 px), einem Tastendruck oder einem anderen Klick bleibt die angeklickte Section das Ziel.
 var sperre = { sec: null, x: 0, y: 0 };
 
@@ -343,9 +343,10 @@ function sperreAus() {
 }
 
 document.addEventListener('click', function (e) {
-    var titel = e.button === 0 && !document.body.classList.contains('edit-mode') && e.target.closest && e.target.closest('#container .name a');
-    if (!titel) { sperreAus(); return; }
-    sperre.sec = titel.closest('section');
+    var ziel = e.button === 0 && !document.body.classList.contains('edit-mode') && e.target.closest && e.target.closest('#container .name a, a.secname');
+    var sec = ziel && (ziel.matches('a.secname') ? (document.querySelector(ziel.getAttribute('href')) || ziel).closest('section') : ziel.closest('section'));
+    if (!sec) { sperreAus(); return; }
+    sperre.sec = sec;
     sperre.x = e.clientX; sperre.y = e.clientY;
 }, true);
 document.addEventListener('mousemove', function (e) {
@@ -942,7 +943,7 @@ function strichSetzen() {
     var p = strich.pfeil, richtung = z.kopf ? (kopfOben ? null : 'up') : chipRichtung(z.chip);
     p.style.opacity = richtung ? '1' : '0';
     if (richtung) {
-        p.className = 'fa-solid fa-chevron-' + richtung;
+        p.dataset.richtung = richtung;
         p.style.left = strich.x + 'px';
         p.style.top = strich.y + 'px';
     }
@@ -988,9 +989,8 @@ function strichPlanen(e) {
     strich.el.id = 'strich';
     strich.el.setAttribute('aria-hidden', 'true');
     document.body.appendChild(strich.el);
-    strich.pfeil = document.createElement('i');
+    strich.pfeil = document.createElement('div');
     strich.pfeil.id = 'strich-pfeil';
-    strich.pfeil.className = 'fa-solid fa-chevron-up';
     strich.pfeil.setAttribute('aria-hidden', 'true');
     document.body.appendChild(strich.pfeil);
     document.addEventListener('mousemove', strichPlanen, { passive: true });

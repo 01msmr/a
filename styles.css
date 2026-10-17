@@ -1739,20 +1739,27 @@ body.view-grid .geist .name {
     transition: none;   /* volle Höhe sofort, keine Skalierung */
 }
 
-/* Chevron nach oben als Zeiger im Titel, in normaler Textgröße, Farbe wie die Titelschrift */
+/* Chevron als Zeiger (Titel, Nav-Chip): zwei dünne Kanten statt des fetten Font-Awesome-Zeichens, ca. Textgröße; Farbe wie die Titelschrift */
 #strich-pfeil {
     position: fixed;
     z-index: 50;
+    width: .6em;
+    height: .6em;
+    box-sizing: border-box;
+    border: 0 solid var(--on-c);
     opacity: 0;
     pointer-events: none;
-    transform: translate(-50%, -50%);
-    color: var(--on-c);
+    transition: none;   /* Farbe wechselt sofort */
 }
 
-/* auch das Glyph (::before) ohne Übergang: seine Farbe erbt den Wechsel zwischen Chip und Titel sonst mit 0,3 s */
-#strich-pfeil,
-#strich-pfeil::before {
-    transition: none;
+#strich-pfeil[data-richtung="up"] {
+    border-width: 2px 0 0 2px;
+    transform: translate(-50%, -25%) rotate(45deg);
+}
+
+#strich-pfeil[data-richtung="down"] {
+    border-width: 0 2px 2px 0;
+    transform: translate(-50%, -75%) rotate(45deg);
 }
 
 html.strich-an,
