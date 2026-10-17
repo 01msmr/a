@@ -494,6 +494,13 @@ body:not(.touch):not(.tastatur):not(.gesperrt) a.sec-btn:not(.active):is(:hover,
     box-shadow: var(--sb-hover-schatten, 0 -0.1875rem 0.4375rem -0.0625rem rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .6));
 }
 
+/* Hover auf dem Titel (Desktop): der aktive Chip hebt sich wie beim Hover ab (Schatten, nach vorn), behält aber seine Füllung;
+   ein nicht aktiver Chip zeigt dabei die weiche Hover-Fläche (Regel oben) */
+body:not(.touch):not(.tastatur):not(.gesperrt) a.sec-btn.active.mit-hover {
+    z-index: 1;
+    box-shadow: var(--sb-hover-schatten, 0 -0.1875rem 0.4375rem -0.0625rem rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .6));
+}
+
 /* aktiv: Chip und Titel sind eine durchgehende Fläche — keine Kante, kein Schatten dazwischen */
 a.sec-btn.active {
     /* keine Seitenkanten: sonst bleibt neben dem Innenschatten ein farbiger Strich */
