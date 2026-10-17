@@ -410,8 +410,19 @@ document.addEventListener('mousemove', function (e) {
 // ein Tastendruck hebt nur die Sperre nach einem Titelklick auf, nicht die nach einem Chipklick
 document.addEventListener('keydown', function () { if (sperre.art === 'titel') sperreAus(); });
 
+// Touch-Wischen: solange der Inhalt per Finger scrollt (samt Auslauf), zeigt das Fenster kein Ziel, auch nicht die aktive Section oben
+var wischt = false, wischT = 0, letzterZeiger = 'mouse';
+document.addEventListener('pointerdown', function (e) { letzterZeiger = e.pointerType; }, true);
+document.addEventListener('scroll', function () {
+    if (letzterZeiger === 'mouse' || document.body.classList.contains('gesperrt')) return;
+    wischt = true;
+    clearTimeout(wischT);
+    wischT = setTimeout(function () { wischt = false; fensterSync(); }, 200);
+}, true);
+
 function fensterZiel() {
     var c = fenster.container, s = null, heiss = true;
+    if (wischt) return null;
     if (document.body.classList.contains('tastatur')) {
         s = c.querySelector('section:focus-visible') || c.querySelector('section:has(:focus-visible)');
     } else if (sperre.sec) {
