@@ -188,6 +188,6 @@ Welche Dateien nicht ins Webverzeichnis gehören, steht in
 
 GNU GPL v3, siehe [LICENSE](LICENSE).
 
-Der Farbschema-Knopf im Overlay schaltet durch auto, light und dark: manuell groß Sonne bzw. Mond und klein unten rechts „auto“ (Icon-Modus: leerer Kreis), in auto groß „auto“ (Icon-Modus: gefüllter Kreis) und klein der Systemwert.
+Der Farbschema-Knopf im Overlay schaltet durch auto, light und dark: manuell groß Sonne bzw. Mond, in auto groß „auto“ (Icon-Modus: gefüllter Kreis) und klein der Systemwert.
 
 Im Text-Modus heißt das Zahnrad „set“. Das Sections-Dropdown öffnet in beiden Modi eine eigene Liste (Namen bzw. Icons); drücken, ziehen, loslassen wählt. In `index.html` hängt an `styles.css` und `app.js` eine Version (`?v=…`): bei Änderungen hochzählen, sonst mischen Browser alte und neue Dateien.

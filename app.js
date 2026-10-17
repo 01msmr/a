@@ -1251,8 +1251,8 @@ function wertNach(e, w) {
     return e.werte[(i + 1) % e.werte.length][0];
 }
 
-// Farbschema: manuell groß hell/dunkel und klein „auto“; auto groß „auto“ und klein das Icon des Systemwerts.
-// Text-Modus: Wörter; Icon-Modus: Sonne/Mond, „auto“ als Kreis (leer = aus, gefüllt = an)
+// Farbschema: manuell groß hell/dunkel; auto groß „auto“ und klein das Icon des Systemwerts.
+// Text-Modus: Wörter; Icon-Modus: Sonne/Mond, „auto“ als gefüllter Kreis
 function zeichneSchema(ic, w) {
     var icons = document.body.classList.contains('nav-icons');
     var sym = { light: 'fa-sun', dark: 'fa-moon' }, wort = { auto: 'auto', light: 'light', dark: 'dark' };
@@ -1274,7 +1274,6 @@ function zeichneSchema(ic, w) {
         ic.appendChild(glyph('fa-solid ' + sym[window.msmrTheme.get()], 'set-ecke'));
     } else {
         ic.appendChild(icons ? glyph('fa-solid ' + sym[w]) : text(wort[w], 'set-letter set-text'));
-        ic.appendChild(icons ? glyph('fa-regular fa-circle', 'set-ecke') : text(wort.auto, 'set-ecke'));
     }
 }
 
