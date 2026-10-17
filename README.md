@@ -199,7 +199,9 @@ Liste gefüllt und ins Sichtfeld gescrollt. Namen verlieren eine Endung (`tbx.li
 - **Scrollen:** die aktive Section wird während des Wischens alle 80 ms nachgezogen und am Ende über `scrollend`
   und `bisRuhe` (zwei stille Frames) bestätigt; sie gilt 24 px vor dem Einrasten als aktiv. Während des Wischens
   (`html.wischt`, nicht am `body`: dessen Klassenwechsel löst die Neuvermessung aus) bleibt das Leuchtfenster bei
-  der aktuellen Section ohne Hover, die Chips ohne Hover-Optik. Hochkant auf dem iPhone ist `scroll-snap-stop`
+  der aktuellen Section ohne Hover, die Chips ohne Hover-Optik; schon nach 12 px Fingerweg geht es zur nächsten
+  Section in Wischrichtung (`wischVorhersage`, folgt der Richtung, bis die aktive Section wechselt) und gleitet
+  auf Touch 1,6-mal so langsam wie mit der Maus. Hochkant auf dem iPhone ist `scroll-snap-stop`
   normal: ein Wisch darf mehrere Sections überspringen.
 
 ### Zentrale Variablen
