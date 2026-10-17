@@ -31,6 +31,7 @@ const dom = new JSDOM(html, {
         w.ResizeObserver = class { observe() { } disconnect() { } };
         w.CSS = { supports: () => true };
         w.document.elementFromPoint = () => null;   // jsdom hat kein Layout
+        w.Element.prototype.scrollIntoView = function () { };   // ebenso
         w.HTMLElement.prototype.showPopover = function () { };
         w.HTMLElement.prototype.hidePopover = function () { };
         w.fetch = async u => /links/.test(u)
@@ -73,6 +74,11 @@ const dann = (fn, ms) => new Promise(r => setTimeout(() => { fn(); r(); }, ms));
         prüfe(d.body.classList.contains('gesperrt'), 'Sperre fehlt nach Chip-Klick');
         d.dispatchEvent(ev('mousemove', { clientX: 80, clientY: 80 }));
         prüfe(!d.body.classList.contains('gesperrt'), 'Sperre bleibt nach Mausbewegung');
+        // Auswahl in der Sections-Liste sperrt ebenfalls (Loslassen über einem Eintrag klickt ihn ohne pointerdown)
+        w.springeZu(d.querySelectorAll('a.secname')[1].getAttribute('href'));
+        prüfe(d.body.classList.contains('gesperrt'), 'Sperre fehlt nach Auswahl in der Liste');
+        d.dispatchEvent(ev('mousemove', { clientX: 200, clientY: 200 }));
+        prüfe(!d.body.classList.contains('gesperrt'), 'Sperre bleibt nach Mausbewegung (Liste)');
     }, 50);
     await dann(() => { }, 200);
     fehler.forEach(f => console.error(f));

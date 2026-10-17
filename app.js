@@ -24,7 +24,7 @@ applyPrefs();
 
 // ── Render ────────────────────────────────────────────────────────
 var syncActive = function () { };
-var sperre = { sec: null, x: 0, y: 0, art: '' };   // nach Titel- oder Chip-Klick gesperrte Section (s. fensterZiel); art: 'titel' oder 'chip'
+var sperre = { sec: null, x: 0, y: 0, art: '' };   // nach Klick auf Titel, Chip oder Listeneintrag gesperrte Section (s. fensterZiel); art: 'titel' oder 'nav'
 var jumperWert = '';   // Hash der aktiven Section (oder des Sprungziels); die Liste markiert ihn
 var selSprung = null;   // Ziel eines Sprungs über das Dropdown: es zeigt bis zur Ankunft diese Section
 
@@ -82,6 +82,11 @@ function springeZu(hash) {
     setTimeout(function () { selSprung = null; syncActive(); }, 1500);
     var el = document.querySelector(hash);
     if (el) el.scrollIntoView();
+    // Maus: der ruhende Zeiger wird ignoriert, bis er bewegt wird (auch beim Loslassen über einem Eintrag, ohne pointerdown darauf)
+    var sec = el && el.closest('section');
+    if (sec && !document.body.classList.contains('tastatur') && !document.body.classList.contains('edit-mode')) {
+        sperreAn(sec, mausPunkt ? mausPunkt.x : 0, mausPunkt ? mausPunkt.y : 0, 'nav');
+    }
     document.getElementById('section-jumper').blur();
     focusContent(el && el.closest('section'));
 }
@@ -329,8 +334,19 @@ var fenster = {
     von: null, nach: null, t0: 0, dauer: 0, raf: 0, obs: []
 };
 
-// Nach dem Klick auf einen Titel oder Nav-Chip scrollt die Section nach oben, und der ruhende Zeiger liegt danach über einer anderen.
+// Nach dem Klick auf einen Titel, Nav-Chip oder Listeneintrag scrollt die Section nach oben, und der ruhende Zeiger liegt danach über einer anderen.
 // Bis zur nächsten echten Mausbewegung (mehr als 4 px), einem anderen Klick oder (nur nach einem Titelklick) einem Tastendruck bleibt die angeklickte Section das Ziel.
+
+// art: 'titel' (ein Tastendruck löst die Sperre) oder 'nav' (Chip oder Listeneintrag)
+function sperreAn(sec, x, y, art) {
+    sperre.sec = sec;
+    sperre.art = art;
+    sperre.x = x; sperre.y = y;
+    document.body.classList.add('gesperrt');
+    lichtHart();
+    fensterSync();
+    syncActive();
+}
 
 function sperreAus() {
     if (!sperre.sec) return;
@@ -344,16 +360,10 @@ function sperreAus() {
 
 // schon beim Drücken, damit der Chip sofort aktiv ist (kein Hover-/Druck-Zustand) und der Zeiger beim Hochscrollen verschwindet
 document.addEventListener('pointerdown', function (e) {
-    var ziel = e.button === 0 && !document.body.classList.contains('edit-mode') && e.target.closest && e.target.closest('#container .name a, a.secname');
-    var sec = ziel && (ziel.matches('a.secname') ? (document.querySelector(ziel.getAttribute('href')) || ziel).closest('section') : ziel.closest('section'));
+    var ziel = e.button === 0 && !document.body.classList.contains('edit-mode') && e.target.closest && e.target.closest('#container .name a, a.sec-btn');
+    var sec = ziel && (ziel.matches('a.sec-btn') ? (document.querySelector(ziel.getAttribute('href')) || ziel).closest('section') : ziel.closest('section'));
     if (!sec) { sperreAus(); return; }
-    sperre.sec = sec;
-    sperre.art = ziel.matches('a.secname') ? 'chip' : 'titel';
-    document.body.classList.add('gesperrt');
-    sperre.x = e.clientX; sperre.y = e.clientY;
-    lichtHart();
-    fensterSync();
-    syncActive();
+    sperreAn(sec, e.clientX, e.clientY, ziel.matches('a.sec-btn') ? 'nav' : 'titel');
 }, true);
 document.addEventListener('mousemove', function (e) {
     if (sperre.sec && Math.hypot(e.clientX - sperre.x, e.clientY - sperre.y) > 4) sperreAus();
