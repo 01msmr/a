@@ -449,17 +449,23 @@ document.addEventListener('pointermove', function (e) {
 
 // Wischbeginn: das Fenster geht zur nächsten Section in Wischrichtung, sobald der Finger 12 px gezogen hat (kein Zucken bei Kleinstbewegung),
 // und folgt der Richtung, solange die aktive Section noch die vom Start ist
-var wischVon = null, wischTop = 0;
+var wischVon = null, wischTop = 0, wischRicht = 0, wischGipfel = 0;
 function wischStart() {
     wischVon = fenster.container && fenster.container.querySelector('section.aktuell');
+    wischRicht = 0; wischGipfel = 0;
 }
+// Die Richtung rastet bei 12 px ein und kehrt erst um, wenn der Finger 48 px vom Gipfel zurückgeht: Zittern und Einrasten lassen das Fenster nicht springen
 function wischVorhersage() {
     var c = fenster.container, cur = c && c.querySelector('section.aktuell');
     if (!c || !wischVon || cur !== wischVon) return null;
     var d = c.scrollTop - wischTop;
-    if (Math.abs(d) < 12) return null;
+    if (!wischRicht) {
+        if (Math.abs(d) < 12) return null;
+        wischRicht = d > 0 ? 1 : -1; wischGipfel = d;
+    } else if (wischRicht * (d - wischGipfel) > 0) wischGipfel = d;
+    else if (Math.abs(d - wischGipfel) > 48) { wischRicht = -wischRicht; wischGipfel = d; }
     var l = Array.prototype.slice.call(c.querySelectorAll('section')), i = l.indexOf(cur);
-    return l[i + (d > 0 ? 1 : -1)] || null;
+    return l[i + wischRicht] || null;
 }
 document.addEventListener('pointerdown', function (e) { if (e.pointerType !== 'mouse' && fenster.container) wischTop = fenster.container.scrollTop; }, true);
 
