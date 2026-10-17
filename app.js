@@ -350,7 +350,7 @@ function trackActiveSection() {
         clearTimeout(timer);
         var jetzt = performance.now();
         if (jetzt - letzte > 80) { letzte = jetzt; syncActive(); }
-        timer = setTimeout(syncActive, 120);
+        if (!('onscrollend' in window)) timer = setTimeout(syncActive, 120);   // nur Ersatz ohne scrollend
     });
     container.addEventListener('scrollend', function () { clearTimeout(timer); syncActive(); });
     syncActive();
@@ -432,7 +432,7 @@ document.addEventListener('scroll', function () {
     wischt = true;
     document.body.classList.add('wischt');
     clearTimeout(wischT);
-    wischT = setTimeout(wischEnde, 200);
+    if (!('onscrollend' in window)) wischT = setTimeout(wischEnde, 200);   // nur Ersatz ohne scrollend
 }, true);
 
 function fensterZiel() {
