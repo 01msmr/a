@@ -193,7 +193,7 @@ Auf dem iPhone hochkant weichen die Chips; in der unteren Leiste folgen Dropdown
 Chips und Einträge der Sections-Liste teilen sich die Klasse `a.sec-btn` (gebaut von `secKnopf`):
 gleiche Grundgestalt, gleiche Hover-, Aktiv- und Druckeffekte (flach, ohne Schatten in der Liste, gesteuert
 über `--sb-*`-Variablen). Hover auf einem Eintrag leuchtet wie Hover auf dem Chip: `koppleHover`
-koppelt Chip, Titel und Eintrag einer Section (`.mit-hover`). Beim Hover auf dem Titel zeigt ein nicht aktiver Chip die weiche Hover-Fläche, der aktive hebt sich mit dem Hover-Schatten ab und behält seine Füllung. Die aktive Section ist in der offenen
+koppelt Chip, Titel und Eintrag einer Section (`.mit-hover`). Der Titel zeigt beim Hover denselben erhabenen Effekt wie ein Chip (Glanz oben, Schatten) auf der vollen Farbe der Section, ohne Schleier. Die aktive Section ist in der offenen
 Liste gefüllt und ins Sichtfeld gescrollt. Namen verlieren eine Endung (`tbx.li` → `tbx`).
 
 ### Touch (Smartphone)

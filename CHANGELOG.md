@@ -25,7 +25,7 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 - Neue Icons `favicon/ico-light-{180,192,512}.png` und `ico-dark-{180,192,512}.png`: das „a.“ in Ubuntu (Schrift der Seite, Medium), opak gerendert (hell #eee/schwarz, dunkel #333/weiß), statt der alten Graustufen-PNGs mit Alpha, die iOS nur klein oder gar nicht zeigte. `index.html` verlinkt das helle als `apple-touch-icon` und beide als `icon` mit `prefers-color-scheme`; das Manifest listet 180, 192 und 512 px (hell). Neue Dateinamen, weil iOS Icons je URL zwischenspeichert. Der Web-App-Modus (standalone) bleibt aus.
 
 **Desktop: Hover auf dem Titel**
-- Der gekoppelte Chip zeigt den Nav-Hover-Effekt: nicht aktiv die weiche Hover-Fläche, aktiv hebt er sich mit dem Hover-Schatten ab und behält seine Füllung (`a.sec-btn.active.mit-hover`).
+- Der Titel zeigt beim Hover (auch gekoppelt, wenn der Chip berührt wird) den Nav-Hover-Effekt: erhaben mit Glanz oben und Schatten, auf der vollen Farbe der Section statt des 28-%-Schleiers (`--c-hov` entfällt).
 
 **Smartphone und nicht erreichbare Links**
 - Smartphone: keine Ghost headers mehr; die Titel bleiben an ihrer Section und scrollen mit ihr aus der Ansicht (kein Kleben am Rand der Ansicht).
