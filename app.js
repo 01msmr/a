@@ -19,10 +19,10 @@ function applyPrefs() {
     if (typeof settingsAnzeige === 'function') settingsAnzeige();
 }
 
-// Dropdown: in beiden Modi nur der Chevron nach unten (Font-Awesome-Zeichen)
-function dropdownBeschriften() {
+// Dropdown: in beiden Modi nur ein Chevron (Font-Awesome-Zeichen), nach oben, solange die Liste offen ist
+function dropdownBeschriften(offen) {
     document.querySelectorAll('#section-jumper option').forEach(function (o) {
-        o.textContent = '\uf078';
+        o.textContent = offen ? '\uf077' : '\uf078';
         o.title = o.dataset.titel;
     });
 }
@@ -136,6 +136,7 @@ function jumperListe(data) {
         if (ev.key === 'ArrowDown') { ev.preventDefault(); l[Math.min(i + 1, l.length - 1)].focus(); }
         else if (ev.key === 'ArrowUp') { ev.preventDefault(); l[Math.max(i - 1, 0)].focus(); }
     });
+    pop.addEventListener('toggle', function (ev) { dropdownBeschriften(ev.newState === 'open'); });
     document.addEventListener('pointerdown', function (ev) {
         if (offen() && !ev.target.closest('#jumper-pop, #section-jumper')) pop.hidePopover();
     });
