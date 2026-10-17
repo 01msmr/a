@@ -775,8 +775,10 @@ function geistRender() {
     klon.querySelectorAll('a').forEach(function (a) { a.tabIndex = -1; });
     el.appendChild(klon);
     el.style.top = (lage === 'oben' ? 0 : hoch - hoehe) + 'px';
-    // Ziel weiter hinten in der Reihenfolge: die vorige weicht zurück und die neue liegt darunter; weiter vorn: die neue gleitet darüber
-    var weicht = cur && !!(cur.sec.compareDocumentPosition(sec) & Node.DOCUMENT_POSITION_FOLLOWING);
+    // oben: Ziel weiter hinten in der Reihenfolge → die vorige weicht zurück und die neue liegt darunter; weiter vorn → die neue gleitet darüber
+    // am unteren Rand umgekehrt: dort weicht die vorige, wenn das neue Ziel weiter vorn liegt
+    var spaeter = cur && !!(cur.sec.compareDocumentPosition(sec) & Node.DOCUMENT_POSITION_FOLLOWING);
+    var weicht = cur && (lage === 'oben' ? spaeter : !spaeter);
     var kurve = 'transform ' + geistDauer() + 'ms cubic-bezier(.55, .085, .68, .19), filter ' + geistDauer() + 'ms linear';
     if (weicht) {
         ebene.insertBefore(el, cur.el);
