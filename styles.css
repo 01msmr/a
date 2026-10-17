@@ -1700,8 +1700,10 @@ body.view-grid .geist .name {
     filter: grayscale(1);
 }
 
+/* nur die dünne Linie bleibt und geht mit der ausgleitenden Kopie */
 .geist.alt::after {
-    display: none;
+    height: 1px;
+    background: rgba(0, 0, 0, .55);
 }
 
 /* ── Strich-Zeiger (app.js): senkrechter Strich statt des Punkts ── */
