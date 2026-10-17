@@ -68,8 +68,8 @@ Names in this log are the current English ones (the code was translated to Engli
 - Ghost headers (`ghostHeader.stack`) again form a stack of all sections between view and target (ordered by distance, target on top, those in between lying ready underneath): further away only the copy of the target glides in, nearer the ones above just glide out and uncover the ones below (before they first glided down). If the target jumped over several, they glide out together. Every change takes 400 ms, the next target waits, only the last one counts (fast hovering skips intermediate steps). Gliding in and out with ease-out; shadow and line fade out quickly at the end of gliding out during the last 25 %.
 - With keyboard navigation a resting mouse pointer over nav chips or headings triggers neither line/chevron nor a ghost header.
 
-**Home screen icon: outline a bit stronger**
-- The white outline of the light icons is 1.35 % of the icon width (about 2.4 px at 180 px; was 0.9 % ≈ 1.6 px, too faint on the phone, and 1.8 % ≈ 3.2 px before, too heavy). Embedded copy updated.
+**Home screen icon: softer outline**
+- The outline of the light icons is light grey (#d7d7d7 instead of white) and 1.1 % of the icon width (about 2 px at 180 px). History on the phone: 3.2 px white looked too heavy, 1.6 px white too faint, 2.4 px white too harsh. Embedded copy updated.
 
 **Home screen icon: "a" closer to the dot**
 - In all icons (`ico-light-*`, `ico-dark-*`, embedded copy) the "a" sits closer to the dot: half of the gap between the two letters is closed (the gap was about 12 % of the icon width), the dot keeps its shape and the pair stays centered. Regenerated from the Ubuntu font, then `node tools/touch-icon.js inline`.

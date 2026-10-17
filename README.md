@@ -243,7 +243,7 @@ The pointers belong there too (`--curs-img`, `--curs-sec`, `--curs-hov`, `--curs
 
 ## Home screen icon (iOS)
 
-The home screen icon is `favicon/ico-light-180.png` (180×180, opaque, rendered from the page's Ubuntu font, black "a." with a thin white outline so it stays visible when iOS darkens the icon in dark mode; a web shortcut cannot supply its own dark variant). On iOS 27.2 the
+The home screen icon is `favicon/ico-light-180.png` (180×180, opaque, rendered from the page's Ubuntu font, black "a." with a thin light grey outline so it stays visible when iOS darkens the icon in dark mode; a web shortcut cannot supply its own dark variant). On iOS 27.2 the
 Add to Home Screen sheet loads the icon with its own loader that fails on any network URL and then shows a letter tile,
 although the file is fine and opens in a Safari tab. That is why `index.html` currently embeds the icon as a `data:` URI in
 `<link rel="apple-touch-icon">`. The switch is reversible:
