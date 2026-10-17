@@ -23,7 +23,7 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 
 **Leiste auf dem Smartphone**
 - Smartphone: Ghost headers sind so breit wie der echte Titel (Seitenpolster des Inhalts) statt vollbreit; sie schrumpfen beim Übergang nicht mehr.
-- iPhone hochkant: Dropdown und Zahnrad stehen ganz rechts, das Zahnrad am Rand; die Stepper bleiben links neben dem Titel (`#section-nav-list` ist dort `display: contents`, Reihenfolge per `order`).
+- iPhone hochkant: Dropdown und Stepper folgen dicht auf den Titel, das Zahnrad steht ganz rechts am Rand (`#section-nav-list` ist dort `display: contents`, Reihenfolge per `order`).
 
 **Aufräumen (HTML und Logik, Aussehen unverändert)**
 - **Fehler behoben:** Ein Zeilenkommentar hatte in `fensterZu` die Zeile `f.t0 = performance.now();` verschluckt (seit der Verlangsamung auf Touch). Das Leuchtfenster bekam keine Startzeit und sprang statt zu gleiten, auch auf dem Desktop.

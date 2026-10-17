@@ -187,8 +187,8 @@ nicht, läuft die Zeile nach links über (`justify-content: flex-end`): Zahnrad 
 bleiben erreichbar. Das Dropdown ist ein `<button>` (`aria-haspopup`, `aria-expanded`) mit Icon und
 dem Wort „sec“, der Chevron dreht sich offen nach oben.
 
-Auf dem iPhone hochkant weichen die Chips; Dropdown und Zahnrad stehen ganz rechts in der unteren Leiste (Zahnrad am Rand,
-`#section-nav-list` ist dort `display: contents`), die Stepper links neben dem Titel.
+Auf dem iPhone hochkant weichen die Chips; in der unteren Leiste folgen Dropdown und Stepper dicht auf den Titel, das Zahnrad steht ganz rechts am Rand
+(`#section-nav-list` ist dort `display: contents`, Reihenfolge per `order`).
 
 Chips und Einträge der Sections-Liste teilen sich die Klasse `a.sec-btn` (gebaut von `secKnopf`):
 gleiche Grundgestalt, gleiche Hover-, Aktiv- und Druckeffekte (flach, ohne Schatten in der Liste, gesteuert
