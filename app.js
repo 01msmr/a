@@ -775,12 +775,21 @@ function geistRender() {
     klon.querySelectorAll('a').forEach(function (a) { a.tabIndex = -1; });
     el.appendChild(klon);
     el.style.top = (lage === 'oben' ? 0 : hoch - hoehe) + 'px';
-    el.style.transform = lage === 'oben' ? 'translateY(-100%)' : 'translateY(100%)';
-    ebene.appendChild(el);
-    el.getBoundingClientRect();   // Ausgangslage festschreiben
-    // beschleunigt und endet hart, wie das Fenster
-    el.style.transition = 'transform ' + geistDauer() + 'ms cubic-bezier(.55, .085, .68, .19), filter ' + geistDauer() + 'ms linear';
-    el.style.transform = 'none';
+    // Ziel weiter hinten in der Reihenfolge: die vorige weicht zurück und die neue liegt darunter; weiter vorn: die neue gleitet darüber
+    var weicht = cur && !!(cur.sec.compareDocumentPosition(sec) & Node.DOCUMENT_POSITION_FOLLOWING);
+    var kurve = 'transform ' + geistDauer() + 'ms cubic-bezier(.55, .085, .68, .19), filter ' + geistDauer() + 'ms linear';
+    if (weicht) {
+        ebene.insertBefore(el, cur.el);
+        cur.el.style.transition = kurve;
+        cur.el.style.transform = cur.lage === 'oben' ? 'translateY(-100%)' : 'translateY(100%)';
+    } else {
+        el.style.transform = lage === 'oben' ? 'translateY(-100%)' : 'translateY(100%)';
+        ebene.appendChild(el);
+        el.getBoundingClientRect();   // Ausgangslage festschreiben
+        // beschleunigt und endet hart, wie das Fenster
+        el.style.transition = kurve;
+        el.style.transform = 'none';
+    }
     var neu = { sec: sec, el: el, lage: lage };
     if (cur) { cur.el.classList.add('alt'); geist.alt.push(cur); }   // vorige: grau, ohne Schatten
     geist.cur = neu;
