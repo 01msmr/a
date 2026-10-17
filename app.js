@@ -51,8 +51,9 @@ function koppleHover(gruppe) {
     gruppe.forEach(function (el) {
         var andere = gruppe.filter(function (x) { return x !== el; });
         var setze = function (name, an) { andere.forEach(function (x) { x.classList.toggle(name, an); }); };
-        el.addEventListener('mouseenter', function () { setze('mit-hover', true); });
-        el.addEventListener('mouseleave', function () { setze('mit-hover', false); setze('mit-druck', false); });
+        // Touch hat kein Hover: emulierte Maus-Events würden den ersten Tap als Hover verschlucken
+        el.addEventListener('pointerenter', function (ev) { if (ev.pointerType === 'mouse') setze('mit-hover', true); });
+        el.addEventListener('pointerleave', function (ev) { if (ev.pointerType === 'mouse') { setze('mit-hover', false); setze('mit-druck', false); } });
         el.addEventListener('mousedown', function () { setze('mit-druck', true); });
         el.addEventListener('mouseup', function () { setze('mit-druck', false); });
     });
@@ -102,6 +103,12 @@ function jumperListe(data) {
             pop.hidePopover();
             springeZu('#' + sec.id);
         });
+        // Touch: der Tap wählt sofort, ohne auf die emulierte Maus zu warten
+        a.addEventListener('pointerup', function (ev) {
+            if (ev.pointerType === 'mouse') return;
+            ev.preventDefault();
+            a.click();
+        });
         pop.appendChild(a);
         eintrag[sec.id] = a;
     });
@@ -134,8 +141,10 @@ function jumperListe(data) {
     }
     // drücken, auf einen Eintrag ziehen, loslassen wählt ihn (wie beim Einstellungs-Overlay); ein einfacher Klick öffnet/schließt
     var gedrueckt = false, warOffen = false;
+    var letzterTouch = 0;
     sel.addEventListener('mousedown', function (ev) {
         ev.preventDefault();   // kein natives Menü
+        if (Date.now() - letzterTouch < 800) return;   // emulierte Maus nach Touch: schon behandelt
         gedrueckt = true;
         warOffen = offen();
         if (!warOffen) oeffnen();
@@ -148,6 +157,35 @@ function jumperListe(data) {
         else if (ev.target.closest('#section-jumper')) { if (warOffen) pop.hidePopover(); }
         else pop.hidePopover();
     });
+    // Touch: antippen, ziehen und loslassen in einem Zug; ein einfacher Tap öffnet/schließt
+    var ziehId = null, ziehOffen = false, ziehEintrag = null;
+    function ziehMarke(e) {
+        if (e === ziehEintrag) return;
+        if (ziehEintrag) ziehEintrag.classList.remove('mit-hover');
+        ziehEintrag = e;
+        if (e) e.classList.add('mit-hover');
+    }
+    sel.addEventListener('pointerdown', function (ev) {
+        if (ev.pointerType === 'mouse') return;
+        ev.preventDefault();
+        letzterTouch = Date.now();
+        ziehId = ev.pointerId;
+        ziehOffen = offen();
+        if (!ziehOffen) oeffnen();
+    });
+    sel.addEventListener('pointermove', function (ev) {
+        if (ev.pointerId === ziehId) ziehMarke(eintragUnter(ev));
+    });
+    sel.addEventListener('pointerup', function (ev) {
+        if (ev.pointerId !== ziehId) return;
+        ziehId = null;
+        letzterTouch = Date.now();
+        var e = eintragUnter(ev);
+        ziehMarke(null);
+        if (e) e.click();
+        else if (ziehOffen && ev.target.closest('#section-jumper')) pop.hidePopover();
+    });
+    sel.addEventListener('pointercancel', function () { ziehId = null; ziehMarke(null); });
     sel.addEventListener('keydown', function (ev) {
         if (!(ev.key === 'Enter' || ev.key === ' ' || ev.key === 'ArrowDown' || ev.key === 'ArrowUp')) return;
         ev.preventDefault();

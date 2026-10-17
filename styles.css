@@ -1612,6 +1612,17 @@ body.tastatur .set-btn:focus-visible .mit-t::after {
     outline: none;
 }
 
+/* Touch: kein Hover-Zustand, kompaktere Einträge */
+@media (hover: none) {
+    .jumper-pop a {
+        height: 2.75rem;
+    }
+    .jumper-pop a:hover:not(.active):not(.mit-hover) {
+        background: none;
+        box-shadow: none;
+    }
+}
+
 body.nav-icons .jumper-pop .secshort,
 body:not(.nav-icons) .jumper-pop .secicon {
     display: none;
@@ -1777,4 +1788,9 @@ body.view-grid:not(.edit-mode) .group.ende-gedeckt::after {
     z-index: 0;
     display: none;
     pointer-events: none;
+}
+
+/* Touch-Ziehen vom Feld in die Liste: kein Scrollen/Zoomen dazwischen */
+#section-jumper {
+    touch-action: none;
 }
