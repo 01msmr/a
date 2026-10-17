@@ -3,7 +3,7 @@
 Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 `git log`; hier beginnt die Aufzeichnung mit der Sitzung vom 25./26. Juli 2026.
 
-## 2026-10-17 (später) — Touch auf dem Smartphone: kein Hover, Tippen, Ziehen, freies Wischen
+## 2026-10-17 (später) — Touch auf dem Smartphone, Ghost headers als Stapel, Home-Icon, Raster, Hover in der Section, nicht erreichbare Links
 
 **Touch statt Hover (iOS)**
 - `body.touch` (gesetzt beim `pointerdown` mit Finger oder Stift, entfernt bei echter Mausbewegung): alle `:hover`-Regeln für Kacheln, Titel, Chips und Knöpfe gelten nur ohne diese Klasse; iOS lässt `:hover` nach einem Tap sonst hängen. Auch der Druck-Zustand (`:active`) der Chips und die iOS-Tap-Aufhellung entfallen. Die gekoppelte Hervorhebung (`koppleHover`) reagiert nur noch auf `pointerType === 'mouse'`; die von iOS nachgeschobene Mausposition färbt den Chip nicht mehr.

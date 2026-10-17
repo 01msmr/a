@@ -61,7 +61,7 @@ damit der Browser nie eine alte Kopie zeigt.
   Section füllt sich in der Sektionsfarbe, die Kachel unter dem Cursor kehrt um
   (Fläche weiß, Text in der Sektionsfarbe). Der Strich-Cursor sitzt im gleitenden Kachel-Licht und
   wandert mit.
-- Der Nav-Chip folgt der Section unter der Maus, sonst der obersten sichtbaren.
+- Der aktive Nav-Chip folgt der Scrollposition (die oberste sichtbare Section), nie der Maus; die Section unter der Maus zeigt an ihrem Chip die weiche Hover-Fläche.
 - **Klick-Sperre:** Nach einem Klick auf einen Titel, einen Nav-Chip oder einen Eintrag der
   Sections-Liste scrollt die Section nach oben, und der ruhende Zeiger liegt danach über etwas
   anderem. Bis der Zeiger sich um mehr als 4 px bewegt oder ein anderer Klick kommt, bleibt die
@@ -131,7 +131,7 @@ eingefärbten Section hell. „Links“ heißt hier volle Breite, auch die Leist
 über die ganze Seite; die Kacheln der Sections bleiben bei höchstens 6 Spalten und werden breiter, auf schmalen Bildschirmen (Smartphone) stehen mindestens zwei nebeneinander. Leere Felder der letzten Zeile tragen die Linien der Kacheln. Ein toter Link zeigt ein rotes Quadrat in der Ecke (am Desktop ein Dreieck mit 6 px Katheten). Der Edit-Mode
 nutzt weiter das Chip-Layout.
 
-### Leuchtfenster und Geist-Titel
+### Leuchtfenster und Ghost headers
 
 Die leuchtende Section (Hover, Nav-Chip, Tastatur, sonst die oberste) ist ein Fenster, das zur
 nächsten gleitet und dabei wächst bzw. schrumpft (200 ms, beschleunigt, endet hart; bei
