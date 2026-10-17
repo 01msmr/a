@@ -596,7 +596,7 @@ function fensterZu(ziel, animiert) {
     // reduzierte Bewegung heißt kürzer, nicht keine
     var kurz = matchMedia('(prefers-reduced-motion: reduce)').matches;
     f.von = { top: f.top, bot: f.bot }; f.nach = nach;
-    f.dauer = kurz ? masz['fenster-dauer-kurz'] : masz['fenster-dauer']; f.t0 = performance.now();
+    f.dauer = kurz ? masz['fenster-dauer-kurz'] : masz['fenster-dauer'] * (document.body.classList.contains('touch') ? 1.6 : 1);   // Touch: langsamer, sonst eilt das Fenster dem Finger voraus f.t0 = performance.now();
     f.raf = requestAnimationFrame(fensterSchritt);
 }
 
