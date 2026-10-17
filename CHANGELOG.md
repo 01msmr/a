@@ -68,6 +68,9 @@ Names in this log are the current English ones (the code was translated to Engli
 - Ghost headers (`ghostHeader.stack`) again form a stack of all sections between view and target (ordered by distance, target on top, those in between lying ready underneath): further away only the copy of the target glides in, nearer the ones above just glide out and uncover the ones below (before they first glided down). If the target jumped over several, they glide out together. Every change takes 400 ms, the next target waits, only the last one counts (fast hovering skips intermediate steps). Gliding in and out with ease-out; shadow and line fade out quickly at the end of gliding out during the last 25 %.
 - With keyboard navigation a resting mouse pointer over nav chips or headings triggers neither line/chevron nor a ghost header.
 
+**Home screen icon: structure behind the "a."**
+- iOS re-colors home screen icons in dark mode (it splits foreground and background and darkens the background), which made the thin outline disappear. The light icons (`ico-light-*`, also the embedded home screen icon) now have a structure behind the black "a.": white horizontal lines (every 1/18 of the icon height, 1.2 % thick) on mid grey (#c8c8c8); the outline is gone. The lines stay lighter than the background after darkening, so the edge of the "a." keeps contrast. Dots instead of lines were the alternative (also previewed). Embedded copy updated.
+
 **Home screen icon: softer outline**
 - The outline of the light icons is light grey (#d7d7d7 instead of white) and 1.1 % of the icon width (about 2 px at 180 px). History on the phone: 3.2 px white looked too heavy, 1.6 px white too faint, 2.4 px white too harsh. Embedded copy updated.
 
