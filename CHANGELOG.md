@@ -32,6 +32,9 @@ Names in this log are the current English ones (the code was translated to Engli
 **Smartphone: pages made of sections**
 - Two consecutive half-height sections form one page (one snap point), a remaining one stays alone and gets an empty half-height section behind it (also as the last one), a larger one always starts its own page and, if taller than the screen, scrolls freely inside it. `buildPages` (in `glowMeasure`) sets `.page-start` and the filler (`margin-bottom`); the glow window covers the whole page; steppers, arrows and dropdown jump from page to page (`pageStart`, `jumpBy`, `jumpTo`). No pages in edit mode.
 
+**Smartphone: one active section**
+- The glow window (the "active" highlight) always covers exactly one section: the first one on screen while scrolling, or the tapped one. On a page of two half-height sections only the upper one is active (before, the window covered the whole page; `glow.pages` is gone, `glowScroll` and `glowFrame` work on single sections again).
+
 **Touch: transition after tapping**
 - If you tap into a section and then scroll, the window jumped from the tap target to the frame of the scroll position and the bottom edge stuttered. Now the distance fades out during the transition over 280 ms (smoothstep, `f.offset` in `glowScroll`; first as an exponential decay with 110 ms, which jerked at the start).
 - On touch the tile light is off (`setPointerKind` resets `lightMouse` and `mousePoint` and calls `lightReset()`; the light's `mouseover`/`mousemove` handlers ignore mouse events pushed in by iOS). Before, it stayed stuck at the touch point on the screen while the content scrolled underneath.

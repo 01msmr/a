@@ -224,8 +224,7 @@ measuring in `glowMeasure`):
 - A remaining half-height section stays alone. It gets an empty half-height section behind it (`margin-bottom`, also as the last one), so the page is full
   and a following larger section starts on its own page (three half-height, then a large one: page 1 = two, page 2 = the third with an empty lower half, page 3 = the large one).
 - A larger section always starts its own page; if it is taller than the screen, it scrolls freely inside it (the snap point is at its start).
-- The snap point is the first section of each page (`.page-start`, `scroll-snap-align: start`). The glow window covers the whole page while scrolling and on tapping
-  (`glow.pages`); steppers, arrows and dropdown jump from page to page or to the start of the page of the target (`pageStart`, `jumpBy`).
+- The snap point is the first section of each page (`.page-start`, `scroll-snap-align: start`). The glow window always covers exactly one section, never the whole page: the first one on screen while scrolling, or the tapped one; steppers, arrows and dropdown jump from page to page or to the start of the page of the target (`pageStart`, `jumpBy`).
 - There are no pages in edit mode.
 
 ### Central variables

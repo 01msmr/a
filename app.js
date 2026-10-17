@@ -569,12 +569,7 @@ function glowFrame(sec) {
     for (var i = 0; i < glow.secs.length; i++) {
         var s = glow.secs[i];
         if (s.el === sec) {
-            // Smartphone: the window covers the whole page (both sections of a pair)
-            var p = isPhone() && glow.pageIdx && glow.pageIdx.filter(function (q) { return q.indexOf(i) >= 0; })[0];
-            if (p && p.length > 1) {
-                var a = glow.secs[p[0]], b = glow.secs[p[p.length - 1]];
-                return { top: a.y, bot: b.y + b.h };
-            }
+            // always exactly one section, also on the smartphone (the tapped one)
             return { top: s.y, bot: s.y + s.h };
         }
     }
@@ -606,7 +601,7 @@ function glowTo(dest, animated) {
 // Smartphone: pages made of sections. Two consecutive half-height sections form one page (one snap point, both on the
 // screen at once); a remaining half-height section stays alone (the lower half stays empty); a larger section always starts
 // its own page and, if taller than the screen, scrolls freely inside it. The snap point is the first section of each page
-// (.page-start, styles.css). Each page is a frame (y to bot) for the window; pageIdx holds the section numbers per page.
+// (.page-start, styles.css). pageIdx holds the section numbers per page. The glow window still covers only one section: the first one on screen or the tapped one.
 function buildPages(c, secs) {
     var phone = isPhone() && !document.body.classList.contains('edit-mode');
     var H = c.clientHeight, pages = [], i = 0;
@@ -616,10 +611,6 @@ function buildPages(c, secs) {
         else { pages.push([i]); i++; }
     }
     glow.pageIdx = pages;
-    glow.pages = pages.map(function (p) {
-        var a = secs[p[0]], b = secs[p[p.length - 1]];
-        return { y: a.y, h: b.y + b.h - a.y };
-    });
     var starts = {}, lone = {}, changed = false;
     pages.forEach(function (p) { starts[p[0]] = true; if (p.length === 1 && isHalf(secs[p[0]])) lone[p[0]] = true; });
     secs.forEach(function (s, k) {
@@ -649,7 +640,7 @@ function pageStart(sec) {
 // coasting, without its own time: no running ahead, lagging behind or twitching on target changes. The last section may never reach the top edge:
 // its transition ends at the maximum scroll distance.
 function glowScroll() {
-    var f = glow, c = f.container, l = f.pages && f.pages.length ? f.pages : f.secs;
+    var f = glow, c = f.container, l = f.secs;   // always one section: the first one on screen
     if (!l.length) return;
     cancelAnimationFrame(f.raf); f.raf = 0;
     f.dest = null;   // determine anew afterwards
