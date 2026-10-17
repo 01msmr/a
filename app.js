@@ -918,6 +918,8 @@ function strichZiel(t) {
     var z = { sec: t.closest('#container section'), fest: null, hide: false, kopf: !!t.closest('#container .name') };
     // gesperrt: liegt der Zeiger nicht in der angeklickten Section, zeigt er keinen Section-Strich und keinen Titel-Chevron
     if (sperre.sec && z.sec !== sperre.sec) { z.sec = null; z.kopf = false; }
+    // gesperrt: auch auf Nav-Chips kein Strich und kein Chevron (der Chip der angeklickten Section ist aktiv, die anderen zeigen keinen Hover)
+    if (sperre.sec && t.closest('a.secname')) return null;
     if (t.closest('li a')) { z.hide = true; z.sec = null; }   // Kachel: nur ihr eigener Strich
     else {
         // Kachelrand (kein Hintergrund erkennen) bzw. Nav-Chip: Strich in der Höhe der Zeile
