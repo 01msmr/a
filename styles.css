@@ -1709,9 +1709,16 @@ body.view-grid .geist .name {
 
 /* Chevron nach oben als Zeiger im Titel, in normaler Textgröße, Farbe wie die Titelschrift */
 #strich-pfeil {
+    /* Popover: oberste Ebene, über der Sections-Liste; die Standardformate eines Popovers zurücknehmen */
     position: fixed;
-    z-index: 50;
-    opacity: 0;
+    inset: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    overflow: visible;
+    width: auto;
+    height: auto;
     pointer-events: none;
     transform: translate(-50%, -50%);
     font-size: 1.5em;   /* größer als die Textgröße des Titels, damit der Zeiger auffällt */
