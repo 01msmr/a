@@ -101,7 +101,7 @@ function jumperListe(data) {
     function offen() { return pop.matches(':popover-open'); }
     function oeffnen() {
         var r = sel.getBoundingClientRect(), oben = r.top > window.innerHeight / 2;
-        pop.style.minWidth = r.width + 'px';
+        pop.style.width = r.width + 'px';   // bündig mit dem Feld, wie das Einstellungs-Overlay
         pop.style.left = r.left + 'px';
         pop.style.top = oben ? 'auto' : r.bottom + 'px';
         pop.style.bottom = oben ? (window.innerHeight - r.top) + 'px' : 'auto';
@@ -1207,6 +1207,7 @@ var EINSTELLUNGEN = [
     {
         label: 'Farbe',
         werte: [['bunt', 'bunt'], ['blass', 'blass']],
+        text: { bunt: 'bunt', blass: 'blass' },
         // Kreis in einer Section-Farbe: kräftig = bunt, fast farblos (gleiche Helligkeit) = blass
         kreis: { bunt: '1', blass: 'var(--farbe-blass)' },
         get: function () { return getPref('farbe'); },
@@ -1215,14 +1216,16 @@ var EINSTELLUNGEN = [
     {
         label: 'Navigation',
         werte: [['short', 'Text'], ['icons', 'Icons']],
-        // Squircle wie bei APP; mit „t“ darin = Text aktiv
-        squircle: { short: true, icons: false },
+        // Text-Modus: das Wort „text“; Icon-Modus: Squircle wie bei APP
+        text: { short: 'text', icons: 'icons' },
+        squircle: true,
         get: function () { return getPref('navMode'); },
         set: function (w) { setPref('navMode', w); }
     },
     {
         label: 'Ansicht',
         werte: [['chips', 'Chips'], ['grid', 'Raster']],
+        text: { chips: 'chips', grid: 'raster' },
         // vier Kacheln: gerundet und getrennt = Chips; eckig und aneinander = Raster
         kacheln: { chips: false, grid: true },
         get: function () { return getPref('view'); },
@@ -1233,14 +1236,15 @@ var EINSTELLUNGEN = [
         // im Raster heißt „links“ volle Breite
         beschr: function (w) { return w === 'left' && getPref('view') === 'grid' ? 'volle Breite' : null; },
         werte: [['left', 'links'], ['center', 'Mitte']],
-        // „l“ linksbündig bzw. „c“ zentriert in einer festen Breite
-        buchstabe: { left: 'l', center: 'c' },
+        text: { left: 'links', center: 'mitte' },
+        icons: { left: 'fa-align-left', center: 'fa-align-center' },
         get: function () { return getPref('align'); },
         set: function (w) { setPref('align', w); }
     },
     {
         label: 'Bearbeiten',
-        werte: [['aus', 'aus'], ['an', 'an (zum Beenden drücken)']],
+        werte: [['aus', 'aus'], ['an', 'an']],
+        text: { aus: 'edit', an: 'fertig' },
         // zwei Chevrons übereinander = aus; Diskette = es wird bearbeitet, Klick beendet und fragt nach dem Speichern
         icons: { aus: ['fa-chevron-up', 'fa-chevron-down'], an: 'fa-floppy-disk' },
         get: function () { return document.body.classList.contains('edit-mode') ? 'an' : 'aus'; },
@@ -1260,30 +1264,30 @@ function wertNach(e, w) {
     return e.werte[(i + 1) % e.werte.length][0];
 }
 
-// Farbschema: manuell groß Sonne/Mond und klein „auto“; auto groß „auto“ und klein der Systemwert.
-// „auto“ ist im Text-Modus ein Wort, im Icon-Modus ein Kreis (leer = aus, gefüllt = an)
+// Farbschema: manuell groß hell/dunkel und klein „auto“; auto groß „auto“ und klein das Icon des Systemwerts.
+// Text-Modus: Wörter; Icon-Modus: Sonne/Mond, „auto“ als Kreis (leer = aus, gefüllt = an)
 function zeichneSchema(ic, w) {
     var icons = document.body.classList.contains('nav-icons');
-    var sym = { light: 'fa-sun', dark: 'fa-moon' };
+    var sym = { light: 'fa-sun', dark: 'fa-moon' }, wort = { auto: 'auto', light: 'hell', dark: 'dunkel' };
     function glyph(klasse, extra) {
         var g = document.createElement('i');
         g.className = klasse + (extra ? ' ' + extra : '');
         return g;
     }
-    function wort(extra) {
-        var t = document.createElement('span');
-        t.className = extra;
-        t.textContent = 'auto';
-        return t;
+    function text(t, klasse) {
+        var s = document.createElement('span');
+        s.className = klasse;
+        s.textContent = t;
+        return s;
     }
     ic.className = 'set-icon set-schema';
     ic.textContent = '';
     if (w === 'auto') {
-        ic.appendChild(icons ? glyph('fa-solid fa-circle') : wort('set-letter set-auto'));
+        ic.appendChild(icons ? glyph('fa-solid fa-circle') : text(wort.auto, 'set-letter set-text'));
         ic.appendChild(glyph('fa-solid ' + sym[window.msmrTheme.get()], 'set-ecke'));
     } else {
-        ic.appendChild(glyph('fa-solid ' + sym[w]));
-        ic.appendChild(icons ? glyph('fa-regular fa-circle', 'set-ecke') : wort('set-ecke'));
+        ic.appendChild(icons ? glyph('fa-solid ' + sym[w]) : text(wort[w], 'set-letter set-text'));
+        ic.appendChild(icons ? glyph('fa-regular fa-circle', 'set-ecke') : text(wort.auto, 'set-ecke'));
     }
 }
 
@@ -1295,20 +1299,20 @@ function zeichneIcon(ic, e, w) {
         ic.textContent = d.text;
     } else if (e.schema) {
         zeichneSchema(ic, w);
+    } else if (e.text && !document.body.classList.contains('nav-icons')) {
+        ic.className = 'set-icon set-letter set-text';
+        ic.textContent = e.text[w];
     } else if (e.kreis) {
         ic.className = 'set-icon set-kreis';
         ic.textContent = '';
         ic.style.setProperty('--k', secFarbe(6, e.kreis[w]));
     } else if (e.squircle) {
-        ic.className = 'set-icon icon-squircle' + (e.squircle[w] ? ' mit-t' : '');
+        ic.className = 'set-icon icon-squircle';
         ic.textContent = '';
     } else if (e.kacheln) {
         ic.className = 'set-icon set-kacheln' + (e.kacheln[w] ? ' eckig' : '');
         ic.textContent = '';
         for (var k = 0; k < 4; k++) ic.appendChild(document.createElement('i'));
-    } else if (e.buchstabe) {
-        ic.className = 'set-icon set-letter set-ausrichtung ' + w;
-        ic.textContent = e.buchstabe[w];
     } else if (Array.isArray(e.icons[w])) {
         // mehrere Symbole als ein Icon, senkrecht gestapelt
         ic.className = 'set-icon set-stapel';
@@ -1326,10 +1330,10 @@ function zeichneIcon(ic, e, w) {
 
 function settingsAnzeige() {
     document.querySelectorAll('#settings-pop .set-btn').forEach(function (b, i) {
-        var e = EINSTELLUNGEN[i], w = e.get(), nach = wertNach(e, w);
+        var e = EINSTELLUNGEN[i], w = e.get();
         zeichneIcon(b.querySelector('.set-icon'), e, w);
-        b.title = e.label + ': ' + wertName(e, w) + ' → ' + wertName(e, nach);
-        b.setAttribute('aria-label', e.label + ': ' + wertName(e, w) + ' — zum Umschalten drücken (' + wertName(e, nach) + ')');
+        b.title = e.label + ': ' + wertName(e, w);
+        b.setAttribute('aria-label', b.title);
     });
 }
 

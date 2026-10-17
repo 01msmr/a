@@ -26,11 +26,11 @@ html[data-zoom="m"] {
     --geist-haelt: 2500;         /* so lange wartet ein Sprung höchstens auf den Titel */
     --strich-schwach: .33;       /* Deckkraft des Strichs auf Titel und Section */
     --strich-breite: 3px;
-    --pop-dauer: 200;            /* Einstellungs-Overlay gleitet auf und zu (ms) */
+    --pop-dauer: 200;            /* Einstellungs-Overlay wächst auf und schrumpft zu (ms) */
     --pop-kurve: cubic-bezier(.55, .085, .68, .19);   /* beschleunigt, endet hart */
     --pop-t: calc(var(--pop-dauer) * 1ms);
-    --pop-uebergang: transform var(--pop-t) var(--pop-kurve), clip-path var(--pop-t) var(--pop-kurve),
-        background-color var(--pop-t) var(--pop-kurve), color var(--pop-t) var(--pop-kurve),
+    --pop-uebergang: height var(--pop-t) var(--pop-kurve), background-color var(--pop-t) var(--pop-kurve),
+        color var(--pop-t) var(--pop-kurve), box-shadow var(--pop-t) var(--pop-kurve),
         overlay var(--pop-t) allow-discrete, display var(--pop-t) allow-discrete;
     --farb-int: 1;               /* Sättigung der Section-Farben, bei Einstellung „blass“ s. u. */
     --farbe-blass: .4;
@@ -1397,7 +1397,7 @@ body:not(.tastatur) .settings-btn.offen {
     background-color: var(--sect-col);
 }
 
-/* senkrechter Stapel aus Icon-Knöpfen: jedes Icon zeigt den Zustand einer Einstellung, Klick schaltet reihum */
+/* senkrechter Stapel aus Knöpfen: jeder zeigt den Zustand einer Einstellung, Klick schaltet reihum */
 .settings-pop {
     position: fixed;
     inset: auto;
@@ -1409,51 +1409,42 @@ body:not(.tastatur) .settings-btn.offen {
     border-radius: 0 0 .49rem .49rem;   /* wie die Kacheln: .35em bei 1.4rem Schrift */
     overflow: hidden;
     /* zu: Farben der Leiste; offen = umgekehrt: Fläche in Schriftfarbe, Icons in Flächenfarbe.
-       Beim Öffnen gleitet das Overlay unter dem Zahnrad herunter, beim Schließen wieder hinauf,
-       und die Farben wechseln unterwegs (Fenster fest am Zahnrad, Schatten bleibt sichtbar) */
+       Beim Öffnen wächst das Overlay vom Zahnrad weg auf seine Höhe, beim Schließen (auch automatisch) schrumpft es dorthin zurück;
+       die Knöpfe bleiben am Zahnrad stehen, die Farben wechseln unterwegs */
+    interpolate-size: allow-keywords;
+    height: 0;
     background: var(--front-body);
     color: var(--sect-col);
-    transform: translateY(-100%);
-    clip-path: inset(100% -2rem -2rem -2rem);
     transition: var(--pop-uebergang);
-    box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .35);
+    box-shadow: 0 .25rem 1rem transparent;
     flex-direction: column;
 }
 
 .settings-pop.nach-oben {
     border-radius: .49rem .49rem 0 0;
-    transform: translateY(100%);
-    clip-path: inset(-2rem -2rem 100% -2rem);
+    justify-content: flex-end;   /* unten am Zahnrad verankert */
 }
 
 .settings-pop:popover-open {
     display: flex;
+    height: auto;
     background: var(--sect-col);
     color: var(--front-body);
-    transform: none;
-    clip-path: inset(0 -2rem -2rem -2rem);
-}
-
-.settings-pop.nach-oben:popover-open {
-    clip-path: inset(-2rem -2rem 0 -2rem);
+    box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .35);
 }
 
 /* Ausgangslage beim Öffnen = zugeklappt */
 @starting-style {
     .settings-pop:popover-open {
+        height: 0;
         background: var(--front-body);
         color: var(--sect-col);
-        transform: translateY(-100%);
-        clip-path: inset(100% -2rem -2rem -2rem);
-    }
-
-    .settings-pop.nach-oben:popover-open {
-        transform: translateY(100%);
-        clip-path: inset(-2rem -2rem 100% -2rem);
+        box-shadow: 0 .25rem 1rem transparent;
     }
 }
 
 .set-btn {
+    flex: none;   /* beim Schrumpfen des Overlays behalten die Knöpfe ihre Höhe */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1479,10 +1470,6 @@ body:not(.tastatur) .settings-btn.offen {
 }
 
 /* Farbschema: groß der aktive Wert (hell/dunkel bzw. auto), klein unten rechts der andere Teil (auto bzw. der Systemwert) */
-.set-schema .set-auto {
-    font-size: .95rem;
-}
-
 .set-ecke {
     position: absolute;
     right: .35rem;
@@ -1495,6 +1482,11 @@ body:not(.tastatur) .settings-btn.offen {
 .set-letter {
     font-family: Ubuntu, "Helvetica neue", Helvetica, Arial, sans-serif;
     font-weight: bold;
+}
+
+/* Text-Modus: jede Einstellung zeigt ein kurzes Wort */
+.set-text {
+    font-size: .85rem;
 }
 
 /* Ansicht: vier Kacheln. Chips = gefüllt, gerundet, mit Abstand; Raster = Umriss, eckig, aneinander */
@@ -1534,7 +1526,7 @@ body:not(.tastatur) .settings-btn.offen {
     line-height: .85;
 }
 
-/* Navigation: Squircle, mit „t“ darin (Schrift in Flächenfarbe) wenn der Text aktiv ist */
+/* Navigation (Icon-Modus): Squircle wie bei APP */
 .set-icon.icon-squircle {
     position: relative;
     display: inline-block;
@@ -1546,30 +1538,7 @@ body:not(.tastatur) .settings-btn.offen {
     vertical-align: top;
 }
 
-.set-icon.mit-t::after {
-    content: "t";
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--sect-col);
-    font: bold .8em Ubuntu, "Helvetica neue", Helvetica, Arial, sans-serif;
-}
-
-/* Ausrichtung: Buchstabe links oder mittig in fester Breite */
-.set-ausrichtung {
-    display: inline-block;
-    width: 1.4rem;
-    text-align: left;
-}
-
-.set-ausrichtung.center {
-    text-align: center;
-}
-
-/* Umschalten und Hover ohne Übergang */
-.settings-pop,
+/* Umschalten und Hover ohne Übergang (das Overlay selbst wächst und schrumpft) */
 .settings-pop *,
 .settings-pop *::before,
 .settings-pop *::after {
@@ -1579,6 +1548,12 @@ body:not(.tastatur) .settings-btn.offen {
 /* Hover und Tastaturfokus kehren wieder um: Fläche in Flächenfarbe, Icon in Schriftfarbe */
 body:not(.tastatur) .set-btn:hover,
 body.tastatur .set-btn:focus-visible {
+    background-color: var(--front-body);
+    color: var(--sect-col);
+    outline: none;
+}
+
+.set-btn:focus-visible {
     background-color: var(--front-body);
     color: var(--sect-col);
     outline: none;
@@ -1606,7 +1581,8 @@ body.tastatur .set-btn:focus-visible .mit-t::after {
         --pop-dauer: 90;
     }
 
-    .settings-pop {
+    .settings-pop,
+    .jumper-pop {
         transition: var(--pop-uebergang) !important;
     }
 }
@@ -1623,22 +1599,36 @@ body.tastatur .set-btn:focus-visible .mit-t::after {
     border: 0;
     box-sizing: border-box;
     overflow-y: auto;
+    overflow-x: hidden;
     border-radius: 0 0 .49rem .49rem;
     background: var(--front-body);
     color: var(--sect-col);
-    box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .35);
+    /* wie das Einstellungs-Overlay: wächst beim Öffnen vom Feld weg und schrumpft beim Schließen zurück */
+    interpolate-size: allow-keywords;
+    height: 0;
+    transition: var(--pop-uebergang);
+    box-shadow: 0 .25rem 1rem transparent;
 }
 
 .jumper-pop.nach-oben {
     border-radius: .49rem .49rem 0 0;
+    justify-content: flex-end;
 }
 
 .jumper-pop:popover-open {
     display: flex;
     flex-direction: column;
+    height: auto;
+    box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .35);
 }
 
-.jumper-pop,
+@starting-style {
+    .jumper-pop:popover-open {
+        height: 0;
+        box-shadow: 0 .25rem 1rem transparent;
+    }
+}
+
 .jumper-pop *,
 .jumper-pop *::before,
 .jumper-pop *::after {
@@ -1646,6 +1636,7 @@ body.tastatur .set-btn:focus-visible .mit-t::after {
 }
 
 .jumper-pop a {
+    flex: none;   /* beim Schrumpfen behalten die Einträge ihre Höhe */
     display: flex;
     align-items: center;
     justify-content: center;
