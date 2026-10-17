@@ -17,21 +17,12 @@ function applyPrefs() {
     document.body.classList.toggle('view-grid', getPref('view') === 'grid');
     document.documentElement.dataset.farbe = getPref('farbe');
     if (typeof settingsAnzeige === 'function') settingsAnzeige();
-    dropdownBeschriften();
 }
 
-// Dropdown: im Icon-Modus das Icon-Zeichen der Section statt ihres Namens
+// Dropdown: in beiden Modi nur der Chevron nach unten (Font-Awesome-Zeichen)
 function dropdownBeschriften() {
-    var icons = document.body.classList.contains('nav-icons');
     document.querySelectorAll('#section-jumper option').forEach(function (o) {
-        if (o.dataset.glyph === undefined) {
-            var i = makeIcon(o.dataset.icon);
-            document.body.appendChild(i);
-            var z = getComputedStyle(i, '::before').content.replace(/["']/g, '');
-            i.remove();
-            o.dataset.glyph = o.dataset.icon === 'icon-squircle' || !z || z === 'none' ? '\uf0c8' : z;
-        }
-        o.textContent = icons ? o.dataset.glyph : o.dataset.titel;
+        o.textContent = '\uf078';
         o.title = o.dataset.titel;
     });
 }
@@ -181,7 +172,6 @@ function render(data) {
         var opt = document.createElement('option');
         opt.value = '#' + sec.id;
         opt.dataset.titel = sec.title;
-        opt.dataset.icon = sec.icon || '';
         sel.appendChild(opt);
     });
     dropdownBeschriften();
@@ -1422,7 +1412,7 @@ function settingsPlatzieren() {
         if (!zeiger.matches || !pop.matches(':popover-open')) return;
         zu = setTimeout(function () { if (pop.matches(':popover-open')) pop.hidePopover(); }, 3000);
     }
-    var zahnrad = document.getElementById('settings-btn');
+    var zahnrad = document.getElementById('settings-btn'), zahnradZu = 0;
     [pop, zahnrad].forEach(function (el) {
         el.addEventListener('mouseenter', zuStoppen);
         el.addEventListener('mouseleave', zuStarten);
@@ -1432,7 +1422,11 @@ function settingsPlatzieren() {
     pop.addEventListener('focusout', zuStarten);
     pop.addEventListener('toggle', function (ev) {
         var an = ev.newState === 'open';
-        zahnrad.classList.toggle('offen', an);   // Zahnrad kehrt um, solange das Overlay offen ist
+        // Zahnrad kehrt um, solange das Overlay offen ist; zurück erst, wenn es eingezogen ist
+        clearTimeout(zahnradZu);
+        if (an) zahnrad.classList.add('offen');
+        else zahnradZu = setTimeout(function () { zahnrad.classList.remove('offen'); },
+            parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--pop-dauer')) || 0);
         zahnrad.setAttribute('aria-expanded', an);
         if (an) zuStarten(); else zuStoppen();
     });

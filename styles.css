@@ -26,7 +26,7 @@ html[data-zoom="m"] {
     --geist-haelt: 2500;         /* so lange wartet ein Sprung höchstens auf den Titel */
     --strich-schwach: .33;       /* Deckkraft des Strichs auf Titel und Section */
     --strich-breite: 3px;
-    --pop-dauer: 200;            /* Einstellungs-Overlay wächst auf und schrumpft zu (ms) */
+    --pop-dauer: 125;            /* Einstellungs-Overlay und Dropdown wachsen auf und schrumpfen zu (ms) */
     --pop-kurve: cubic-bezier(.55, .085, .68, .19);   /* beschleunigt, endet hart */
     --pop-t: calc(var(--pop-dauer) * 1ms);
     --pop-uebergang: height var(--pop-t) var(--pop-kurve), overlay var(--pop-t) allow-discrete, display var(--pop-t) allow-discrete;
@@ -1143,8 +1143,8 @@ body:not(.nav-icons) .settings-btn .secicon {
     display: none;
 }
 
-/* Icon-Modus: das Dropdown zeigt die Icons als Font-Awesome-Zeichen */
-body.nav-icons #section-jumper {
+/* das Dropdown zeigt einen Font-Awesome-Chevron */
+#section-jumper {
     font-family: "Font Awesome 6 Free", sans-serif;
     font-weight: 900;
     color: var(--sect-col);   /* wie die Icons der Leiste; --title-dom ist heller */
@@ -1388,7 +1388,11 @@ body:not(.tastatur) .settings-btn:hover,
     outline: none;
 }
 
-/* gedrückt oder Overlay offen: umgekehrt, bündig mit dem Overlay darunter */
+/* gedrückt oder Overlay offen: umgekehrt, bündig mit dem Overlay darunter; der Wechsel schaltet sofort */
+.settings-btn {
+    transition: none;
+}
+
 .settings-btn:active,
 .settings-btn.offen,
 body:not(.tastatur) .settings-btn:active,
@@ -1430,10 +1434,13 @@ body:not(.tastatur) .settings-btn.offen {
 .jumper-pop:popover-open {
     display: flex;
     height: auto;
-    background: var(--sect-col);
-    color: var(--front-body);
     transition: var(--pop-uebergang);
     box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .35);
+}
+
+.settings-pop:popover-open {
+    background: var(--sect-col);
+    color: var(--front-body);
 }
 
 /* Ausgangslage beim Öffnen = zugeklappt */
@@ -1486,8 +1493,7 @@ body:not(.tastatur) .settings-btn.offen {
 }
 
 /* Text-Modus: jede Einstellung zeigt ein kurzes Wort */
-.set-btn,
-.jumper-pop a {
+.set-btn {
     container-type: inline-size;
 }
 
@@ -1603,8 +1609,8 @@ body.tastatur .set-btn:focus-visible .mit-t::after {
 
 
 
-/* Sections-Liste: gleiche Gestalt, Technik und Farben wie das Einstellungs-Overlay (s. dort), nur mit Sections als Einträgen;
-   Icon-Modus zeigt nur Icons, Text-Modus nur Namen */
+/* Sections-Liste: gleiche Gestalt und Technik wie das Einstellungs-Overlay (s. dort), aber nicht umgekehrt;
+   Icon-Modus zeigt nur Icons, Text-Modus nur Namen in der normalen Schriftgröße */
 .jumper-pop {
     overflow-y: auto;
 }
@@ -1635,20 +1641,15 @@ body:not(.nav-icons) .jumper-pop .secicon {
     line-height: 1;
 }
 
-/* Text-Modus: die Namen nutzen die ganze Breite */
-.jumper-pop .secshort {
-    font-size: clamp(.85rem, 22cqw, 1.25rem);
-}
-
 .jumper-pop a.aktiv .secshort {
     font-weight: bold;
 }
 
-/* Hover und Tastaturfokus kehren wieder um, wie bei den Einstellungen */
+/* Hover und Tastaturfokus kehren um */
 body:not(.tastatur) .jumper-pop a:hover,
 body.tastatur .jumper-pop a:focus-visible {
-    background: var(--front-body);
-    color: var(--sect-col);
+    background: var(--sect-col);
+    color: var(--front-body);
 }
 
 /* ── Geist-Titel (app.js): Kopie des Ziel-Titels am Rand der Ansicht ── */
