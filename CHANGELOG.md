@@ -68,6 +68,9 @@ Names in this log are the current English ones (the code was translated to Engli
 - Ghost headers (`ghostHeader.stack`) again form a stack of all sections between view and target (ordered by distance, target on top, those in between lying ready underneath): further away only the copy of the target glides in, nearer the ones above just glide out and uncover the ones below (before they first glided down). If the target jumped over several, they glide out together. Every change takes 400 ms, the next target waits, only the last one counts (fast hovering skips intermediate steps). Gliding in and out with ease-out; shadow and line fade out quickly at the end of gliding out during the last 25 %.
 - With keyboard navigation a resting mouse pointer over nav chips or headings triggers neither line/chevron nor a ghost header.
 
+**Home screen icon: light only**
+- The dark-mode tag is removed again (iOS 27.2 ignores `media` and showed the dark icon in both modes). The home screen icon is the light one with the thin white outline in both modes.
+
 **Home screen icon: thinner**
 - The white outline of the light icons is half as wide (about 1.5 px at 180 px instead of 3 px), and the dark icons (`ico-dark-*`, white on #333) use Ubuntu Regular instead of Medium, because white text on dark looks bolder. Embedded copies updated.
 

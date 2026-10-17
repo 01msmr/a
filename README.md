@@ -253,9 +253,10 @@ node tools/touch-icon.js inline   # embed the icon (current; run again after cha
 node tools/touch-icon.js url      # default variant: link ./favicon/ico-light-180.png
 ```
 
-Experiment: a second tag `<link rel="apple-touch-icon" media="(prefers-color-scheme: dark)">` carries the dark icon
-(`favicon/ico-dark-180.png`, white "a." in Ubuntu Regular on #333) for dark mode. On iOS 27.2 this makes iOS show the dark icon in both modes (it ignores `media`). iOS does not document dark variants for web shortcuts; the tag
-comes first, so if iOS ignores `media` and takes the last tag, the light icon stays. The script switches it along with the light one.
+There is no dark variant: a second tag `<link rel="apple-touch-icon" media="(prefers-color-scheme: dark)">` was tried, and
+iOS 27.2 ignored `media` and showed the dark icon in both modes. In dark mode iOS puts the light icon on black itself; the thin white
+outline keeps the "a." visible (the home screen icon style "Light" on the phone avoids the darkening). `tools/touch-icon.js` would
+switch a dark tag along if one were added again.
 Both variants also copy the icon to `/apple-touch-icon.png` and `/apple-touch-icon-precomposed.png`. iOS keeps the icon from
 the moment a shortcut is added: to see a change, delete the shortcut, clear the website data for a.msmr.co in Safari and add it again.
 
