@@ -72,7 +72,7 @@ function jumperListe(data) {
         a.appendChild(makeIcon(sec.icon));
         var t = document.createElement('span');
         t.className = 'secshort';
-        t.textContent = sec.title;
+        t.textContent = sec.title.replace(/\..*$/, '');   // „tbx.li“ → „tbx“: passt in die schmale Liste
         a.appendChild(t);
         a.title = sec.title;
         a.addEventListener('click', function (ev) {

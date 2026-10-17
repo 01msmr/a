@@ -1394,8 +1394,10 @@ body:not(.tastatur) #section-jumper:hover,
 }
 
 /* gedrückt oder Overlay offen: umgekehrt, bündig mit dem Overlay darunter; der Wechsel schaltet sofort */
-.settings-btn {
-    transition: none;
+.settings-btn,
+.settings-btn *,
+#section-jumper {
+    transition: none;   /* auch die Kinder (Icon, Wort): ihre Farbe erbt den Wechsel sonst mit Übergang */
 }
 
 .settings-btn:active,
