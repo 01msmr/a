@@ -148,7 +148,7 @@ echo '</pre>';
 if ($write) {
     foreach ($data as $si => $sec) {
         foreach (($sec['links'] ?? []) as $li => $link) {
-            unset($data[$si]['links'][$li]['dead']);
+            unset($data[$si]['links'][$li]['dead'], $data[$si]['links'][$li]['tot']);   // 'tot' is the old name of the flag
         }
     }
     foreach ($dead as $e) {
