@@ -1143,7 +1143,7 @@ body:not(.nav-icons) .settings-btn .secicon {
     display: none;
 }
 
-/* das Dropdown zeigt einen Font-Awesome-Chevron */
+/* das Dropdown zeigt einen dünnen Chevron (zwei Diagonalen, 1,5 px, in der Schriftfarbe), mittig; nach oben, solange die Liste offen ist */
 #section-jumper {
     -webkit-appearance: none;
     appearance: none;
@@ -1152,13 +1152,21 @@ body:not(.nav-icons) .settings-btn .secicon {
     margin-left: -0.375rem;   /* hebt den Spaltenabstand der Leiste (.title) zu den Chips auf */
     padding: 0;
     border-radius: 0;
-    background: transparent;
-    font-family: "Font Awesome 6 Free", sans-serif;
-    font-weight: 900;
-    font-size: 1.5625rem;
-    text-align: center;
-    text-align-last: center;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-size: .5rem .5rem;
+    background-position: calc(50% - .25rem) 50%, calc(50% + .25rem) 50%;
+    /* links „\“, rechts „/“ = V; offen umgekehrt = Λ */
+    background-image:
+        linear-gradient(to top right, transparent calc(50% - .75px), currentColor calc(50% - .75px), currentColor calc(50% + .75px), transparent calc(50% + .75px)),
+        linear-gradient(to top left, transparent calc(50% - .75px), currentColor calc(50% - .75px), currentColor calc(50% + .75px), transparent calc(50% + .75px));
     cursor: inherit;
+}
+
+#section-jumper.offen {
+    background-image:
+        linear-gradient(to top left, transparent calc(50% - .75px), currentColor calc(50% - .75px), currentColor calc(50% + .75px), transparent calc(50% + .75px)),
+        linear-gradient(to top right, transparent calc(50% - .75px), currentColor calc(50% - .75px), currentColor calc(50% + .75px), transparent calc(50% + .75px));
 }
 
 /* Squircle wie Apples App-Icons: Superellipse |x|^5 + |y|^5 = 1 (n ≈ 5; ein mathematisches Squircle hat n = 4).
@@ -1400,6 +1408,8 @@ body:not(.tastatur) #section-jumper:hover,
 /* gedrückt oder Overlay offen: umgekehrt, bündig mit dem Overlay darunter; der Wechsel schaltet sofort */
 .settings-btn,
 .settings-btn *,
+.settings-btn *::before,
+.settings-btn *::after,
 #section-jumper {
     transition: none;   /* auch die Kinder (Icon, Wort): ihre Farbe erbt den Wechsel sonst mit Übergang */
 }
@@ -1739,28 +1749,20 @@ body.view-grid .geist .name {
     transition: none;   /* volle Höhe sofort, keine Skalierung */
 }
 
-/* Chevron als Zeiger (Titel, Nav-Chip): zwei dünne Kanten statt des fetten Font-Awesome-Zeichens, ca. Textgröße; Farbe wie die Titelschrift */
+/* Chevron nach oben als Zeiger im Titel, in normaler Textgröße, Farbe wie die Titelschrift */
 #strich-pfeil {
     position: fixed;
     z-index: 50;
-    width: .6em;
-    height: .6em;
-    box-sizing: border-box;
-    border: 0 solid var(--on-c);
     opacity: 0;
     pointer-events: none;
-    filter: drop-shadow(0 0 1px rgba(0, 0, 0, .5));   /* die dünne helle Linie bleibt auch auf blassen Flächen sichtbar */
-    transition: none;   /* Farbe wechselt sofort */
+    transform: translate(-50%, -50%);
+    color: var(--on-c);
 }
 
-#strich-pfeil[data-richtung="up"] {
-    border-width: 2px 0 0 2px;
-    transform: translate(-50%, -25%) rotate(45deg);
-}
-
-#strich-pfeil[data-richtung="down"] {
-    border-width: 0 2px 2px 0;
-    transform: translate(-50%, -75%) rotate(45deg);
+/* auch das Glyph (::before) ohne Übergang: seine Farbe erbt den Wechsel zwischen Chip und Titel sonst mit 0,3 s */
+#strich-pfeil,
+#strich-pfeil::before {
+    transition: none;
 }
 
 html.strich-an,

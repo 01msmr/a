@@ -19,10 +19,11 @@ function applyPrefs() {
     if (typeof settingsAnzeige === 'function') settingsAnzeige();
 }
 
-// Dropdown: in beiden Modi nur ein Chevron (Font-Awesome-Zeichen), nach oben, solange die Liste offen ist
+// Dropdown: nur ein dünner Chevron (styles.css, #section-jumper), nach oben, solange die Liste offen ist
 function dropdownBeschriften(offen) {
+    document.getElementById('section-jumper').classList.toggle('offen', !!offen);
     document.querySelectorAll('#section-jumper option').forEach(function (o) {
-        o.textContent = offen ? '\uf077' : '\uf078';
+        o.textContent = '';
         o.title = o.dataset.titel;
     });
 }
@@ -947,7 +948,7 @@ function strichSetzen() {
     var p = strich.pfeil, richtung = z.kopf ? (kopfOben ? null : 'up') : chipRichtung(z.chip);
     p.style.opacity = richtung ? '1' : '0';
     if (richtung) {
-        p.dataset.richtung = richtung;
+        p.className = 'fa-solid fa-chevron-' + richtung;
         p.style.left = strich.x + 'px';
         p.style.top = strich.y + 'px';
     }
@@ -993,8 +994,9 @@ function strichPlanen(e) {
     strich.el.id = 'strich';
     strich.el.setAttribute('aria-hidden', 'true');
     document.body.appendChild(strich.el);
-    strich.pfeil = document.createElement('div');
+    strich.pfeil = document.createElement('i');
     strich.pfeil.id = 'strich-pfeil';
+    strich.pfeil.className = 'fa-solid fa-chevron-up';
     strich.pfeil.setAttribute('aria-hidden', 'true');
     document.body.appendChild(strich.pfeil);
     document.addEventListener('mousemove', strichPlanen, { passive: true });
