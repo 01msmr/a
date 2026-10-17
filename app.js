@@ -945,6 +945,9 @@ function strichZiel(t) {
     var z = { sec: t.closest('#container section'), fest: null, hide: false, kopf: !!t.closest('#container .name') };
     // gesperrt: auf Nav-Chips und außerhalb der angeklickten Section der normale Punkt-Zeiger, bis die Maus sich bewegt
     if (sperre.sec && (t.closest('a.secname') || z.sec !== sperre.sec)) return { sec: null, fest: null, hide: false, kopf: false, std: true };
+    // Eintrag der Sections-Liste: derselbe Chevron wie auf dem Nav-Chip (Richtung des Klicks), ohne Strich
+    var eintrag = t.closest('#jumper-pop a');
+    if (eintrag) return { sec: null, fest: null, hide: false, kopf: false, chip: eintrag, liste: true };
     if (t.closest('li a')) { z.hide = true; z.sec = null; }   // Kachel: nur ihr eigener Strich
     else {
         // Kachelrand (kein Hintergrund erkennen) bzw. Nav-Chip: Strich in der Höhe der Zeile
@@ -973,12 +976,13 @@ function strichSetzen() {
         return;
     }
     document.documentElement.classList.add('strich-an');
-    document.documentElement.classList.toggle('strich-std', !!z.std);
     // in der Section (nicht auf Chip oder Kachel) zeigt das kleine Quadrat die Zeigerposition, auch im Titel, der ganz oben steht
     var kopfOben = z.kopf && z.sec && Math.abs(z.sec.getBoundingClientRect().top - document.getElementById('container').getBoundingClientRect().top) <= 2;
     document.documentElement.classList.toggle('strich-punkt', !!z.sec && (!z.kopf || kopfOben));
     // im Titel zeigt ein Chevron nach oben die Zeigerposition, auf einem Nav-Chip nach oben oder unten, wohin der Klick scrollt
     var p = strich.pfeil, richtung = z.kopf ? (kopfOben ? null : 'up') : chipRichtung(z.chip);
+    // normaler Punkt-Zeiger: während der Sperre, und in der Liste, wenn die Section schon oben liegt (kein Chevron)
+    document.documentElement.classList.toggle('strich-std', !!z.std || (!!z.liste && !richtung));
     p.style.opacity = richtung ? '1' : '0';
     if (richtung) {
         p.className = 'fa-solid fa-chevron-' + richtung;
