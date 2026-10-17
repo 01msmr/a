@@ -68,8 +68,11 @@ Names in this log are the current English ones (the code was translated to Engli
 - Ghost headers (`ghostHeader.stack`) again form a stack of all sections between view and target (ordered by distance, target on top, those in between lying ready underneath): further away only the copy of the target glides in, nearer the ones above just glide out and uncover the ones below (before they first glided down). If the target jumped over several, they glide out together. Every change takes 400 ms, the next target waits, only the last one counts (fast hovering skips intermediate steps). Gliding in and out with ease-out; shadow and line fade out quickly at the end of gliding out during the last 25 %.
 - With keyboard navigation a resting mouse pointer over nav chips or headings triggers neither line/chevron nor a ghost header.
 
+**Home screen icon: thinner**
+- The white outline of the light icons is half as wide (about 1.5 px at 180 px instead of 3 px), and the dark icons (`ico-dark-*`, white on #333) use Ubuntu Regular instead of Medium, because white text on dark looks bolder. Embedded copies updated.
+
 **Home screen icon: dark variant (experiment)**
-- A second `<link rel="apple-touch-icon" media="(prefers-color-scheme: dark)">` embeds the dark icon (`ico-dark-180.png`, white "a." on #333) for dark mode, placed before the regular tag: if iOS ignores `media` and uses the last tag, nothing changes. Undocumented for web shortcuts; to be checked on the device. `tools/touch-icon.js` switches it along.
+- A second `<link rel="apple-touch-icon" media="(prefers-color-scheme: dark)">` embeds the dark icon (`ico-dark-180.png`, white "a." on #333) for dark mode, placed before the regular tag: if iOS ignores `media` and uses the last tag, nothing changes. Undocumented for web shortcuts. Result on the device (iOS 27.2): iOS then shows the dark icon in both modes, so it ignores `media`. `tools/touch-icon.js` switches it along.
 
 **Home screen icon: white outline**
 - The light icons (`favicon/ico-light-{180,192,512}.png`, also the embedded home screen icon) now have a white outline around the black "a." (about 3 px at 180 px). In dark mode iOS puts the icon on black itself; a web shortcut cannot supply its own dark variant, so the outline keeps the "a." visible there. Regenerated with the Ubuntu font, then `node tools/touch-icon.js inline`.

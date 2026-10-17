@@ -243,7 +243,7 @@ The pointers belong there too (`--curs-img`, `--curs-sec`, `--curs-hov`, `--curs
 
 ## Home screen icon (iOS)
 
-The home screen icon is `favicon/ico-light-180.png` (180×180, opaque, rendered from the page's Ubuntu font, black "a." with a white outline so it stays visible when iOS darkens the icon in dark mode; a web shortcut cannot supply its own dark variant). On iOS 27.2 the
+The home screen icon is `favicon/ico-light-180.png` (180×180, opaque, rendered from the page's Ubuntu font, black "a." with a thin white outline so it stays visible when iOS darkens the icon in dark mode; a web shortcut cannot supply its own dark variant). On iOS 27.2 the
 Add to Home Screen sheet loads the icon with its own loader that fails on any network URL and then shows a letter tile,
 although the file is fine and opens in a Safari tab. That is why `index.html` currently embeds the icon as a `data:` URI in
 `<link rel="apple-touch-icon">`. The switch is reversible:
@@ -254,7 +254,7 @@ node tools/touch-icon.js url      # default variant: link ./favicon/ico-light-18
 ```
 
 Experiment: a second tag `<link rel="apple-touch-icon" media="(prefers-color-scheme: dark)">` carries the dark icon
-(`favicon/ico-dark-180.png`, white "a." on #333) for dark mode. iOS does not document dark variants for web shortcuts; the tag
+(`favicon/ico-dark-180.png`, white "a." in Ubuntu Regular on #333) for dark mode. On iOS 27.2 this makes iOS show the dark icon in both modes (it ignores `media`). iOS does not document dark variants for web shortcuts; the tag
 comes first, so if iOS ignores `media` and takes the last tag, the light icon stays. The script switches it along with the light one.
 Both variants also copy the icon to `/apple-touch-icon.png` and `/apple-touch-icon-precomposed.png`. iOS keeps the icon from
 the moment a shortcut is added: to see a change, delete the shortcut, clear the website data for a.msmr.co in Safari and add it again.
