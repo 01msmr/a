@@ -1242,6 +1242,7 @@ var EINSTELLUNGEN = [
         label: 'Theme',
         werte: [['auto', 'auto'], ['light', 'light'], ['dark', 'dark']],
         schema: true,
+        alle: true,   // der Hinweis nennt alle Werte, der aktuelle in Klammern
         get: function () { return window.msmrTheme.auto() ? 'auto' : window.msmrTheme.get(); },
         set: function (w) { if (w === 'auto') window.msmrTheme.setAuto(); else window.msmrTheme.set(w); }
     },
@@ -1367,7 +1368,9 @@ function settingsAnzeige() {
     document.querySelectorAll('#settings-pop .set-btn').forEach(function (b, i) {
         var e = EINSTELLUNGEN[i], w = e.get();
         zeichneIcon(b.querySelector('.set-icon'), e, w);
-        b.title = wertName(e, w) + '/' + wertName(e, wertNach(e, w));   // jetzt/nächster Wert
+        b.title = e.alle
+            ? e.werte.map(function (p) { return p[0] === w ? '[' + p[1] + ']' : p[1]; }).join(' / ')
+            : wertName(e, w) + '/' + wertName(e, wertNach(e, w));   // jetzt/nächster Wert
         b.setAttribute('aria-label', e.label + ': ' + b.title);
     });
 }
