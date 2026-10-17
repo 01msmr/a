@@ -60,7 +60,7 @@
     <link rel="manifest" href="./favicon/manifest.json">
     <meta name="theme-color" content="#ffffff">
 
-    <link rel="stylesheet" href="styles.css?v=2026-10-17u">
+    <link rel="stylesheet" href="styles.css?v=2026-10-17v">
 
     <script type="text/javascript">
         document.addEventListener("touchstart", function () { }, true);
@@ -74,14 +74,16 @@
                 a.<span class="titledomain">msmr.co</span>
             </a>
             <nav id="section-nav-list">
-                <button type="button" id="settings-btn" class="settings-btn"
+                <button type="button" id="settings-btn" class="nav-btn"
                 aria-label="Einstellungen" title="Einstellungen">
                 <i class="fa-solid fa-gear secicon" aria-hidden="true"></i><span class="secshort">set</span>
             </button>
+                <!-- Sections-Liste: Zahnrad und Dropdown teilen sich mit den Chips eine Flex-Zeile (gleiche Regeln, gleiche Breiten) -->
+                <button type="button" id="section-jumper" class="nav-btn" aria-haspopup="true" aria-expanded="false"
+                aria-controls="jumper-pop" aria-label="Sections" title="Sections">
+                <i class="fa-solid fa-chevron-down secicon" aria-hidden="true"></i><span class="secshort">sec</span>
+            </button>
             </nav>
-            <!-- autocomplete=off: sonst stellt Chrome beim Reload die alte
-                 Auswahl wieder her und löst damit erneut den Edit-Mode aus -->
-            <select id="section-jumper" autocomplete="off"></select>
             <!-- nur am Telefon sichtbar, siehe styles.css -->
             <a href="#" id="step-prev" class="stepper" target="_self" aria-label="vorige Section">
                 <i class="fa-solid fa-chevron-up" aria-hidden="true"></i>
@@ -97,7 +99,7 @@
         <div id="settings-pop" class="settings-pop" popover="manual"></div>
     </div>
 
-    <script src="app.js?v=2026-10-17u"></script>
+    <script src="app.js?v=2026-10-17v"></script>
 </body>
 
 </html>

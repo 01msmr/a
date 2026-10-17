@@ -261,8 +261,7 @@ section a {
 }
 
 a.secname,
-.settings-btn,
-#section-jumper {
+.nav-btn {
     box-sizing: border-box;
     /* volle Höhe der Leiste, volle Breite: die Chips teilen sich den Platz */
     align-self: stretch;
@@ -457,6 +456,8 @@ body:not(.edit-mode) section h3.name a::after {
     align-self: stretch;
     /* Basis 0: die Chips teilen sich den Rest und brechen auch bei großem Zoom nicht in eine zweite Zeile */
     flex: 1 1 0;
+    /* reicht der Platz nicht, läuft die Zeile nach links über: Zahnrad und Dropdown am Ende bleiben erreichbar */
+    justify-content: flex-end;
 }
 
 a.secname:visited {
@@ -738,8 +739,7 @@ li.tot::after {
     .home-link,
     #section-nav-list,
     .secname,
-    #section-jumper,
-    .settings-btn,
+    .nav-btn,
     .stepper {
         flex-shrink: 0;
         padding: 0 0.8em;
@@ -747,8 +747,7 @@ li.tot::after {
 
     /* niedriger: der 48px-Chip gab bisher die Leistenhöhe vor */
     a.secname,
-    #section-jumper,
-    .settings-btn,
+    .nav-btn,
     .stepper {
         height: 2.375rem;
     }
@@ -839,7 +838,7 @@ li.tot::after {
         padding: 4px 6px;
     }
 
-    /* die Chips weichen dem Dropdown; das Zahnrad bleibt, in seiner eigenen Breite */
+    /* die Chips weichen; Zahnrad und Dropdown bleiben, in ihrer eigenen Breite */
     #section-nav-list {
         flex: 0 0 auto;
     }
@@ -848,7 +847,7 @@ li.tot::after {
         display: none;
     }
 
-    #section-nav-list .settings-btn {
+    #section-nav-list .nav-btn {
         flex: 0 0 auto;
     }
 }
@@ -1014,11 +1013,6 @@ body.edit-mode li.btn-add {
    die ganze Kachel. inline-grid, damit die Spaltenbildung erhalten bleibt —
    sie ist beim Sortieren gerade das, worauf man schaut. */
 @media only screen and (min-device-width: 1025px) {
-    /* sitzt nicht bündig am Seitenrand, sonst wirkt der Rahmen abgeschnitten (Abstand wie zwischen den Chips) */
-    #section-jumper {
-        margin-right: 0.375rem;
-    }
-
     body.edit-mode li:not(.btn-add) {
         display: inline-grid;
         vertical-align: top;
@@ -1129,8 +1123,7 @@ body.nav-icons .secname .secicon {
 
 /* quadratischer Chip, Icon horizontal mittig */
 body.nav-icons a.secname,
-body.nav-icons .settings-btn,
-body.nav-icons #section-jumper {
+body.nav-icons .nav-btn {
     width: 3rem;
     text-align: center;
     /* kein seitliches Polster — sonst wird das größere Icon beschnitten */
@@ -1139,32 +1132,9 @@ body.nav-icons #section-jumper {
 }
 
 body.nav-icons .secname .secshort,
-body.nav-icons .settings-btn .secshort,
-body:not(.nav-icons) .settings-btn .secicon {
+body.nav-icons .nav-btn .secshort,
+body:not(.nav-icons) .nav-btn .secicon {
     display: none;
-}
-
-/* das Dropdown zeigt im Text-Modus das Wort „sec“, im Icon-Modus einen Chevron (nach oben, solange die Liste offen ist) */
-#section-jumper {
-    -webkit-appearance: none;
-    appearance: none;
-    flex: 0 0 auto;   /* wächst nicht mit den Chips */
-    /* Breite und Polster wie die Nav-Chips: Icon-Modus quadratisch (s. dort), Text-Modus Mindestbreite plus Polster von a.secname */
-    margin-left: -0.375rem;   /* hebt den Spaltenabstand der Leiste (.title) zu den Chips auf */
-    border-radius: 0;
-    background-color: transparent;
-    font: inherit;
-    font-size: .9em;   /* wie die Chips */
-    text-align: center;
-    text-align-last: center;
-    cursor: inherit;
-}
-
-/* Icon-Modus: der Chevron als Font-Awesome-Zeichen in der Größe der anderen Nav-Icons */
-body.nav-icons #section-jumper {
-    font-family: "Font Awesome 6 Free", sans-serif;
-    font-weight: 900;
-    font-size: 1.5625rem;
 }
 
 /* Squircle wie Apples App-Icons: Superellipse |x|^5 + |y|^5 = 1 (n ≈ 5; ein mathematisches Squircle hat n = 4).
@@ -1363,7 +1333,7 @@ body.edit-mode #container {
     }
 
     a.secname,
-    .settings-btn {
+    .nav-btn {
         padding-left: 0.25rem;
         padding-right: 0.25rem;
         font-size: 0.75em;
@@ -1371,8 +1341,7 @@ body.edit-mode #container {
 
     /* Icon bleibt 25px, nur die Tippfläche schrumpft */
     body.nav-icons a.secname,
-    body.nav-icons .settings-btn,
-    body.nav-icons #section-jumper {
+    body.nav-icons .nav-btn {
         width: 2.5rem;
         padding-left: 0;
         padding-right: 0;
@@ -1387,35 +1356,32 @@ body.edit-mode #container {
 }
 /* ── Einstellungen: Zahnrad in der Leiste + Overlay ─────────────── */
 
-.settings-btn {
+.nav-btn {
     /* Breite, Polster und Kanten kommen von den Nav-Chips (s. a.secname) */
     background: transparent;
     font-family: inherit;
     cursor: inherit;
 }
 
-body:not(.tastatur) .settings-btn:hover,
-.settings-btn:focus-visible,
-body:not(.tastatur) #section-jumper:hover,
-#section-jumper:focus-visible {
+body:not(.tastatur) .nav-btn:hover,
+.nav-btn:focus-visible {
     color: var(--title-col);
     background-color: color-mix(in srgb, var(--sect-col) 15%, transparent);
     outline: none;
 }
 
 /* gedrückt oder Overlay offen: umgekehrt, bündig mit dem Overlay darunter; der Wechsel schaltet sofort */
-.settings-btn,
-.settings-btn *,
-.settings-btn *::before,
-.settings-btn *::after,
-#section-jumper {
+.nav-btn,
+.nav-btn *,
+.nav-btn *::before,
+.nav-btn *::after {
     transition: none;   /* auch die Kinder (Icon, Wort): ihre Farbe erbt den Wechsel sonst mit Übergang */
 }
 
-.settings-btn:active,
-.settings-btn.offen,
-body:not(.tastatur) .settings-btn:active,
-body:not(.tastatur) .settings-btn.offen {
+.nav-btn:active,
+.nav-btn.offen,
+body:not(.tastatur) .nav-btn:active,
+body:not(.tastatur) .nav-btn.offen {
     color: var(--front-body);
     background-color: var(--sect-col);
 }
@@ -1660,8 +1626,19 @@ body:not(.nav-icons) .jumper-pop .secicon {
     line-height: 1;
 }
 
+/* die aktive Section trägt ihre Farbe (wie der aktive Chip) */
+.jumper-pop a.aktiv {
+    background-color: var(--c, var(--sect-col));
+    color: var(--on-c);
+}
+
 .jumper-pop a.aktiv .secshort {
     font-weight: bold;
+}
+
+/* Dropdown offen: der Chevron zeigt nach oben */
+#section-jumper[aria-expanded="true"] .secicon {
+    transform: rotate(180deg);
 }
 
 /* Hover und Tastaturfokus kehren um */

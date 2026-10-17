@@ -46,6 +46,14 @@ const prüfe = (ok, text) => { if (!ok) fehler.push(text); };
 const dann = (fn, ms) => new Promise(r => setTimeout(() => { fn(); r(); }, ms));
 (async () => {
     await dann(() => prüfe(d.querySelectorAll('section').length > 0, 'keine Sections gerendert'), 500);
+    // Nav: Chips, Zahnrad und Dropdown stehen in einer Zeile (gleiche Flex-Regeln), das Dropdown zuletzt
+    await dann(() => {
+        const nav = d.getElementById('section-nav-list'), kinder = [...nav.children];
+        prüfe(kinder.length > 2 && kinder[kinder.length - 1].id === 'section-jumper', 'Dropdown nicht letzter Nav-Eintrag');
+        prüfe(kinder[kinder.length - 2].id === 'settings-btn', 'Zahnrad nicht vor dem Dropdown');
+        prüfe(d.querySelectorAll('#jumper-pop a').length === d.querySelectorAll('a.secname').length, 'Liste und Chips unterschiedlich lang');
+        prüfe(d.getElementById('section-jumper').tagName === 'BUTTON', 'Dropdown ist kein Button');
+    }, 0);
     // Edit-Mode einschalten und die Beobachter (Microtasks) laufen lassen: hier hing die Seite einmal
     await dann(() => { d.body.classList.add('edit-mode'); w.raster(); w.linksFreigeben(); w.settingsAnzeige(); }, 0);
     await dann(() => {

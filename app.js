@@ -17,45 +17,15 @@ function applyPrefs() {
     document.body.classList.toggle('view-grid', getPref('view') === 'grid');
     document.documentElement.dataset.farbe = getPref('farbe');
     if (typeof settingsAnzeige === 'function') settingsAnzeige();
-    dropdownBeschriften();
-    dropdownBreite();
 }
 
-// Dropdown: Text-Modus das Wort „sec“, Icon-Modus der Font-Awesome-Chevron wie die anderen Nav-Icons, nach oben, solange die Liste offen ist
-function dropdownBeschriften(offen) {
-    var sel = document.getElementById('section-jumper');
-    if (offen !== undefined) sel.classList.toggle('offen', offen);
-    var icons = document.body.classList.contains('nav-icons'), auf = sel.classList.contains('offen');
-    document.querySelectorAll('#section-jumper option').forEach(function (o) {
-        o.textContent = icons ? (auf ? '\uf077' : '\uf078') : 'sec';
-        o.title = o.dataset.titel;
-    });
-}
-
-// Raster in voller Breite: die Nav-Chips strecken sich, das Dropdown (außerhalb der Liste) bekommt die Breite des Zahnrads.
-// Rückkopplung (das Dropdown verkleinert die Liste und damit das Zahnrad) konvergiert; die Bremse hält sie bei Bedarf an.
-var dropBreiteN = 0, dropBreiteT = 0;
-function dropdownBreite() {
-    var sel = document.getElementById('section-jumper'), gz = document.getElementById('settings-btn');
-    if (!sel || !gz) return;
-    var b = document.body.classList;
-    if (!(b.contains('view-grid') && !b.contains('align-center'))) { sel.style.width = ''; return; }
-    var w = gz.getBoundingClientRect().width;
-    if (!w || Math.abs(w - sel.getBoundingClientRect().width) < 1) return;
-    if (++dropBreiteN > 8) return;
-    if (!dropBreiteT) dropBreiteT = setTimeout(function () { dropBreiteN = 0; dropBreiteT = 0; }, 200);
-    sel.style.width = w + 'px';
-}
 
 applyPrefs();
-dropdownBreite();
-window.addEventListener('resize', dropdownBreite);
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(dropdownBreite);
-if (window.ResizeObserver && document.getElementById('settings-btn')) new ResizeObserver(dropdownBreite).observe(document.getElementById('settings-btn'));
 
 // ── Render ────────────────────────────────────────────────────────
 var syncActive = function () { };
 var sperre = { sec: null, x: 0, y: 0 };   // nach Titel- oder Chip-Klick gesperrte Section (s. fensterZiel)
+var jumperWert = '';   // Hash der aktiven Section (oder des Sprungziels); die Liste markiert ihn
 var selSprung = null;   // Ziel eines Sprungs über das Dropdown: es zeigt bis zur Ankunft diese Section
 
 // kräftige, gesättigte Farben (ohne Grauanteil): weiße Schrift (hell) bzw. dunkle Schrift (dunkel) bleibt lesbar
@@ -86,12 +56,25 @@ function koppleHover(a, b) {
     });
 }
 
+// Sprung zu einer Section (Dropdown-Liste)
+function springeZu(hash) {
+    selSprung = hash;
+    jumperWert = hash;
+    // Auffangnetz: die letzte Section erreicht den oberen Rand evtl. nie
+    setTimeout(function () { selSprung = null; syncActive(); }, 1500);
+    var el = document.querySelector(hash);
+    if (el) el.scrollIntoView();
+    document.getElementById('section-jumper').blur();
+    focusContent(el && el.closest('section'));
+}
+
 // Sections-Liste: ein Eintrag je Section (Icon oder Name), öffnet statt des nativen Menüs
 function jumperListe(data) {
     var pop = document.getElementById('jumper-pop');
     pop.innerHTML = '';
-    data.forEach(function (sec) {
+    data.forEach(function (sec, idx) {
         var a = document.createElement('a');
+        a.style.setProperty('--c', secFarbe(idx));   // die aktive Section trägt ihre Farbe
         a.href = '#' + sec.id;
         a.target = '_self';
         a.appendChild(makeIcon(sec.icon));
@@ -103,9 +86,7 @@ function jumperListe(data) {
         a.addEventListener('click', function (ev) {
             ev.preventDefault();
             pop.hidePopover();
-            var sel = document.getElementById('section-jumper');
-            sel.value = '#' + sec.id;
-            sel.dispatchEvent(new Event('change'));
+            springeZu('#' + sec.id);
         });
         pop.appendChild(a);
     });
@@ -125,9 +106,11 @@ function jumperListe(data) {
         pop.style.maxHeight = (oben ? r.top : window.innerHeight - r.bottom) - 8 + 'px';
         pop.classList.toggle('nach-oben', oben);
         pop.querySelectorAll('a').forEach(function (a) {
-            a.classList.toggle('aktiv', a.getAttribute('href') === sel.value);
+            a.classList.toggle('aktiv', a.getAttribute('href') === jumperWert);
         });
         pop.showPopover();
+        var ak = pop.querySelector('a.aktiv');
+        if (ak) ak.scrollIntoView({ block: 'nearest' });   // die aktive Section ist beim Öffnen sichtbar
     }
     function eintragUnter(ev) {
         var el = document.elementFromPoint(ev.clientX, ev.clientY);
@@ -161,7 +144,7 @@ function jumperListe(data) {
         if (ev.key === 'ArrowDown') { ev.preventDefault(); l[Math.min(i + 1, l.length - 1)].focus(); }
         else if (ev.key === 'ArrowUp') { ev.preventDefault(); l[Math.max(i - 1, 0)].focus(); }
     });
-    pop.addEventListener('toggle', function (ev) { dropdownBeschriften(ev.newState === 'open'); });
+    pop.addEventListener('toggle', function (ev) { sel.setAttribute('aria-expanded', ev.newState === 'open'); });
     document.addEventListener('pointerdown', function (ev) {
         if (offen() && !ev.target.closest('#jumper-pop, #section-jumper')) pop.hidePopover();
     });
@@ -173,10 +156,8 @@ function jumperListe(data) {
 function render(data) {
     var chipOf = {};
     var nav = document.getElementById('section-nav-list');
-    var sel = document.getElementById('section-jumper');
-    var zahnrad = document.getElementById('settings-btn');   // bleibt als letzter Eintrag in der Leiste
+    var zahnrad = document.getElementById('settings-btn');   // Chips stehen vor Zahnrad und Dropdown
     nav.querySelectorAll('.secname').forEach(function (a) { a.remove(); });
-    sel.innerHTML = '';
 
     data.forEach(function (sec, idx) {
         var a = document.createElement('a');
@@ -194,25 +175,8 @@ function render(data) {
         a.addEventListener('click', function () { focusContent(); });
         nav.insertBefore(a, zahnrad);
         chipOf[sec.id] = a;
-
-        var opt = document.createElement('option');
-        opt.value = '#' + sec.id;
-        opt.dataset.titel = sec.title;
-        sel.appendChild(opt);
     });
-    dropdownBeschriften();
     jumperListe(data);
-
-    sel.addEventListener('change', function () {
-        selSprung = sel.value;
-        // Auffangnetz: die letzte Section erreicht den oberen Rand evtl. nie
-        setTimeout(function () { selSprung = null; syncActive(); }, 1500);
-        var el = document.querySelector(sel.value);
-        if (el) el.scrollIntoView();
-        // iOS gibt den Fokus nach dem Schließen der Auswahlliste an das select zurück
-        sel.blur();
-        focusContent(el && el.closest('section'));
-    });
 
     var container = document.getElementById('container');
     container.tabIndex = -1;
@@ -273,7 +237,6 @@ function render(data) {
 // Oberste sichtbare Section: Chip invertiert, Dropdown nachgeführt.
 function trackActiveSection() {
     var container = document.getElementById('container');
-    var sel = document.getElementById('section-jumper');
     var chips = document.querySelectorAll('.secname');
     var timer = null;
 
@@ -311,7 +274,7 @@ function trackActiveSection() {
         // angedockter Header → Rahmen der Leiste mitfärben, kein heller Spalt
         document.body.classList.toggle('docked',
             !!aktiv && aktiv.getBoundingClientRect().top - top <= 1);
-        if (selSprung === null || selSprung === active) { selSprung = null; sel.value = active; }
+        if (selSprung === null || selSprung === active) { selSprung = null; jumperWert = active; }
         jumpTarget = null;   // Scrollen zur Ruhe gekommen
     };
 
