@@ -1695,15 +1695,14 @@ body.view-grid .geist .name {
     --richtung: to top;
 }
 
-/* die vorige Kopie behält ihre Farbe und wirft keinen Schatten mehr (nur die dünne Linie), während die neue darüber gleitet */
+/* eine Kopie unter einer anderen behält ihre Farbe, wirft aber keinen Schatten und hat keine Linie mehr */
 .geist.alt {
     filter: none;
 }
 
-/* nur die dünne Linie bleibt und geht mit der ausgleitenden Kopie */
+/* darunterliegende Kopie: weder Schatten noch Linie, damit es bei mehreren nicht immer dunkler wird */
 .geist.alt::after {
-    height: 1px;
-    background: rgba(0, 0, 0, .55);
+    display: none;
 }
 
 /* ── Strich-Zeiger (app.js): senkrechter Strich statt des Punkts ── */

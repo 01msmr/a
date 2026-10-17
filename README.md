@@ -147,7 +147,7 @@ bzw. unteren Rand, bis der echte Titel dort ankommt und weiterläuft; sie bleibt
 die Titelzeile ganz deckt, und blendet dann 60 ms aus. Die Kopien stapeln sich: am oberen Rand liegt die Kopie der frühesten Section oben (am unteren die der spätesten).
 Ein früheres Ziel legt sich darüber; ein späteres lässt die Kopien davor hinausgleiten, und das neue Ziel gleitet darunter
 ein. Kehrt das Ziel zu einer Kopie im Stapel zurück, gleiten die darüber hinaus und sie ist wieder frei. Darunterliegende
-Kopien behalten ihre Farbe und werfen keinen Schatten mehr (nur die dünne Linie); steht der echte Titel einer solchen Kopie
+Kopien behalten ihre Farbe, haben aber weder Schatten noch Linie (es gibt immer nur einen, sonst würde er mit jeder Kopie dunkler); hinausgleitende nehmen Schatten und Linie mit; steht der echte Titel einer solchen Kopie
 in der Ansicht, verschwindet sie. Die Kopie wirft einen weichen Schatten von
 66 % einer Kachelhöhe auf den Inhalt. Nach einem Klick läuft er aus, je näher der echte Titel
 seiner Stelle kommt. Im Edit-Mode gibt es keine Kopie.

@@ -706,7 +706,7 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(fensterPla
 // Die Kopien stapeln sich: stapel liegt von unten nach oben, cur ist die oberste (das aktuelle Ziel). Am oberen Rand liegt die Kopie
 // der frühesten Section oben, am unteren Rand die der spätesten: ein früheres Ziel legt sich darüber, ein späteres lässt die Kopien davor
 // hinausgleiten; kehrt das Ziel zu einer Kopie im Stapel zurück, gleiten die darüber hinaus und sie ist wieder frei.
-var geist = { ebene: null, cur: null, stapel: [], alt: [], sprung: null, sprungT: 0, weg: 0 };
+var geist = { ebene: null, cur: null, stapel: [], alt: [], sprung: null, sprungT: 0, weg: 0, unterT: 0 };
 
 // Lage außerhalb der Ansicht: die Kopie samt Schatten (--schatten) und Linie liegt ganz draußen
 function geistWeg(lage) {
@@ -812,7 +812,6 @@ function geistRender() {
     }
     var kurve = 'transform ' + geistDauer() + 'ms cubic-bezier(.55, .085, .68, .19)';
     function hinaus(g) {   // gleitet samt Schatten und Linie hinaus und wird danach entfernt
-        g.el.classList.add('alt');
         g.el.style.transition = kurve;
         g.el.style.transform = geistWeg(g.lage);
         geist.alt.push(g);
@@ -860,7 +859,12 @@ function geistRender() {
     var idx = geistIndex(sec);
     var weichen = geist.stapel.filter(function (g) { return lage === 'oben' ? geistIndex(g.sec) < idx : geistIndex(g.sec) > idx; });
     geist.stapel = geist.stapel.filter(function (g) { return weichen.indexOf(g) < 0; });
-    geist.stapel.forEach(function (g) { g.el.classList.add('alt'); });   // darunter: nur die dünne Linie, kein zweiter Schatten
+    // darunter: kein zweiter Schatten und keine zweite Linie (sonst wird es immer dunkler); erst wenn die neue Kopie da ist, damit keine Lücke entsteht
+    var darunter = geist.stapel.slice();
+    clearTimeout(geist.unterT);
+    geist.unterT = setTimeout(function () {
+        darunter.forEach(function (g) { if (g !== geist.cur && geist.stapel.indexOf(g) >= 0) g.el.classList.add('alt'); });
+    }, geistDauer());
     // die neue Kopie gleitet immer ein, samt Schatten und Linie; weichende liegen darüber
     el.style.transform = geistWeg(lage);
     if (weichen.length) ebene.insertBefore(el, weichen[0].el); else ebene.appendChild(el);
@@ -881,7 +885,7 @@ function geistIndex(sec) {
 }
 
 function geistZuruecksetzen() {
-    clearTimeout(geist.weg); clearTimeout(geist.sprungT);
+    clearTimeout(geist.weg); clearTimeout(geist.sprungT); clearTimeout(geist.unterT);
     if (geist.ebene) geist.ebene.innerHTML = '';
     geist.cur = null; geist.stapel = []; geist.alt = []; geist.sprung = null;
 }
