@@ -835,6 +835,25 @@ li.tot::after {
     #section-nav-list .nav-btn {
         flex: 0 0 auto;
     }
+
+    /* Dropdown und Zahnrad ganz rechts, das Zahnrad am Rand; die Stepper bleiben links neben dem Titel.
+       display: contents hebt Dropdown und Zahnrad in die Leiste, damit order und margin-left: auto wirken */
+    #section-nav-list {
+        display: contents;
+    }
+
+    .stepper {
+        order: 1;
+    }
+
+    #section-jumper {
+        order: 2;
+        margin-left: auto;
+    }
+
+    #settings-btn {
+        order: 3;
+    }
 }
 
 /* ── Edit Mode ───────────────────────────────────────────────────── */

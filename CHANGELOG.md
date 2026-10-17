@@ -21,6 +21,9 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 - **Leuchtfenster auf Touch an die Scrollposition gekoppelt (`fensterScroll`):** Aus der Bildschirmaufnahme (Stepper-Schritt) ging hervor, dass das Fenster mit eigener Zeit lief und der Scrollkurve vorauseilte (obere Reihen unbedeckt, das Fenster schrumpfte, wuchs im langen Auslauf wieder). Jetzt geht es zwischen zwei Section-Oberkanten vom Rahmen der einen zu dem der nächsten über (Oberkante = Scrollposition); am Einrastpunkt deckt es genau die Section. Entfallen sind die Wischvorhersage (`wischVorhersage`), `fensterJagd` und die Touch-Dauer; ein Tap auf eine Section animiert weiter mit fester Dauer.
 - iPhone hochkant: kein `scroll-snap-stop: always`, ein Wisch darf mehrere Sections überspringen; gerastet wird am Ende.
 
+**Leiste auf dem Smartphone**
+- iPhone hochkant: Dropdown und Zahnrad stehen ganz rechts, das Zahnrad am Rand; die Stepper bleiben links neben dem Titel (`#section-nav-list` ist dort `display: contents`, Reihenfolge per `order`).
+
 **Aufräumen (HTML und Logik, Aussehen unverändert)**
 - **Fehler behoben:** Ein Zeilenkommentar hatte in `fensterZu` die Zeile `f.t0 = performance.now();` verschluckt (seit der Verlangsamung auf Touch). Das Leuchtfenster bekam keine Startzeit und sprang statt zu gleiten, auch auf dem Desktop.
 - Die Leiste ist ein `<header class="title">` statt `<h3>`; `font-size: 1.17em` und `font-weight: bold` stehen jetzt in `.title`, damit alle em-Maße gleich bleiben. Der leere `touchstart`-Listener im `<head>` (iOS-Kniff für `:active`) entfällt.
