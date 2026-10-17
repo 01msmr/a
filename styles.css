@@ -556,7 +556,7 @@ a.sec-btn.active + a.sec-btn {
 }
 
 /* Klick: der Knopf sinkt in die Tiefe (kleiner), keine Bewegung nach unten; Titel gibt leicht nach */
-a.sec-btn:is(:active, .mit-druck):not(.active) {
+body:not(.touch) a.sec-btn:is(:active, .mit-druck):not(.active) {
     transform: scale(.96);
     box-shadow: var(--sb-druck-schatten, 0 -0.125rem 0.25rem -0.0625rem rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .6));
 }
@@ -1800,4 +1800,10 @@ body.wischt a.sec-btn:not(.active) {
     background-color: transparent;
     background-image: none;
     box-shadow: none;
+}
+
+/* Touch: weder Tap-Aufhellung noch Druck-Zustand beim Berühren (ein Wisch darf nichts zeigen) */
+a.sec-btn,
+#container section .name a {
+    -webkit-tap-highlight-color: transparent;
 }
