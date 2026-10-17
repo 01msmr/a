@@ -922,8 +922,8 @@ var strich = { el: null, pfeil: null, secEl: null, x: 0, y: 0, ziel: null, raf: 
 function strichZiel(t) {
     if (!t || !t.closest || document.body.classList.contains('edit-mode')) return null;
     var z = { sec: t.closest('#container section'), fest: null, hide: false, kopf: !!t.closest('#container .name') };
-    // gesperrt: auf Nav-Chips und außerhalb der angeklickten Section gar kein Zeiger, bis die Maus sich bewegt
-    if (sperre.sec && (t.closest('a.secname') || z.sec !== sperre.sec)) return { sec: null, fest: null, hide: true, kopf: false };
+    // gesperrt: auf Nav-Chips und außerhalb der angeklickten Section der normale Punkt-Zeiger, bis die Maus sich bewegt
+    if (sperre.sec && (t.closest('a.secname') || z.sec !== sperre.sec)) return { sec: null, fest: null, hide: false, kopf: false, std: true };
     if (t.closest('li a')) { z.hide = true; z.sec = null; }   // Kachel: nur ihr eigener Strich
     else {
         // Kachelrand (kein Hintergrund erkennen) bzw. Nav-Chip: Strich in der Höhe der Zeile
@@ -952,6 +952,7 @@ function strichSetzen() {
         return;
     }
     document.documentElement.classList.add('strich-an');
+    document.documentElement.classList.toggle('strich-std', !!z.std);
     // in der Section (nicht auf Chip oder Kachel) zeigt das kleine Quadrat die Zeigerposition, auch im Titel, der ganz oben steht
     var kopfOben = z.kopf && z.sec && Math.abs(z.sec.getBoundingClientRect().top - document.getElementById('container').getBoundingClientRect().top) <= 2;
     document.documentElement.classList.toggle('strich-punkt', !!z.sec && (!z.kopf || kopfOben));

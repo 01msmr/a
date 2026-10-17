@@ -1778,6 +1778,11 @@ html.strich-an * {
     cursor: none !important;
 }
 
+html.strich-an.strich-std,
+html.strich-an.strich-std * {
+    cursor: var(--curs-img) 1 1, auto !important;
+}
+
 html.strich-an.strich-punkt,
 html.strich-an.strich-punkt * {
     cursor: var(--curs-sec) 1 1, auto !important;
