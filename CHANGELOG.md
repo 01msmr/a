@@ -65,6 +65,9 @@ Names in this log are the current English ones (the code was translated to Engli
 - Ghost headers (`ghostHeader.stack`) again form a stack of all sections between view and target (ordered by distance, target on top, those in between lying ready underneath): further away only the copy of the target glides in, nearer the ones above just glide out and uncover the ones below (before they first glided down). If the target jumped over several, they glide out together. Every change takes 400 ms, the next target waits, only the last one counts (fast hovering skips intermediate steps). Gliding in and out with ease-out; shadow and line fade out quickly at the end of gliding out during the last 25 %.
 - With keyboard navigation a resting mouse pointer over nav chips or headings triggers neither line/chevron nor a ghost header.
 
+**Dead-link triangle**
+- Grid on the desktop: the triangle now has 8 px legs (before 6 px), still moved 1 px inward; the white 1 px border triangle underneath grew to 11.42 px (8 + 1.42 + 2).
+
 **URL check (`edit/check.php`)**
 - The check runs in batches of 40 in parallel, the GET retry for servers that reject HEAD is parallel too (it aborts after the first bytes), and the page prints its progress ("n / total") after every batch instead of staying blank until the end. 163 entries take about 85 s from the command line; the progress output also keeps a reverse proxy from timing out. The page no longer reads the old `tot` flag, so the dead marks only appear after one run with `?write=1`.
 

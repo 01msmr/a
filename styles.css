@@ -1261,13 +1261,13 @@ body.view-grid:not(.edit-mode) li.dead::after {
     border-radius: 0;
 }
 
-/* Desktop: an isosceles right triangle in the top right corner, legs 6 px (x and y), moved 1 px inward;
+/* Desktop: an isosceles right triangle in the top right corner, legs 8 px (x and y), moved 1 px inward;
    below it a larger white triangle as a 1 px border, so it contrasts on colored sections */
 body.view-grid:not(.edit-mode):not(.touch) li.dead::after {
     top: 1px;
     right: 1px;
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
     clip-path: polygon(0 0, 100% 0, 100% 100%);
     z-index: 3;
 }
@@ -1277,8 +1277,8 @@ body.view-grid:not(.edit-mode):not(.touch) li.dead::before {
     position: absolute;
     top: 0;
     right: 0;
-    width: 9.42px;   /* 6 px + 2 × 1 px border on the legs and 1 px on the hypotenuse (6 + 1.42 + 2) */
-    height: 9.42px;
+    width: 11.42px;   /* 8 px + 2 × 1 px border on the legs and 1 px on the hypotenuse (8 + 1.42 + 2) */
+    height: 11.42px;
     clip-path: polygon(0 0, 100% 0, 100% 100%);
     background: #fff;
     pointer-events: none;

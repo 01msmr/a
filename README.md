@@ -47,7 +47,7 @@ so the browser never shows an old copy.
 ```
 
 - `icon` is a Font Awesome class (6.7.2, CDN) or `icon-squircle`, a custom icon.
-- `dead` marks a link that was not reachable at the last test (red dot; in the grid a square, on the desktop a triangle with 6 px legs, moved 1 px inward and with a white 1 px border, in the top right corner). Exceptions that never count as dead are kept centrally in `never-dead.json` (`allIpAddresses`: every IP address; `hosts`: host names, currently `orderbox` and `kitchen.toolbox-bodensee.de`); `edit/check.php` and the page (`isNeverDead` in `app.js`, also for marks that are already saved) read the same file.
+- `dead` marks a link that was not reachable at the last test (red dot; in the grid a square, on the desktop a triangle with 8 px legs, moved 1 px inward and with a white 1 px border, in the top right corner). Exceptions that never count as dead are kept centrally in `never-dead.json` (`allIpAddresses`: every IP address; `hosts`: host names, currently `orderbox` and `kitchen.toolbox-bodensee.de`); `edit/check.php` and the page (`isNeverDead` in `app.js`, also for marks that are already saved) read the same file.
 - `color` is not displayed. The section color comes from the palette `SEC_COLORS`
   in `app.js` **by position**. Inserting or moving sections therefore changes
   the colors of the following ones.
@@ -130,7 +130,7 @@ iPad and iPhone remain device properties and do not follow the zoom.
 
 Square tiles without gloss, 1 px lines. In inactive sections they are gray, in the
 colored section light. "Left" means full width here, the bar also runs
-across the whole page; the tiles of the sections stay at at most 6 columns and get wider, on narrow screens (smartphone) at least two sit side by side. Empty cells of the last row carry the lines of the tiles. A dead link shows a red square in the corner (on the desktop a triangle with 6 px legs). Edit mode
+across the whole page; the tiles of the sections stay at at most 6 columns and get wider, on narrow screens (smartphone) at least two sit side by side. Empty cells of the last row carry the lines of the tiles. A dead link shows a red square in the corner (on the desktop a triangle with 8 px legs). Edit mode
 keeps using the chip layout.
 
 ### Glow window and ghost headers
