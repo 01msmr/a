@@ -144,9 +144,11 @@ Inhalt, Scrollen ändert sie nicht.
 Liegt der Titel der Ziel-Section (Nav-Chip unter der Maus oder Sprung nach Klick, Dropdown,
 Pfeiltasten) außerhalb der Ansicht, klebt eine Kopie (`#geist-ebene`, `geistRender`) am oberen
 bzw. unteren Rand, bis der echte Titel dort ankommt und weiterläuft; sie bleibt, bis das Fenster
-die Titelzeile ganz deckt, und blendet dann 60 ms aus. Ein neues Ziel gleitet über die vorige
-Kopie (oben, wenn es weiter vorn liegt; am unteren Rand, wenn es weiter hinten liegt): diese behält ihre Farbe und wirft
-keinen Schatten mehr (nur die dünne Linie am Rand geht mit). Jede Kopie beginnt ihren Schatten mit einer 1 px dünnen dunklen Linie. Im umgekehrten Fall weicht die vorige Kopie zurück und die neue liegt darunter. Die Kopie wirft einen weichen Schatten von
+die Titelzeile ganz deckt, und blendet dann 60 ms aus. Die Kopien stapeln sich: am oberen Rand liegt die Kopie der frühesten Section oben (am unteren die der spätesten).
+Ein früheres Ziel legt sich darüber; ein späteres lässt die Kopien davor hinausgleiten, und das neue Ziel gleitet darunter
+ein. Kehrt das Ziel zu einer Kopie im Stapel zurück, gleiten die darüber hinaus und sie ist wieder frei. Darunterliegende
+Kopien behalten ihre Farbe und werfen keinen Schatten mehr (nur die dünne Linie); steht der echte Titel einer solchen Kopie
+in der Ansicht, verschwindet sie. Die Kopie wirft einen weichen Schatten von
 66 % einer Kachelhöhe auf den Inhalt. Nach einem Klick läuft er aus, je näher der echte Titel
 seiner Stelle kommt. Im Edit-Mode gibt es keine Kopie.
 
