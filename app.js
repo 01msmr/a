@@ -419,13 +419,20 @@ function sperreAus() {
 }
 
 // schon beim Drücken, damit der Chip sofort aktiv ist (kein Hover-/Druck-Zustand) und der Zeiger beim Hochscrollen verschwindet
-document.addEventListener('pointerdown', function (e) {
-    letzterZeiger = e.pointerType;
-    document.body.classList.toggle('touch', e.pointerType !== 'mouse');   // Touch hat kein Hover: das hängende :hover von iOS zählt nicht
-    var ziel = e.button === 0 && !document.body.classList.contains('edit-mode') && e.target.closest && e.target.closest('#container .name a, a.sec-btn');
+// Maus: schon beim Drücken. Touch: erst beim Klick, damit ein Wisch über die Chips oder den Titel nichts aktiviert
+function sperreAusEreignis(e, touch) {
+    var ziel = (touch || e.button === 0) && !document.body.classList.contains('edit-mode') && e.target.closest && e.target.closest('#container .name a, a.sec-btn');
     var sec = ziel && (ziel.matches('a.sec-btn') ? (document.querySelector(ziel.getAttribute('href')) || ziel).closest('section') : ziel.closest('section'));
     if (!sec) { sperreAus(); return; }
     sperreAn(sec, e.clientX, e.clientY, ziel.matches('a.sec-btn') ? 'nav' : 'titel');
+}
+document.addEventListener('pointerdown', function (e) {
+    letzterZeiger = e.pointerType;
+    document.body.classList.toggle('touch', e.pointerType !== 'mouse');   // Touch hat kein Hover: das hängende :hover von iOS zählt nicht
+    if (e.pointerType === 'mouse') sperreAusEreignis(e, false);
+}, true);
+document.addEventListener('click', function (e) {
+    if (document.body.classList.contains('touch') && e.detail !== undefined) sperreAusEreignis(e, true);
 }, true);
 document.addEventListener('mousemove', function (e) {
     if (sperre.sec && Math.hypot(e.clientX - sperre.x, e.clientY - sperre.y) > 4) sperreAus();
