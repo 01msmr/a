@@ -1,455 +1,463 @@
-# Änderungen
+# Changes
 
-Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
-`git log`; hier beginnt die Aufzeichnung mit der Sitzung vom 25./26. Juli 2026.
+Newest first. One heading per working session. Older states are in
+`git log`; the record starts here with the session of 25/26 July 2026.
+Names in this log are the current English ones (the code was translated to English on 2026-10-17).
 
-## 2026-10-17 (später) — Touch auf dem Smartphone, Ghost headers als Stapel, Home-Icon, Raster, Hover in der Section, nicht erreichbare Links
+## 2026-10-17 (later) — Touch on the smartphone, ghost headers as a stack, home icon, grid, hover in a section, unreachable links, everything in English
 
-**Touch statt Hover (iOS)**
-- `body.touch` (gesetzt beim `pointerdown` mit Finger oder Stift, entfernt bei echter Mausbewegung): alle `:hover`-Regeln für Kacheln, Titel, Chips und Knöpfe gelten nur ohne diese Klasse; iOS lässt `:hover` nach einem Tap sonst hängen. Auch der Druck-Zustand (`:active`) der Chips und die iOS-Tap-Aufhellung entfallen. Die gekoppelte Hervorhebung (`koppleHover`) reagiert nur noch auf `pointerType === 'mouse'`; die von iOS nachgeschobene Mausposition färbt den Chip nicht mehr.
-- Tippen wirkt wie ein Klick: ein Tap auf Chip, Titel, Hintergrund oder Kachel aktiviert die Section (`sperreAn` beim Klick, nicht beim Berühren). Ein Wisch über Chips oder Titel aktiviert nichts und hebt die Sperre auf (`touchmove`).
+**Touch instead of hover (iOS)**
+- `body.touch` (set on `pointerdown` with a finger or pen, removed on real mouse movement): all `:hover` rules for tiles, headings, chips and buttons only apply without this class; otherwise iOS leaves `:hover` hanging after a tap. The press state (`:active`) of the chips and the iOS tap highlight are gone too. The coupled highlight (`coupleHover`) now only reacts to `pointerType === 'mouse'`; the mouse position pushed in by iOS no longer colors the chip.
+- A tap acts like a click: a tap on a chip, heading, background or tile activates the section (`lockOn` on click, not on touch). A swipe over chips or headings activates nothing and releases the lock (`touchmove`).
 
-**Sections-Dropdown**
-- Einträge auf Touch 2,75 rem hoch (vorher Höhe des Zahnrads); Tap wählt sofort (`pointerup`).
-- Antippen, Ziehen, Loslassen in einem Zug öffnet die Liste und wählt den Eintrag unter dem Finger (`touch-action: none` am Feld).
+**Sections dropdown**
+- Entries are 2.75 rem tall on touch (before: the height of the gear); a tap selects immediately (`pointerup`).
+- Tap, drag, release in one go opens the list and selects the entry under the finger (`touch-action: none` on the field).
 
-**Scrollen**
-- Aktivierung auch bei langsamem Wischen: Nachziehen alle 80 ms während des Scrollens, am Ende per `scrollend` und zusätzlich per eigener Ruhe-Erkennung (`bisRuhe`, zwei stille Frames, ohne Wartezeit). Eine Section gilt 24 px vor dem Einrasten als aktiv (vorher 8 px).
-- Beim Wischen zeigt das Leuchtfenster keinen Hover-Zustand, bleibt aber bei der aktuellen Section (kein Flackern des Hintergrunds); die Chips verlieren ihre Hover-Optik (`html.wischt`).
-- Das Wischen endet erst, wenn der Finger oben ist (`fingerDa`, `touchstart`/`touchend`): hält er beim Ziehen kurz still, geht es gleich weiter, ohne dass das Wischen zwischendurch endet.
-- **Fehler behoben:** Die Wisch-Klasse lag am `body`; deren Klassenwechsel löste die Neuvermessung (`layout()`) aus und störte den Scroll-Auslauf. Jetzt am `html`.
-- **Leuchtfenster auf Touch an die Scrollposition gekoppelt (`fensterScroll`):** Aus der Bildschirmaufnahme (Stepper-Schritt) ging hervor, dass das Fenster mit eigener Zeit lief und der Scrollkurve vorauseilte (obere Reihen unbedeckt, das Fenster schrumpfte, wuchs im langen Auslauf wieder). Jetzt geht es zwischen zwei Section-Oberkanten vom Rahmen der einen zu dem der nächsten über (Oberkante = Scrollposition); am Einrastpunkt deckt es genau die Section. Entfallen sind die Wischvorhersage (`wischVorhersage`), `fensterJagd` und die Touch-Dauer; ein Tap auf eine Section animiert weiter mit fester Dauer.
-- iPhone hochkant: kein `scroll-snap-stop: always`, ein Wisch darf mehrere Sections überspringen; gerastet wird am Ende.
+**Scrolling**
+- Activation also for slow swiping: catching up every 80 ms while scrolling, at the end via `scrollend` and additionally via our own stillness detection (`whenStill`, two still frames, without waiting). A section counts as active 24 px before snapping (before: 8 px).
+- While swiping the glow window shows no hover state but stays at the current section (no flicker of the background); the chips lose their hover look (`html.swiping`).
+- Swiping only ends when the finger is up (`fingerDown`, `touchstart`/`touchend`): if it pauses while dragging, it carries on right away without the swipe ending in between.
+- **Bug fixed:** The swipe class was on the `body`; its class change triggered the re-measure (`layout()`) and disturbed the scroll coasting. Now it is on the `html`.
+- **Glow window on touch tied to the scroll position (`glowScroll`):** The screen recording (stepper step) showed that the window ran on its own time and ran ahead of the scroll curve (upper rows uncovered, the window shrank, grew again in the long coasting). Now it moves between two section top edges from the frame of one to that of the next (top edge = scroll position); at the snap point it covers exactly the section. Removed are the swipe prediction (`swipePrediction`), `glowChase` and the touch duration; a tap on a section still animates with a fixed duration.
+- iPhone in portrait: no `scroll-snap-stop: always`, a swipe may skip several sections; snapping happens at the end.
 
-**Home-Icon (iOS)**
-- Neue Icons `favicon/ico-light-{180,192,512}.png` und `ico-dark-{180,192,512}.png`: das „a.“ in Ubuntu (Schrift der Seite, Medium), opak gerendert (hell #eee/schwarz, dunkel #333/weiß), statt der alten Graustufen-PNGs mit Alpha, die iOS nur klein oder gar nicht zeigte. `index.html` verlinkt das helle als `apple-touch-icon` und beide als `icon` mit `prefers-color-scheme`; das Manifest listet 180, 192 und 512 px (hell). Neue Dateinamen, weil iOS Icons je URL zwischenspeichert. Der Web-App-Modus (standalone) bleibt aus.
+**Home icon (iOS)**
+- New icons `favicon/ico-light-{180,192,512}.png` and `ico-dark-{180,192,512}.png`: the "a." in Ubuntu (the page's font, medium), rendered opaque (light #eee/black, dark #333/white), instead of the old grayscale PNGs with alpha that iOS showed only small or not at all. `index.html` links the light one as `apple-touch-icon` and both as `icon` with `prefers-color-scheme`; the manifest lists 180, 192 and 512 px (light). New file names, because iOS caches icons per URL. The web app mode (standalone) stays off.
 
-**Umbenennung auf Englisch (neue Module von heute)**
-- Zeigerart: `pointerKind`, `isTouch()`, `setPointerKind()` (vorher `zeigerArt`, `istTouch`, `zeigerArtSetzen`); Phone-Abfrage `isPhone()`; Wischen: `swiping`, `swipeEnd`, `fingerDown`, `whenStill` (Ruhe-Erkennung), `html.swiping`; Seiten: `buildPages`, `pageStart`, `fenster.pages`/`pageIdx`, Klasse `.page-start`; Übergang ins Scroll-Fenster: `inScroll`, `offset`. Ältere Einträge dieses Protokolls nennen noch die alten Namen.
+**Renaming to English**
+- Pointer kind: `pointerKind`, `isTouch()`, `setPointerKind()` (before `zeigerArt`, `istTouch`, `zeigerArtSetzen`); phone query `isPhone()`; swiping: `swiping`, `swipeEnd`, `fingerDown`, `whenStill` (stillness detection), `html.swiping`; pages: `buildPages`, `pageStart`, `glow.pages`/`pageIdx`, class `.page-start`; transition into the scroll window: `inScroll`, `offset`.
+- Later the same day everything else followed (see "Everything in English" below).
 
-**Smartphone: Seiten aus Sections**
-- Zwei aufeinanderfolgende halbhohe Sections bilden eine Seite (ein Einrastpunkt), eine übrig bleibende bleibt allein und bekommt eine leere halbhohe Section dahinter (auch als letzte), eine größere beginnt immer eine eigene Seite und scrollt, wenn höher als der Bildschirm, darin frei. `seitenBilden` (in `fensterMessen`) setzt `.seitenstart` und den Füllraum (`margin-bottom`); das Leuchtfenster deckt die ganze Seite; Stepper, Pfeile und Dropdown springen von Seite zu Seite (`seitenStart`, `jumpBy`, `springeZu`). Im Edit-Mode keine Seiten.
+**Smartphone: pages made of sections**
+- Two consecutive half-height sections form one page (one snap point), a remaining one stays alone and gets an empty half-height section behind it (also as the last one), a larger one always starts its own page and, if taller than the screen, scrolls freely inside it. `buildPages` (in `glowMeasure`) sets `.page-start` and the filler (`margin-bottom`); the glow window covers the whole page; steppers, arrows and dropdown jump from page to page (`pageStart`, `jumpBy`, `jumpTo`). No pages in edit mode.
 
-**Touch: Übergang nach dem Tippen**
-- Tippt man in eine Section und scrollt danach, sprang das Fenster vom Tap-Ziel auf den Rahmen der Scrollposition, die Unterkante ruckelte. Jetzt klingt der Abstand beim Übergang in 280 ms ab (Smoothstep, `f.versatz` in `fensterScroll`; zuerst als Exponentialabklang mit 110 ms, der am Anfang ruckte).
-- Auf Touch ist das Kachel-Licht aus (`zeigerArtSetzen` setzt `lichtMaus` und `mausPunkt` zurück und ruft `lichtHart()`; die `mouseover`-/`mousemove`-Handler des Lichts ignorieren von iOS nachgeschobene Mausereignisse). Vorher blieb es an der Berührungsstelle auf dem Bildschirm hängen, während darunter gescrollt wurde.
+**Touch: transition after tapping**
+- If you tap into a section and then scroll, the window jumped from the tap target to the frame of the scroll position and the bottom edge stuttered. Now the distance fades out during the transition over 280 ms (smoothstep, `f.offset` in `glowScroll`; first as an exponential decay with 110 ms, which jerked at the start).
+- On touch the tile light is off (`setPointerKind` resets `lightMouse` and `mousePoint` and calls `lightReset()`; the light's `mouseover`/`mousemove` handlers ignore mouse events pushed in by iOS). Before, it stayed stuck at the touch point on the screen while the content scrolled underneath.
 
-**Desktop: Hover in einer Section**
-- Der aktive Chip folgt nur noch der Scrollposition, nie der Maus (vorher wurde der Chip der Section unter der Maus aktiv, also gefüllt). Liegt die Maus irgendwo in einer nicht aktiven Section (Titel, Hintergrund, Kachel), zeigt deren Chip die weiche Hover-Fläche wie beim direkten Hover im Nav (`.sec-hover`); der aktive Chip bleibt wie ohne Hover. Entfallen: die `mousemove`-/`mouseleave`-Nachführung (`mausPos`). Die Titel selbst sind unverändert.
+**Desktop: hover in a section**
+- The active chip now only follows the scroll position, never the mouse (before, the chip of the section under the mouse became active, i.e. filled). If the mouse is anywhere in a non-active section (heading, background, tile), its chip shows the soft hover area as with direct hover in the nav (`.sec-hover`); the active chip stays as without hover. Removed: the `mousemove`/`mouseleave` tracking (`mousePos`). The headings themselves are unchanged.
 
-**Smartphone und nicht erreichbare Links**
-- Smartphone: keine Ghost headers mehr; die Titel bleiben an ihrer Section und scrollen mit ihr aus der Ansicht (kein Kleben am Rand der Ansicht).
-- Touch: Die Hover-Farbe der Kacheln erscheint sofort, ohne Übergang.
-- Raster am Desktop: Das „nicht erreichbar“-Zeichen ist ein Dreieck in der oberen rechten Ecke mit 6 px Katheten, 1 px nach innen gerückt, mit weißem 1-px-Rand (zweites, 9,42 px großes weißes Dreieck darunter) für den Kontrast auf farbigen Sections.
-- Alle Geräte: IP-Adressen, `http://orderbox` und `kitchen.toolbox-bodensee.de` gelten nie als nicht erreichbar. Die Ausnahmen stehen zentral in `never-dead.json`; `intern()` in `edit/pruefen.php` und `isNeverDead()` in `app.js` lesen dieselbe Datei.
+**Smartphone and unreachable links**
+- Smartphone: no ghost headers any more; the headings stay with their section and scroll out of view with it (no sticking to the edge of the view).
+- Touch: the hover color of the tiles appears immediately, without a transition.
+- Grid on the desktop: The "not reachable" mark is a triangle in the top right corner with 6 px legs, moved 1 px inward, with a white 1 px border (a second, 9.42 px white triangle underneath) for contrast on colored sections.
+- All devices: IP addresses, `http://orderbox` and `kitchen.toolbox-bodensee.de` never count as unreachable. The exceptions are kept centrally in `never-dead.json`; `internal()` in `edit/check.php` and `isNeverDead()` in `app.js` read the same file.
 
-**Raster auf dem Smartphone**
-- Im Raster-Modus stehen mindestens zwei Kacheln nebeneinander (Spaltenbreite höchstens `50 % - 1px`), bei mehr Platz mehr, höchstens 6; vorher ergab ein schmales Telefon eine Spalte, wenn zwei Kacheln à 11,875 rem nicht ganz passten.
+**Grid on the smartphone**
+- In grid mode at least two tiles sit side by side (column width at most `50 % - 1px`), more when there is room, at most 6; before, a narrow phone gave one column when two tiles of 11.875 rem did not quite fit.
 
-**Leiste auf dem Smartphone**
-- iPhone hochkant: Dropdown und Stepper folgen dicht auf den Titel, das Zahnrad steht ganz rechts am Rand (`#section-nav-list` ist dort `display: contents`, Reihenfolge per `order`).
+**Bar on the smartphone**
+- iPhone in portrait: dropdown and steppers follow close behind the title, the gear sits at the very right edge (`#section-nav-list` is `display: contents` there, order via `order`).
 
-**Aufräumen (HTML und Logik, Aussehen unverändert)**
-- **Fehler behoben:** Ein Zeilenkommentar hatte in `fensterZu` die Zeile `f.t0 = performance.now();` verschluckt (seit der Verlangsamung auf Touch). Das Leuchtfenster bekam keine Startzeit und sprang statt zu gleiten, auch auf dem Desktop.
-- Die Leiste ist ein `<header class="title">` statt `<h3>`; `font-size: 1.17em` und `font-weight: bold` stehen jetzt in `.title`, damit alle em-Maße gleich bleiben. Der leere `touchstart`-Listener im `<head>` (iOS-Kniff für `:active`) entfällt.
-- Zeigerart zentral: `zeigerArt`, `istTouch()` und `zeigerArtSetzen()` ersetzen `letzterZeiger` und sechs Direktabfragen von `body.touch`; ein gemeinsamer `pointerdown`-Handler setzt Zeigerart, Wisch-Ausgangspunkt und Klick-Sperre. Die Wisch-Zustände stehen in einem Block („Touch-Wischen“); der tote Timer `wischT` entfällt.
-- `tools/smoke.js` nutzt Pointer-Events mit `pointerType` (jsdom kennt keine); die beiden Prüfungen zu gekoppeltem Hover und Klick-Sperre schlugen vorher fehl.
+**Cleanup (HTML and logic, looks unchanged)**
+- **Bug fixed:** A line comment had swallowed the line `f.t0 = performance.now();` in `glowTo` (since the slowdown on touch). The glow window got no start time and jumped instead of gliding, also on the desktop.
+- The bar is a `<header class="title">` instead of an `<h3>`; `font-size: 1.17em` and `font-weight: bold` now live in `.title` so all em measures stay the same. The empty `touchstart` listener in the `<head>` (iOS trick for `:active`) is gone.
+- Pointer kind centralized: `pointerKind`, `isTouch()` and `setPointerKind()` replace `lastPointer` and six direct queries of `body.touch`; one shared `pointerdown` handler sets pointer kind, swipe origin and click lock. The swipe states are in one block ("Touch swiping"); the dead timer `swipeTimer` is gone.
+- `tools/smoke.js` uses pointer events with `pointerType` (jsdom has none); the two checks for coupled hover and click lock used to fail.
 
-**Zeiger, Tastatur und Geist-Titel**
-- Im Titel nur der Chevron, kein schwacher Section-Strich; der Strich bleibt in der Section. Im obersten (aktiven) Titel gelten Punkt und Strich, kein Chevron.
-- Geist-Titel: der Schatten beginnt mit einer 1 px dünnen dunklen Linie, die auch an der ausgleitenden Kopie bleibt; die vorige Kopie wird nicht mehr grau.
-- **Ghost headers (vorher „Geist-Titel“) umbenannt:** `ghostHeader*` statt `geist*` in `app.js` (Zustand `ghostHeader` mit `stack`, `leaving`, `layer`, …; `ghostHeaderRender`, `ghostHeaderRemove`, …), `.ghost-header`, `#ghost-header-layer` und `--ghost-header-shadow/-fade/-hold` im CSS; Rand-Klassen `top`/`bottom`, Klasse `under` statt `alt`.
-- Ghost headers wechseln nur einzeln: läuft ein Wechsel (400 ms), wartet das nächste Ziel auf dessen Ende und nur das letzte zählt (`ghostHeader.free`); beim schnellen Überfahren mehrerer Chips gleiten so nie mehrere Kopien gleichzeitig wie ein Fächer.
-- Ghost headers (`ghostHeader.stack`) bilden wieder einen Stapel aus allen Sections zwischen Ansicht und Ziel (nach Entfernung geordnet, Ziel oben, die dazwischen fertig darunter): weiter weg gleitet nur die Kopie des Ziels ein, näher gleiten die darüber nur hinaus und legen die darunter frei (vorher glitten sie erst herunter). Sprang das Ziel über mehrere, gleiten sie gemeinsam hinaus. Jeder Wechsel dauert 400 ms, das nächste Ziel wartet, nur das letzte zählt (schnelles Überfahren lässt Zwischenschritte aus). Ein- und Hinausgleiten mit ease-out; Schatten und Linie blenden am Ende des Hinausgleitens in den letzten 25 % schnell aus.
-- Bei Tastaturnavigation löst ein ruhender Mauszeiger über Nav-Chips oder Titeln weder Strich/Chevron noch Geist-Titel aus.
+**Pointer, keyboard and ghost headers**
+- In the heading only the chevron, no faint section line; the line stays in the section. In the topmost (active) heading dot and line apply, no chevron.
+- Ghost headers: the shadow starts with a 1 px thin dark line, which also stays on the copy gliding out; the previous copy no longer turns gray.
+- **Ghost headers renamed** (before "Geist-Titel", German for ghost titles): `ghostHeader*` instead of `geist*` in `app.js` (state `ghostHeader` with `stack`, `leaving`, `layer`, …; `ghostHeaderRender`, `ghostHeaderRemove`, …), `.ghost-header`, `#ghost-header-layer` and `--ghost-header-shadow/-fade/-hold` in the CSS; edge classes `top`/`bottom`, class `under` instead of `old`.
+- Ghost headers change one at a time: while a change runs (400 ms), the next target waits for it to end and only the last one counts (`ghostHeader.free`); when hovering quickly over several chips, several copies never glide at once like a fan.
+- Ghost headers (`ghostHeader.stack`) again form a stack of all sections between view and target (ordered by distance, target on top, those in between lying ready underneath): further away only the copy of the target glides in, nearer the ones above just glide out and uncover the ones below (before they first glided down). If the target jumped over several, they glide out together. Every change takes 400 ms, the next target waits, only the last one counts (fast hovering skips intermediate steps). Gliding in and out with ease-out; shadow and line fade out quickly at the end of gliding out during the last 25 %.
+- With keyboard navigation a resting mouse pointer over nav chips or headings triggers neither line/chevron nor a ghost header.
 
----
-
-## 2026-10-17 — Nav und Sections-Dropdown vereinheitlicht, Zeiger als Bildzeiger, Klick-Sperre, Sections umsortieren
-
-**Nav und Sections-Dropdown**
-- **Eine Zeile, eine Gestalt:** Chips, Zahnrad und Dropdown stehen in `#section-nav-list`; Zahnrad und Dropdown teilen sich die Klasse `.nav-btn` (vorher `.settings-btn`, dazu Sonderregeln für `#section-jumper` und eine JS-Messung der Breite). Reicht der Platz nicht, läuft die Zeile nach links über, damit Zahnrad und Dropdown erreichbar bleiben.
-- **Button statt Select:** Das Dropdown ist ein `<button>` (`aria-expanded`), Text-Modus „sec“, Icon-Modus Chevron, der sich offen nach oben dreht. Die `<option>`-Hacks (Glyphen als Text, `sel.value`) entfallen; `jumperWert` und `springeZu()` ersetzen sie.
-- **Liste wie die Chips:** Chips und Einträge teilen `a.sec-btn` (`secKnopf` baut beide): gleiche Grundgestalt, Hover-, Aktiv- und Druckeffekte; in der Liste flach (`--sb-*`-Variablen). `koppleHover` koppelt Chip, Titel und Eintrag einer Section. Die aktive Section ist in der offenen Liste gefüllt. Eintragshöhe wie die Einstellungen (`navKnopfHoehe`). Die Pfeiltasten gelten am Dropdown-Button nicht global.
-- **Overlays:** Einstellungen und Sections-Liste wachsen in der Höhe auf und schrumpfen zu (125 ms), auch beim Auto-Schließen; nur die Höhe animiert, Farben schalten vor dem Aufziehen bzw. nach dem Einziehen. Das Zahnrad schaltet ohne Übergang (auch das Glyph, ein `::before`) und kehrt erst nach dem Einziehen zurück.
-
-**Einstellungen**
-- Farbschema mit „auto“ in einem Knopf (auto, light, dark); der separate auto-Knopf der Leiste entfällt. Hover-Hinweis „jetzt/nächster Wert“ bzw. alle Werte beim Theme.
-- Text-Modus: alle Einstellungen als kurze englische Wörter (`aut`, `light`, `dark`, `col`, `pale`, `text`, `chip`, `grid`, `left`, `cen`, `edit`, `save`), größere Schrift. Ausrichtung im Icon-Modus mit `fa-align-left` und `fa-align-center`; Navigation: „text“ statt „t“ im Squircle.
-- Blasse Farbe etwas kräftiger (`--farbe-blass` .4).
-
-**Zeiger**
-- Chevron nach oben oder unten auf Titeln, Nav-Chips und Listeneinträgen, wohin ein Klick scrollt. Echter Bildzeiger (SVG, 25 px, je Thema `--curs-auf` und `--curs-ab`), `data-pfeil` auf `html`; ein DOM-Element lag hinter der Liste (oberste Ebene).
-- Das Quadrat in der Section ist weiß im Hellen, invertiert im Dunkeln; im obersten Titel gilt es statt des Chevrons.
-- Der Kachel-Strich sitzt im gleitenden Licht (`.licht-strich`) und wandert mit. Alle Zeiger ohne Übergang (die globale Regel `*` überblendete Glyphen und Farben).
-- Der Titel zeigt beim Hover keinen 28-%-Schleier mehr.
-
-**Klick-Sperre**
-- Nach einem Klick auf Titel, Chip oder Listeneintrag bleibt die Section Ziel, bis die Maus sich um mehr als 4 px bewegt oder ein anderer Klick kommt (`sperreAn`, `body.gesperrt`): Leuchtfenster, aktiver Chip, kein Kachel-Licht und kein Kachel-Hover, kein Chip-Hover, Zeiger der normale Punkt. Nach einem Titelklick hebt auch ein Tastendruck sie auf.
-
-**Bearbeiten**
-- Sections lassen sich per Griff am Titel senkrecht umsortieren (`sectionsSortierbar`); der Speicherdialog nennt die geänderte Reihenfolge. Der Doppelklick auf die Leiste startet das Bearbeiten nicht mehr.
-- **Fehler behoben:** Beim Einschalten des Edit-Modes fror die Seite ein. `lichtHart()` rief `classList.remove` auch ohne gesetzte Klasse auf, das zählt als Änderung und löste den Beobachter auf `<body>` immer wieder aus. Jetzt nur noch bei gesetzter Klasse; zusätzlich bricht `sicherBeobachten` die Beobachter nach 500 Aufrufen ohne Atempause ab.
-
-**Sonstiges**
-- Theme-Werte zentral: ein Dunkel-Block statt zweier, `data-theme` wird immer gesetzt (auto = System). Ohne JavaScript gilt das helle Thema.
-- Raster: Linie unter der gehoverten Kachel bleibt wie vorher; Section-Füllung 1 px weiter, damit bei gebrochener Höhe kein Streifen bleibt.
-- Smartphone-/Kleinansicht: das Zahnrad (mit Dropdown) bleibt auch im Hochformat, die Chips weichen.
-- `tools/smoke.js`: Rauchtest ohne Browser (jsdom).
+**Everything in English (identifiers, texts, documents)**
+- Identifiers in `app.js`, `styles.css`, `index.html` and `tools/smoke.js`: `fenster*` → `glow*` (the glow window), `licht*` → `light*` and `.licht`/`#kachel-licht` → `.tile-light`/`#tile-light`, `strich*` → `cursor*` (`#cursor`, `#cursor-sec`, `.cursor-on/-dot/-std`), `sperre*` → `lock*` (`body.locked`), `kachel` → `tile`, `koppleHover` → `coupleHover`, `springeZu` → `jumpTo`, `maszLesen` → `readMeasures`, and the classes `.gedeckt` → `.covered`, `.aktuell` → `.current`, `.heiss` → `.hot`, `.tastatur` → `.keyboard`, `.mit-hover` → `.with-hover`, `.mit-druck` → `.with-press`, `.da` → `.inverted`, `.seite` → `.app-frame`; CSS variables such as `--kachel` → `--tile`, `--raster` → `--grid`, `--schatten` → `--shadow`, `--fenster-dauer` → `--glow-duration`, `--curs-auf/-ab` → `--curs-up/--curs-down`; `data-pfeil` → `data-arrow`.
+- **Data and saved choices:** the link flag `tot` is now `dead` (in `edit/links.json`, `links.default.json` and the PHP scripts; `edit/check.php` rewrites all flags on `?write=1`, so run it once if the live data still carries `"tot"`). The setting stored as `a.farbe` (`bunt`/`blass`) is now `a.colorMode` (`vivid`/`pale`): a device that had saved "pale" starts with "vivid" once and has to choose again.
+- **Scripts:** `edit/pruefen.php` is now `edit/check.php` and `?schreiben=1` is `?write=1`; all messages and the report page are English.
+- **Visible texts:** dialogs (`Save changes?`, `Discard changes?`, `Save new entries?`, `Changed (n)`, `Deleted (n)`, `Order changed (n)`), button hints (`Delete`, `Restore`, `Add link`, `Move`, `Move section`), the sign-in hint and the load error are English, as are the `aria-label`s and the test messages; `index.html` carries `lang="en"`.
+- All comments in `app.js`, `styles.css`, `index.html`, the PHP scripts and `tools/smoke.js`, plus `README.md`, this log (history included) and the documents under `docs/`, were translated. Names in older entries are the current ones.
 
 ---
 
-## 2026-10-15 bis 16 — Leuchtfenster, Geist-Titel, Kachel-Licht, Strich-Zeiger, Farbe
+## 2026-10-17 — Nav and sections dropdown unified, pointer as an image pointer, click lock, re-sorting sections
 
-**Leuchtfenster und Geist-Titel**
-- **Leuchtfenster:** Statt die Section beim Wechsel sofort einzufärben, gleitet ein Fenster zur neuen Section (Hover, Nav, Tastatur, sonst die oberste) und wächst bzw. schrumpft dabei (200 ms, beschleunigt, endet hart). Die Farbe wechselt hart an den Section-Kanten: jede Section malt ihren Teil als Verlauf mit harten Stopps (`app.js`, `fensterInit`). Zeilen schalten per `.gedeckt`, sobald ihre Mitte im Fenster liegt; die untere Rasterlinie per `.gedeckt-u` an der Unterkante der Zeile. `.gedeckt`-Regeln ersetzen die `:hover`/`:has`/`.aktuell`-Selektoren in `styles.css`. Hover-Fläche des Titels (28 %) in Chips und Raster; auch der Chip der aktiven Section zählt als Hover.
-- **Geist-Titel:** Liegt der Titel der Ziel-Section außerhalb der Ansicht, klebt eine Kopie am Rand, bis der echte Titel dort ankommt (auch nach einem Klick, während die Seite scrollt). Sie wird erst entfernt, wenn das Fenster die Titelzeile ganz deckt, und blendet dabei 60 ms aus. Ein neues Ziel gleitet über die vorige Kopie, die grau wird und keinen Schatten mehr wirft. Weicher Schatten von 66 % einer Kachelhöhe, nach einem Klick auslaufend, ohne Unterstreichung.
-- **Kachelschrift:** In der leuchtenden Section bleibt sie `--on-c` (hell: weiß, dunkel: dunkel). Der Druckzustand des Titels (`.mit-druck`) ändert nur noch den Schatten, nicht mehr die Farbe (kein Hell-Dunkel-Hell beim Klick auf einen Nav-Chip).
-- **Zustandscache:** Beim Neumessen bleibt der Zustand je Zeile und je Klasse (`.gedeckt`, `.gedeckt-u`) erhalten; vorher überschrieb einer den anderen, und die Kachelschrift hing in falscher Farbe.
+**Nav and sections dropdown**
+- **One row, one shape:** Chips, gear and dropdown sit in `#section-nav-list`; gear and dropdown share the class `.nav-btn` (before `.settings-btn`, plus special rules for `#section-jumper` and a JS measurement of the width). If space is short, the row overflows to the left so that gear and dropdown stay reachable.
+- **Button instead of select:** The dropdown is a `<button>` (`aria-expanded`), text mode "sec", icon mode a chevron that turns upward when open. The `<option>` hacks (glyphs as text, `sel.value`) are gone; `jumperValue` and `jumpTo()` replace them.
+- **List like the chips:** Chips and entries share `a.sec-btn` (`sectionButton` builds both): same base shape, hover, active and press effects; flat in the list (`--sb-*` variables). `coupleHover` couples chip, heading and entry of a section. The active section is filled in the open list. Entry height like the settings (`navButtonHeight`). The arrow keys do not apply globally on the dropdown button.
+- **Overlays:** Settings and sections list grow in height and shrink back (125 ms), also on auto-closing; only the height animates, colors switch before growing or after retracting. The gear switches without a transition (also the glyph, a `::before`) and only returns after retracting.
 
-**Kachel-Licht (Chips und Raster)**
-- Die Hover-Fläche der Kachel ist ein einzelnes Element (`#kachel-licht`), das von Kachel zu Kachel gleitet (90 ms, Kurve `--licht-potenz`). Aus dem Nichts kommt es in voller Größe von außen über die Eintrittskante durch ein festes Rechteck ohne Rundung (Kachelgröße) in die Kachel und verlässt sie genauso (90 ms, linear); es wird nichts skaliert. Die Kachelschrift kehrt erst um (`.da`), wenn das Licht sie zu 95 % deckt; geprüft wird je Frame, so bleibt keine hängen. Die Zelle unter dem Licht trägt die Section-Farbe sofort (`.kachel-zelle`, hinter dem Licht), das Fenster der Section läuft davon unabhängig. Das Licht folgt sicherheitshalber bei Bewegung und Scrollen der Kachel unter dem Zeiger.
+**Settings**
+- Color scheme with "auto" in one button (auto, light, dark); the separate auto button of the bar is gone. Hover hint "now/next value" or all values for the theme.
+- Text mode: all settings as short English words (`aut`, `light`, `dark`, `col`, `pale`, `text`, `chip`, `grid`, `left`, `cen`, `edit`, `save`), larger text. Alignment in icon mode with `fa-align-left` and `fa-align-center`; navigation: "text" instead of "t" in the squircle.
+- Pale color a bit stronger (`--color-pale` .4).
 
-**Strich-Zeiger**
-- Senkrechter Strich statt des Punkts: auf Nav-Chips und Kachelrändern in Zeilenhöhe, auf Section-Hintergrund und Titel in Section-Höhe mit 33 % Deckkraft (`#strich-sec` im Inhalt, hinter Titel, Kacheln und Licht; nicht beim Hover auf einer Kachel, dort zeichnet die Kachel ihren eigenen Strich). Systemzeiger bleibt in Feldern, Dropdown, Einstellungen und im Edit-Mode. Farbe schaltet sofort.
+**Pointer**
+- Chevron up or down on headings, nav chips and list entries, showing where a click scrolls. Real image pointer (SVG, 25 px, per theme `--curs-up` and `--curs-down`), `data-arrow` on `html`; a DOM element lay behind the list (top layer).
+- The square in the section is white in light mode, inverted in dark mode; in the topmost heading it applies instead of the chevron.
+- The tile line sits in the gliding light (`.tile-light-line`) and moves along. All pointers without a transition (the global `*` rule cross-faded glyphs and colors).
+- The heading no longer shows a 28 % veil on hover.
 
-**Einstellungen**
-- **Farbe:** Neue Einstellung bunt/blass: die Sättigung aller Section-Farben sinkt bei gleicher Helligkeit (`--farbe-blass`, 0,4); Icon ein Kreis in einer Section-Farbe. Gespeichert als `a.farbe`.
-- **Overlay:** Gleitet beim Öffnen unter dem Zahnrad herunter und beim Schließen hinauf (am Telefon umgekehrt), die Farben wechseln unterwegs (200 ms, bei reduzierter Bewegung 90 ms). Breite bündig mit dem Zahnrad; im Raster behalten die Knöpfe die Höhe wie bei Chips.
+**Click lock**
+- After a click on a heading, chip or list entry the section stays the target until the mouse moves by more than 4 px or another click comes (`lockOn`, `body.locked`): glow window, active chip, no tile light and no tile hover, no chip hover, pointer the normal dot. After a heading click a key press releases it as well.
 
-**Raster**
-- Kacheln einer Section bleiben bei höchstens 6 Spalten und füllen die Breite. Leere Felder der letzten Zeile tragen die Linien der Kacheln (`--leer`, `.group::after`).
+**Editing**
+- Sections can be re-sorted vertically by the handle on the heading (`sectionsSortable`); the save dialog names the changed order. A double click on the bar no longer starts editing.
+- **Bug fixed:** Switching on edit mode froze the page. `lightReset()` called `classList.remove` even without the class set, which counts as a change and triggered the observer on `<body>` again and again. Now only when the class is set; in addition `safeObserve` disconnects the observers after 500 calls without a break.
 
-**Zentral**
-- Zeiten, Kurven, Anteile und Deckkraft stehen als Variablen im ersten `:root` von `styles.css`, `app.js` liest sie einmal (`maszLesen`).
-
----
-
-## 2026-10-11 — Nur noch zwei Werte je Einstellung
-
-Jede Einstellung hat zwei Werte, der Knopf schaltet zum anderen, keine Vorschau beim Hover. Zoom nur S/M ohne Erkennung (gespeichertes `l` zählt als `m`). Farbschema nur hell/dunkel; die Automatik ist ein eigener Kreis am Ende der Leiste (leer/gefüllt).
-
-- **Text-Modus:** Zahnrad heißt „set“, der Automatik-Knopf „auto“ (aktiv = umgekehrt); im Icon-Modus Zahnrad und Kreis.
-- **Sections-Liste:** Statt des nativen Menüs öffnet das Auswahlfeld in beiden Modi eine eigene Liste (`#jumper-pop`): im Text-Modus Namen, im Icon-Modus Icons; Stapel in Feldbreite wie das Einstellungs-Overlay, nicht umgekehrt, ohne Übergänge. Drücken, ziehen, loslassen wählt einen Eintrag. Grund: das native macOS-Menü zeigt keine Webschrift (Font-Awesome-Icons erschienen als „?“).
-- **Auswahlfeld:** Bleibt ein `<select>`; im Icon-Modus zeigt es das Icon-Zeichen in der Farbe der Leisten-Icons. Beim Sprung über das Dropdown zeigt es bis zur Ankunft die gewählte Section (`selSprung`), nicht die durchscrollten.
-- **APP-Icon:** überall Font Awesomes `fa-square` statt der Squircle-Maske (die bleibt nur im Navigations-Knopf der Einstellungen). Ein Versuch, das Feld auf einen Button umzubauen, wurde verworfen.
-- **Titelzeile:** Die ganze Zeile einer Section ist der Link (`a::after` über die Zeile), nicht im Edit-Mode.
-- **Desktop:** Das Dropdown hat 0,375 rem Abstand zum rechten Seitenrand.
-- **Cache:** `styles.css` und `app.js` hängen `?v=…` an (in `index.html`); der Server schickt keine Cache-Header, ein altes `app.js` zu neuem `index.html` ließ die Seite leer. Bei Änderungen die Version hochzählen.
+**Miscellaneous**
+- Theme values central: one dark block instead of two, `data-theme` is always set (auto = system). Without JavaScript the light theme applies.
+- Grid: the line under the hovered tile stays as before; section fill 1 px further, so no stripe remains at fractional heights.
+- Smartphone/small view: the gear (with dropdown) stays in portrait too, the chips give way.
+- `tools/smoke.js`: smoke test without a browser (jsdom).
 
 ---
 
-## 2026-10-09 bis 11 — Sektionsfarben, Zoom, Farbschema, Einstellungs-Overlay, Raster
+## 2026-10-15 to 16 — Glow window, ghost headers, tile light, line pointer, color
 
-Aus einem Feinschliff der Nav und der Kacheln wurde eine umfassende Überarbeitung der
-Oberfläche. Geprüft wurde im Headless-Browser (Vivaldi über CDP) mit Messwerten und
-Screenshots, nicht nach Augenmaß; Telefon, iPad, Dunkelmodus im Raster und die
-Fernbedienung am TV blieben ungeprüft.
+**Glow window and ghost headers**
+- **Glow window:** Instead of coloring the section immediately on a change, a window glides to the new section (hover, nav, keyboard, otherwise the topmost) and grows or shrinks on the way (200 ms, accelerating, ends hard). The color changes abruptly at the section edges: each section paints its part as a gradient with hard stops (`app.js`, `glowInit`). Rows switch via `.covered` as soon as their middle lies inside the window; the bottom grid line via `.covered-bottom` at the bottom edge of the row. `.covered` rules replace the `:hover`/`:has`/`.current` selectors in `styles.css`. Hover area of the heading (28 %) in chips and grid; the chip of the active section also counts as hover.
+- **Ghost headers (then "Geist-Titel"):** If the heading of the target section lies outside the view, a copy sticks to the edge until the real heading arrives there (also after a click while the page scrolls). It is only removed once the window fully covers the heading row, and fades out over 60 ms. A new target glides over the previous copy, which turns gray and no longer casts a shadow. Soft shadow of 66 % of a tile height, fading out after a click, without underline.
+- **Tile text:** In the glowing section it stays `--on-c` (light: white, dark: dark). The press state of the heading (`.with-press`) now only changes the shadow, no longer the color (no light-dark-light on a click on a nav chip).
+- **State cache:** When re-measuring, the state per row and per class (`.covered`, `.covered-bottom`) is kept; before, one overwrote the other and the tile text got stuck in the wrong color.
 
-### Sektionsfarben und Hervorhebung
+**Tile light (chips and grid)**
+- The hover area of the tile is a single element (`#tile-light`) that glides from tile to tile (90 ms, curve `--light-power`). Out of nowhere it comes in full size from outside over the entry edge through a fixed rectangle without rounding (tile size) into the tile and leaves it the same way (90 ms, linear); nothing is scaled. The tile text only inverts (`.inverted`) when the light covers 95 % of it; checked per frame, so none stays stuck. The cell under the light carries the section color immediately (`.tile-cell`, behind the light), the window of the section runs independently of it. For safety the light follows the tile under the pointer on movement and scrolling.
 
-Jede Section hat eine Farbe (`--c`, 15 Töne aus `SEC_COLORS`, nach Position). Daraus
-leiten sich ab: `--c-hov` (28 % Deckkraft), `--on-c` (Schrift auf der Farbe) und
-`--c-text` (die Sektionsfarbe mit auf einen Bereich begrenzter Helligkeit, damit sie auf
-Weiß bzw. Dunkel lesbar bleibt).
+**Line pointer**
+- Vertical line instead of the dot: on nav chips and tile edges at row height, on section background and heading at section height with 33 % opacity (`#cursor-sec` in the content, behind heading, tiles and light; not when hovering a tile, there the tile draws its own line). The system pointer stays in fields, dropdown, settings and in edit mode. Color switches immediately.
 
-Die **aktive oder gehoverte Section füllt sich ganz** in ihrer Farbe, Schrift weiß (im
-Dunkeln `#111`). Die Kachel unter dem Cursor kehrt um: helle Fläche, Text in der
-Sektionsfarbe, der gezeichnete Strich-Cursor ebenfalls. Die Titel-Hervorhebung der aktiven
-Section entfiel; der Nav-Chip folgt im Maus-Modus der Section unter der Maus.
+**Settings**
+- **Color:** New setting vivid/pale: the saturation of all section colors drops at the same lightness (`--color-pale`, 0.4); icon a circle in a section color. Saved as `a.colorMode` (before `a.farbe` with `bunt`/`blass`).
+- **Overlay:** Glides down under the gear when opening and up when closing (the other way round on the phone), the colors change on the way (200 ms, with reduced motion 90 ms). Width flush with the gear; in the grid the buttons keep the height as for chips.
 
-Es zählt **nur die zuletzt benutzte Eingabe**. `body.tastatur` (gesetzt bei Tab und Pfeilen,
-entfernt bei Mausbewegung) schaltet zwischen Hover-Regeln und Fokus-Regeln um. Im
-Maus-Modus tritt die „aktuelle“ Section zurück, solange eine andere gehovert wird —
-vorher waren zwei gleichzeitig eingefärbt.
+**Grid**
+- Tiles of a section stay at at most 6 columns and fill the width. Empty cells of the last row carry the lines of the tiles (`--empty`, `.group::after`).
 
-Behoben: Beim Tastatur-Sprung bekam die Ziel-Section zuerst den Fokus und erst später
-`.aktuell`. In der Lücke galt nur die allgemeine Regel, die Titel, Unterkante und Text auf
-`--title-col` setzt, im Dunkeln also ein weißes Aufblitzen. Die Einfärbung gilt jetzt auch
-bei `section:focus-visible`.
+**Central**
+- Times, curves, shares and opacity are variables in the first `:root` of `styles.css`, `app.js` reads them once (`readMeasures`).
 
-### app als dritte Section
+---
 
-`mitApp()` in `app.js` setzt die Section `app` an Position 3, wenn sie in den Daten fehlt;
-ein früher gespeichertes „APP“ und das Handy-Icon werden beim Laden auf `app` und den
-Squircle umgestellt. Der Titel steht kleingeschrieben da, die Großbuchstaben macht
-`text-transform` wie bei den anderen. Das Icon `icon-squircle` ist eine Superellipse mit
-Exponent 5 (Apples App-Icons; ein mathematisches Squircle hätte 4), als CSS-Maske aus einem
-SVG gezeichnet — Font Awesome hat keine solche Form.
+## 2026-10-11 — Only two values per setting
+
+Each setting has two values, the button switches to the other one, no preview on hover. Zoom only S/M without detection (a saved `l` counts as `m`). Color scheme only light/dark; the automatic mode is a separate circle at the end of the bar (empty/filled).
+
+- **Text mode:** The gear is called "set", the automatic button "auto" (active = inverted); in icon mode gear and circle.
+- **Sections list:** Instead of the native menu the select field opens its own list in both modes (`#jumper-pop`): names in text mode, icons in icon mode; stack in field width like the settings overlay, not inverted, without transitions. Press, drag, release selects an entry. Reason: the native macOS menu does not show web fonts (Font Awesome icons appeared as "?").
+- **Select field:** Stays a `<select>`; in icon mode it shows the icon character in the color of the bar icons. When jumping via the dropdown it shows the selected section until arrival (`selJump`), not the ones scrolled past.
+- **APP icon:** Font Awesome's `fa-square` everywhere instead of the squircle mask (which only stays in the navigation button of the settings). An attempt to turn the field into a button was discarded.
+- **Heading row:** The whole row of a section is the link (`a::after` across the row), not in edit mode.
+- **Desktop:** The dropdown has 0.375 rem distance to the right edge of the page.
+- **Cache:** `styles.css` and `app.js` append `?v=…` (in `index.html`); the server sends no cache headers, an old `app.js` with a new `index.html` left the page empty. Increase the version on changes.
+
+---
+
+## 2026-10-09 to 11 — Section colors, zoom, color scheme, settings overlay, grid
+
+A polish of the nav and the tiles turned into a comprehensive overhaul of the
+interface. It was checked in a headless browser (Vivaldi via CDP) with measured values and
+screenshots, not by eye; phone, iPad, dark mode in the grid and the
+remote control on the TV remained unchecked.
+
+### Section colors and highlighting
+
+Every section has a color (`--c`, 15 tones from `SEC_COLORS`, by position). From it
+are derived: `--c-hov` (28 % opacity), `--on-c` (text on the color) and
+`--c-text` (the section color with lightness limited to a range, so it stays readable on
+white or dark).
+
+The **active or hovered section fills completely** in its color, text white (in
+dark mode `#111`). The tile under the cursor inverts: light area, text in the
+section color, the drawn line cursor too. The heading highlight of the active
+section was dropped; in mouse mode the nav chip follows the section under the mouse.
+
+Only **the most recently used input counts**. `body.keyboard` (set on Tab and arrows,
+removed on mouse movement) switches between hover rules and focus rules. In
+mouse mode the "current" section steps back as long as another one is hovered —
+before, two were colored at the same time.
+
+Fixed: On a keyboard jump the target section got the focus first and `.current` only
+later. In the gap only the general rule applied, which sets heading, bottom edge and text to
+`--title-col`, in dark mode a white flash. The coloring now also applies
+for `section:focus-visible`.
+
+### app as the third section
+
+`withApp()` in `app.js` puts the section `app` at position 3 if it is missing in the data;
+a previously saved "APP" and the phone icon are switched to `app` and the
+squircle on load. The title is written in lowercase, the capitals come from
+`text-transform` as with the others. The icon `icon-squircle` is a superellipse with
+exponent 5 (Apple's app icons; a mathematical squircle would have 4), drawn as a CSS mask from an
+SVG — Font Awesome has no such shape.
 
 ### Zoom S / M / L
 
-`html` bekommt `font-size: calc(100% * var(--zoom))` mit 1, 1,25 und 1,6. Kachelbreite,
-Zeilen- und Leistenhöhe, Abstände, Schatten und der rote Punkt stehen in `rem`; Haarlinien
-bleiben `1px`. Die Wahl liegt je Gerät in `localStorage["msmr.zoom"]`, ohne Eintrag gilt ein
-automatischer Standard (TV, breit ohne Maus, Tablet). Ein Inline-Skript im `<head>` setzt
-sie vor dem ersten Paint. API: `msmrZoom.get/set/step/cycle/reset`. Tasten `+`, `-`, `0`.
+`html` gets `font-size: calc(100% * var(--zoom))` with 1, 1.25 and 1.6. Tile width,
+row and bar height, spacing, shadows and the red dot are in `rem`; hairlines
+stay `1px`. The choice is kept per device in `localStorage["msmr.zoom"]`, without an entry an
+automatic default applies (TV, wide without a mouse, tablet). An inline script in the `<head>` sets
+it before the first paint. API: `msmrZoom.get/set/step/cycle/reset`. Keys `+`, `-`, `0`.
 
-Die Nav-Chips bekamen `flex: 1 1 0`, damit sie bei großem Zoom nicht in eine zweite Zeile
-brechen. Die `device-width`-Media-Queries bleiben in `px`.
+The nav chips got `flex: 1 1 0` so they do not wrap to a second row at large zoom.
+The `device-width` media queries stay in `px`.
 
-### Farbschema auto / hell / dunkel
+### Color scheme auto / light / dark
 
-Die Variablen stehen für Hell (Standard), für die Systemvorgabe Dunkel und für die
-ausdrückliche Wahl `data-theme="dark"`. Dunkel steht deshalb zweimal in `styles.css` — eine
-Media Query kennt kein Attribut. Die Wahl liegt in `localStorage["msmr.theme"]`, ohne Eintrag
-folgt die Seite dem System. Im Dunkeln hat die Hover-Kachel die Seitenfarbe als Fläche und
-der Glanz ist auf 60 % gesenkt (`--glanz`).
+The variables exist for light (default), for the dark system default and for the
+explicit choice `data-theme="dark"`. Dark is therefore in `styles.css` twice — a media
+query does not know an attribute. The choice is kept in `localStorage["msmr.theme"]`, without an entry
+the page follows the system. In dark mode the hover tile has the page color as its area and
+the gloss is lowered to 60 % (`--gloss`).
 
-### Einstellungen im Overlay
+### Settings in the overlay
 
-Zahnrad als letzter Nav-Eintrag, davor die Chips, danach das Dropdown. Ein Klick öffnet
-einen senkrechten Stapel aus Icon-Knöpfen (ein natives `popover="manual"`), jeder schaltet
-reihum. Das Icon zeigt in Ruhe den Zustand und unter dem Zeiger das Ergebnis des Klicks; nach
-einem Klick den neuen Zustand, bis der Zeiger den Knopf verlassen hat. Der Stapel ist so
-breit wie das Zahnrad, das dieselben Breitenregeln wie die Nav-Chips teilt, und invertiert
-sich solange er offen ist. Drücken, auf einen Knopf ziehen und Loslassen schaltet nur diesen
-Knopf. Mit Maus schließt er sich 3 s nach dem Verlassen, ohne Zeiger nie.
+The gear as the last nav entry, the chips before it, the dropdown after it. A click opens
+a vertical stack of icon buttons (a native `popover="manual"`), each cycles through
+the values. At rest the icon shows the state and under the pointer the result of the click; after
+a click the new state, until the pointer has left the button. The stack is as
+wide as the gear, which shares the same width rules as the nav chips, and inverts
+itself as long as it is open. Pressing, dragging onto a button and releasing only switches this
+button. With a mouse it closes 3 s after leaving, without a pointer never.
 
-Der frühere Einstellungsblock im Edit-Mode und die zwei Knopfleisten unten rechts
-entfielen. Die Einstellungen Navigation (Text/Icons) und Ausrichtung (links/Mitte) sind
-vom Edit-Mode ins Overlay gewandert.
+The former settings block in edit mode and the two button strips at the bottom right
+are gone. The settings navigation (text/icons) and alignment (left/center) moved
+from edit mode into the overlay.
 
-### Raster-Ansicht
+### Grid view
 
-Neue Einstellung „Ansicht“: eckige Kacheln ohne Glanz, 1 px Linien auf den Gitterlinien
-(grau in inaktiven Sections, hell in der eingefärbten), kein Strich unter dem Titel und kein
-Polster unter der Gruppe. Bei Hover hebt sich der Titel mit 28 % in der Schriftfarbe von der
-Fläche ab. „Links“ heißt hier volle Breite, auch die Leiste. Der tote Link ist ein rotes
-Quadrat bündig in der Ecke. Der Edit-Mode bleibt beim Chip-Layout.
+New setting "View": square tiles without gloss, 1 px lines on the grid lines
+(gray in inactive sections, light in the colored one), no line under the heading and no
+padding under the group. On hover the heading stands out with 28 % in the text color from the
+area. "Left" means full width here, also for the bar. The dead link is a red
+square flush in the corner. Edit mode stays with the chip layout.
 
-### Bearbeiten
+### Editing
 
-Einstieg über das Overlay (zwei Chevrons; während der Bearbeitung eine Diskette) oder
-Doppelklick auf die Leiste. Speichern/Abbrechen und der Eintrag „edit“ im Dropdown
-entfielen. Das Beenden fragt: speichern? sonst verwerfen? sonst weiterbearbeiten; ohne
-Änderung lädt die Seite einfach neu. Links lassen sich in andere Sections ziehen (nur mit
-Maus); der Speichern-Dialog meldet dann die Ziel-Section als geändert.
+Entry via the overlay (two chevrons; a floppy disk while editing) or
+double click on the bar. Save/cancel and the entry "edit" in the dropdown
+are gone. Finishing asks: save? otherwise discard? otherwise keep editing; without a
+change the page simply reloads. Links can be dragged into other sections (mouse
+only); the save dialog then reports the target section as changed.
 
-### Tastatur
+### Keyboard
 
-- Pfeile gelten auch mit Fokus auf Nav-Chips oder Zahnrad.
-- Nach einer Mausbewegung starten sie an der Section bzw. Kachel unter der Maus statt am
-  Scrollstand. Davor sprang „nach unten“ zur ersten Section.
-- Pfeil links nach einem Section-Wechsel geht auf die letzte Kachel der Section.
+- The arrows also work with focus on nav chips or gear.
+- After a mouse movement they start at the section or tile under the mouse instead of the
+  scroll position. Before, "down" jumped to the first section.
+- Arrow left after a section change goes to the last tile of the section.
 
-### Weiteres
+### More
 
-- Favicon ist jetzt `apple-icon-180x180.png`; `favicon-32x32.png` existierte nicht. Pfade im
-  Manifest sind relativ zum Manifest.
-- `tools/dev-router.php`: Demo-Server mit `no-store` und Versionsnummer an CSS/JS. Eine
-  zeitweilige Cache-`.htaccess` ist wieder entfernt, die echte Seite lädt korrekt.
-- Die Seite hat keine Rundung des Rahmens mehr (`div.seite` füllt das Fenster); die
-  Eckenrundung der Vivaldi-Webview ist eine Browsereinstellung.
+- The favicon is now `apple-icon-180x180.png`; `favicon-32x32.png` did not exist. Paths in the
+  manifest are relative to the manifest.
+- `tools/dev-router.php`: demo server with `no-store` and a version number on CSS/JS. A
+  temporary cache `.htaccess` has been removed again, the real site loads correctly.
+- The page no longer has a rounded frame (`div.app-frame` fills the window); the
+  corner rounding of the Vivaldi webview is a browser setting.
 
-### Fallstricke, die bleiben
+### Pitfalls that remain
 
-- **Spezifität bei den Hover-Regeln.** Die Einfärbung steht in mehreren Selektorlisten
-  (Maus, Fokus, aktuell). Wer eine Eigenschaft ändert, muss alle drei erwischen.
-- **`:where(:not(:has(...)))`** hält die Spezifität der „aktuell“-Regeln klein; ein
-  normales `:not()` würde sie über die Hover-Regeln heben.
-- **`custom property` mit Farbe im `:root`.** `--teiler` o. Ä. mit `var(--c)` im `:root`
-  wertet nicht pro Section aus; solche Mischungen gehören direkt in die Regel.
-- **`sed -i` auf macOS** braucht `-i ''`; Python-Ersetzungen mit `assert` sind sicherer.
-- **Screenshots im Headless-Browser** zeigen die Seite am rechten Rand doppelt und
-  lassen das Overlay manchmal aus; Messwerte (`getComputedStyle`, `elementFromPoint`) sind
-  verlässlicher als das Bild.
+- **Specificity of the hover rules.** The coloring is in several selector lists
+  (mouse, focus, current). Whoever changes a property has to catch all three.
+- **`:where(:not(:has(...)))`** keeps the specificity of the "current" rules low; a
+  normal `:not()` would lift them above the hover rules.
+- **`custom property` with a color in `:root`.** `--divider` or the like with `var(--c)` in `:root`
+  is not evaluated per section; such mixes belong directly in the rule.
+- **`sed -i` on macOS** needs `-i ''`; Python replacements with `assert` are safer.
+- **Screenshots in a headless browser** show the page twice at the right edge and
+  sometimes omit the overlay; measured values (`getComputedStyle`, `elementFromPoint`) are
+  more reliable than the picture.
 
-## 2026-07-26 — Höhenraster, gekürzte Namen, Fokus, tote Links
+## 2026-07-26 — Height grid, shortened names, focus, dead links
 
-Der Tag begann mit zwei Wünschen fürs iPad und wuchs zu einer Überarbeitung
-der mobilen Darstellung. Geprüft wurde durchgehend mit einem lokalen
-Testserver und Messungen im Browser statt nach Augenmaß — mehrere Befunde
-haben Annahmen widerlegt, die vorher plausibel aussahen.
+The day began with two wishes for the iPad and grew into an overhaul
+of the mobile presentation. Everything was checked with a local
+test server and measurements in the browser instead of by eye — several findings
+refuted assumptions that looked plausible beforehand.
 
-### Höhenraster
+### Height grid
 
-Sections belegen jetzt ein **ganzes Vielfaches eines Viertels der
-Inhaltshöhe**: am iPad einen Platz, überlange zwei; am iPhone zwei oder vier.
-Damit steht nie eine angeschnittene Section am unteren Rand.
+Sections now occupy a **whole multiple of a quarter of the
+content height**: on the iPad one slot, overlong ones two; on the iPhone two or four.
+So a cut-off section never stands at the bottom edge.
 
-`raster()` in `app.js` rundet die Höhen auf, die Rastereinheit kommt aus der
-CSS-Eigenschaft `--raster` der jeweiligen Media Query. Wo sie fehlt — am
-Desktop — behalten die Sections ihre eigenen Höhen. CSS allein konnte das
-nicht: Aufrunden auf ein Vielfaches hängt am Inhalt.
+`gridInit()` in `app.js` rounds the heights up, the grid unit comes from the
+CSS property `--grid` of the respective media query. Where it is missing — on the
+desktop — the sections keep their own heights. CSS alone could not do this:
+rounding up to a multiple depends on the content.
 
-Die Schwelle liegt bei 20 Links pro Platz und passt sich von selbst an: Fällt
-eine zweiplätzige Section darunter, bekommt sie wieder einen Platz.
+The threshold is 20 links per slot and adapts by itself: if
+a two-slot section falls below it, it gets one slot again.
 
-`max-height: 46vh` ist entfallen, `height: 100%` wurde zu `min-height`. Beides
-waren Decken ohne `overflow` — Inhalt lief darüber hinaus in die nächste
-Section.
+`max-height: 46vh` is gone, `height: 100%` became `min-height`. Both
+were ceilings without `overflow` — content ran past them into the next
+section.
 
-### Kacheln
+### Tiles
 
-Lange Namen brechen nicht mehr um, sondern werden mit `…` gekürzt. Dadurch
-sind alle Kacheln auf einem Gerät exakt gleich groß. Vorher lief die zweite
-Zeile über die nächste Reihe, überall dort wo die Kachelbreite fest ist.
+Long names no longer wrap but are shortened with `…`. As a result
+all tiles on a device are exactly the same size. Before, the second
+line ran into the next row, everywhere the tile width is fixed.
 
-Die Spaltenzahl folgt der verfügbaren Breite statt einer festen Zahl
-(`repeat(auto-fill, minmax(190px, 1fr))`): am iPad vier im Hoch-, sechs im
-Querformat, ohne eigene Regel je Orientierung. Bei 190 px Mindestbreite bleibt
-**kein einziger der 162 Namen gekürzt**.
+The number of columns follows the available width instead of a fixed number
+(`repeat(auto-fill, minmax(190px, 1fr))`): on the iPad four in portrait, six in
+landscape, without a rule of its own per orientation. At a minimum width of 190 px
+**not a single one of the 162 names is shortened**.
 
-Der vertikale Zwischenraum entfiel — `margin` und `gap` lagen übereinander und
-kosteten 8 px je Reihe. Section-Köpfe sind mobil von 54 auf 35 px geschrumpft;
-das bringt keine zusätzliche Kachelreihe, nur eine kompaktere Seite.
+The vertical gap is gone — `margin` and `gap` lay on top of each other and
+cost 8 px per row. Section headers shrank on mobile from 54 to 35 px;
+that does not bring an additional tile row, just a more compact page.
 
-### Leiste und Überlappungen
+### Bar and overlaps
 
-Die untere Leiste am iPhone verdeckte 14–23 px Inhalt: Sie war 64–73 px hoch,
-`.container` hielt aber nur 50 px frei. Ursache war ein `padding` von 0.5em
-oben und unten. Jetzt bestimmt der Chip die Höhe, und `raster()` setzt den
-Freiraum auf die gemessene Leistenhöhe — er stimmt damit immer.
+The bottom bar on the iPhone covered 14–23 px of content: it was 64–73 px tall,
+but `.container` only kept 50 px free. The cause was a `padding` of 0.5em
+top and bottom. Now the chip determines the height, and `gridInit()` sets
+the free space to the measured bar height — so it is always right.
 
-Im Querformat brach dieselbe Leiste auf 113 px um und verdeckte 63 px. Grund
-war eine Doppelregel: `.title` war zweimal definiert, und die spätere
-überstimmte allein durch ihre Position das `flex-wrap: nowrap` der
-Smartphone-Query. Zusammengeführt.
+In landscape the same bar wrapped to 113 px and covered 63 px. The reason
+was a double rule: `.title` was defined twice, and the later one
+overrode the `flex-wrap: nowrap` of the smartphone query merely by its position. Merged.
 
-`#container` bekommt seine Höhe jetzt per Flexbox statt als geschätzte 94 %.
-Zusammen mit der 50 px hohen Leiste ergab die Schätzung unterhalb von 833 px
-Seitenhöhe einen Überschuss — deshalb ließ sich die Seite am iPad **nur im
-Querformat** um wenige Pixel schieben.
+`#container` now gets its height via flexbox instead of an estimated 94 %.
+Together with the 50 px bar the estimate gave a surplus below 833 px
+page height — which is why the page could be moved by a few pixels on the iPad **only in
+landscape**.
 
-Gummiband nur noch auf einer Ebene: `overscroll-behavior: contain` am Inhalt,
-`none` an Seite und Dokument.
+Rubber band on one level only: `overscroll-behavior: contain` on the content,
+`none` on page and document.
 
-### Sprungtasten am iPhone
+### Jump keys on the iPhone
 
-Zwei gefüllte Chevron-Tasten hinter dem Dropdown springen eine Section vor
-oder zurück, mit Umlauf von der letzten zur ersten. Sie benutzen dieselbe
-`jumpBy()` wie die Pfeiltasten; die schlagen weiterhin an den Enden an.
+Two filled chevron keys behind the dropdown jump one section forward
+or back, wrapping from the last to the first. They use the same
+`jumpBy()` as the arrow keys; those still stop at the ends.
 
-### Fokus und Kontrast
+### Focus and contrast
 
-Der kontrastreiche Zustand hing ausschließlich an `section:hover` — auf einem
-Touchgerät nicht erreichbar. Er gilt jetzt ebenso für `:focus`,
-`:focus-within` und `.aktuell`, letzteres von `syncActive()` an die oberste
-sichtbare Section vergeben. Damit greift er auch beim Scrollen von Hand und
-beim Laden der Seite.
+The high-contrast state depended solely on `section:hover` — not reachable on a
+touch device. It now applies equally to `:focus`,
+`:focus-within` and `.current`, the latter assigned by `syncActive()` to the topmost
+visible section. So it also works when scrolling by hand and
+when the page loads.
 
-Nach einem Sprung wird die Section fokussiert. Drei Zeitpunkte sind nötig,
-weil jeder für sich unzuverlässig ist: sofort im Klick, im nächsten Frame und
-bei `hashchange`. Das Ziel wird dabei **jedes Mal neu** aus dem Hash bestimmt
-— beim Klick auf einen Nav-Chip steht dort noch der alte Wert.
+After a jump the section is focused. Three points in time are needed,
+because each is unreliable on its own: immediately in the click, in the next frame and
+on `hashchange`. The target is **determined anew every time** from the hash
+— on a click on a nav chip the hash still has the old value.
 
-### Tote Links
+### Dead links
 
-Alle 162 URLs wurden geprüft. 13 sind nachweislich tot (404 oder Domain
-verschwunden) und tragen jetzt `"tot": true`; sie erscheinen rot, im
-Aktivzustand mit roter Fläche. Nicht markiert wurden 5 Heimnetz-Adressen,
-2 Zeitüberschreitungen und 10 Bot-Sperren (401/403/500/503).
+All 162 URLs were checked. 13 are demonstrably dead (404 or domain
+gone) and now carry `"dead": true` (then `"tot": true`); they appear red, in the
+active state with a red area. Not marked were 5 home network addresses,
+2 timeouts and 10 bot blocks (401/403/500/503).
 
-`collectData()` schreibt die Markierung mit — ohne das hätte der erste
-Speichern-Klick sie gelöscht. Eine geänderte URL hebt sie auf.
+`collectData()` writes the mark along — without that the first
+save click would have deleted it. A changed URL clears it.
 
-**Wichtig für den Betrieb:** `edit/links.json` ist nicht versioniert. Die
-Markierungen erreichen den Server nur durch einmaliges Hochladen dieser Datei;
-ein Deploy allein genügt nicht.
+**Important for operation:** `edit/links.json` is not versioned. The
+marks only reach the server by uploading this file once;
+a deploy alone is not enough.
 
-### Kleinigkeiten
+### Small things
 
-`a.msmr.co` kürzt sich am iPhone und am iPad im Hochformat auf `a.`, quer
-steht die volle Adresse. Section-Header-Links füllen die Restbreite neben dem
-Icon. Die Icons sitzen auf der Grundlinie und überragen die Versalhöhe nicht.
+`a.msmr.co` shortens to `a.` on the iPhone and on the iPad in portrait, in landscape
+the full address is shown. Section header links fill the remaining width next to the
+icon. The icons sit on the baseline and do not exceed the cap height.
 
 ---
 
-## 2026-07-25 / 26 — Icons, Einstellungen, Schreibschutz, CSS-Kaskade
+## 2026-07-25 / 26 — Icons, settings, write protection, CSS cascade
 
-Elf Commits von `f36eea8` bis `ce4fdcf`, in einem Zug von 22:02 bis 00:43.
-Die Sitzung hat drei Stränge: neue Oberfläche, ein neuer Ort für den
-Schreibzugriff und zum Schluss zwei Aufräumarbeiten.
+Eleven commits from `f36eea8` to `ce4fdcf`, in one go from 22:02 to 00:43.
+The session has three strands: a new interface, a new place for
+write access and, at the end, two cleanups.
 
-### Oberfläche
+### Interface
 
-- **Section-Icons.** Jede Section trägt in `links.json` ein Feld `icon`
-  (Font Awesome 6 Free, Solid). Der Section-Header zeigt immer Icon und Titel,
-  die Navigationsleiste wahlweise Icons oder die 3-Letter-Kürzel.
-  Die Zuordnung aller 15 Sections steht in
+- **Section icons.** Every section carries a field `icon` in `links.json`
+  (Font Awesome 6 Free, Solid). The section header always shows icon and title,
+  the navigation bar either icons or the 3-letter abbreviations.
+  The assignment of all 15 sections is in
   [docs/superpowers/specs/2026-07-25-section-icons-settings-design.md](docs/superpowers/specs/2026-07-25-section-icons-settings-design.md).
-- **Einstellungs-Panel** am Seitenanfang, nur im Edit-Mode sichtbar: zwei
-  iOS-Schalter (Icons an/aus, linksbündig/zentriert) sowie Abbrechen und
-  Speichern. Die untere Edit-Leiste entfällt dafür. Die beiden Ansichts-
-  Einstellungen liegen im `localStorage`, nicht in `links.json` — Handy und
-  Desktop dürfen unterschiedlich eingestellt sein.
-- **Aktiv-Anzeige.** Die oberste sichtbare Section wird invers hervorgehoben,
-  in Chip, Section-Header und Dropdown-Auswahl zugleich. Hover legt die
-  Passiv-Farbe als Fläche unter und weicht dem Aktiv-Zustand.
-- **Löschen ist umkehrbar** bis zum Speichern: der Eintrag wird durchgestrichen
-  statt entfernt, das × wird zum ↺.
-- **Pfeiltasten.** Nach Chip-Klick oder Dropdown-Auswahl wandert der Fokus auf
-  `#container` (`tabindex -1`, `preventScroll`). Vorher blieb er auf dem Anker
-  in der Titelleiste, und die Pfeiltasten scrollten von dort aus ins Leere.
-  Beim Laden ist der Inhalt bereits fokussiert, mehrere Tastendrücke summieren
-  sich.
-- **Chip-Maße.** Im Icon-Modus quadratisch, Icon horizontal mittig; Leisten- und
-  Chiphöhe in beiden Modi gleich, auf glatte Werte festgelegt; Icons 25 px.
+- **Settings panel** at the top of the page, only visible in edit mode: two
+  iOS switches (icons on/off, left-aligned/centered) as well as cancel and
+  save. The bottom edit bar is dropped for it. The two view
+  settings live in `localStorage`, not in `links.json` — phone and
+  desktop may be set differently.
+- **Active display.** The topmost visible section is highlighted inverted,
+  in chip, section header and dropdown selection at once. Hover puts the
+  passive color underneath as an area and gives way to the active state.
+- **Deleting is undoable** until saving: the entry is struck through
+  instead of removed, the × becomes a ↺.
+- **Arrow keys.** After a chip click or dropdown selection the focus moves to
+  `#container` (`tabindex -1`, `preventScroll`). Before, it stayed on the anchor
+  in the title bar, and the arrow keys scrolled into nothing from there.
+  On load the content is already focused, several key presses add
+  up.
+- **Chip measures.** In icon mode square, icon horizontally centered; bar and
+  chip height the same in both modes, fixed to round values; icons 25 px.
 
-### Schreibzugriff und Datenhaltung
+### Write access and data storage
 
-- `save.php` und `config.php` liegen jetzt unter `edit/`, zusammen mit der
-  Datenbank `links.json` und ihrem Backup. Der Verzeichnisschutz greift damit
-  auf einen Ordner statt auf einzelne Dateien und lässt sich über das
-  Hoster-Panel einrichten.
-- Der Token entfällt ersatzlos — in einer öffentlichen JavaScript-Datei war er
-  ohnehin wirkungslos. Die Basic-Auth vor `/edit/` ersetzt ihn vollständig.
-- `links.php` liefert die Liste öffentlich aus und legt sie beim allerersten
-  Aufruf aus `links.default.json` an. `links.json` und `links.bak.json` sind
-  nicht mehr versioniert; die echten Daten leben auf dem Server.
-- `app.js` meldet bei HTTP 401 verständlich, dass die einmalige Anmeldung unter
-  `/edit/` fehlt — `fetch()` löst dafür keinen Anmeldedialog aus.
-- **Saat auf den Live-Stand gehoben.** `links.default.json` war älter als der
-  Server; übernommen wurde der Inhalt von `links.php` samt Icons, mit der
-  Schlüsselreihenfolge name-vor-url, wie `collectData()` sie erzeugt.
-- Aufbau, Prüfschritte und Grenzen stehen in
+- `save.php` and `config.php` now live under `edit/`, together with the
+  database `links.json` and its backup. The directory protection thus applies
+  to one folder instead of single files and can be set up via the
+  host panel.
+- The token is dropped without replacement — in a public JavaScript file it was
+  ineffective anyway. The basic auth in front of `/edit/` replaces it completely.
+- `links.php` serves the list publicly and creates it on the very first
+  request from `links.default.json`. `links.json` and `links.bak.json` are
+  no longer versioned; the real data lives on the server.
+- `app.js` reports on HTTP 401 in plain words that the one-time sign-in at
+  `/edit/` is missing — `fetch()` does not trigger a sign-in dialog for it.
+- **Seed raised to the live state.** `links.default.json` was older than the
+  server; the content of `links.php` was taken over including icons, with the
+  key order name-before-url, as `collectData()` produces it.
+- Structure, test steps and limits are in
   [docs/htaccess-setup.md](docs/htaccess-setup.md).
 
-### Speichern mit Rückfrage
+### Saving with confirmation
 
-- Vor dem Speichern erscheint eine Rückfrage mit zwei Listen — geändert und
-  gelöscht, jeweils mit alter und neuer Fassung. Neu angelegte Einträge stehen
-  in keiner der beiden: sie können nichts überschreiben.
-- Grundlage ist ein Vergleich gegen den geladenen Stand. `render()` stempelt
-  `data-name0` und `data-url0` an jeden Eintrag, `aenderungen()` vergleicht
-  dagegen.
-- Ein Speichervorgang ganz ohne Abweichung bricht mit Hinweis ab. Er hätte die
-  Datei nur neu geschrieben und dabei das Backup mit einer identischen Fassung
-  überschrieben. Neue Einträge und betätigte Einstellungs-Schalter zählen als
-  Änderung und lassen ihn durch.
+- Before saving a confirmation appears with two lists — changed and
+  deleted, each with the old and new version. Newly created entries are in
+  neither: they cannot overwrite anything.
+- The basis is a comparison against the loaded state. `render()` stamps
+  `data-name0` and `data-url0` on every entry, `changes()` compares
+  against it.
+- A save without any deviation aborts with a note. It would have
+  only rewritten the file and overwritten the backup with an identical version.
+  New entries and operated settings switches count as a
+  change and let it through.
 
-### CSS-Kaskade
+### CSS cascade
 
-- **44 `!important` auf 1**, ohne einen berechneten Wert zu verändern.
-  Verifiziert über 46 Zustände × 18 Eigenschaften, zweimal, ohne Abweichung.
-  Hover ließ sich messen, indem `:hover` im Stylesheet durch eine Klasse ersetzt
-  wurde: gleiche Spezifität, gleiche Kaskade.
-- Kern war die Farbkaskade: `section .group` setzte `text-col` und zwang `.group`
-  zu einem `!important`. Ohne diesen Selektor greift `.group` von selbst, und die
-  Spezifität allein reicht: `section a` < `section:hover a` < `li a:hover`,
-  `.name.active a` schlägt beide über die Klassenzahl.
-- Mehrfach definierte Regeln zusammengeführt: `li a` (3×), `a.secname` (2×),
-  `.group` (2×). Ihre Wirkung hing zuvor allein an der Reihenfolge im File.
-- Die Media-Query-`!important` wurden einzeln geprüft, indem die Bedingung auf
-  `all` gesetzt und mit und ohne gemessen wurde — `max-device-width` hängt an
-  der physischen Bildschirmgröße und ist über die Fenstergröße nicht auslösbar.
-  Sechs trugen nichts und sind entfernt. Übrig bleibt eines: `.group` muss in
-  der iPhone-Hochformat-Regel `margin-inline: auto` überstimmen.
-- `li { margin }` entfällt. Es hatte allein den Zweck, die iPad-Regel zu
-  überstimmen; dort wirkt jetzt `margin: 2px` wie geschrieben — Kacheln mit
-  Abstand, Section 20 px höher. Einzige gewollte Verhaltensänderung der
-  Aufräumarbeit, alle anderen Profile bleiben identisch.
-- **GitHub-Pages-Workflow entfernt.** `CNAME` ist weg, `a.msmr.co` zeigt auf
-  netcup, Plesk zieht `main` selbst. Pages friert auf dem letzten Stand ein und
-  kann in den Repo-Einstellungen abgeschaltet werden.
+- **44 `!important` down to 1**, without changing a computed value.
+  Verified over 46 states × 18 properties, twice, without deviation.
+  Hover could be measured by replacing `:hover` in the stylesheet with a class:
+  same specificity, same cascade.
+- The core was the color cascade: `section .group` set `text-col` and forced `.group`
+  into an `!important`. Without this selector `.group` applies by itself, and the
+  specificity alone is enough: `section a` < `section:hover a` < `li a:hover`,
+  `.name.active a` beats both through the number of classes.
+- Rules defined several times merged: `li a` (3×), `a.secname` (2×),
+  `.group` (2×). Their effect before depended solely on the order in the file.
+- The media query `!important`s were checked one by one by setting the condition to
+  `all` and measuring with and without — `max-device-width` depends on
+  the physical screen size and cannot be triggered via the window size.
+  Six carried nothing and are removed. One remains: `.group` has to override
+  `margin-inline: auto` in the iPhone portrait rule.
+- `li { margin }` is dropped. Its only purpose was to override the iPad rule;
+  there `margin: 2px` now applies as written — tiles with
+  spacing, section 20 px taller. The only intended behavior change of the
+  cleanup, all other profiles stay identical.
+- **GitHub Pages workflow removed.** `CNAME` is gone, `a.msmr.co` points to
+  netcup, Plesk pulls `main` itself. Pages freezes at the last state and
+  can be switched off in the repo settings.
 
-### Fallstricke, die aus dieser Sitzung bleiben
+### Pitfalls that remain from this session
 
-- `collectData()` liest den DOM zurück in JSON. Jedes Feld, das dabei nicht
-  ausgelesen wird, ist nach dem ersten Speichern-Klick weg. Deshalb trägt das
-  `<h3>` sowohl `data-icon` als auch `data-color`.
-- `autocomplete="off"` am Section-Dropdown ist nötig: Chrome stellt sonst beim
-  Reload die alte Auswahl wieder her und löst damit den Edit-Mode neu aus.
-- Neue Dateien im Repo-Wurzelverzeichnis landen beim Deploy öffentlich in
-  `httpdocs`, wenn sie nicht in der Bereitstellungsaktion stehen.
+- `collectData()` reads the DOM back into JSON. Every field that is not read out
+  is gone after the first save click. That is why the
+  `<h3>` carries both `data-icon` and `data-color`.
+- `autocomplete="off"` on the section dropdown is necessary: otherwise Chrome restores
+  the old selection on reload and thereby triggers edit mode again.
+- New files in the repo root end up publicly in `httpdocs` on deploy
+  if they are not in the deployment action.

@@ -1,77 +1,83 @@
-# Aufbau und Schreibschutz
+# Structure and write protection
 
 ```
 a.msmr.co/
-├── index.html   app.js   styles.css     öffentlich
-├── links.php                            öffentlich, liefert die Liste aus
-├── links.default.json                   Saat, nur beim allerersten Aufruf
-├── favicon/                             Icons, Manifest
-└── edit/                                Basic-Auth, komplett dicht
+├── index.html   app.js   styles.css     public
+├── links.php                            public, serves the list
+├── links.default.json                   seed, only on the very first request
+├── never-dead.json                      addresses that never count as dead
+├── favicon/                             icons, manifest
+└── edit/                                basic auth, completely closed
     ├── .htaccess
     ├── .htpasswd
-    ├── links.json                       die Datenbank
-    ├── links.bak.json                   Backup der letzten Fassung
-    └── save.php
+    ├── links.json                       the database
+    ├── links.bak.json                   backup of the last version
+    ├── save.php
+    └── check.php                        URL check (marks dead links)
 ```
 
-## Lokale Demo
+## Local demo
 
-Zum Gestalten lokal: `php -S 0.0.0.0:8080 tools/dev-router.php` im Projektordner. Der Router liefert alles mit `no-store` und hängt eine Versionsnummer an CSS und JS, damit der Browser nie eine alte Kopie zeigt. Er gehört nicht auf den Server.
+For design work locally: `php -S 0.0.0.0:8080 tools/dev-router.php` in the project folder. The router serves everything with `no-store` and appends a version number to CSS and JS, so the browser never shows an old copy. It does not belong on the server.
 
-## Wie die Daten fließen
+## How the data flows
 
-`app.js` lädt die Liste über `links.php`. Das Skript liest `edit/links.json` und gibt sie als JSON aus. Existiert die Datei noch nicht, legt es sie aus `links.default.json` an.
+`app.js` loads the list via `links.php`. The script reads `edit/links.json` and outputs it as JSON. If the file does not exist yet, it creates it from `links.default.json`.
 
-Gespeichert wird über `edit/save.php`, das in dasselbe geschützte Verzeichnis schreibt und vorher eine Sicherung nach `links.bak.json` legt.
+Saving goes through `edit/save.php`, which writes into the same protected directory and first makes a backup to `links.bak.json`.
 
-Der Vorteil dieser Aufteilung: Die Datenbank liegt hinter der Anmeldung und ist von außen nicht abrufbar, die Auslieferung nach außen erledigt ein öffentliches Skript. `links.json` und `links.bak.json` stehen deshalb in der `.gitignore` — die echten Daten leben auf dem Server, nicht im Repo.
+The advantage of this split: the database sits behind the sign-in and cannot be fetched from outside, delivery to the outside is done by a public script. `links.json` and `links.bak.json` are therefore in the `.gitignore` — the real data lives on the server, not in the repo.
 
-## Was den Schreibzugriff schützt
+## What protects write access
 
-Ausschließlich die Basic-Auth vor `/edit/`. Apache lehnt unangemeldete Anfragen ab, bevor PHP startet — `save.php` wird gar nicht erst ausgeführt. Einen Token gibt es nicht mehr; er wäre in einer öffentlichen JavaScript-Datei ohnehin wirkungslos gewesen.
+Only the basic auth in front of `/edit/`. Apache rejects unauthenticated requests before PHP starts — `save.php` is not even executed. There is no token any more; in a public JavaScript file it would have been ineffective anyway.
 
-Nicht geschützt ist der Edit-Mode im Browser: Wer will, schaltet ihn über die Konsole frei. Das verändert nur die Anzeige im eigenen Browser, gespeichert wird ohne Anmeldung nichts.
+Edit mode in the browser is not protected: anyone who wants can unlock it via the console. That only changes the display in their own browser, nothing is saved without signing in.
 
-## Einmalige Anmeldung pro Browser
+## One-time sign-in per browser
 
-`fetch()` löst **keinen** Anmeldedialog aus. Ein 401 kommt in der Seite nur als Fehlermeldung an.
+`fetch()` does **not** trigger a sign-in dialog. A 401 only arrives in the page as an error message.
 
-Deshalb einmal pro Browser `https://a.msmr.co/edit/` direkt aufrufen und anmelden. Danach hängt der Browser die Zugangsdaten automatisch an alle weiteren Anfragen derselben Realm an, auch an die von `app.js`.
+That is why you open `https://a.msmr.co/edit/` directly once per browser and sign in. After that the browser attaches the credentials automatically to all further requests of the same realm, including those of `app.js`.
 
-Erscheint beim Speichern „Nicht angemeldet — /edit/ einmal direkt im Browser aufrufen", ist genau das die Ursache.
+If saving shows "Not signed in — open /edit/ once directly in the browser and sign in.", that is exactly the cause.
 
-## Prüfen
+## Checking
 
-- `https://a.msmr.co/edit/` → Anmeldedialog. Kommt keiner, wird die `.htaccess` nicht ausgewertet.
-- Nach der Anmeldung `https://a.msmr.co/edit/save.php` → `Method Not Allowed`. Die Meldung kommt aus `save.php` selbst und beweist, dass die Anmeldung durch ist.
-- `https://a.msmr.co/edit/links.json` → muss den Anmeldedialog zeigen, nicht die Daten.
-- `https://a.msmr.co/links.php` → muss die Liste als JSON liefern, ohne Anmeldung.
+- `https://a.msmr.co/edit/` → sign-in dialog. If none appears, the `.htaccess` is not being evaluated.
+- After signing in, `https://a.msmr.co/edit/save.php` → `Method Not Allowed`. The message comes from `save.php` itself and proves that the sign-in is done.
+- `https://a.msmr.co/edit/links.json` → must show the sign-in dialog, not the data.
+- `https://a.msmr.co/links.php` → must deliver the list as JSON, without sign-in.
 
-## Passwort ändern
+## URL check (dead links)
 
-Die Passwortdatei liegt in `edit/.htpasswd`, der Pfad steht in `edit/.htaccess`. Neues Passwort auf dem Mac erzeugen und hochladen:
+`https://a.msmr.co/edit/check.php` checks all URLs in `edit/links.json` and reports which ones are dead (404/410 or domain gone), unclear (401, 403, 429, 5xx: bot blocks and server moods) or skipped (own network, all IP addresses and the hosts in `never-dead.json`). Without parameters it only reports; `?write=1` writes `"dead": true` to the dead ones (and removes old marks) and saves the previous version as `links.bak.json`. It sits behind the same basic auth as `save.php`.
+
+## Changing the password
+
+The password file is in `edit/.htpasswd`, the path is in `edit/.htaccess`. Create a new password on the Mac and upload it:
 
 ```
-/usr/sbin/htpasswd -B ~/.htpasswd DEINBENUTZERNAME
+/usr/sbin/htpasswd -B ~/.htpasswd YOURUSERNAME
 ```
 
-`-B` erzwingt bcrypt. Ohne `-c`, sonst wird die Datei überschrieben statt ergänzt. Die Datei darf nie ins Repo — sie steht in der `.gitignore`.
+`-B` forces bcrypt. Without `-c`, otherwise the file is overwritten instead of extended. The file must never go into the repo — it is in the `.gitignore`.
 
-## Automatischer Deploy aus GitHub
+## Automatic deploy from GitHub
 
-Plesk zieht `main` selbst und legt die Repo-Dateien nach `httpdocs`. Die Live-Daten überstehen das: `edit/links.json`, `edit/links.bak.json` und `edit/.htpasswd` stehen in der `.gitignore`, sind also gar nicht im Repo — Plesk kopiert nur, was dort liegt, und löscht nichts Zusätzliches.
+Plesk pulls `main` itself and puts the repo files into `httpdocs`. The live data survives that: `edit/links.json`, `edit/links.bak.json` and `edit/.htpasswd` are in the `.gitignore`, so they are not in the repo at all — Plesk only copies what is there and deletes nothing additional.
 
-`edit/.htaccess` trägt im Repo den echten Serverpfad und wird durch identischen Inhalt ersetzt.
+`edit/.htaccess` carries the real server path in the repo and is replaced by identical content.
 
-Damit Doku und Projektdateien nicht öffentlich im Webverzeichnis landen, unter **Zusätzliche Bereitstellungsaktionen** eintragen:
+So that documentation and project files do not end up publicly in the web directory, enter under **Additional deployment actions**:
 
 ```
 rm -rf docs LICENSE CHANGELOG.md .github .gitignore
 ```
 
-`edit` gehört **nicht** in diese Liste. Der GitHub-Pages-Workflow entfernt es, weil dort kein PHP läuft — auf dem echten Server ist es der Kern der Anwendung.
+`edit` does **not** belong in this list. The GitHub Pages workflow removes it because no PHP runs there — on the real server it is the core of the application.
 
-## Voraussetzungen
+## Requirements
 
-- Apache 2.4 mit ausgewertetem `.htaccess`.
-- HTTPS. Basic-Auth überträgt die Zugangsdaten nur base64-kodiert; über HTTP wären sie bei jedem Aufruf mitlesbar.
+- Apache 2.4 with an evaluated `.htaccess`.
+- HTTPS. Basic auth transmits the credentials only base64-encoded; over HTTP they could be read along on every request.

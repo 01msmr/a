@@ -1,48 +1,48 @@
-# Section-Icons, Edit-Mode-Einstieg und Ansichts-Einstellungen
+# Section icons, edit mode entry and view settings
 
-> **Stand 2026-10-17:** Dies ist der ursprüngliche Entwurf vom 25. Juli 2026 und bleibt als Verlauf stehen. Die
-> Umsetzung ist seither davon abgewichen: Der Edit-Mode startet nur noch über das Zahnrad (der Doppelklick auf die
-> Titelzeile ist entfallen). Die Einstellungen liegen in einem Overlay am Zahnrad, nicht in einem Bereich nur im
-> Edit-Mode, und es gibt mehr davon (Zoom, Theme mit auto, Color, Navigation, View, Align, Edit). Das Section-Dropdown
-> ist ein Button mit eigener Liste. Maßgeblich sind [README](../../../README.md) und [CHANGELOG](../../../CHANGELOG.md).
+> **Status 2026-10-17:** This is the original draft of 25 July 2026 and stays as a record. The
+> implementation has since deviated from it: Edit mode only starts via the gear (the double click on the
+> title bar is gone). The settings live in an overlay at the gear, not in an area only in
+> edit mode, and there are more of them (Zoom, Theme with auto, Color, Navigation, View, Align, Edit). The section dropdown
+> is a button with its own list. Authoritative are the [README](../../../README.md) and the [CHANGELOG](../../../CHANGELOG.md).
 
-Datum: 2026-07-25
+Date: 2026-07-25
 
-## Ziel
+## Goal
 
-Drei Erweiterungen der Startseite `a.msmr.co`:
+Three extensions of the start page `a.msmr.co`:
 
-1. Der Edit-Mode wird über das Section-Dropdown erreichbar (bisher nur per Doppelklick auf die Titelzeile).
-2. Jede Section bekommt ein Font-Awesome-Icon. Die Navigationsleiste zeigt wahlweise Icons oder die 3-Letter-Kürzel.
-3. Die Seite lässt sich linksbündig oder zentriert darstellen.
+1. Edit mode becomes reachable via the section dropdown (before, only by double click on the title bar).
+2. Every section gets a Font Awesome icon. The navigation bar shows either icons or the 3-letter abbreviations.
+3. The page can be shown left-aligned or centered.
 
-Die beiden Ansichts-Optionen werden in einem Einstellungs-Bereich am Seitenanfang geschaltet, der nur im Edit-Mode sichtbar ist.
+The two view options are switched in a settings area at the top of the page that is only visible in edit mode.
 
-## Icon-Zuordnung
+## Icon assignment
 
-Font Awesome 6 Free, Solid-Style. Die Zuordnung ist Bestandteil der Daten, nicht der Ansicht.
+Font Awesome 6 Free, Solid style. The assignment is part of the data, not of the view.
 
-| id | Kürzel | Inhalt | FA-Klasse |
-|----|--------|--------|-----------|
-| sec1 | srv | Server, self-hosted Dienste, Admin-Panels | `fa-server` |
-| sec2 | tec | Tech-News | `fa-microchip` |
-| sec3 | riid | Zeitungen und Magazine | `fa-newspaper` |
-| sec4 | tbx.li | Toolbox-Unterseiten | `fa-toolbox` |
-| sec5 | wrk | Arbeit, Firmendienste | `fa-briefcase` |
-| sec6 | mee | Social, Banking, private Mail | `fa-user` |
-| sec7 | see | TV und Streaming | `fa-tv` |
-| sec8 | hiir | Radiostreams | `fa-radio` |
-| sec9 | bsy | eigene Projekte | `fa-lightbulb` |
-| sec10 | dis | Foren und Communities | `fa-comments` |
-| sec11 | art | Kunst | `fa-palette` |
-| sec12 | eat | Restaurants und Lieferdienste | `fa-utensils` |
-| sec13 | shp | Shops und Preisvergleich | `fa-cart-shopping` |
-| sec14 | pol | Politik und Verbände | `fa-landmark` |
+| id | Abbreviation | Content | FA class |
+|----|--------------|---------|----------|
+| sec1 | srv | Servers, self-hosted services, admin panels | `fa-server` |
+| sec2 | tec | Tech news | `fa-microchip` |
+| sec3 | riid | Newspapers and magazines | `fa-newspaper` |
+| sec4 | tbx.li | Toolbox subpages | `fa-toolbox` |
+| sec5 | wrk | Work, company services | `fa-briefcase` |
+| sec6 | mee | Social, banking, private mail | `fa-user` |
+| sec7 | see | TV and streaming | `fa-tv` |
+| sec8 | hiir | Radio streams | `fa-radio` |
+| sec9 | bsy | own projects | `fa-lightbulb` |
+| sec10 | dis | Forums and communities | `fa-comments` |
+| sec11 | art | Art | `fa-palette` |
+| sec12 | eat | Restaurants and delivery services | `fa-utensils` |
+| sec13 | shp | Shops and price comparison | `fa-cart-shopping` |
+| sec14 | pol | Politics and associations | `fa-landmark` |
 | sec15 | mdf | Markdorf | `fa-location-dot` |
 
-## Datenmodell
+## Data model
 
-`links.json` bleibt ein Array von Sections. Neu ist pro Section das Feld `icon`:
+`links.json` stays an array of sections. New per section is the field `icon`:
 
 ```json
 {
@@ -54,36 +54,36 @@ Font Awesome 6 Free, Solid-Style. Die Zuordnung ist Bestandteil der Daten, nicht
 }
 ```
 
-`save.php` bleibt unverändert — es schreibt den Request-Body unbesehen.
+`save.php` stays unchanged — it writes the request body as is.
 
-**Kritisch:** `collectData()` liest den DOM zurück in JSON. Ohne Anpassung würde der erste Speichern-Klick alle `icon`-Felder löschen. Das `<h3>` trägt deshalb `data-icon`, und `collectData()` schreibt das Feld mit.
+**Critical:** `collectData()` reads the DOM back into JSON. Without an adjustment the first save click would delete all `icon` fields. The `<h3>` therefore carries `data-icon`, and `collectData()` writes the field along.
 
-## Einstellungen
+## Settings
 
-Zwei Ansichts-Einstellungen, gespeichert in `localStorage`:
+Two view settings, stored in `localStorage`:
 
-| Schlüssel | Werte | Default |
-|-----------|-------|---------|
+| Key | Values | Default |
+|-----|--------|---------|
 | `a.navMode` | `short` \| `icons` | `short` |
 | `a.align` | `left` \| `center` | `left` |
 
-Bewusst nicht in `links.json`: Es sind Geräte-Präferenzen. Sie wirken sofort, brauchen kein `save.php` und kein Token, und erlauben am Handy eine andere Wahl als am Desktop.
+Deliberately not in `links.json`: they are device preferences. They take effect immediately, need no `save.php` and no token, and allow a different choice on the phone than on the desktop.
 
-Folge daraus: Eine Einstellung bleibt auch bestehen, wenn der Edit-Mode mit **Abbrechen** verlassen wird. Abbrechen verwirft nur Link-Änderungen. Das ist beabsichtigt.
+Consequence: A setting also persists when edit mode is left with **Cancel**. Cancel only discards link changes. That is intended.
 
-Umgesetzt wird das über zwei Klassen an `<body>`: `nav-icons` und `align-center`. Die Zuweisung erfolgt vor dem Laden von `links.json`, damit die Seite nicht mit falschem Layout aufblitzt.
+It is implemented via two classes on `<body>`: `nav-icons` and `align-center`. The assignment happens before `links.json` is loaded, so the page does not flash with the wrong layout.
 
-## Darstellung
+## Presentation
 
-**Navigationsleiste (`.secname`):** Jeder Chip enthält beide Varianten im Markup — `<i class="fa-solid fa-…">` und `<span class="secshort">srv</span>`. Sichtbar ist je nach `body.nav-icons` genau eine. Umschalten braucht damit kein Re-Rendern. Das `title`-Attribut trägt in beiden Modi den Section-Namen.
+**Navigation bar (`.secname`):** Every chip contains both variants in the markup — `<i class="fa-solid fa-…">` and `<span class="secshort">srv</span>`. Depending on `body.nav-icons` exactly one is visible. Switching thus needs no re-rendering. The `title` attribute carries the section name in both modes.
 
-**Section-Header (`h3.name`):** zeigt **immer** Icon und Titel, unabhängig vom Modus.
+**Section header (`h3.name`):** **always** shows icon and title, independent of the mode.
 
-**Dropdown (`#section-jumper`):** bleibt unverändert Text. Native `<option>`-Elemente stellen Icon-Fonts nicht zuverlässig dar.
+**Dropdown (`#section-jumper`):** stays text, unchanged. Native `<option>` elements do not show icon fonts reliably.
 
-**Ausrichtung:** Der Modus `left` ist der unveränderte Bestand — es kommt keine Regel hinzu. `align-center` rückt Titelzeile, Section-Titel und Kacheln in eine mittige Spalte von 1250 px. Es wird kein `text-align` angefasst: Sämtliche Texte bleiben linksbündig, zentriert wird nur die Spalte als Ganzes.
+**Alignment:** The mode `left` is the unchanged existing state — no rule is added. `align-center` moves title bar, section titles and tiles into a centered column of 1250 px. No `text-align` is touched: all texts stay left-aligned, only the column as a whole is centered.
 
-Zentriert wird dabei **der Inhalt, nicht die Container-Box**: `#container` behält seine volle Breite, weil er mit `overflow-x: hidden` alles Breitere abschneidet — eine durchgehende Trennlinie wäre sonst gekappt. Die Spalte entsteht über `margin-inline: auto` an `.group` und `.settings-row` sowie ein symmetrisches Polster an `.name`:
+What is centered is **the content, not the container box**: `#container` keeps its full width, because with `overflow-x: hidden` it cuts off anything wider — a continuous divider line would otherwise be clipped. The column is created via `margin-inline: auto` on `.group` and `.settings-row` as well as symmetric padding on `.name`:
 
 ```css
 body.align-center .name {
@@ -92,87 +92,87 @@ body.align-center .name {
 }
 ```
 
-**Trennlinien:** Die Linie unter jedem Section-Titel ist das `border-bottom` von `.name` und läuft in **beiden** Modi über die volle Seitenbreite. Nur ihr Text rückt in die Spalte.
+**Divider lines:** The line under each section title is the `border-bottom` of `.name` and runs across the full page width in **both** modes. Only its text moves into the column.
 
-Damit Polster und Rahmen die Spaltenbreite nicht überschreiten, tragen `.title`, `.name` und `.settings-row` `box-sizing: border-box` — ohne das ragte die Kopfzeile um Polster plus Rahmen über den Inhalt hinaus.
+So that padding and border do not exceed the column width, `.title`, `.name` and `.settings-row` carry `box-sizing: border-box` — without that the header row stuck out beyond the content by padding plus border.
 
-**Titelzeile:** wird zur umbrechenden Flex-Zeile (`display: flex; flex-wrap: wrap`). Das Dropdown sitzt damit hinter den Section-Chips, solange die Breite reicht, und rutscht bei Platzmangel eine Zeile tiefer. Die Chip-Leiste schrumpft dabei über ihr bestehendes `overflow: hidden`, das Dropdown bleibt immer erreichbar. Die Mobile-Leiste behält ihr `flex-wrap: nowrap` und damit das horizontale Scrollen.
+**Title bar:** becomes a wrapping flex row (`display: flex; flex-wrap: wrap`). The dropdown thus sits behind the section chips as long as the width suffices, and drops one row down when space is short. The chip bar shrinks via its existing `overflow: hidden`, the dropdown always stays reachable. The mobile bar keeps its `flex-wrap: nowrap` and thus the horizontal scrolling.
 
-Das horizontale Polster der Leiste entspricht ihrem Eckenradius (1 em). Die Chips sind randlose Rechtecke über die volle Höhe; ohne dieses Polster ragt ein Chip-Hintergrund an den Enden über die Rundung hinaus — sichtbar besonders beim invertierten aktiven Chip.
+The horizontal padding of the bar equals its corner radius (1 em). The chips are borderless rectangles over the full height; without this padding a chip background sticks out beyond the rounding at the ends — visible especially with the inverted active chip.
 
-**Aktive Section:** Die oberste sichtbare Section wird dreifach angezeigt — ihr Chip und ihr Section-Header tauschen Vorder- und Hintergrundfarbe (`--sect-col` als Fläche, `--front-body` für Text **und** Icon), und das Dropdown wird auf sie gesetzt, wo das native ✓ sie markiert. Der Trennstrich unter dem Header entfällt dabei, die Fläche trennt bereits. Ermittelt wird sie beim Scrollen des Containers: die letzte Section, deren Oberkante die Containerkante passiert hat.
+**Active section:** The topmost visible section is shown in three ways — its chip and its section header swap foreground and background color (`--sect-col` as the area, `--front-body` for text **and** icon), and the dropdown is set to it, where the native ✓ marks it. The divider under the header is dropped, the area already separates. It is determined while the container scrolls: the last section whose top edge has passed the container edge.
 
-**Hover:** Chip und Section-Header bekommen die Passiv-Farbe `--text-col` als Fläche, die Schrift bleibt unverändert — keine Umkehr. Beide Regeln tragen `:not(.active)`, damit der Aktiv-Zustand beim Überfahren erhalten bleibt und die Reihenfolge im File keine Rolle spielt. Am Chip muss die Schriftfarbe explizit auf `--sect-col` zurückgesetzt werden, weil `li a:hover, a.secname:hover` aus dem Bestand sonst auf `--text-hov` (weiß) schaltet.
+**Hover:** Chip and section header get the passive color `--text-col` as the area, the text stays unchanged — no inversion. Both rules carry `:not(.active)`, so the active state is kept when hovering over it and the order in the file does not matter. On the chip the text color has to be reset explicitly to `--sect-col`, because `li a:hover, a.secname:hover` from the existing code would otherwise switch to `--text-hov` (white).
 
-Zwei Spezifitäts-Fallen dabei: `section:hover .name` ist (0,2,1) und sticht ein einfaches `.name:hover` (0,2,0) — die Regeln brauchen deshalb `section` davor. Und ein Kind kann den Rahmen seines Elternteils nie übermalen; der helle 1-px-Spalt zwischen Titelleiste und angedocktem Header lässt sich nur lösen, indem die Leiste ihren unteren Rahmen mitfärbt (`body.docked`, gesetzt wenn der aktive Header bündig unter der Leiste steht).
+Two specificity traps here: `section:hover .name` is (0,2,1) and beats a simple `.name:hover` (0,2,0) — the rules therefore need `section` in front. And a child can never paint over the border of its parent; the light 1 px gap between title bar and docked header can only be solved by having the bar color its bottom border too (`body.docked`, set when the active header sits flush under the bar).
 
-Nachgezogen wird **0,15 s nach der letzten Scroll-Bewegung** (Timer, der bei jedem Scroll-Event neu gesetzt wird). Beim Durchscrollen soll die Hervorhebung nicht durch die Chips wandern.
+It is caught up **0.15 s after the last scroll movement** (a timer that is reset on every scroll event). When scrolling through, the highlight should not wander through the chips.
 
-Im **geschlossenen** Dropdown erscheint bewusst kein ✓. Ein natives `<select>` rendert dort ausschließlich den Text der gewählten Option; das Zeichen ließe sich nur in den Options-Text schreiben — mit doppeltem Häkchen im geöffneten Menü und Textumbau bei jedem Scrollen. Das wäre ein Hack und unterbleibt.
+In the **closed** dropdown deliberately no ✓ appears. A native `<select>` renders only the text of the selected option there; the character could only be written into the option text — with a double check mark in the open menu and a text rebuild on every scroll. That would be a hack and is left out.
 
-## Löschen von Links
+## Deleting links
 
-Ein Klick auf `×` entfernt den Eintrag nicht, sondern markiert ihn (`li.removed`): durchgestrichen, abgeblendet, und das `×` wird zum `↺`. Ein weiterer Klick nimmt das zurück. Endgültig verschwindet der Eintrag erst beim Speichern, weil `collectData()` über `li:not(.btn-add):not(.removed)` sammelt.
+A click on `×` does not remove the entry but marks it (`li.removed`): struck through, dimmed, and the `×` becomes `↺`. Another click undoes it. The entry only disappears for good on saving, because `collectData()` collects via `li:not(.btn-add):not(.removed)`.
 
-Damit ist Löschen bis zum Speichern umkehrbar, ohne blockierenden Dialog, und vor dem Speichern ist sichtbar, was wegfällt. Das `×` ist 22 px groß mit 2 px Polster, 3 px Radius und rotem Hintergrund beim Hover.
+So deleting is undoable until saving, without a blocking dialog, and before saving it is visible what drops out. The `×` is 22 px large with 2 px padding, 3 px radius and a red background on hover.
 
-## Edit-Mode-Einstieg
+## Edit mode entry
 
-Das Dropdown erhält `edit` als **ersten** Eintrag, ohne Trenner. Beim Laden ist der Eintrag damit zwar vorausgewählt, löst aber nichts aus: `change` feuert nur bei echter Benutzerauswahl, und `syncActive()` setzt das Select beim Rendern sofort auf die sichtbare Section.
+The dropdown gets `edit` as the **first** entry, without a separator. On load the entry is thus preselected but triggers nothing: `change` only fires on a real user selection, and `syncActive()` sets the select to the visible section immediately on rendering.
 
-Bei Auswahl startet der Edit-Mode, danach fällt die Auswahl auf die aktive Section zurück — das Dropdown bleibt durchgehend Anzeige des aktuellen Orts. Der Edit-Mode hängt an einer Body-Klasse und bleibt davon unberührt. Der bestehende Doppelklick auf die Titelzeile bleibt als zweiter Weg erhalten.
+On selection edit mode starts, afterwards the selection falls back to the active section — the dropdown stays a display of the current place throughout. Edit mode hangs on a body class and is untouched by this. The existing double click on the title bar remains as a second way.
 
-**`autocomplete="off"` am Select ist zwingend.** Chrome stellt sonst beim Reload die zuletzt gewählte Option wieder her und löst dabei erneut den Edit-Mode aus. Da Abbrechen und Speichern beide `location.reload()` aufrufen, käme der Edit-Mode andernfalls direkt nach dem Verlassen zurück.
+**`autocomplete="off"` on the select is mandatory.** Otherwise Chrome restores the last selected option on reload and triggers edit mode again. Since Cancel and Save both call `location.reload()`, edit mode would otherwise come back right after leaving it.
 
-## Einstellungs-Panel
+## Settings panel
 
-Ein `div.settings-panel` als erstes Kind von `#container`, per CSS nur in `body.edit-mode` sichtbar.
+A `div.settings-panel` as the first child of `#container`, visible via CSS only in `body.edit-mode`.
 
 ```
-⚙ EINSTELLUNGEN
+⚙ SETTINGS
 ───────────────────────────────────────
- Navigation mit Icons   (•  )
- Seite linksbündig      (  •)
-                    [ Abbrechen ] [ Speichern ]
+ Navigation with icons  (•  )
+ Page left-aligned      (  •)
+                    [ Cancel ] [ Save ]
 ```
 
-Beide Einstellungen sind iOS-artige Ein/Aus-Schalter: eine `checkbox` mit `opacity: 0` über einer gestylten Spur, Zustand per `input:checked + .switch-track`. Farben kommen aus den bestehenden CSS-Variablen und tragen damit Hell- und Dunkelmodus.
+Both settings are iOS-style on/off switches: a `checkbox` with `opacity: 0` above a styled track, state via `input:checked + .switch-track`. Colors come from the existing CSS variables and thus carry light and dark mode.
 
-Die Zeilen teilen sich die Spaltenbreite mit `.group`. Ihr linkes Polster von `0.36em` bringt Labels und Buttons auf die Kante des **Linktextes**, nicht auf die seiner Hintergrundfläche — die Anker haben selbst noch `padding-left`. Damit `em` dieselbe Basis hat wie bei `.group`, trägt die Zeile keine eigene `font-size`; die sitzt an den Kindern.
+The rows share the column width with `.group`. Their left padding of `0.36em` brings labels and buttons onto the edge of the **link text**, not of its background area — the anchors themselves still have `padding-left`. So that `em` has the same basis as for `.group`, the row carries no `font-size` of its own; that sits on the children.
 
-Abbrechen und Speichern stehen linksbündig in derselben Spalte.
+Cancel and Save are left-aligned in the same column.
 
-Abbrechen und Speichern sitzen ausschließlich hier. Die frühere fixierte Leiste unten rechts (`#edit-bar`) entfällt ersatzlos.
+Cancel and Save sit exclusively here. The former fixed bar at the bottom right (`#edit-bar`) is dropped without replacement.
 
-**Scrollverhalten:** `#container` scrollt mit `scroll-snap-type: y mandatory`. Blendet man das Panel darüber ein, rastet der Container auf sein bisheriges Snap-Ziel zurück und schiebt die Einstellungen aus dem Bild — auch gegen ein nachgelagertes `scrollIntoView`. Im Edit-Mode wird Snapping deshalb abgeschaltet (`body.edit-mode #container { scroll-snap-type: none }`); beim Bearbeiten ist freies Scrollen ohnehin das gewünschte Verhalten. Das Anscrollen des Panels erfolgt einen Frame nach dem Einblenden.
+**Scroll behavior:** `#container` scrolls with `scroll-snap-type: y mandatory`. If the panel is faded in above it, the container snaps back to its previous snap target and pushes the settings out of view — even against a later `scrollIntoView`. In edit mode snapping is therefore switched off (`body.edit-mode #container { scroll-snap-type: none }`); free scrolling is the wanted behavior while editing anyway. Scrolling to the panel happens one frame after fading in.
 
 ## Font Awesome
 
-Einbindung per CDN in `index.html`, analog zur schon vorhandenen Google-Fonts-Einbindung:
+Included via CDN in `index.html`, analogous to the already existing Google Fonts inclusion:
 
 ```html
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
 ```
 
-Nur das CSS wird eingebunden; die Woff2-Dateien lädt Font Awesome selbst nach.
+Only the CSS is included; Font Awesome loads the woff2 files itself.
 
-## Betroffene Dateien
+## Affected files
 
-| Datei | Änderung |
-|-------|----------|
-| `links.json` | `icon`-Feld für alle 15 Sections |
-| `index.html` | Font-Awesome-CDN-Link |
-| `app.js` | Icon-Rendering, Dropdown-Eintrag, Panel, Prefs, aktive Section, `collectData()` |
-| `styles.css` | Icon-Umschaltung, Spaltenausrichtung, Panel-Styles, Kopfzeilen-Polster |
+| File | Change |
+|------|--------|
+| `links.json` | `icon` field for all 15 sections |
+| `index.html` | Font Awesome CDN link |
+| `app.js` | Icon rendering, dropdown entry, panel, prefs, active section, `collectData()` |
+| `styles.css` | Icon switching, column alignment, panel styles, header-row padding |
 
-## Aufgeräumt
+## Cleaned up
 
-Bei der Gelegenheit entfernte CSS-Regeln, die in `app.js` und `index.html` nirgends vorkommen — Reste früherer Fassungen: `.secnum`, `.bottomspace`, `.gear-btn`, `.navprev`/`.navnext` (4 Blöcke), die Tabellenstruktur `.group .links .row .cell` (5 Blöcke) sowie `.paired-section`/`.full-page-section`. Dazu der negative Versatz `left: -0.2em` an `.home-link`, der das Logo in die Ecke zog.
+On this occasion CSS rules were removed that occur nowhere in `app.js` and `index.html` — leftovers of earlier versions: `.secnum`, `.bottomspace`, `.gear-btn`, `.navprev`/`.navnext` (4 blocks), the table structure `.group .links .row .cell` (5 blocks) as well as `.paired-section`/`.full-page-section`. Plus the negative offset `left: -0.2em` on `.home-link`, which pulled the logo into the corner.
 
-## Abgrenzung
+## Scope limits
 
-Nicht Teil dieser Arbeit:
+Not part of this work:
 
-- Icon-Auswahl über die Oberfläche. Die Zuordnung steht in `links.json` und wird dort geändert.
-- Bearbeiten von Section-Titeln, -Farben oder -Reihenfolge.
-- Sichtbarkeit auf dem iPhone im Hochformat: Die Navigationsleiste ist dort per CSS ausgeblendet, der Icon-Modus wirkt entsprechend nicht. Die Ausrichtung wirkt überall.
+- Icon selection via the interface. The assignment is in `links.json` and is changed there.
+- Editing section titles, colors or order.
+- Visibility on the iPhone in portrait: the navigation bar is hidden there via CSS, icon mode accordingly has no effect. The alignment works everywhere.

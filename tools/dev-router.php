@@ -1,6 +1,6 @@
 <?php
-// Lokaler Demo-Server ohne Cache: ein normaler Reload zeigt sofort die neueste Fassung.
-// Start im Projektordner:  php -S 0.0.0.0:8080 tools/dev-router.php
+// Local demo server without a cache: a normal reload immediately shows the newest version.
+// Start in the project folder:  php -S 0.0.0.0:8080 tools/dev-router.php
 $root = dirname(__DIR__);
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 if ($path === '/') $path = '/index.html';
@@ -12,7 +12,7 @@ if ($file && strpos($file, $root) === 0 && is_file($file) && pathinfo($file, PAT
     header('Content-Type: ' . ($types[$ext] ?? 'application/octet-stream'));
     header('Cache-Control: no-store');
     if ($ext === 'html') {
-        // Versionsnummer an CSS/JS: auch Kopien aus dem Browser-Cache früherer Läufe werden so umgangen
+        // Version number on CSS/JS: this also bypasses copies from the browser cache of earlier runs
         $html = file_get_contents($file);
         foreach (['styles.css', 'app.js'] as $asset) {
             $html = str_replace("\"$asset\"", "\"$asset?v=" . filemtime("$root/$asset") . "\"", $html);
