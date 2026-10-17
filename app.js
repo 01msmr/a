@@ -476,7 +476,15 @@ function wischVorhersage() {
     var l = Array.prototype.slice.call(c.querySelectorAll('section')), i = l.indexOf(cur);
     return l[i + wischRicht] || null;
 }
+// Das Wischen endet erst, wenn der Finger oben ist: hält er beim Ziehen kurz still, ruht zwar das Scrollen, die Vorhersage soll aber bleiben
+var fingerDa = false;
+document.addEventListener('touchstart', function () { fingerDa = true; }, { passive: true, capture: true });
+['touchend', 'touchcancel'].forEach(function (n) {
+    document.addEventListener(n, function () { fingerDa = false; if (wischt) bisRuhe(wischEnde); }, { passive: true, capture: true });
+});
+
 function wischEnde() {
+    if (fingerDa) return;
     wischVon = null;
     if (fenster.container) wischTop = fenster.container.scrollTop;
     wischt = false;
