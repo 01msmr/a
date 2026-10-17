@@ -6,6 +6,8 @@ a.msmr.co/
 ├── links.php                            public, serves the list
 ├── links.default.json                   seed, only on the very first request
 ├── never-dead.json                      addresses that never count as dead
+├── apple-touch-icon.png                 copies of the home screen icon for iOS and other browsers
+├── apple-touch-icon-precomposed.png
 ├── favicon/                             icons, manifest
 └── edit/                                basic auth, completely closed
     ├── .htaccess

@@ -68,6 +68,10 @@ Names in this log are the current English ones (the code was translated to Engli
 - Ghost headers (`ghostHeader.stack`) again form a stack of all sections between view and target (ordered by distance, target on top, those in between lying ready underneath): further away only the copy of the target glides in, nearer the ones above just glide out and uncover the ones below (before they first glided down). If the target jumped over several, they glide out together. Every change takes 400 ms, the next target waits, only the last one counts (fast hovering skips intermediate steps). Gliding in and out with ease-out; shadow and line fade out quickly at the end of gliding out during the last 25 %.
 - With keyboard navigation a resting mouse pointer over nav chips or headings triggers neither line/chevron nor a ghost header.
 
+**Home screen icon on iOS 27.2**
+- Analysis: the icon file is a valid 180×180 RGB PNG, served with 200 over HTTP/1.1 and HTTP/2 without redirects, and opens in a Safari tab; the certificate chain verifies. The Add to Home Screen sheet still showed a letter tile. Several developers report the same on iOS 27.2: the sheet loads the touch icon with its own loader that fails on network URLs (and ignores manifest icons); embedding the icon as a `data:` URI fixed it for them.
+- `index.html` now embeds `favicon/ico-light-180.png` as a `data:` URI in `<link rel="apple-touch-icon">` (about 7 KB). `tools/touch-icon.js` switches between `inline` and `url` (the default variant) and copies the icon to `/apple-touch-icon.png` and `/apple-touch-icon-precomposed.png` (before: 404).
+
 **Dead-link triangle**
 - Grid on the desktop: the triangle now has 8 px legs (before 6 px), still moved 1 px inward; the white 1 px border triangle underneath grew to 11.42 px (8 + 1.42 + 2).
 

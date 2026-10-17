@@ -18,6 +18,7 @@ Built for mouse and keyboard on the desktop, iPad and iPhone, and for the browse
 | `never-dead.json` | Addresses that never count as dead (read by `edit/check.php` and the page) |
 | `links.default.json` | Seed, only on the very first request |
 | `tools/dev-router.php` | Demo server with `no-store`, local only |
+| `tools/touch-icon.js` | Switches the iOS home screen icon between embedded (`node tools/touch-icon.js inline`, the iOS 27.2 workaround, current) and linked (`… url`, the default); also copies the icon to `/apple-touch-icon.png` and `/apple-touch-icon-precomposed.png` |
 | `tools/smoke.js` | Smoke test without a browser (jsdom): loads the page, switches edit mode on, checks the nav structure, click lock, coupled highlight and re-sorting of sections; fails on page errors and infinite loops. `npm install --no-save jsdom && node tools/smoke.js` |
 | `favicon/` | Icons and manifest |
 | `docs/` | Server, write protection, deploy; design draft for icons and settings |
@@ -239,6 +240,21 @@ The "Color" setting scales the saturation of all section colors (`oklch`) via `-
 The color values of the themes stand once in the light block (`:root`) and once in the dark one
 (`:root[data-theme="dark"]`); the script in the `<head>` always sets `data-theme`, also for "auto".
 The pointers belong there too (`--curs-img`, `--curs-sec`, `--curs-hov`, `--curs-up`, `--curs-down`).
+
+## Home screen icon (iOS)
+
+The home screen icon is `favicon/ico-light-180.png` (180×180, opaque, rendered from the page's Ubuntu font). On iOS 27.2 the
+Add to Home Screen sheet loads the icon with its own loader that fails on any network URL and then shows a letter tile,
+although the file is fine and opens in a Safari tab. That is why `index.html` currently embeds the icon as a `data:` URI in
+`<link rel="apple-touch-icon">`. The switch is reversible:
+
+```
+node tools/touch-icon.js inline   # embed the icon (current; run again after changing the icon file)
+node tools/touch-icon.js url      # default variant: link ./favicon/ico-light-180.png
+```
+
+Both variants also copy the icon to `/apple-touch-icon.png` and `/apple-touch-icon-precomposed.png`. iOS keeps the icon from
+the moment a shortcut is added: to see a change, delete the shortcut, clear the website data for a.msmr.co in Safari and add it again.
 
 ## Editing
 
