@@ -464,13 +464,13 @@ section {
     --c-text: oklch(from var(--c, var(--sect-col)) clamp(var(--text-l-min), l, var(--text-l-max)) c h);
 }
 
-/* Hover auf dem Titel (auch gekoppelt, wenn der Chip berührt wird): der Nav-Hover-Effekt (erhaben: Glanz oben, Schatten) auf der vollen
-   Farbe der Section, wie beim aktiven Chip; kein heller Schleier mehr über der Füllung */
-body:not(.touch):not(.tastatur):not(.gesperrt):not(.edit-mode) #container section .name:is(:hover, .mit-hover) {
-    position: relative;
-    z-index: 1;
-    background-image: linear-gradient(rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, .15));
-    box-shadow: 0 -0.1875rem 0.4375rem -0.0625rem rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .6);
+a.sec-btn,
+#container section .name {
+    --c-hov: color-mix(in srgb, var(--c, var(--sect-col)) 28%, transparent);
+}
+
+body:not(.touch):not(.tastatur) #container section .name.gedeckt:hover {
+    background-color: var(--c-hov);
 }
 
 body:not(.touch):not(.tastatur):not(.gesperrt) a.sec-btn:not(.active):is(:hover, .mit-hover) {

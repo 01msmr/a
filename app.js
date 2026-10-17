@@ -315,13 +315,14 @@ function trackActiveSection() {
                 aktiv = h3;
             }
         });
-        // Maus zuletzt benutzt und über einer Section: deren Chip leuchtet, sonst die oberste
+        // Maus zuletzt benutzt und über einer Section (nicht über einem Titel): deren Chip leuchtet, sonst die oberste.
+        // Über dem Titel einer nicht aktiven Section bleibt der aktive Chip aktiv, und ihr Chip zeigt die weiche Hover-Fläche (.mit-hover, koppleHover)
         var nav = active;
         if (mausPos && !document.body.classList.contains('tastatur') && !istTouch()) {
             var unterMaus = document.elementFromPoint(mausPos.x, mausPos.y);
             var sec = unterMaus && unterMaus.closest && unterMaus.closest('#container section');
             var kopf = sec && sec.querySelector('h3.name');
-            if (kopf) nav = '#' + kopf.id;
+            if (kopf && !unterMaus.closest('.name')) nav = '#' + kopf.id;
         }
         // nach dem Klick auf Titel oder Chip bleibt dessen Chip aktiv, bis Maus oder Tastatur sich rühren
         var gesperrt = sperre.sec && !document.body.classList.contains('tastatur') && sperre.sec.querySelector('h3.name');
