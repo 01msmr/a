@@ -1261,11 +1261,28 @@ body.view-grid:not(.edit-mode) li.tot::after {
     border-radius: 0;
 }
 
-/* Desktop: ein gleichschenklig-rechtwinkliges Dreieck in der oberen rechten Ecke, Katheten 4 px (x und y) */
+/* Desktop: ein gleichschenklig-rechtwinkliges Dreieck in der oberen rechten Ecke, Katheten 6 px (x und y), 1 px nach innen gerückt;
+   darunter ein größeres weißes Dreieck als 1-px-Rand, damit es auf farbigen Sections kontrastiert */
 body.view-grid:not(.edit-mode):not(.touch) li.tot::after {
-    width: 4px;
-    height: 4px;
+    top: 1px;
+    right: 1px;
+    width: 6px;
+    height: 6px;
     clip-path: polygon(0 0, 100% 0, 100% 100%);
+    z-index: 3;
+}
+
+body.view-grid:not(.edit-mode):not(.touch) li.tot::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 9.42px;   /* 6 px + 2 × 1 px Rand an den Katheten und 1 px an der Schräge (6 + 1,42 + 2) */
+    height: 9.42px;
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+    background: #fff;
+    pointer-events: none;
+    z-index: 2;
 }
 
 /* volle Breite (Raster, nicht zentriert): auch die Leiste läuft über die ganze Seite */

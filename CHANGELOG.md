@@ -27,8 +27,8 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 **Smartphone und nicht erreichbare Links**
 - Smartphone: keine Ghost headers mehr; die Titel bleiben an ihrer Section und scrollen mit ihr aus der Ansicht (kein Kleben am Rand der Ansicht).
 - Touch: Die Hover-Farbe der Kacheln erscheint sofort, ohne Übergang.
-- Raster am Desktop: Das „nicht erreichbar“-Zeichen ist ein Dreieck in der oberen rechten Ecke mit 4 px Katheten.
-- Alle Geräte: IP-Adressen, `http://orderbox` und `kitchen.toolbox-bodensee.de` gelten nie als nicht erreichbar (`intern()` in `edit/pruefen.php`, `nieTot()` in `app.js`).
+- Raster am Desktop: Das „nicht erreichbar“-Zeichen ist ein Dreieck in der oberen rechten Ecke mit 6 px Katheten, 1 px nach innen gerückt, mit weißem 1-px-Rand (zweites, 9,42 px großes weißes Dreieck darunter) für den Kontrast auf farbigen Sections.
+- Alle Geräte: IP-Adressen, `http://orderbox` und `kitchen.toolbox-bodensee.de` gelten nie als nicht erreichbar. Die Ausnahmen stehen zentral in `never-dead.json`; `intern()` in `edit/pruefen.php` und `isNeverDead()` in `app.js` lesen dieselbe Datei.
 
 **Raster auf dem Smartphone**
 - Im Raster-Modus stehen mindestens zwei Kacheln nebeneinander (Spaltenbreite höchstens `50 % - 1px`), bei mehr Platz mehr, höchstens 6; vorher ergab ein schmales Telefon eine Spalte, wenn zwei Kacheln à 11,875 rem nicht ganz passten.

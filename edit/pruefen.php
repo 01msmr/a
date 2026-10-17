@@ -22,15 +22,24 @@ $schreiben = isset($_GET['schreiben']) && $_GET['schreiben'] === '1';
 $UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 '
     . '(KHTML, like Gecko) Version/17.0 Safari/605.1.15';
 
-// Diese Adressen gelten nie als "tot": das eigene Netz, alle IP-Adressen, http://orderbox und kitchen.toolbox-bodensee.de
+// Diese Adressen gelten nie als "tot": das eigene Netz sowie alles aus ../never-dead.json (alle IP-Adressen, Rechnernamen);
+// dieselbe Datei liest die Seite (app.js)
+$AUSNAHMEN = json_decode((string) @file_get_contents(__DIR__ . '/../never-dead.json'), true) ?: [];
+$ALLE_IP = $AUSNAHMEN['allIpAddresses'] ?? true;
+$NIE_TOT_HOSTS = array_map('strtolower', $AUSNAHMEN['hosts'] ?? []);
+
 function intern($url)
 {
+    global $ALLE_IP, $NIE_TOT_HOSTS;
     $host = parse_url($url, PHP_URL_HOST);
     if (!$host) return true;
     $host = strtolower(trim($host, '[]'));
     if (preg_match('/\.(local|fritz\.box|lan|home)$/i', $host)) return true;
-    if (filter_var($host, FILTER_VALIDATE_IP)) return true;
-    return $host === 'orderbox' || $host === 'kitchen.toolbox-bodensee.de';
+    if (filter_var($host, FILTER_VALIDATE_IP)) {
+        // private und reservierte Adressen sind von außen nie erreichbar; öffentliche nur, wenn die Datei alle IPs ausnimmt
+        return $ALLE_IP || !filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
+    }
+    return in_array($host, $NIE_TOT_HOSTS, true);
 }
 
 // alle Einträge einsammeln, mit Rückverweis auf ihren Platz in $daten

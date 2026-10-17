@@ -45,7 +45,7 @@ damit der Browser nie eine alte Kopie zeigt.
 ```
 
 - `icon` ist eine Font-Awesome-Klasse (6.7.2, CDN) oder `icon-squircle`, ein eigenes Icon.
-- `tot` markiert einen beim letzten Test nicht erreichbaren Link (roter Punkt; im Raster ein Quadrat, am Desktop ein Dreieck mit 4 px Katheten in der oberen rechten Ecke). IP-Adressen, `http://orderbox` und `kitchen.toolbox-bodensee.de` gelten nie als tot (weder in `edit/pruefen.php` noch beim Anzeigen, `nieTot` in `app.js`).
+- `tot` markiert einen beim letzten Test nicht erreichbaren Link (roter Punkt; im Raster ein Quadrat, am Desktop ein Dreieck mit 6 px Katheten, 1 px nach innen gerückt und mit weißem 1-px-Rand, in der oberen rechten Ecke). Ausnahmen, die nie als tot gelten, stehen zentral in `never-dead.json` (`allIpAddresses`: jede IP-Adresse; `hosts`: Rechnernamen, derzeit `orderbox` und `kitchen.toolbox-bodensee.de`); `edit/pruefen.php` und die Seite (`isNeverDead` in `app.js`, auch für schon gespeicherte Markierungen) lesen dieselbe Datei.
 - `color` wird nicht angezeigt. Die Sektionsfarbe kommt aus der Palette `SEC_COLORS`
   in `app.js` **nach Position**. Ein Einfügen oder Verschieben von Sections ändert also
   die Farben der folgenden.
@@ -128,7 +128,7 @@ iPad und iPhone bleiben Gerätemerkmale und folgen dem Zoom nicht.
 
 Eckige Kacheln ohne Glanz, 1 px Linien. In inaktiven Sections sind sie grau, in der
 eingefärbten Section hell. „Links“ heißt hier volle Breite, auch die Leiste läuft dann
-über die ganze Seite; die Kacheln der Sections bleiben bei höchstens 6 Spalten und werden breiter, auf schmalen Bildschirmen (Smartphone) stehen mindestens zwei nebeneinander. Leere Felder der letzten Zeile tragen die Linien der Kacheln. Ein toter Link zeigt ein rotes Quadrat in der Ecke (am Desktop ein Dreieck mit 4 px Katheten). Der Edit-Mode
+über die ganze Seite; die Kacheln der Sections bleiben bei höchstens 6 Spalten und werden breiter, auf schmalen Bildschirmen (Smartphone) stehen mindestens zwei nebeneinander. Leere Felder der letzten Zeile tragen die Linien der Kacheln. Ein toter Link zeigt ein rotes Quadrat in der Ecke (am Desktop ein Dreieck mit 6 px Katheten). Der Edit-Mode
 nutzt weiter das Chip-Layout.
 
 ### Leuchtfenster und Geist-Titel

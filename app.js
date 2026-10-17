@@ -1496,16 +1496,20 @@ document.addEventListener('keydown', function (e) {
     });
 });
 
-// Diese Adressen gelten nie als nicht erreichbar (auch wenn die Daten es markieren): IP-Adressen, http://orderbox und kitchen.toolbox-bodensee.de
-function nieTot(url) {
+// Adressen, die nie als nicht erreichbar gelten (auch wenn die Daten es markieren): zentral in never-dead.json
+// (allIpAddresses: jede IP-Adresse; hosts: Rechnernamen). edit/pruefen.php liest dieselbe Datei.
+var neverDead = { allIpAddresses: true, hosts: [] };
+
+function isNeverDead(url) {
     var h;
     try { h = new URL(url).hostname; } catch (e) { return false; }
-    return /^\d{1,3}(\.\d{1,3}){3}$/.test(h) || h.charAt(0) === '[' || h === 'orderbox' || h === 'kitchen.toolbox-bodensee.de';
+    if (neverDead.allIpAddresses && (/^\d{1,3}(\.\d{1,3}){3}$/.test(h) || h.charAt(0) === '[')) return true;
+    return neverDead.hosts.indexOf(h.toLowerCase()) >= 0;
 }
 
 function makeLi(name, url, tot) {
     var li = document.createElement('li');
-    if (tot && !nieTot(url)) li.classList.add('tot');   // beim letzten Test nicht erreichbar
+    if (tot && !isNeverDead(url)) li.classList.add('tot');   // beim letzten Test nicht erreichbar
     var a = document.createElement('a');
     a.tabIndex = 0;
     a.href = url;
@@ -1828,7 +1832,15 @@ function mitApp(data) {
 }
 
 // ── Load ──────────────────────────────────────────────────────────
-fetch('links.php?t=' + Date.now())
+// Ausnahmen zuerst (fehlt die Datei, gelten nur die Standardwerte), dann die Links
+fetch('never-dead.json')
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+        if (typeof d.allIpAddresses === 'boolean') neverDead.allIpAddresses = d.allIpAddresses;
+        if (Array.isArray(d.hosts)) neverDead.hosts = d.hosts.map(function (x) { return String(x).toLowerCase(); });
+    })
+    .catch(function () { })
+    .then(function () { return fetch('links.php?t=' + Date.now()); })
     .then(function (r) { return r.json(); })
     .then(mitApp)
     .then(render)

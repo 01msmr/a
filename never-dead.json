@@ -1,0 +1,7 @@
+{
+    "allIpAddresses": true,
+    "hosts": [
+        "orderbox",
+        "kitchen.toolbox-bodensee.de"
+    ]
+}
