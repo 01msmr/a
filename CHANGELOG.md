@@ -24,6 +24,9 @@ Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 **Home-Icon (iOS)**
 - Neue Icons `favicon/ico-light-{180,192,512}.png` und `ico-dark-{180,192,512}.png`: das „a.“ in Ubuntu (Schrift der Seite, Medium), opak gerendert (hell #eee/schwarz, dunkel #333/weiß), statt der alten Graustufen-PNGs mit Alpha, die iOS nur klein oder gar nicht zeigte. `index.html` verlinkt das helle als `apple-touch-icon` und beide als `icon` mit `prefers-color-scheme`; das Manifest listet 180, 192 und 512 px (hell). Neue Dateinamen, weil iOS Icons je URL zwischenspeichert. Der Web-App-Modus (standalone) bleibt aus.
 
+**Touch: Übergang nach dem Tippen**
+- Tippt man in eine Section und scrollt danach, sprang das Fenster vom Tap-Ziel auf den Rahmen der Scrollposition, die Unterkante ruckelte. Jetzt klingt der Abstand beim Übergang mit der Zeitkonstante 110 ms ab (`f.versatz` in `fensterScroll`).
+
 **Desktop: Hover in einer Section**
 - Der aktive Chip folgt nur noch der Scrollposition, nie der Maus (vorher wurde der Chip der Section unter der Maus aktiv, also gefüllt). Liegt die Maus irgendwo in einer nicht aktiven Section (Titel, Hintergrund, Kachel), zeigt deren Chip die weiche Hover-Fläche wie beim direkten Hover im Nav (`.sec-hover`); der aktive Chip bleibt wie ohne Hover. Entfallen: die `mousemove`-/`mouseleave`-Nachführung (`mausPos`). Die Titel selbst sind unverändert.
 

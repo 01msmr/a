@@ -604,7 +604,14 @@ function fensterScroll() {
         top = a.y + (b.y - a.y) * p;
         bot = a.y + a.h + (b.y + b.h - a.y - a.h) * p;
     }
-    fensterMalen(top, bot);
+    // Übergang vom Tap-Ziel (oder einer Animation) in die Kopplung: der Abstand zum Rahmen der Scrollposition klingt ab (Zeitkonstante 110 ms),
+    // statt dass das Fenster dorthin springt (das ließ die Unterkante nach dem Tippen und Scrollen ruckeln)
+    var jetzt = performance.now();
+    if (!f.imScroll) { f.imScroll = true; f.versatz = { top: f.top - top, bot: f.bot - bot, t0: jetzt }; }
+    var v = f.versatz, k = v ? Math.exp(-(jetzt - v.t0) / 110) : 0;
+    if (v && Math.abs(v.top) * k < 0.5 && Math.abs(v.bot) * k < 0.5) { f.versatz = v = null; k = 0; }
+    fensterMalen(top + (v ? v.top * k : 0), bot + (v ? v.bot * k : 0));
+    if (v) f.raf = requestAnimationFrame(fensterScroll);   // weiter abklingen, auch wenn das Scrollen kurz ruht
 }
 
 function fensterSync() {
@@ -616,6 +623,7 @@ function fensterSync() {
         fensterScroll();
         return;
     }
+    f.imScroll = false;   // nicht an die Scrollposition gekoppelt: beim nächsten Übergang neu ansetzen
     var z = fensterZiel();
     f.container.querySelectorAll('section.heiss').forEach(function (s) {
         if (!z || s !== z.sec || !z.heiss) s.classList.remove('heiss');

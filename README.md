@@ -210,7 +210,7 @@ Liste gefüllt und ins Sichtfeld gescrollt. Namen verlieren eine Endung (`tbx.li
   haben die Chips keine Hover-Optik. Das Leuchtfenster ist beim Scrollen eine Funktion der Scrollposition
   (`fensterScroll`): zwischen zwei Section-Oberkanten geht es vom Rahmen der einen zu dem der nächsten über (Oberkante =
   Scrollposition), am Einrastpunkt deckt es genau die Section. Es läuft so mit Finger, Auslauf, Stepper- und Chip-Sprüngen,
-  ohne eigene Zeit (kein Vorauseilen, Zurückbleiben oder Zucken). Nur ein Tap auf eine Section animiert es (feste Dauer). Hochkant auf dem iPhone ist `scroll-snap-stop`
+  ohne eigene Zeit (kein Vorauseilen, Zurückbleiben oder Zucken). Nur ein Tap auf eine Section animiert es (feste Dauer). Beim Übergang vom Tap-Ziel in die Kopplung klingt der Abstand zum Rahmen der Scrollposition ab (Zeitkonstante 110 ms), das Fenster springt nicht. Hochkant auf dem iPhone ist `scroll-snap-stop`
   normal: ein Wisch darf mehrere Sections überspringen.
 
 ### Zentrale Variablen
