@@ -171,6 +171,7 @@ Inhalt, das Licht scrollt mit und folgt bei Bewegung und Scrollen der Kachel unt
   (SVG-Data-URI, 25 px, je Thema in `--curs-auf` und `--curs-ab`; `app.js` setzt nur
   `data-pfeil` auf `html`), also immer über allem, auch über Popovers.
 - In Feldern, Dropdown-Liste, Einstellungen und im Edit-Mode bleibt der Systemzeiger; Touch bleibt ohne Zeiger.
+- Im Titel zeigt nur der Chevron die Position (kein Section-Strich); bei Tastaturnavigation (`body.tastatur`) bleiben Strich, Chevron und Geist-Titel unter dem ruhenden Mauszeiger aus.
 
 ### Nav und Sections-Dropdown
 
@@ -185,6 +186,20 @@ gleiche Grundgestalt, gleiche Hover-, Aktiv- und Druckeffekte (flach, ohne Schat
 über `--sb-*`-Variablen). Hover auf einem Eintrag leuchtet wie Hover auf dem Chip: `koppleHover`
 koppelt Chip, Titel und Eintrag einer Section (`.mit-hover`). Die aktive Section ist in der offenen
 Liste gefüllt und ins Sichtfeld gescrollt. Namen verlieren eine Endung (`tbx.li` → `tbx`).
+
+### Touch (Smartphone)
+
+- **Kein Hover:** `body.touch` (`pointerdown` mit Finger/Stift; echte Mausbewegung entfernt es) schaltet alle
+  `:hover`- und `:active`-Effekte ab, die iOS sonst nach einem Tap hängen lässt; `koppleHover` und das
+  Leuchtfenster ignorieren Touch-Hover. Ein Tap wirkt wie ein Klick: er aktiviert die Section
+  (Chip, Titel, Hintergrund, Kachel; `sperreAn` beim Klick), ein Wisch aktiviert nichts und hebt die Sperre auf.
+- **Sections-Dropdown:** Einträge 2,75 rem hoch, Tap wählt sofort; Antippen, Ziehen und Loslassen öffnet die Liste
+  und wählt den Eintrag unter dem Finger in einem Zug (`touch-action: none` am Feld).
+- **Scrollen:** die aktive Section wird während des Wischens alle 80 ms nachgezogen und am Ende über `scrollend`
+  und `bisRuhe` (zwei stille Frames) bestätigt; sie gilt 24 px vor dem Einrasten als aktiv. Während des Wischens
+  (`html.wischt`, nicht am `body`: dessen Klassenwechsel löst die Neuvermessung aus) bleibt das Leuchtfenster bei
+  der aktuellen Section ohne Hover, die Chips ohne Hover-Optik. Hochkant auf dem iPhone ist `scroll-snap-stop`
+  normal: ein Wisch darf mehrere Sections überspringen.
 
 ### Zentrale Variablen
 

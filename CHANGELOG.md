@@ -3,6 +3,28 @@
 Neueste zuerst. Eine Überschrift pro Arbeitssitzung. Ältere Stände stehen im
 `git log`; hier beginnt die Aufzeichnung mit der Sitzung vom 25./26. Juli 2026.
 
+## 2026-10-17 (später) — Touch auf dem Smartphone: kein Hover, Tippen, Ziehen, freies Wischen
+
+**Touch statt Hover (iOS)**
+- `body.touch` (gesetzt beim `pointerdown` mit Finger oder Stift, entfernt bei echter Mausbewegung): alle `:hover`-Regeln für Kacheln, Titel, Chips und Knöpfe gelten nur ohne diese Klasse; iOS lässt `:hover` nach einem Tap sonst hängen. Auch der Druck-Zustand (`:active`) der Chips und die iOS-Tap-Aufhellung entfallen. Die gekoppelte Hervorhebung (`koppleHover`) reagiert nur noch auf `pointerType === 'mouse'`; die von iOS nachgeschobene Mausposition färbt den Chip nicht mehr.
+- Tippen wirkt wie ein Klick: ein Tap auf Chip, Titel, Hintergrund oder Kachel aktiviert die Section (`sperreAn` beim Klick, nicht beim Berühren). Ein Wisch über Chips oder Titel aktiviert nichts und hebt die Sperre auf (`touchmove`).
+
+**Sections-Dropdown**
+- Einträge auf Touch 2,75 rem hoch (vorher Höhe des Zahnrads); Tap wählt sofort (`pointerup`).
+- Antippen, Ziehen, Loslassen in einem Zug öffnet die Liste und wählt den Eintrag unter dem Finger (`touch-action: none` am Feld).
+
+**Scrollen**
+- Aktivierung auch bei langsamem Wischen: Nachziehen alle 80 ms während des Scrollens, am Ende per `scrollend` und zusätzlich per eigener Ruhe-Erkennung (`bisRuhe`, zwei stille Frames, ohne Wartezeit). Eine Section gilt 24 px vor dem Einrasten als aktiv (vorher 8 px).
+- Beim Wischen zeigt das Leuchtfenster keinen Hover-Zustand, bleibt aber bei der aktuellen Section (kein Flackern des Hintergrunds); die Chips verlieren ihre Hover-Optik (`html.wischt`).
+- **Fehler behoben:** Die Wisch-Klasse lag am `body`; deren Klassenwechsel löste die Neuvermessung (`layout()`) aus und störte den Scroll-Auslauf. Jetzt am `html`.
+- iPhone hochkant: kein `scroll-snap-stop: always`, ein Wisch darf mehrere Sections überspringen; gerastet wird am Ende.
+
+**Zeiger und Tastatur**
+- Im Titel nur der Chevron, kein schwacher Section-Strich; der Strich bleibt in der Section.
+- Bei Tastaturnavigation löst ein ruhender Mauszeiger über Nav-Chips oder Titeln weder Strich/Chevron noch Geist-Titel aus.
+
+---
+
 ## 2026-10-17 — Nav und Sections-Dropdown vereinheitlicht, Zeiger als Bildzeiger, Klick-Sperre, Sections umsortieren
 
 **Nav und Sections-Dropdown**
