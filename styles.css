@@ -1129,7 +1129,8 @@ body.nav-icons .secname .secicon {
 
 /* quadratischer Chip, Icon horizontal mittig */
 body.nav-icons a.secname,
-body.nav-icons .settings-btn {
+body.nav-icons .settings-btn,
+body.nav-icons #section-jumper {
     width: 3rem;
     text-align: center;
     /* kein seitliches Polster — sonst wird das größere Icon beschnitten */
@@ -1148,9 +1149,8 @@ body:not(.nav-icons) .settings-btn .secicon {
     -webkit-appearance: none;
     appearance: none;
     flex: 0 0 auto;   /* wächst nicht mit den Chips */
-    width: 3rem;
+    /* Breite und Polster wie die Nav-Chips: Icon-Modus quadratisch (s. dort), Text-Modus Mindestbreite plus Polster von a.secname */
     margin-left: -0.375rem;   /* hebt den Spaltenabstand der Leiste (.title) zu den Chips auf */
-    padding: 0;
     border-radius: 0;
     background-color: transparent;
     font: inherit;
@@ -1265,8 +1265,7 @@ body.view-grid:not(.edit-mode) li {
     border-bottom-color: color-mix(in srgb, var(--sect-col) 25%, transparent);
 }
 
-body.view-grid:not(.edit-mode) li.gedeckt-u,
-body.licht.view-grid:not(.edit-mode) li.da {
+body.view-grid:not(.edit-mode) li.gedeckt-u {
     border-bottom-color: color-mix(in srgb, var(--on-c) 25%, transparent);
 }
 
@@ -1372,7 +1371,8 @@ body.edit-mode #container {
 
     /* Icon bleibt 25px, nur die Tippfläche schrumpft */
     body.nav-icons a.secname,
-    body.nav-icons .settings-btn {
+    body.nav-icons .settings-btn,
+    body.nav-icons #section-jumper {
         width: 2.5rem;
         padding-left: 0;
         padding-right: 0;
