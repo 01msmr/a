@@ -1,5 +1,5 @@
-// Owns: adding the APP section, loading never-dead.json, starting the page
-// Defines globals: withApp
+// Owns: adding the APP section, loading never-dead.json and links.php (started in the head), starting the page
+// Defines globals: withApp, neverDeadReq, linksReq
 // Uses: render, links
 // APP belongs as the 3rd section in the row; if it is missing in the saved data, it is added empty
 function withApp(data) {
@@ -16,15 +16,17 @@ function withApp(data) {
 }
 
 // ── Load ──────────────────────────────────────────────────────────
-// Exceptions first (if the file is missing, only the defaults apply), then the links
-fetch('never-dead.json')
+// Exceptions first (if the file is missing, only the defaults apply), then the links; both requests start in the head of index.html
+var neverDeadReq = window.msmrNeverDead || fetch('never-dead.json');
+var linksReq = window.msmrLinks || fetch('links.php?t=' + Date.now());
+neverDeadReq
     .then(function (r) { return r.json(); })
     .then(function (d) {
         if (typeof d.allIpAddresses === 'boolean') neverDead.allIpAddresses = d.allIpAddresses;
         if (Array.isArray(d.hosts)) neverDead.hosts = d.hosts.map(function (x) { return String(x).toLowerCase(); });
     })
     .catch(function () { })
-    .then(function () { return fetch('links.php?t=' + Date.now()); })
+    .then(function () { return linksReq; })
     .then(function (r) { return r.json(); })
     .then(withApp)
     .then(render)

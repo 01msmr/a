@@ -36,7 +36,8 @@ const dom = new JSDOM(html, {
         w.Element.prototype.scrollIntoView = function () { };   // likewise
         w.HTMLElement.prototype.showPopover = function () { };
         w.HTMLElement.prototype.hidePopover = function () { };
-        w.fetch = async u => /links/.test(u)
+        w.fetchLog = [];
+        w.fetch = async u => (w.fetchLog.push(String(u)), /links/.test(u))
             ? { ok: true, status: 200, json: async () => JSON.parse(fs.readFileSync(root + 'links.default.json', 'utf8')) }
             : { ok: true, status: 405, json: async () => ({}) };
     }
@@ -108,7 +109,12 @@ const afterMs = (fn, ms) => new Promise(r => setTimeout(() => { fn(); r(); }, ms
         d.dispatchEvent(ev('mousemove', { clientX: 200, clientY: 200 }));
         check(!d.body.classList.contains('locked'), 'lock stays after mouse movement (list)');
     }, 50);
-    await afterMs(() => { }, 200);
+    await afterMs(() => {
+        const n = re => w.fetchLog.filter(u => re.test(u)).length;
+        check(n(/^links\.php/) === 1, 'links.php is not fetched exactly once (' + n(/^links\.php/) + ')');
+        check(n(/^never-dead\.json/) === 1, 'never-dead.json is not fetched exactly once (' + n(/^never-dead\.json/) + ')');
+        check(w.msmrLinks && typeof w.msmrLinks.then === 'function', 'links.php is not started from the head (window.msmrLinks)');
+    }, 200);
     errors.forEach(f => console.error(f));
     process.exit(errors.length ? 1 : 0);
 })();

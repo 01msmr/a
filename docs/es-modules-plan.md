@@ -4,7 +4,7 @@ Status: not started. Written 2026-10-18 after `app.js` was split into classic sc
 
 ## Why not now
 
-The 14 files share 36 top-level `var` names (below) and about 150 functions as globals, and register their event listeners while loading. A direct conversion would turn that coupling into circular imports or one large shared object. Touch, glide and glow behavior is tuned on iOS and only the jsdom smoke test guards it. So the split came first; modules come file by file, only if the benefit (explicit dependencies, editor and type-checker support, importing one unit in a test) is worth it.
+The 14 files share 38 top-level `var` names (below) and about 150 functions as globals, and register their event listeners while loading. A direct conversion would turn that coupling into circular imports or one large shared object. Touch, glide and glow behavior is tuned on iOS and only the jsdom smoke test guards it. So the split came first; modules come file by file, only if the benefit (explicit dependencies, editor and type-checker support, importing one unit in a test) is worth it.
 
 ## Order
 
@@ -69,6 +69,8 @@ Readers are textual matches in other files (comments excluded); verify when migr
 | `mouseMoved` | `navigation` | `settings` |
 | `mousePoint` | `navigation` | `render`, `touch`, `settings` |
 | `neverDead` | `links` | `boot` |
+| `neverDeadReq` | `boot` | (only own file) |
+| `linksReq` | `boot` | (only own file) |
 | `SETTINGS` | `settings` | (only own file) |
 | `dragged` | `edit` | (only own file) |
 | `prepared` | `edit` | (only own file) |

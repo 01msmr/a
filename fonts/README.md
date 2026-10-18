@@ -5,7 +5,23 @@
 
 ## Icons
 
-Only `fa-solid` glyphs are used (page, settings and the section icons in the data), so only `fa-solid-900.woff2` is shipped. `css/all.min.css` is kept unmodified and still names the regular, brands and v4-compatibility fonts: a `fa-regular`, `fa-brands` or old `fa fa-…` icon would show nothing until its woff2 file from the same release is copied into `webfonts/`.
+All four Font Awesome Free fonts are shipped (`fa-solid-900`, `fa-regular-400`, `fa-brands-400`, `fa-v4compatibility`), so any free icon can be used for a section. The browser only downloads a font file when a glyph from it is shown.
+
+- Solid icons: write the class as before (`fa-briefcase`). The page adds `fa-solid` itself.
+- Brand and regular icons: write the style too, e.g. `fa-brands fa-apple` or `fa-regular fa-star` (the page adds `fa-solid` in front; the style you write wins). A bare `fa-apple` shows nothing, because the Apple logo is not in the solid font.
+
+### Small solid font
+
+`fa-solid-900-subset.woff2` (3 KB) holds the 28 solid glyphs the page and today's section icons use, instead of the 158 KB full file. `styles.css` declares it with a `unicode-range` after the full font, so those glyphs come from the small file and any other solid icon makes the browser load the full one.
+
+When the set of icons in use changes, rebuild it and give it a **new file name** (the `.woff2` cache is one year, immutable), then update the `src` and `unicode-range` in `styles.css` and the preload in `index.html`:
+
+```
+# codepoints of the used icons: look up each class in vendor/fontawesome-6.7.2/css/all.min.css (.fa-gear{--fa:"\f013"} -> U+f013)
+pyftsubset vendor/fontawesome-6.7.2/webfonts/fa-solid-900.woff2 --unicodes="U+f013,U+f007,..." --flavor=woff2 --layout-features='*' --output-file=vendor/fontawesome-6.7.2/webfonts/fa-solid-900-subset-2.woff2
+```
+
+(`pip install fonttools brotli` provides `pyftsubset`.) Glyphs missing from the subset are not a problem; they only cost the extra download.
 
 ## Updating
 

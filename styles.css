@@ -16,6 +16,17 @@
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+/* Font Awesome solid, small version of the glyphs the page and the section icons use (3 KB instead of 158 KB). It is declared after the full font
+   of vendor/fontawesome-6.7.2/css/all.min.css, so these glyphs come from here; any other solid icon makes the browser load the full font. */
+@font-face {
+    font-family: 'Font Awesome 6 Free';
+    font-style: normal;
+    font-weight: 900;
+    font-display: block;
+    src: url(vendor/fontawesome-6.7.2/webfonts/fa-solid-900-subset.woff2) format('woff2');
+    unicode-range: U+23, U+f007, U+f013, U+f036, U+f037, U+f077, U+f078, U+f07a, U+f086, U+f0b1, U+f0c7, U+f0c8, U+f0c9, U+f0eb, U+f111, U+f185, U+f186, U+f1ea, U+f233, U+f26c, U+f2db, U+f2e7, U+f3c5, U+f3cf, U+f53f, U+f552, U+f66f, U+f8d7;
+}
+
 /* Tile: 190px is enough for all names up to 183px of text (li a has no padding on the right).
    Column: 6 tiles — a seventh did not fit into the old 1250px either */
 html {
