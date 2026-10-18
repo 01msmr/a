@@ -379,7 +379,7 @@ readMeasures();
 // each section paints only its part of the window as its background. Rows (heading, group, tiles)
 // get .covered as soon as their middle lies inside the window. Measures live in the content, scrolling does not change them.
 var glow = {
-    container: null, secs: [], rows: [], sig: '', top: 0, bot: 0, dest: null,
+    container: null, secs: [], rows: [], sig: '', top: 0, bot: 0, dest: null, instant: true,
     from: null, to: null, t0: 0, duration: 0, raf: 0, obs: []
 };
 
@@ -722,7 +722,10 @@ function glowSync() {
     });
     if (z && z.hot) z.sec.classList.add('hot');
     if (z && z.sec === f.dest) return;
-    var first = !f.dest;
+    // Always the same transition. Only the first placement and a layout change are instant (f.instant); before, an empty f.dest after the
+    // scroll-driven mode made the first tap switch at once, while later taps glided.
+    var first = f.instant;
+    f.instant = false;
     f.dest = z && z.sec;
     glowTo(z, !first);
 }
@@ -731,6 +734,7 @@ function glowLayout() {
     var f = glow;
     if (!f.container || !glowMeasure()) return;
     f.dest = null;   // determine anew and set without gliding
+    f.instant = true;
     glowSync();
 }
 
@@ -767,7 +771,7 @@ function glowInit() {
     ghostHeaderReset();
     lock.sec = null;
     document.body.classList.toggle('locked', false);
-    f.container = c; f.rows = []; f.secs = []; f.sig = ''; f.dest = null; f.top = f.bot = 0;
+    f.container = c; f.rows = []; f.secs = []; f.sig = ''; f.dest = null; f.instant = true; f.top = f.bot = 0;
     glowMeasure();
     glowSync();
 

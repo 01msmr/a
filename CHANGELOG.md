@@ -68,6 +68,9 @@ Names in this log are the current English ones (the code was translated to Engli
 - Ghost headers (`ghostHeader.stack`) again form a stack of all sections between view and target (ordered by distance, target on top, those in between lying ready underneath): further away only the copy of the target glides in, nearer the ones above just glide out and uncover the ones below (before they first glided down). If the target jumped over several, they glide out together. Every change takes 400 ms, the next target waits, only the last one counts (fast hovering skips intermediate steps). Gliding in and out with ease-out; shadow and line fade out quickly at the end of gliding out during the last 25 %.
 - With keyboard navigation a resting mouse pointer over nav chips or headings triggers neither line/chevron nor a ghost header.
 
+**Highlight transition always the same**
+- The first tap on a section after scrolling switched the highlight at once, while later taps (e.g. on the upper section and on that section again) glided. Cause: the scroll-driven mode left `f.dest` empty, and an empty `f.dest` was read as "first placement, no animation". The first placement (and a layout change) is now marked explicitly (`f.instant`), so every change of the highlighted section glides the same way.
+
 **Smartphone: heading link scrolled one section too far**
 - Tapping the heading of a section (e.g. TBX.LI) scrolled the page one section too far, so the section left the view. The plain anchor jump puts the heading at the top; for the second section of a pair (no snap point) the snapping then pulled the page on to the next snap point. On the smartphone a click on a heading link now jumps to the snap point of its page (`pageStart`, the first section of the pair, so both are visible) and sets the address with `history.replaceState`. The tapped section is still the active one (the tap lock).
 
