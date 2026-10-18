@@ -10,7 +10,7 @@ Built for mouse and keyboard on the desktop, iPad and iPhone, and for the browse
 | File | Purpose |
 |---|---|
 | `index.html` | Skeleton: bar with nav chips, gear and sections dropdown (one button, all in one flex row), content, overlays. The `<head>` holds the scripts for zoom and color scheme (they run before the first paint) |
-| `app.js` | Rendering, navigation, settings, edit mode |
+| `js/*.js` | Rendering, navigation, settings, edit mode, split by area (14 files, loaded in order from `index.html`); file map in `CLAUDE.md` |
 | `styles.css` | All looks; color schemes, zoom and grid hang on variables and classes |
 | `links.php` | Serves `edit/links.json` (public) |
 | `edit/save.php` | Writes the data (basic auth) |
@@ -48,9 +48,9 @@ so the browser never shows an old copy.
 ```
 
 - `icon` is a Font Awesome class (6.7.2, CDN) or `icon-squircle`, a custom icon.
-- `dead` marks a link that was not reachable at the last test (red dot; in the grid a square, on the desktop a triangle with 8 px legs, moved 1 px inward and with a white 1 px border, in the top right corner). Exceptions that never count as dead are kept centrally in `never-dead.json` (`allIpAddresses`: every IP address; `hosts`: host names, currently `orderbox` and `kitchen.toolbox-bodensee.de`); `edit/check.php` and the page (`isNeverDead` in `app.js`, also for marks that are already saved) read the same file.
+- `dead` marks a link that was not reachable at the last test (red dot; in the grid a square, on the desktop a triangle with 8 px legs, moved 1 px inward and with a white 1 px border, in the top right corner). Exceptions that never count as dead are kept centrally in `never-dead.json` (`allIpAddresses`: every IP address; `hosts`: host names, currently `orderbox` and `kitchen.toolbox-bodensee.de`); `edit/check.php` and the page (`isNeverDead` in `js/links.js`, also for marks that are already saved) read the same file.
 - `color` is not displayed. The section color comes from the palette `SEC_COLORS`
-  in `app.js` **by position**. Inserting or moving sections therefore changes
+  in `js/render.js` **by position**. Inserting or moving sections therefore changes
   the colors of the following ones.
 - The section `app` (`id: "app"`) always belongs as the 3rd section in the row. If it is missing in
   the saved data, `withApp()` inserts it empty; it only appears in the file after the
@@ -138,7 +138,7 @@ keeps using the chip layout.
 
 The glowing section (hover, nav chip, keyboard, otherwise the topmost) is a window that glides to the
 next one, growing or shrinking on the way (200 ms, accelerating, ends hard; with
-reduced motion 60 ms). The color changes abruptly at the section edges. `app.js`
+reduced motion 60 ms). The color changes abruptly at the section edges. `js/glow.js`
 (`glowInit`) paints the part of the window as the background of each section and sets `.covered`
 on headings, groups and tiles whose middle lies inside the window (`.covered-bottom` for the lower
 grid line at the bottom edge); the CSS only colors via these classes. The measures live in the
@@ -161,7 +161,7 @@ gets to its place. In edit mode and on the smartphone there is no copy: there th
 ### Tile light
 
 The hover area of the tile (chips and grid) is a single element (`#tile-light`,
-`light*` in `app.js`) that glides from tile to tile (90 ms). Out of nowhere it comes in
+`light*` in `js/light.js`) that glides from tile to tile (90 ms). Out of nowhere it comes in
 full size from outside over the entry edge through a fixed rectangle without rounding into the
 tile (90 ms, linear) and leaves it the same way over the exit edge; the rounded area
 itself is never scaled. The tile text inverts (`.inverted`) as soon as the light covers 95 % of it.
@@ -177,7 +177,7 @@ content, the light scrolls along and follows the tile under the pointer on movem
   inverted in dark mode (`--curs-sec`); also in the heading that is at the very top.
 - **Chevron:** on headings, nav chips and entries of the sections list a chevron pointing up or down shows
   where a click scrolls (`chipDirection`; in the heading always up). It is a real image pointer
-  (SVG data URI, 25 px, per theme in `--curs-up` and `--curs-down`; `app.js` only sets
+  (SVG data URI, 25 px, per theme in `--curs-up` and `--curs-down`; `js/cursor.js` only sets
   `data-arrow` on `html`), so it is always above everything, also above popovers.
 - In fields, dropdown list, settings and in edit mode the system pointer stays; touch stays without a pointer.
 - In the heading only the chevron shows the position (no section line); in the topmost, active heading dot and line apply instead; with keyboard navigation (`body.keyboard`) line, chevron and ghost header stay off under the resting mouse pointer.
@@ -224,14 +224,14 @@ list and scrolled into view. Names lose a suffix (`tbx.li` → `tbx`).
 and a layout change are instant (`glow.instant`). In the scroll-driven mode the window follows the scroll position, so there is no transition.
 
 **Taps while the page glides:** iOS passes no touch event to the page while it glides after a swipe (a touch only halts the scroll), so
-taps during the glide were lost. The page therefore finishes the glide itself (`cutTail` in `app.js`): once the finger is up, the page
+taps during the glide were lost. The page therefore finishes the glide itself (`cutTail` in `js/touch.js`): once the finger is up, the page
 moves at most 3 px per scroll event and is within 60 px of a snap point, the native scrolling and the snapping are switched off for a
 moment and the last stretch is animated onto the snap point in 60 to 180 ms (ease-out); a touch ends that animation at once. A tap into
 a section is read from `pointerup` and `touchend`, and a touch during a scroll activates its section right at the touch; a touch that iOS
 cancels is remembered and activated when the scroll ends.
 ### Pages on the smartphone
 
-On the smartphone (`isPhone()`, `PHONE_QUERY`) not all sections snap, but **pages** (`buildPages` in `app.js`, during
+On the smartphone (`isPhone()`, `PHONE_QUERY`) not all sections snap, but **pages** (`buildPages` in `js/glow.js`, during
 measuring in `glowMeasure`):
 
 - Two consecutive **half-height** sections (height at most half the content height) form one page: one snap point, both on the screen at once.
@@ -243,7 +243,7 @@ measuring in `glowMeasure`):
 
 ### Central variables
 
-The first `:root` of `styles.css` holds the tuning values; `app.js` reads them once
+The first `:root` of `styles.css` holds the tuning values; `js/touch.js` reads them once
 (`readMeasures`): `--glow-duration` (200), `--glow-duration-short` (60), `--glide-power` (2),
 `--light-duration` (90), `--light-power` (1.4), `--light-edge-duration` (90), `--light-coverage` (.95),
 `--ghost-header-shadow` (.66), `--ghost-header-fade` (2), `--ghost-header-hold` (2500), `--cursor-line-faint` (.33),
@@ -304,5 +304,5 @@ GNU GPL v3, see [LICENSE](LICENSE).
 
 ## Note on the version
 
-In `index.html` a version (`?v=…`) hangs on `styles.css` and `app.js`: increase it on changes,
+In `index.html` a version (`?v=…`) hangs on `styles.css` and on every `js/*.js` file (the same value on all): increase it on changes,
 otherwise browsers mix old and new files.

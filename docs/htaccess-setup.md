@@ -2,7 +2,7 @@
 
 ```
 a.msmr.co/
-├── index.html   app.js   styles.css     public
+├── index.html   styles.css   js/*.js    public
 ├── links.php                            public, serves the list
 ├── links.default.json                   seed, only on the very first request
 ├── never-dead.json                      addresses that never count as dead
@@ -24,7 +24,7 @@ For design work locally: `php -S 0.0.0.0:8080 tools/dev-router.php` in the proje
 
 ## How the data flows
 
-`app.js` loads the list via `links.php`. The script reads `edit/links.json` and outputs it as JSON. If the file does not exist yet, it creates it from `links.default.json`.
+`js/boot.js` loads the list via `links.php`. The script reads `edit/links.json` and outputs it as JSON. If the file does not exist yet, it creates it from `links.default.json`.
 
 Saving goes through `edit/save.php`, which writes into the same protected directory and first makes a backup to `links.bak.json`.
 
@@ -40,7 +40,7 @@ Edit mode in the browser is not protected: anyone who wants can unlock it via th
 
 `fetch()` does **not** trigger a sign-in dialog. A 401 only arrives in the page as an error message.
 
-That is why you open `https://a.msmr.co/edit/` directly once per browser and sign in. After that the browser attaches the credentials automatically to all further requests of the same realm, including those of `app.js`.
+That is why you open `https://a.msmr.co/edit/` directly once per browser and sign in. After that the browser attaches the credentials automatically to all further requests of the same realm, including those of the scripts in `js/`.
 
 If saving shows "Not signed in — open /edit/ once directly in the browser and sign in.", that is exactly the cause.
 

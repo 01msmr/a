@@ -14,9 +14,9 @@ if ($file && strpos($file, $root) === 0 && is_file($file) && pathinfo($file, PAT
     if ($ext === 'html') {
         // Version number on CSS/JS: this also bypasses copies from the browser cache of earlier runs
         $html = file_get_contents($file);
-        foreach (['styles.css', 'app.js'] as $asset) {
-            $html = str_replace("\"$asset\"", "\"$asset?v=" . filemtime("$root/$asset") . "\"", $html);
-        }
+        $html = preg_replace_callback('~(styles\.css|js/[\w-]+\.js)\?v=[^"]*~', function ($m) use ($root) {
+            return $m[1] . '?v=' . filemtime("$root/$m[1]");
+        }, $html);
         echo $html;
         return true;
     }

@@ -23,7 +23,7 @@ $UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 '
     . '(KHTML, like Gecko) Version/17.0 Safari/605.1.15';
 
 // These addresses are never "dead": the own network plus everything in ../never-dead.json (all IP addresses, host names);
-// the page (app.js) reads the same file
+// the page (js/links.js) reads the same file
 $EXCEPTIONS = json_decode((string) @file_get_contents(__DIR__ . '/../never-dead.json'), true) ?: [];
 $ALL_IPS = $EXCEPTIONS['allIpAddresses'] ?? true;
 $NEVER_DEAD_HOSTS = array_map('strtolower', $EXCEPTIONS['hosts'] ?? []);

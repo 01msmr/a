@@ -1,4 +1,4 @@
-// Smoke test without a browser: loads index.html and app.js in jsdom, switches edit mode on and simulates the click lock.
+// Smoke test without a browser: loads index.html and its js/ scripts in jsdom, switches edit mode on and simulates the click lock.
 // If the page freezes (infinite loop), the test aborts after 20 s; if the page reports an "infinite loop", it fails.
 // Usage: npm install --no-save jsdom && node tools/smoke.js
 const { spawnSync } = require('child_process');
@@ -21,9 +21,12 @@ const vc = new VirtualConsole();
 vc.on('jsdomError', e => errors.push(e.message));
 vc.on('error', (...a) => errors.push(a.join(' ')));
 
-const html = fs.readFileSync(root + 'index.html', 'utf8')
+const rawHtml = fs.readFileSync(root + 'index.html', 'utf8');
+const scripts = [...rawHtml.matchAll(/<script src="(js\/[^"?]+)[^>]*><\/script>/g)].map(m => m[1]);   // load order = order in index.html
+if (!scripts.length) { console.error('no js/ scripts found in index.html'); process.exit(1); }
+const html = rawHtml
     .replace(/<link[^>]*(googleapis|cdnjs)[^>]*>/g, '')
-    .replace(/<script src="app.js[^>]*><\/script>/, '');
+    .replace(/<script src="js\/[^>]*><\/script>/g, '');
 const dom = new JSDOM(html, {
     url: 'http://localhost/', runScripts: 'dangerously', pretendToBeVisual: true, virtualConsole: vc,
     beforeParse(w) {
@@ -40,7 +43,7 @@ const dom = new JSDOM(html, {
     }
 });
 const w = dom.window, d = w.document;
-w.eval(fs.readFileSync(root + 'app.js', 'utf8'));
+scripts.forEach(f => w.eval(fs.readFileSync(root + f, 'utf8')));
 
 const ev = (t, o) => new w.MouseEvent(t, Object.assign({ bubbles: true, cancelable: true, button: 0, clientX: 10, clientY: 10 }, o));
 // jsdom has no PointerEvents: MouseEvent with pointerType (default: mouse)
