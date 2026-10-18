@@ -68,6 +68,9 @@ Names in this log are the current English ones (the code was translated to Engli
 - Ghost headers (`ghostHeader.stack`) again form a stack of all sections between view and target (ordered by distance, target on top, those in between lying ready underneath): further away only the copy of the target glides in, nearer the ones above just glide out and uncover the ones below (before they first glided down). If the target jumped over several, they glide out together. Every change takes 400 ms, the next target waits, only the last one counts (fast hovering skips intermediate steps). Gliding in and out with ease-out; shadow and line fade out quickly at the end of gliding out during the last 25 %.
 - With keyboard navigation a resting mouse pointer over nav chips or headings triggers neither line/chevron nor a ghost header.
 
+**Smartphone: no divider lines in the bar**
+- The light and dark side edges of the nav buttons (dropdown and gear), which showed as thin divider lines between some elements of the bottom bar, are transparent now (`border-left/right-color: transparent`).
+
 **Smartphone: bar spacing**
 - In the bottom bar the padding to the right of the domain is smaller (0.2 em instead of 0.8 em), and the free width goes to the elements: the sections dropdown and the two steppers grow evenly (`flex: 1 1 auto`), the gear keeps its size at the right edge. Not measured on a device.
 

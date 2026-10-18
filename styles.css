@@ -837,6 +837,12 @@ li.dead::after {
         display: contents;
     }
 
+    /* no divider lines between the bar elements: the light/dark side edges of the nav buttons (button bevel) are off */
+    .nav-btn {
+        border-left-color: transparent;
+        border-right-color: transparent;
+    }
+
     /* less padding to the right of the domain, and the free width goes to the elements: dropdown and steppers grow, the gear keeps its size */
     .home-link {
         padding-right: 0.2em;
