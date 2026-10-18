@@ -203,7 +203,7 @@ list and scrolled into view. Names lose a suffix (`tbx.li` → `tbx`).
 
 - **No hover:** the pointer kind (`pointerKind`, `isTouch()`) is set on `pointerdown`, real mouse movement resets it; `body.touch` mirrors it into the CSS and switches off all
   `:hover` and `:active` effects that iOS otherwise leaves hanging after a tap; `coupleHover` and the
-  glow window ignore touch hover. A tap acts like a click: it activates the section
+  glow window ignore touch hover. A tap (pointerdown + pointerup close together, no scroll in between; no `click` event, iOS does not reliably fire it on non-interactive elements) acts like a click: it activates the section
   (chip, heading, background, tile; `lockOn` on click), a swipe activates nothing and releases the lock.
 - **Sections dropdown and settings overlay:** entries and buttons are 2.75 rem tall, a tap selects immediately; tap, drag and release opens the list
   and selects the entry under the finger in one go (`touch-action: none` on the field).

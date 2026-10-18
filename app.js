@@ -432,13 +432,21 @@ function lockFromEvent(e, touch) {
     if (!sec) { lockOff(); return; }
     lockOn(sec, e.clientX, e.clientY, dest && dest.matches('a.sec-btn') ? 'nav' : 'title');
 }
+// Touch: a tap is a pointerdown and a pointerup close together without scrolling in between (a scroll ends the pointer with pointercancel).
+// A click event is not used: iOS does not reliably fire it for non-interactive elements such as a section background.
+var tapStart = null;
 document.addEventListener('pointerdown', function (e) {
     setPointerKind(e.pointerType);
+    tapStart = isTouch() ? { x: e.clientX, y: e.clientY, t: performance.now() } : null;
     if (!isTouch()) lockFromEvent(e, false);
 }, true);
-document.addEventListener('click', function (e) {
-    if (isTouch() && e.detail !== undefined) lockFromEvent(e, true);
+document.addEventListener('pointerup', function (e) {
+    if (e.pointerType === 'mouse' || !tapStart) return;
+    var moved = Math.hypot(e.clientX - tapStart.x, e.clientY - tapStart.y), duration = performance.now() - tapStart.t;
+    tapStart = null;
+    if (moved < 10 && duration < 600) lockFromEvent(e, true);
 }, true);
+document.addEventListener('pointercancel', function () { tapStart = null; }, true);
 document.addEventListener('mousemove', function (e) {
     if (lock.sec && Math.hypot(e.clientX - lock.x, e.clientY - lock.y) > 4) lockOff();
 }, { passive: true });
