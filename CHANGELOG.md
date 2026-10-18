@@ -68,6 +68,9 @@ Names in this log are the current English ones (the code was translated to Engli
 - Ghost headers (`ghostHeader.stack`) again form a stack of all sections between view and target (ordered by distance, target on top, those in between lying ready underneath): further away only the copy of the target glides in, nearer the ones above just glide out and uncover the ones below (before they first glided down). If the target jumped over several, they glide out together. Every change takes 400 ms, the next target waits, only the last one counts (fast hovering skips intermediate steps). Gliding in and out with ease-out; shadow and line fade out quickly at the end of gliding out during the last 25 %.
 - With keyboard navigation a resting mouse pointer over nav chips or headings triggers neither line/chevron nor a ghost header.
 
+**Touch: settings overlay as tall as the sections list**
+- On touch devices the buttons of the settings overlay are 2.75 rem tall, like the entries of the sections dropdown (before: the width of the gear).
+
 **Home screen icon: transparent, 60 % grey letter (experiment)**
 - All icons (`ico-light-*`, `ico-dark-*`, the embedded home screen icons) are now the same transparent PNG with a 60 % grey (#666) "a." and the dot, no background: iOS fills the background itself, and #666 reads on white (5.7:1), light grey (4.9:1) and black (3.7:1). Reports on what iOS fills in are conflicting (black or white), so this is to be checked on the phone. The script that sets the icon by color scheme stays and now gets the same icon in both modes. Revert with `git revert` of this commit to get the light/dark pair back (black on #eee, soft grey on #3a3a3e).
 

@@ -205,7 +205,7 @@ list and scrolled into view. Names lose a suffix (`tbx.li` → `tbx`).
   `:hover` and `:active` effects that iOS otherwise leaves hanging after a tap; `coupleHover` and the
   glow window ignore touch hover. A tap acts like a click: it activates the section
   (chip, heading, background, tile; `lockOn` on click), a swipe activates nothing and releases the lock.
-- **Sections dropdown:** entries 2.75 rem tall, a tap selects immediately; tap, drag and release opens the list
+- **Sections dropdown and settings overlay:** entries and buttons are 2.75 rem tall, a tap selects immediately; tap, drag and release opens the list
   and selects the entry under the finger in one go (`touch-action: none` on the field).
 - **Scrolling:** the active section is updated every 80 ms while swiping and confirmed at the end via `scrollend`
   and `whenStill` (two still frames); it counts as active 24 px before snapping. While swiping

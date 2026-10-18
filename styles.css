@@ -1659,9 +1659,10 @@ body.keyboard .set-btn:focus-visible .with-t::after {
     outline: none;
 }
 
-/* Touch: no hover state, more compact entries */
+/* Touch: no hover state, more compact entries; the settings buttons get the same height (vertical padding) as the sections entries */
 @media (hover: none) {
-    .jumper-pop a {
+    .jumper-pop a,
+    .settings-pop .set-btn {
         height: 2.75rem;
     }
     .jumper-pop a:hover:not(.active):not(.with-hover) {
