@@ -176,6 +176,8 @@ function settingsPlace() {
     // the button height (and with it the overlay height) the same as for chips; measure it briefly with the bar width of the chips
     pop.style.width = r.width + 'px';   // flush with the gear, even if it stretches in the grid
     pop.style.setProperty('--set-height', navButtonHeight() + 'px');   // button height as for chips
+    var label = gearEl.querySelector('.secshort');
+    pop.style.setProperty('--set-font', getComputedStyle(label).fontSize);   // the entries' words as large as the word on the gear
     pop.style.left = r.left + 'px';
     pop.style.right = 'auto';
     pop.style.top = upper ? 'auto' : r.bottom + 'px';

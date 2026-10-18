@@ -1722,6 +1722,13 @@ body.keyboard .set-btn:focus-visible {
     .settings-pop .set-btn {
         height: 2.75rem;
     }
+
+    /* the words in the settings entries are as large as the word on the gear (--set-font is set in settingsPlace);
+       only on very narrow screens (a button of about 35px) they shrink to what fits */
+    .settings-pop .set-letter,
+    .settings-pop .set-text {
+        font-size: min(var(--set-font, 1.25rem), 44cqw);
+    }
     .jumper-pop a:hover:not(.active):not(.with-hover) {
         background: none;
         box-shadow: none;
