@@ -665,6 +665,18 @@ function pageStart(sec) {
     return sec;
 }
 
+// Smartphone: a click on a heading link jumps to the snap point of its page. The plain anchor jump puts the heading at the top; if the section is
+// the second one of a pair (not a snap point), the snapping then pulls the page on to the next snap point, one section too far, and the tapped
+// section is scrolled out of the view.
+document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('#container .name a');
+    if (!a || !isPhone() || document.body.classList.contains('edit-mode')) return;
+    var sec = a.closest('section');
+    e.preventDefault();
+    pageStart(sec).scrollIntoView();
+    history.replaceState(null, '', a.getAttribute('href'));
+}, true);
+
 // Touch: while scrolling, the window is a function of the scroll position. Between two section top edges it moves from the frame of one
 // to that of the next (top edge = scroll position), at the snap point it covers exactly the section. So it runs with the finger and the
 // coasting, without its own time: no running ahead, lagging behind or twitching on target changes. The last section may never reach the top edge:
