@@ -74,7 +74,7 @@ The password file is in `edit/.htpasswd`, the path is in `edit/.htaccess`. Creat
 `/.htaccess` does two things; every block sits in an `<IfModule>`, so a missing module cannot cause a 500:
 
 - `RedirectMatch 404` for `docs/`, `tools/`, `.claude/`, `.git*`, `*.md`, `LICENSE`, `links.default.json` (the PHP script reads that seed from disk, the browser never fetches it). This complements the deploy action below, which is not set up on the live server today (`/README.md` was public on 2026-10-18).
-- `Cache-Control`: HTML `no-cache`; CSS/JS one hour (the `?v=` bump busts them; a push without a bump can show old files for up to an hour); images and manifest one week; `.woff2` one year, immutable.
+- `Cache-Control`: HTML `no-cache`; CSS/JS and `never-dead.json` one hour (the `?v=` bump busts the CSS/JS; a push without a bump can show old files for up to an hour); images and manifest one week; `.woff2` one year, immutable.
 
 Compression needs nothing: the server already sends `br`/`gzip`.
 

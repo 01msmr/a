@@ -7,13 +7,13 @@
     RedirectMatch 404 ^/(.*\.md|LICENSE|links\.default\.json|package(-lock)?\.json|\.gitignore)$
 </IfModule>
 
-# Caching. The page is revalidated every time; CSS/JS for an hour (?v= busts them on the day-end bump);
+# Caching. The page is revalidated every time; CSS/JS and never-dead.json for an hour (?v= busts them on the day-end bump);
 # icons for a week; fonts, which never change under the same name, for a year.
 <IfModule mod_headers.c>
     <FilesMatch "\.html$">
         Header set Cache-Control "no-cache"
     </FilesMatch>
-    <FilesMatch "\.(css|js)$">
+    <FilesMatch "\.(css|js)$|^never-dead\.json$">
         Header set Cache-Control "public, max-age=3600"
     </FilesMatch>
     <FilesMatch "\.(png|ico|svg|webmanifest)$|^manifest\.json$">
