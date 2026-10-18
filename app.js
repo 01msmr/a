@@ -479,32 +479,6 @@ document.addEventListener('pointermove', function (e) {
     if (e.pointerType === 'mouse' && isTouch()) setPointerKind('mouse');
 }, true);
 
-var debugLog = null;   // set by the event log below when the page is opened with ?debug
-
-// ── Event log (diagnostics) ───────────────────────────────────────
-// Open the page with ?debug: a small overlay at the top lists the last touch, pointer and scroll events with the time, the swipe state
-// and the locked section, to see which events arrive while the page is still scrolling.
-(function () {
-    if (!/[?&]debug\b/.test(location.search)) return;
-    var box = document.createElement('pre');
-    box.style.cssText = 'position:fixed;left:0;top:0;z-index:9999;margin:0;padding:4px 6px;font:10px/1.25 monospace;color:#0f0;background:rgba(0,0,0,.78);pointer-events:none;max-width:100vw;white-space:pre-wrap';
-    document.addEventListener('DOMContentLoaded', function () { document.body.appendChild(box); });
-    var lines = [], t0 = 0, scrolls = 0, moves = 0;
-    debugLog = log;
-    function log(text) {
-        var now = performance.now();
-        if (!t0 || now - t0 > 4000) t0 = now;
-        lines.push(((now - t0) / 1000).toFixed(2) + ' ' + text + ' sw=' + (swiping ? 1 : 0) + ' lock=' + (lock.sec ? lock.kind : '-'));
-        if (lines.length > 14) lines.shift();
-        box.textContent = lines.join('\n');
-    }
-    ['touchstart', 'touchend', 'touchcancel', 'pointerdown', 'pointerup', 'pointercancel', 'scrollend'].forEach(function (n) {
-        document.addEventListener(n, function (e) { log(n + (e.pointerType ? ' ' + e.pointerType : '')); }, { capture: true, passive: true });
-    });
-    document.addEventListener('touchmove', function () { if (++moves % 5 === 1) log('touchmove x' + moves); }, { capture: true, passive: true });
-    document.addEventListener('scroll', function () { if (++scrolls % 15 === 1) log('scroll x' + scrolls); }, { capture: true, passive: true });
-})();
-
 // ── Touch swiping ─────────────────────────────────────────────────
 // While the content scrolls (including the coasting), the window is tied to the scroll position (glowScroll) and the chips show no hover look (html.swiping).
 var swiping = false;
@@ -561,24 +535,21 @@ function cutTail() {
     var top = c.scrollTop, last = tailLast;
     tailLast = top;
     if (last === null || Math.abs(top - last) > 3) return;
-    var step3 = Math.abs(top - last);
     var best = null;
     glow.pageIdx.forEach(function (p) {
         var y = glow.secs[p[0]].y;
         if (best === null || Math.abs(y - top) < Math.abs(best - top)) best = y;
     });
     var max = c.scrollHeight - c.clientHeight, dist = best === null ? 0 : best - top;
-    if (debugLog && Math.abs(dist) <= 120 && Math.abs(dist) >= 0.5 && (cutTail.n = (cutTail.n || 0) + 1) % 8 === 1) debugLog('tail? step=' + step3.toFixed(1) + ' dist=' + dist.toFixed(0));
     if (best === null || best > max || Math.abs(dist) > 60 || Math.abs(dist) < 0.5) return;
     var from = top, t0 = performance.now(), duration = Math.min(180, 60 + Math.abs(dist) * 2);
-    if (debugLog) debugLog('tail cut dist=' + dist.toFixed(1) + ' ' + Math.round(duration) + 'ms');
     c.style.overflowY = 'hidden';
     c.style.scrollSnapType = 'none';
     (function step(now) {
         var t = Math.min(1, (now - t0) / duration), e = 1 - Math.pow(1 - t, 3);
         c.scrollTo({ top: from + dist * e, behavior: 'instant' });
         if (t < 1) tailAnim = requestAnimationFrame(step);
-        else { tailRestore(); tailLast = null; if (debugLog) debugLog('tail done'); }
+        else { tailRestore(); tailLast = null; }
     })(t0);
 }
 
