@@ -190,8 +190,12 @@ is short, the row overflows to the left (`justify-content: flex-end`): gear and 
 stay reachable. The dropdown is a `<button>` (`aria-haspopup`, `aria-expanded`) with an icon and
 the word "sec", the chevron turns upward when open (on the smartphone the icon is a hamburger, `fa-bars`, which does not rotate).
 
-On the iPhone in portrait the chips give way; in the bottom bar dropdown, down and up buttons follow close behind the title, the gear sits at the very right edge
-(`#section-nav-list` is `display: contents` there, order via `order`).
+On the iPhone in portrait the chips give way. The bottom bar then holds the address "a.msmr.co" (no padding to its right) and four buttons of
+exactly the same width: the sections dropdown (a hamburger icon in icon mode, the word "sec" in text mode), down, up and the settings
+gear (`#section-nav-list` is `display: contents` there, the order comes from `order`: dropdown, down, up, settings). The four share the
+free width equally (`flex: 1 1 0`, padding 0, 4 px distance in front of each); only down and up are filled boxes, the dropdown and the
+gear are plain icons without visible edges. A click on a section heading jumps to the snap point of its page (`pageStart`), so the
+second section of a pair is not scrolled out of the view by the snapping.
 
 Chips and entries of the sections list share the class `a.sec-btn` (built by `sectionButton`):
 same base shape, same hover, active and press effects (flat, without shadow in the list, controlled
@@ -206,7 +210,7 @@ list and scrolled into view. Names lose a suffix (`tbx.li` → `tbx`).
   glow window ignore touch hover. A tap (pointerdown + pointerup close together, no scroll in between; no `click` event, iOS does not reliably fire it on non-interactive elements) acts like a click: it activates the section
   (chip, heading, background, tile; `lockOn` on click), a swipe activates nothing and releases the lock.
 - **Sections dropdown and settings overlay:** entries and buttons are 2.75 rem tall, a tap selects immediately; tap, drag and release opens the list
-  and selects the entry under the finger in one go (`touch-action: none` on the field).
+  and selects the entry under the finger in one go (`touch-action: none` on the field). Both overlays have no shadows on touch devices (no drop shadow, no bevel edges on the entries).
 - **Scrolling:** the active section is updated every 80 ms while swiping and confirmed at the end via `scrollend`
   and `whenStill` (two still frames); it counts as active 24 px before snapping. While swiping
   (`html.swiping`, ends only with the finger up; not on the `body`: its class change triggers the re-measure)
@@ -215,6 +219,9 @@ list and scrolled into view. Names lose a suffix (`tbx.li` → `tbx`).
   scroll position), at the snap point it covers exactly the section. So it runs with the finger, coasting, stepper and chip jumps,
   without its own time (no running ahead, lagging or twitching). Only a tap on a section animates it (fixed duration). On the transition from the tap target into the coupling the distance to the frame of the scroll position fades out over 280 ms (smoothstep), the window does not jump. On touch the tile light is off: there is no pointer, and mouse events pushed in by iOS do not count (otherwise the light stayed stuck at the touch point on the screen while the content scrolled underneath). In portrait on the iPhone `scroll-snap-stop` is
   normal: a swipe may skip several sections.
+
+**Highlight transition:** every change of the highlighted section glides the same way (200 ms); only the very first placement on page load
+and a layout change are instant (`glow.instant`). In the scroll-driven mode the window follows the scroll position, so there is no transition.
 
 **Taps while the page glides:** iOS passes no touch event to the page while it glides after a swipe (a touch only halts the scroll), so
 taps during the glide were lost. The page therefore finishes the glide itself (`cutTail` in `app.js`): once the finger is up, the page
