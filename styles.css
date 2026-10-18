@@ -860,19 +860,24 @@ li.dead::after {
         margin-left: 0;
     }
 
+    /* the four buttons (sections dropdown, up, down, settings) share the free width equally */
+    #section-jumper,
+    .stepper,
+    #settings-btn {
+        flex: 1 1 0;
+        min-width: 0;
+    }
+
     #section-jumper {
         order: 1;
-        flex: 1 1 auto;
     }
 
     .stepper {
         order: 2;
-        flex: 1 1 auto;
     }
 
     #settings-btn {
         order: 3;
-        margin-left: auto;
     }
 }
 
