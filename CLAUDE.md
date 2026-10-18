@@ -22,7 +22,7 @@ Personal start page: links in sections, shown as tiles. Static HTML, CSS and van
   - `boot` loads data, starts the page
   - `edit` edit mode, drag and sort, change detection, saving
 - `links.php` serves `edit/links.json` (public); `edit/` (basic auth): `save.php`, `check.php`, data
-- `never-dead.json`, `links.default.json` (seed), `favicon/`, `tools/`, `docs/`, `CHANGELOG.md`
+- `never-dead.json`, `links.default.json` (seed), `favicon/` (icons used by the page), `fonts/`, `vendor/fontawesome/` (self-hosted), `assets/` (source images, unused by the page), `tools/`, `docs/`, `CHANGELOG.md`
 
 Each `js/*.js` starts with three header lines: what it owns, which globals it defines, which files it uses. Keep them true when you move code.
 
