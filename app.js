@@ -537,7 +537,30 @@ document.addEventListener('scroll', function () {
     // not on the body: its class change triggers a re-measure and disturbs the coasting
     document.documentElement.classList.add('swiping');
     whenStill(swipeEnd);
+    cutTail();
 }, true);
+
+// iOS swallows every touch while the page glides (it only halts the scroll, the page gets no touchstart), and the slow end of the glide
+// onto the snap point is long. When the finger is up, the page crawls (at most 1.5 px per scroll event) and is within 8 px of a snap point,
+// it jumps to that point at once: the swallowing window ends a few pixels early, the scroll itself stays untouched.
+var tailLast = null;
+function cutTail() {
+    var c = glow.container;
+    if (!c || fingerDown || !isPhone() || document.body.classList.contains('edit-mode') || !glow.pageIdx) { tailLast = null; return; }
+    var top = c.scrollTop, last = tailLast;
+    tailLast = top;
+    if (last === null || Math.abs(top - last) > 1.5) return;
+    var best = null;
+    glow.pageIdx.forEach(function (p) {
+        var y = glow.secs[p[0]].y;
+        if (best === null || Math.abs(y - top) < Math.abs(best - top)) best = y;
+    });
+    var max = c.scrollHeight - c.clientHeight;
+    if (best !== null && best <= max && Math.abs(best - top) <= 8 && Math.abs(best - top) > 0.5) {
+        tailLast = null;
+        c.scrollTo({ top: best, behavior: 'instant' });
+    }
+}
 
 function glowTarget() {
     var c = glow.container, s = null, hot = true;
