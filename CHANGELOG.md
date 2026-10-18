@@ -68,6 +68,9 @@ Names in this log are the current English ones (the code was translated to Engli
 - Ghost headers (`ghostHeader.stack`) again form a stack of all sections between view and target (ordered by distance, target on top, those in between lying ready underneath): further away only the copy of the target glides in, nearer the ones above just glide out and uncover the ones below (before they first glided down). If the target jumped over several, they glide out together. Every change takes 400 ms, the next target waits, only the last one counts (fast hovering skips intermediate steps). Gliding in and out with ease-out; shadow and line fade out quickly at the end of gliding out during the last 25 %.
 - With keyboard navigation a resting mouse pointer over nav chips or headings triggers neither line/chevron nor a ghost header.
 
+**Diagnostics: event log**
+- Opening the page with `?debug` (e.g. `https://a.msmr.co/?debug`) shows a small overlay at the top with the last touch, pointer and scroll events, the time, the swipe state (`sw`) and the lock (`lock`). It shows which events reach the page while it is still scrolling after a swipe, to find out why a tap shortly before the scroll ends activates the section late. Remove it again once that is solved.
+
 **Highlight transition always the same**
 - The first tap on a section after scrolling switched the highlight at once, while later taps (e.g. on the upper section and on that section again) glided. Cause: the scroll-driven mode left `f.dest` empty, and an empty `f.dest` was read as "first placement, no animation". The first placement (and a layout change) is now marked explicitly (`f.instant`, also consumed by the scroll-driven placement, otherwise the first tap would still have been the "first placement"), so every change of the highlighted section glides the same way.
 

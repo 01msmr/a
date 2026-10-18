@@ -475,6 +475,29 @@ document.addEventListener('pointermove', function (e) {
     if (e.pointerType === 'mouse' && isTouch()) setPointerKind('mouse');
 }, true);
 
+// ── Event log (diagnostics) ───────────────────────────────────────
+// Open the page with ?debug: a small overlay at the top lists the last touch, pointer and scroll events with the time, the swipe state
+// and the locked section, to see which events arrive while the page is still scrolling.
+(function () {
+    if (!/[?&]debug\b/.test(location.search)) return;
+    var box = document.createElement('pre');
+    box.style.cssText = 'position:fixed;left:0;top:0;z-index:9999;margin:0;padding:4px 6px;font:10px/1.25 monospace;color:#0f0;background:rgba(0,0,0,.78);pointer-events:none;max-width:100vw;white-space:pre-wrap';
+    document.addEventListener('DOMContentLoaded', function () { document.body.appendChild(box); });
+    var lines = [], t0 = 0, scrolls = 0, moves = 0;
+    function log(text) {
+        var now = performance.now();
+        if (!t0 || now - t0 > 4000) t0 = now;
+        lines.push(((now - t0) / 1000).toFixed(2) + ' ' + text + ' sw=' + (swiping ? 1 : 0) + ' lock=' + (lock.sec ? lock.kind : '-'));
+        if (lines.length > 14) lines.shift();
+        box.textContent = lines.join('\n');
+    }
+    ['touchstart', 'touchend', 'touchcancel', 'pointerdown', 'pointerup', 'pointercancel', 'scrollend'].forEach(function (n) {
+        document.addEventListener(n, function (e) { log(n + (e.pointerType ? ' ' + e.pointerType : '')); }, { capture: true, passive: true });
+    });
+    document.addEventListener('touchmove', function () { if (++moves % 5 === 1) log('touchmove x' + moves); }, { capture: true, passive: true });
+    document.addEventListener('scroll', function () { if (++scrolls % 15 === 1) log('scroll x' + scrolls); }, { capture: true, passive: true });
+})();
+
 // ── Touch swiping ─────────────────────────────────────────────────
 // While the content scrolls (including the coasting), the window is tied to the scroll position (glowScroll) and the chips show no hover look (html.swiping).
 var swiping = false;
