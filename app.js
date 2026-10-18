@@ -451,11 +451,11 @@ document.addEventListener('pointercancel', function () { tapStart = null; }, tru
 // (pointercancel), but touchend still arrives, so a tap into a section activates it at once and the scrolling goes on untouched.
 var touchTap = null;
 document.addEventListener('touchstart', function (e) {
-    var t = e.touches[0];
+    var t = e.touches && e.touches[0];
     touchTap = t ? { x: t.clientX, y: t.clientY, t: performance.now(), target: e.target } : null;
 }, { passive: true, capture: true });
 document.addEventListener('touchend', function (e) {
-    var start = touchTap, t = e.changedTouches[0];
+    var start = touchTap, t = e.changedTouches && e.changedTouches[0];
     touchTap = null;
     if (!start || !t) return;
     if (Math.hypot(t.clientX - start.x, t.clientY - start.y) < 10 && performance.now() - start.t < 600) {
