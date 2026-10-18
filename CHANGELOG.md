@@ -68,6 +68,10 @@ Names in this log are the current English ones (the code was translated to Engli
 - Ghost headers (`ghostHeader.stack`) again form a stack of all sections between view and target (ordered by distance, target on top, those in between lying ready underneath): further away only the copy of the target glides in, nearer the ones above just glide out and uncover the ones below (before they first glided down). If the target jumped over several, they glide out together. Every change takes 400 ms, the next target waits, only the last one counts (fast hovering skips intermediate steps). Gliding in and out with ease-out; shadow and line fade out quickly at the end of gliding out during the last 25 %.
 - With keyboard navigation a resting mouse pointer over nav chips or headings triggers neither line/chevron nor a ghost header.
 
+**Smartphone: full address and chevron direction**
+- The bar shows the full address "a.msmr.co" again instead of "a." (the hiding rule for the phone is gone). Estimated width at the bar's font size: 90 px for the address; with title padding, dropdown, two steppers, gear and gaps about 353 px, so it fits on iPhones from 375 pt width; on narrower screens the bar scrolls sideways (it already had `overflow-x: auto`). Not measured on a device.
+- The chevron of the sections dropdown points up when closed and down when open (before: down closed, up open), because the list opens upward from the bottom bar.
+
 **Touch: no shadows in the dropdowns**
 - On touch devices the settings overlay and the sections list have no drop shadow, and the entries of the sections list lose the light/dark bevel edges on their left and right (`border-color: transparent`). The inner shadows of the active entry and the hover shadows were already off in the list.
 

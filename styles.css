@@ -668,11 +668,6 @@ li.dead::after {
         font-size: 0.9em;
     }
 
-    /* like on the iPad only "a." — in the narrow bar every pixel counts */
-    .titledomain {
-        display: none;
-    }
-
     /* floor, no ceiling — otherwise long content overflows into the next section */
     section {
         min-height: 50%;
@@ -1888,5 +1883,17 @@ body.touch li a::before {
 
     body:not(.edit-mode) section.page-start {
         scroll-snap-align: start;
+    }
+}
+
+/* Smartphone: the sections list opens upward from the bottom bar, so the chevron points up when closed and down when open
+   (the other way round than on the desktop; after the desktop rule above, same specificity) */
+@media only screen and (min-device-width: 350px) and (max-device-width: 812px) {
+    #section-jumper .secicon {
+        transform: rotate(180deg);
+    }
+
+    #section-jumper[aria-expanded="true"] .secicon {
+        transform: none;
     }
 }
