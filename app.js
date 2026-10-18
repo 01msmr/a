@@ -713,6 +713,7 @@ function glowSync() {
     if (isTouch() && !document.body.classList.contains('keyboard') && (!lock.sec || (swiping && lock.kind !== 'title'))) {
         f.container.querySelectorAll('section.hot').forEach(function (s) { s.classList.remove('hot'); });
         glowScroll();
+        f.instant = false;   // the scroll-driven placement is the first placement; the next change glides
         return;
     }
     f.inScroll = false;   // not tied to the scroll position: start anew at the next transition
