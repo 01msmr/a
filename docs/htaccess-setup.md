@@ -78,17 +78,9 @@ The password file is in `edit/.htpasswd`, the path is in `edit/.htaccess`. Creat
 
 Compression needs nothing: the server already sends `br`/`gzip`.
 
-The live server answers with `server: nginx`, and nginx may serve static files itself, in which case `.htaccess` is ignored for them. Check after every change to it with `curl -I` against the list in `docs/performance-baseline.md`. If static files ignore it, put the same rules into Plesk (Apache & nginx settings → Additional nginx directives):
+The live server answers with `server: nginx` in front of Apache. By default Plesk lets nginx serve static files (CSS, JS, images, fonts) itself, and those never reach `.htaccess`. For the rules above to apply to every file, switch it off: Plesk → Websites & Domains → Apache & nginx Settings → untick **Serve static files directly by nginx** (in some Plesk versions called **Smart static files processing**); without it nginx still hands HTML, PHP and `.md` files to Apache, but not CSS, JS, images or fonts. This site is small, so the extra work for Apache does not matter.
 
-```
-location ~ ^/(docs|tools|\.claude|\.git|\.github)(/|$) { return 404; }
-location ~ ^/(.*\.md|LICENSE|links\.default\.json|package(-lock)?\.json|\.gitignore)$ { return 404; }
-location ~* \.html$ { add_header Cache-Control "no-cache"; }
-location ~* \.(css|js)$ { add_header Cache-Control "public, max-age=3600"; }
-location ~* \.(png|ico|svg)$ { add_header Cache-Control "public, max-age=604800"; }
-location = /favicon/manifest.json { add_header Cache-Control "public, max-age=604800"; }
-location ~* \.woff2$ { add_header Cache-Control "public, max-age=31536000, immutable"; }
-```
+Check after every change with `curl -I https://a.msmr.co/<path>`: `/` has `cache-control: no-cache`; `/styles.css`, `/js/prefs.js` and `/vendor/fontawesome-6.7.2/webfonts/fa-solid-900.woff2` have the max-age from above; `/tools/smoke.js`, `/README.md`, `/docs/htaccess-setup.md`, `/links.default.json` give 404; `/edit/` gives 401; `/links.php` gives 200.
 
 ## Automatic deploy from GitHub
 

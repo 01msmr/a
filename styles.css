@@ -1646,12 +1646,6 @@ body.keyboard .set-btn:focus-visible {
     outline: none;
 }
 
-/* the "t" in the squircle keeps the color the area currently has */
-body:not(.touch):not(.keyboard) .set-btn:hover .with-t::after,
-body.keyboard .set-btn:focus-visible .with-t::after {
-    color: var(--front-body);
-}
-
 .set-btn:focus-visible {
     outline: none;
 }

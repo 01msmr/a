@@ -1,11 +1,11 @@
 # Self-hosted fonts
 
 - `ubuntu-300-latin.woff2`, `ubuntu-300-latin-ext.woff2`: Ubuntu Light from Google Fonts (v21), Ubuntu Font Licence 1.0. The `@font-face` rules are at the top of `styles.css`; Cyrillic and Greek fall back to the system font. The latin file is preloaded in `index.html`.
-- `../vendor/fontawesome-6.7.2/`: Font Awesome Free 6.7.2 (`css/all.min.css` with its licence header, `webfonts/*.woff2`). Fonts: SIL OFL 1.1, icons CC BY 4.0, code MIT.
+- `../vendor/fontawesome-6.7.2/`: Font Awesome Free 6.7.2 (`css/all.min.css` with its licence header, `webfonts/fa-solid-900.woff2`). Fonts: SIL OFL 1.1, icons CC BY 4.0, code MIT.
 
-## Glyph audit (2026-10-18)
+## Icons
 
-Only `fa-solid` is used in `js/`, `index.html` and `styles.css` (gear, chevrons, bars, circle, square, hashtag, align, floppy-disk, sun, moon, mobile-screen) and in the section icons of the data (`links.default.json` and the local `edit/links.json`: briefcase, cart-shopping, comments, landmark, lightbulb, location-dot, microchip, newspaper, palette, radio, server, toolbox, tv, user, utensils). Section icons come from the live data and can be any Font Awesome class, so `regular`, `brands` and the v4 compatibility font are kept as well; browsers fetch a font file only when a glyph from it is shown.
+Only `fa-solid` glyphs are used (page, settings and the section icons in the data), so only `fa-solid-900.woff2` is shipped. `css/all.min.css` is kept unmodified and still names the regular, brands and v4-compatibility fonts: a `fa-regular`, `fa-brands` or old `fa fa-…` icon would show nothing until its woff2 file from the same release is copied into `webfonts/`.
 
 ## Updating
 
