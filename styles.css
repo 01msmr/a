@@ -818,17 +818,9 @@ li.dead::after {
         padding: 4px 6px;
     }
 
-    /* the chips give way; gear and dropdown stay, in their own width */
-    #section-nav-list {
-        flex: 0 0 auto;
-    }
-
+    /* the chips give way; gear and dropdown stay (an older rule `#section-nav-list .nav-btn { flex: 0 0 auto }` outranked the equal widths below and was removed) */
     #section-nav-list .secname {
         display: none;
-    }
-
-    #section-nav-list .nav-btn {
-        flex: 0 0 auto;
     }
 
     /* Dropdown right behind the title, the steppers close behind it; the gear at the very right edge.
