@@ -31,6 +31,7 @@ neverDeadReq
     .then(withApp)
     .then(render)
     .catch(function (e) {
+        document.body.classList.add('rendered');
         document.getElementById('container').innerHTML =
             '<p style="color:red;padding:20px">links.json load error: ' + e + '</p>';
     });

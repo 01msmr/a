@@ -11,6 +11,9 @@ Names in this log are the current English ones (the code was translated to Engli
 - The iOS icon data URIs moved out of `index.html` into `favicon/touch-icon-inline.js` (synchronous script in the head, same behavior); `tools/touch-icon.js` writes there.
 - Ubuntu and Font Awesome 6.7.2 self-hosted (`fonts/`, `vendor/fontawesome-6.7.2/`): no Google Fonts or cdnjs requests any more.
 - Root `.htaccess`: cache headers (HTML `no-cache`, CSS/JS 1 hour, images 1 week, fonts 1 year) and 404 for files that are not part of the site (`docs/`, `tools/`, `*.md`, …). Needs "Serve static files directly by nginx" switched off in Plesk, see `docs/htaccess-setup.md`.
+- Faster first load (Lighthouse mobile, simulated slow 4G, local HTTP/2 copy: score 72 -> 99, first paint 2.1 s -> 1.2 s, 332 KB -> 194 KB): small Font Awesome solid font (3 KB, the full one only loads for other icons), `links.php` and `never-dead.json` requested from the head in parallel, scripts `defer`red in the head.
+- Layout shift 0.9 -> 0: the empty `#container` no longer shows its end spacer (`#container:empty::after`), and the nav row stays hidden until `render()` has set `body.rendered`.
+- Brand and regular icons work again: all four Font Awesome fonts are shipped; write `fa-brands fa-apple` as the section icon.
 - Removed the unused generated icon set from `favicon/`; cursor and source images moved to `assets/`.
 - `tools/smoke.js` also checks: no data URIs and no third-party hosts in `index.html`, one `?v=` value, a versioned Font Awesome path.
 

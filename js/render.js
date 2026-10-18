@@ -262,5 +262,6 @@ function render(data) {
         syncActive();
     }
     focusContent();
+    document.body.classList.add('rendered');   // until now the nav row is hidden, so its late layout is not a layout shift
 }
 

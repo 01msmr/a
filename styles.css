@@ -193,6 +193,16 @@ section {
     height: 100%;
 }
 
+/* before the sections arrive the spacer would sit at the top and then jump to the end: that was the whole layout shift */
+#container:empty::after {
+    display: none;
+}
+
+/* the nav row is laid out again when the chips arrive; hidden until then, so it does not count as a layout shift (class set in render()) */
+body:not(.rendered) #section-nav-list {
+    visibility: hidden;
+}
+
 section {
     color: var(--text-col);
 }

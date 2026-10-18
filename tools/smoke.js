@@ -58,7 +58,10 @@ const afterMs = (fn, ms) => new Promise(r => setTimeout(() => { fn(); r(); }, ms
     check(!/googleapis|gstatic|cdnjs/.test(rawHtml), 'index.html loads fonts or CSS from a third-party host');
     const touch = d.querySelectorAll('link[rel="apple-touch-icon"]');
     check(touch.length === 1 && touch[0].href.startsWith('data:image/png;base64,'), 'apple-touch-icon is not a single data: URI link after the icon script');
-    await afterMs(() => check(d.querySelectorAll('section').length > 0, 'no sections rendered'), 500);
+    await afterMs(() => {
+        check(d.querySelectorAll('section').length > 0, 'no sections rendered');
+        check(d.body.classList.contains('rendered'), 'body has no rendered class after render (the nav row stays hidden)');
+    }, 500);
     // Nav: chips, gear and dropdown are in one row (same flex rules), the dropdown last
     await afterMs(() => {
         const nav = d.getElementById('section-nav-list'), kids = [...nav.children];
