@@ -453,6 +453,9 @@ var touchTap = null;
 document.addEventListener('touchstart', function (e) {
     var t = e.touches && e.touches[0];
     touchTap = t ? { x: t.clientX, y: t.clientY, t: performance.now(), target: e.target } : null;
+    // While the page is still scrolling after a swipe (coasting, then settling on the snap point) a touch can only halt the scroll, be a tap,
+    // or start a new swipe (which releases the lock again): activate right at the touch, otherwise several taps get lost until the scroll has ended
+    if (touchTap && swiping) lockFromEvent({ target: e.target, clientX: t.clientX, clientY: t.clientY, button: 0 }, true);
 }, { passive: true, capture: true });
 document.addEventListener('touchend', function (e) {
     var start = touchTap, t = e.changedTouches && e.changedTouches[0];
@@ -490,7 +493,11 @@ function swipeEnd() {
 }
 document.addEventListener('scrollend', function () { if (swiping) swipeEnd(); }, true);
 // Swiping with a finger ends the click lock (the mouse does that by moving)
-document.addEventListener('touchmove', function () { if (lock.sec) lockOff(); }, { passive: true });
+document.addEventListener('touchmove', function (e) {
+    var t = e.touches && e.touches[0];
+    if (touchTap && t && Math.hypot(t.clientX - touchTap.x, t.clientY - touchTap.y) < 10) return;   // finger jitter of a tap is no swipe
+    if (lock.sec) lockOff();
+}, { passive: true });
 document.addEventListener('scroll', function () {
     if (!isTouch()) return;
     swiping = true;
