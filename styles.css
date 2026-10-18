@@ -868,16 +868,21 @@ li.dead::after {
         min-width: 0;
     }
 
+    /* order: dropdown, down, up, settings */
     #section-jumper {
         order: 1;
     }
 
-    .stepper {
+    #step-next {
         order: 2;
     }
 
-    #settings-btn {
+    #step-prev {
         order: 3;
+    }
+
+    #settings-btn {
+        order: 4;
     }
 }
 

@@ -190,7 +190,7 @@ is short, the row overflows to the left (`justify-content: flex-end`): gear and 
 stay reachable. The dropdown is a `<button>` (`aria-haspopup`, `aria-expanded`) with an icon and
 the word "sec", the chevron turns upward when open (on the smartphone, where the list opens upward from the bottom bar, it points up when closed and down when open).
 
-On the iPhone in portrait the chips give way; in the bottom bar dropdown and steppers follow close behind the title, the gear sits at the very right edge
+On the iPhone in portrait the chips give way; in the bottom bar dropdown, down and up buttons follow close behind the title, the gear sits at the very right edge
 (`#section-nav-list` is `display: contents` there, order via `order`).
 
 Chips and entries of the sections list share the class `a.sec-btn` (built by `sectionButton`):
