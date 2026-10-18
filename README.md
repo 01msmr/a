@@ -22,6 +22,8 @@ For AI agents and new contributors: `CLAUDE.md` has the file map, the rules and 
 | `tools/dev-router.php` | Demo server with `no-store`, local only |
 | `tools/touch-icon.js` | Switches the iOS home screen icon between embedded as data: URIs in `favicon/touch-icon-inline.js` (`node tools/touch-icon.js inline`, the iOS 27.2 workaround, current) and linked (`… url`, the default); also copies the icon to `/apple-touch-icon.png` and `/apple-touch-icon-precomposed.png` |
 | `tools/smoke.js` | Smoke test without a browser (jsdom): loads the page, switches edit mode on, checks the nav structure, click lock, coupled highlight and re-sorting of sections; fails on page errors and infinite loops. `npm install --no-save jsdom && node tools/smoke.js` |
+| `tools/unit.test.js` | Unit tests (Node's test runner) for the pure logic: never-dead addresses, adding the APP section, section colors, preferences, the shared state. `npm install --no-save jsdom && node --test` |
+| `tools/page-env.js` | The jsdom setup shared by the smoke test and the unit tests (loads `index.html` and its scripts) |
 | `tools/browser-checks.mjs` | Checks that need a real browser (headless Chrome via puppeteer-core): no layout shift while loading, the words in the settings overlay as large as the word on the gear (phones, iPad, narrow phone), the Apple logo drawn by our own font, every section icon has a glyph. Starts `tools/dev-router.php` itself. `npm install --no-save jsdom puppeteer-core && node tools/browser-checks.mjs [url]` |
 | `favicon/` | Icons used by the page, manifest, `touch-icon-inline.js` |
 | `assets/` | Cursor images (used by `styles.css`) and source images |

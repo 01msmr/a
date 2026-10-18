@@ -1,6 +1,6 @@
 // Smoke test without a browser: loads index.html and its js/ scripts in jsdom, switches edit mode on and simulates the click lock.
 // If the page freezes (infinite loop), the test aborts after 20 s; if the page reports an "infinite loop", it fails.
-// Usage: npm install --no-save jsdom && node tools/smoke.js
+// Usage: npm install --no-save jsdom && node tools/smoke.js   (the jsdom setup is in tools/page-env.js)
 const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -15,35 +15,7 @@ if (process.argv[2] !== '--child') {
     process.exit(0);
 }
 
-const { JSDOM, VirtualConsole } = require('jsdom');
-const errors = [];
-const vc = new VirtualConsole();
-vc.on('jsdomError', e => errors.push(e.message));
-vc.on('error', (...a) => errors.push(a.join(' ')));
-
-const rawHtml = fs.readFileSync(root + 'index.html', 'utf8');
-const scripts = [...rawHtml.matchAll(/<script src="((?:js|favicon)\/[^"?]+\.js)[^>]*><\/script>/g)].map(m => m[1]);   // load order = order in index.html
-if (!scripts.length) { console.error('no js/ scripts found in index.html'); process.exit(1); }
-const html = rawHtml
-    .replace(/<script src="(?:js|favicon)\/[^>]*><\/script>/g, '');
-const dom = new JSDOM(html, {
-    url: 'http://localhost/', runScripts: 'dangerously', pretendToBeVisual: true, virtualConsole: vc,
-    beforeParse(w) {
-        w.matchMedia = q => ({ matches: /hover: hover|pointer: fine/.test(q), addEventListener() { }, addListener() { } });
-        w.ResizeObserver = class { observe() { } disconnect() { } };
-        w.CSS = { supports: () => true };
-        w.document.elementFromPoint = () => null;   // jsdom has no layout
-        w.Element.prototype.scrollIntoView = function () { };   // likewise
-        w.HTMLElement.prototype.showPopover = function () { };
-        w.HTMLElement.prototype.hidePopover = function () { };
-        w.fetchLog = [];
-        w.fetch = async u => (w.fetchLog.push(String(u)), /links/.test(u))
-            ? { ok: true, status: 200, json: async () => JSON.parse(fs.readFileSync(root + 'links.default.json', 'utf8')) }
-            : { ok: true, status: 405, json: async () => ({}) };
-    }
-});
-const w = dom.window, d = w.document;
-scripts.forEach(f => w.eval(fs.readFileSync(root + f, 'utf8')));
+const { w, d, errors, rawHtml } = require('./page-env.js')();
 
 const ev = (t, o) => new w.MouseEvent(t, Object.assign({ bubbles: true, cancelable: true, button: 0, clientX: 10, clientY: 10 }, o));
 // jsdom has no PointerEvents: MouseEvent with pointerType (default: mouse)

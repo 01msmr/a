@@ -18,6 +18,7 @@ Names in this log are the current English ones (the code was translated to Engli
 - `.htaccess` also hides `links.json` and `*.bak.json` in the web root (an old `links.bak.json` from May 2026 was publicly readable there; it should also be deleted on the server).
 - The custom squircle is gone: the APP section and the Navigation entry in the settings use Font Awesome's `fa-square`; its CSS mask and code are removed. **The saved data must say `"icon": "fa-square"` for the APP section** (the page no longer converts the old `icon-squircle`). The unused v4-compatibility font is removed. A meta description was added.
 - The Apple logo character (U+F8FF) in two link names is drawn by our own tiny font (`fonts/ubuntu-apple-logo.woff2`), so it shows on every device and not only on Apple's.
+- `tools/unit.test.js` (10 tests, Node's test runner) for `isNeverDead`, `withApp`, `sectionColor`, `getPref`/`setPref` and the shared state; `tools/page-env.js` is the jsdom setup the smoke test and the unit tests share. Each test was shown to fail when its function is broken.
 - `tools/browser-checks.mjs`: browser checks for layout shift, settings word size, Apple logo font and icon glyphs (each shown to fail when its feature is broken).
 - `tools/smoke.js` also fails when a file named in `styles.css` or `index.html` is missing.
 - Brand and regular icons work again: all four Font Awesome fonts are shipped; write `fa-brands fa-apple` as the section icon.

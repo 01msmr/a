@@ -42,5 +42,6 @@ Each `js/*.js` starts with three header lines: what it owns, which globals it de
 
 - Local demo (no cache): `php -S 0.0.0.0:8080 tools/dev-router.php`
 - Smoke test: `npm install --no-save jsdom puppeteer-core && node tools/smoke.js` (prints `OK`)
+- Unit tests: `node --test` (tools/unit.test.js; add a test when you change logic in `js/`; the jsdom setup is `tools/page-env.js`)
 - Browser checks (layout shift, settings word size, Apple logo, icon glyphs): `node tools/browser-checks.mjs [url]`; needs Chrome (`CHROME_PATH` if it is not found). Run it after changes to `styles.css`, the settings overlay or the loading order
 - Syntax check one file: `node --check js/FILE.js`
