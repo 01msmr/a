@@ -25,7 +25,6 @@ const rawHtml = fs.readFileSync(root + 'index.html', 'utf8');
 const scripts = [...rawHtml.matchAll(/<script src="((?:js|favicon)\/[^"?]+\.js)[^>]*><\/script>/g)].map(m => m[1]);   // load order = order in index.html
 if (!scripts.length) { console.error('no js/ scripts found in index.html'); process.exit(1); }
 const html = rawHtml
-    .replace(/<link[^>]*(googleapis|cdnjs)[^>]*>/g, '')
     .replace(/<script src="(?:js|favicon)\/[^>]*><\/script>/g, '');
 const dom = new JSDOM(html, {
     url: 'http://localhost/', runScripts: 'dangerously', pretendToBeVisual: true, virtualConsole: vc,

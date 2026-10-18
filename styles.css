@@ -31,7 +31,7 @@ html[data-zoom="m"] {
     --tile: 11.875rem;
     --column: calc(6 * var(--tile));
 
-    /* Motion (app.js reads the numbers; times in ms) */
+    /* Motion (js/touch.js reads the numbers; times in ms) */
     --glow-duration: 200;        /* Glow window and ghost headers glide */
     --glow-duration-short: 60;    /* the same for reduced motion */
     --glide-power: 2;         /* accelerates from the start, ends hard (t to the power n) */
@@ -235,7 +235,7 @@ li a::before {
 
 /* after section:hover a, so the own tile wins.
    Keyboard (Tab, arrow left/right) shows the same area; not while editing.
-   Only one tile lights up: body.keyboard (app.js) switches between mouse and keyboard */
+   Only one tile lights up: body.keyboard (js/settings.js) switches between mouse and keyboard */
 body:not(.touch):not(.keyboard):not(.tile-light):not(.locked) li a:hover,
 body.keyboard:not(.tile-light) li a:not([contenteditable]):focus-visible {
     color: var(--text-hov);
@@ -250,7 +250,7 @@ body.keyboard li a:not([contenteditable]):focus-visible::before {
     background-color: var(--back-hov);
 }
 
-/* The line cursor of the tile sits in the light (.tile-light-line, app.js) and glides along with it; here only the system pointer */
+/* The line cursor of the tile sits in the light (.tile-light-line, js/light.js) and glides along with it; here only the system pointer */
 @media (hover: hover) {
     li a {
         cursor: none;
@@ -475,7 +475,7 @@ a.sec-btn::after {
     transition: none;
 }
 
-/* Every section has its own color (--c, set by app.js):
+/* Every section has its own color (--c, set by js/render.js):
    hover = area with opacity, active = full opacity with contrast text.
    .with-hover couples chip and heading: one lights up when the mouse is on the other */
 section {
@@ -595,7 +595,7 @@ body.docked .title {
     border-bottom-color: var(--sect-col);
 }
 
-/* covered rows (app.js: the window of the glowing section, app.js paints the area as the section background):
+/* covered rows (js/glow.js: the window of the glowing section, js/glow.js paints the area as the section background):
    text white; only the tile under the cursor inverts: light area, text in section color */
 body #container section .name.covered,
 body #container section .name.covered a,
@@ -1277,7 +1277,7 @@ body.view-grid:not(.edit-mode) li {
     border-bottom: 1px solid var(--line);
 }
 
-/* bottom grid line: switches with the window at the bottom edge of the row (.covered-bottom, app.js) */
+/* bottom grid line: switches with the window at the bottom edge of the row (.covered-bottom, js/glow.js) */
 body.view-grid:not(.edit-mode) li {
     border-bottom-color: color-mix(in srgb, var(--sect-col) 25%, transparent);
 }
@@ -1338,7 +1338,7 @@ body.view-grid:not(.edit-mode) li a::before {
     background-image: none;
 }
 
-/* Hover area of the tile as its own element (#tile-light, app.js) that glides from tile to tile;
+/* Hover area of the tile as its own element (#tile-light, js/light.js) that glides from tile to tile;
    the text inverts (.inverted) as soon as the light covers 95 % of the tile */
 #container {
     position: relative;
@@ -1382,7 +1382,7 @@ body:not(.view-grid) #tile-light {
     background-image: linear-gradient(rgba(255, 255, 255, calc(.46 * var(--hl) * var(--gloss))), rgba(255, 255, 255, calc(.12 * var(--hl) * var(--gloss))) 36%, rgba(255, 255, 255, 0) 38%, rgba(0, 0, 0, calc(.2 * var(--hl) * var(--gloss))));
 }
 
-/* ── Re-sorting sections (edit mode, app.js: sectionsSortable) ── */
+/* ── Re-sorting sections (edit mode, js/edit.js: sectionsSortable) ── */
 .sec-handle {
     cursor: grab;
     margin-right: .5em;
@@ -1738,7 +1738,7 @@ body:not(.nav-icons) .jumper-pop .secicon {
     transform: rotate(180deg);
 }
 
-/* ── Ghost headers (app.js): copy of the target heading at the edge of the view ── */
+/* ── Ghost headers (js/ghost-header.js): copy of the target heading at the edge of the view ── */
 #ghost-header-layer {
     position: fixed;
     z-index: 1;
@@ -1770,7 +1770,7 @@ body.view-grid .ghost-header .name {
     border-bottom-width: 0;
 }
 
-/* soft shadow onto the content, 66 % of a tile height (--shadow, set by app.js); it starts with a thin dark line (1 px) */
+/* soft shadow onto the content, 66 % of a tile height (--shadow, set by js/ghost-header.js); it starts with a thin dark line (1 px) */
 .ghost-header::after {
     content: "";
     position: absolute;
@@ -1808,7 +1808,7 @@ body.view-grid .ghost-header .name {
     display: none;
 }
 
-/* ── Line pointer (app.js): vertical line instead of the dot ── */
+/* ── Line pointer (js/cursor.js): vertical line instead of the dot ── */
 #cursor {
     position: fixed;
     z-index: 50;
@@ -1826,7 +1826,7 @@ html.cursor-on * {
     cursor: none !important;
 }
 
-/* Chevron as a real image pointer (heading, nav chip, sections list): shows where a click scrolls (app.js sets data-arrow) */
+/* Chevron as a real image pointer (heading, nav chip, sections list): shows where a click scrolls (js/cursor.js sets data-arrow) */
 html.cursor-on[data-arrow="up"],
 html.cursor-on[data-arrow="up"] * {
     cursor: var(--curs-up) !important;
@@ -1847,7 +1847,7 @@ html.cursor-on.cursor-dot * {
     cursor: var(--curs-sec) 1 1, auto !important;
 }
 
-/* Grid: empty cells of the last row (one area up to the end of the row, --empty is set by app.js) carry the lines of the tiles */
+/* Grid: empty cells of the last row (one area up to the end of the row, --empty is set by js/glow.js) carry the lines of the tiles */
 body.view-grid:not(.edit-mode) .group::after {
     content: "";
     grid-column: span var(--empty, 1);
@@ -1889,7 +1889,7 @@ body.view-grid:not(.edit-mode) .group.end-covered::after {
     background: var(--k);
 }
 
-/* the cell under the tile light carries the section color immediately (areas in the content behind the light, app.js) */
+/* the cell under the tile light carries the section color immediately (areas in the content behind the light, js/light.js) */
 .tile-cell {
     position: absolute;
     z-index: 0;
@@ -1921,7 +1921,7 @@ body.touch li a::before {
     transition: none;
 }
 
-/* Smartphone: snap points only at the first section of each page (app.js, buildPages): two consecutive half-height sections
+/* Smartphone: snap points only at the first section of each page (js/glow.js, buildPages): two consecutive half-height sections
    are one page, a larger one always starts its own */
 @media only screen and (min-device-width: 350px) and (max-device-width: 812px) {
     body:not(.edit-mode) section {

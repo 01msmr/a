@@ -1,6 +1,6 @@
 // Owns: grid layout, focus on content
 // Defines globals: gridBase, gridInit, gridTimer, focusContent
-// Uses: touch, ghost-header, edit
+// Uses: touch, ghost-header (and the edit-mode class on body)
 // Sections occupy a whole multiple of a quarter of the content height
 var gridBase = 0;
 
@@ -73,7 +73,7 @@ window.addEventListener('resize', function () {
     gridTimer = setTimeout(function () { gridInit(true); }, 250);
 });
 
-// the icon font from the CDN changes the header height after loading
+// the icon font changes the header height after loading
 if (document.fonts) document.fonts.ready.then(function () { gridInit(); });
 
 // focus the content after a jump, otherwise the arrow keys go nowhere

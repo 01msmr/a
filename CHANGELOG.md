@@ -4,6 +4,16 @@ Newest first. One heading per working session. Older states are in
 `git log`; the record starts here with the session of 25/26 July 2026.
 Names in this log are the current English ones (the code was translated to English on 2026-10-17).
 
+## 2026-10-18 — Structure, performance and AI-readiness (nothing visible changes)
+
+- `app.js` cut into 14 files in `js/` (prefs, render, active-section, touch, glow, ghost-header, light, cursor, grid, navigation, links, settings, boot, edit), same order and same code; proven byte for byte against the old file. Each file starts with three header lines (owns, defines, uses). `index.html` loads them in order; `tools/smoke.js` and `tools/dev-router.php` read the file list from there.
+- `CLAUDE.md` added (file map, rules, commands); `docs/es-modules-plan.md` (later migration), `docs/performance-baseline.md`, `docs/css-audit.md`.
+- The iOS icon data URIs moved out of `index.html` into `favicon/touch-icon-inline.js` (synchronous script in the head, same behavior); `tools/touch-icon.js` writes there.
+- Ubuntu and Font Awesome 6.7.2 self-hosted (`fonts/`, `vendor/fontawesome-6.7.2/`): no Google Fonts or cdnjs requests any more.
+- Root `.htaccess`: cache headers (HTML `no-cache`, CSS/JS 1 hour, images 1 week, fonts 1 year) and 404 for files that are not part of the site (`docs/`, `tools/`, `*.md`, …). The live server is nginx in front of Apache: verify with `curl -I` after deploy; fallback rules for Plesk in `docs/htaccess-setup.md`.
+- Removed the unused generated icon set from `favicon/`; cursor and source images moved to `assets/`.
+- `tools/smoke.js` also checks: no data URIs and no third-party hosts in `index.html`, one `?v=` value, a versioned Font Awesome path.
+
 ## 2026-10-17 (later) — Touch on the smartphone, ghost headers as a stack, home icon, grid, hover in a section, unreachable links, everything in English
 
 **Touch instead of hover (iOS)**

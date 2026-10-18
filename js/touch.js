@@ -1,6 +1,6 @@
 // Owns: CSS measures, pointer kind, click lock, swipe, tail snap after the glide, glow state
 // Defines globals: measures, readMeasures, glide, glow, PHONE_QUERY, isPhone, pointerKind, isTouch, setPointerKind, lockOn, lockOff, lockFromEvent, tapStart, touchTap, swiping, fingerDown, swipeEnd, tailLast, tailRestore, cutTail, pendingTap, tailAnim
-// Uses: prefs, active-section, glow, light, cursor, navigation, edit
+// Uses: prefs, active-section, glow, light, cursor, navigation (and the edit-mode class on body)
 // Numbers from the CSS variables (:root in styles.css), read once
 var measures = {};
 function readMeasures() {

@@ -2,13 +2,17 @@
 
 ```
 a.msmr.co/
-├── index.html   styles.css   js/*.js    public
+├── index.html   styles.css              public
+├── js/                                  14 scripts, public
+├── fonts/   vendor/fontawesome-6.7.2/   self-hosted fonts, public
+├── assets/                              cursor and source images, public
+├── .htaccess                            caching, hides non-site files (see below)
 ├── links.php                            public, serves the list
 ├── links.default.json                   seed, only on the very first request
 ├── never-dead.json                      addresses that never count as dead
 ├── apple-touch-icon.png                 copies of the home screen icon for iOS and other browsers
 ├── apple-touch-icon-precomposed.png
-├── favicon/                             icons, manifest
+├── favicon/                             icons, manifest, touch-icon-inline.js
 └── edit/                                basic auth, completely closed
     ├── .htaccess
     ├── .htpasswd
@@ -78,9 +82,12 @@ The live server answers with `server: nginx`, and nginx may serve static files i
 
 ```
 location ~ ^/(docs|tools|\.claude|\.git|\.github)(/|$) { return 404; }
-location ~ ^/(.*\.md|LICENSE|links\.default\.json)$ { return 404; }
+location ~ ^/(.*\.md|LICENSE|links\.default\.json|package(-lock)?\.json|\.gitignore)$ { return 404; }
+location ~* \.html$ { add_header Cache-Control "no-cache"; }
 location ~* \.(css|js)$ { add_header Cache-Control "public, max-age=3600"; }
 location ~* \.(png|ico|svg)$ { add_header Cache-Control "public, max-age=604800"; }
+location = /favicon/manifest.json { add_header Cache-Control "public, max-age=604800"; }
+location ~* \.woff2$ { add_header Cache-Control "public, max-age=31536000, immutable"; }
 ```
 
 ## Automatic deploy from GitHub

@@ -7,15 +7,16 @@ if ($path === '/') $path = '/index.html';
 $file = realpath($root . $path);
 if ($file && strpos($file, $root) === 0 && is_file($file) && pathinfo($file, PATHINFO_EXTENSION) !== 'php') {
     $types = ['css' => 'text/css', 'js' => 'application/javascript', 'html' => 'text/html',
-        'json' => 'application/json', 'png' => 'image/png', 'ico' => 'image/x-icon'];
+        'json' => 'application/json', 'png' => 'image/png', 'ico' => 'image/x-icon', 'woff2' => 'font/woff2'];
     $ext = pathinfo($file, PATHINFO_EXTENSION);
     header('Content-Type: ' . ($types[$ext] ?? 'application/octet-stream'));
     header('Cache-Control: no-store');
     if ($ext === 'html') {
         // Version number on CSS/JS: this also bypasses copies from the browser cache of earlier runs
         $html = file_get_contents($file);
-        $html = preg_replace_callback('~(styles\.css|js/[\w-]+\.js)\?v=[^"]*~', function ($m) use ($root) {
-            return $m[1] . '?v=' . filemtime("$root/$m[1]");
+        $html = preg_replace_callback('~(href|src)="([^"?]+)\?v=[^"]*"~', function ($m) use ($root) {
+            $f = "$root/$m[2]";
+            return is_file($f) ? "$m[1]=\"$m[2]?v=" . filemtime($f) . '"' : $m[0];
         }, $html);
         echo $html;
         return true;

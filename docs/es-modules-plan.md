@@ -70,7 +70,7 @@ Readers are textual matches in other files (comments excluded); verify when migr
 | `mousePoint` | `navigation` | `render`, `touch`, `settings` |
 | `neverDead` | `links` | `boot` |
 | `SETTINGS` | `settings` | (only own file) |
-| `dragged` | `edit` | `settings` |
+| `dragged` | `edit` | (only own file) |
 | `prepared` | `edit` | (only own file) |
 | `startPlace` | `edit` | (only own file) |
 | `startList` | `edit` | (only own file) |
