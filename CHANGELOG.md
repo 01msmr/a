@@ -68,6 +68,9 @@ Names in this log are the current English ones (the code was translated to Engli
 - Ghost headers (`ghostHeader.stack`) again form a stack of all sections between view and target (ordered by distance, target on top, those in between lying ready underneath): further away only the copy of the target glides in, nearer the ones above just glide out and uncover the ones below (before they first glided down). If the target jumped over several, they glide out together. Every change takes 400 ms, the next target waits, only the last one counts (fast hovering skips intermediate steps). Gliding in and out with ease-out; shadow and line fade out quickly at the end of gliding out during the last 25 %.
 - With keyboard navigation a resting mouse pointer over nav chips or headings triggers neither line/chevron nor a ghost header.
 
+**Touch: tap during a long scroll**
+- A tap into a section is now also detected from `touchstart`/`touchend` (little movement, under 0.6 s), not only from the pointer events: while the page scrolls, also while it glides on its own, iOS may cancel the pointer events (`pointercancel`), but `touchend` still arrives. The tap activates the section at once and the scrolling is left alone. In a simulated page the pointer path already moved the highlight at once during a running scroll, so the delay on the phone must come from the cancelled pointer events; to be checked on the phone.
+
 **Smartphone: dropdown and gear without a box**
 - The filled box for the dropdown and the gear (previous change) showed up as an empty rectangle: a later rule `.nav-btn { background: transparent }` overrode the fill while the text color (`--front-body`, the page color) stayed. Reverted: the dropdown and the gear are plain icons with transparent edges again, with the same width as the steppers.
 

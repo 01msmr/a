@@ -447,6 +447,21 @@ document.addEventListener('pointerup', function (e) {
     if (moved < 10 && duration < 600) lockFromEvent(e, true);
 }, true);
 document.addEventListener('pointercancel', function () { tapStart = null; }, true);
+// The same tap detection from touch events: while the page is scrolling (also gliding on its own) iOS may cancel the pointer events
+// (pointercancel), but touchend still arrives, so a tap into a section activates it at once and the scrolling goes on untouched.
+var touchTap = null;
+document.addEventListener('touchstart', function (e) {
+    var t = e.touches[0];
+    touchTap = t ? { x: t.clientX, y: t.clientY, t: performance.now(), target: e.target } : null;
+}, { passive: true, capture: true });
+document.addEventListener('touchend', function (e) {
+    var start = touchTap, t = e.changedTouches[0];
+    touchTap = null;
+    if (!start || !t) return;
+    if (Math.hypot(t.clientX - start.x, t.clientY - start.y) < 10 && performance.now() - start.t < 600) {
+        lockFromEvent({ target: start.target, clientX: t.clientX, clientY: t.clientY, button: 0 }, true);
+    }
+}, { passive: true, capture: true });
 document.addEventListener('mousemove', function (e) {
     if (lock.sec && Math.hypot(e.clientX - lock.x, e.clientY - lock.y) > 4) lockOff();
 }, { passive: true });
