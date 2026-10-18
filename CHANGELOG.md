@@ -68,6 +68,9 @@ Names in this log are the current English ones (the code was translated to Engli
 - Ghost headers (`ghostHeader.stack`) again form a stack of all sections between view and target (ordered by distance, target on top, those in between lying ready underneath): further away only the copy of the target glides in, nearer the ones above just glide out and uncover the ones below (before they first glided down). If the target jumped over several, they glide out together. Every change takes 400 ms, the next target waits, only the last one counts (fast hovering skips intermediate steps). Gliding in and out with ease-out; shadow and line fade out quickly at the end of gliding out during the last 25 %.
 - With keyboard navigation a resting mouse pointer over nav chips or headings triggers neither line/chevron nor a ghost header.
 
+**Touch: remembered tap during a scroll**
+- If iOS cancels or swallows a touch while the page glides after a swipe (the `touchcancel`/`pointercancel` lines in the event log), the touch is remembered (`pendingTap`: target and time, only a touch while `swiping`). It is dropped when the finger really moves (swipe, 10 px) or when `touchend` handled it as a tap; otherwise the section is activated when the scroll ends (`swipeEnd`, within 2.5 s). The activation at `touchstart` while scrolling stays.
+
 **Diagnostics: event log**
 - Opening the page with `?debug` (e.g. `https://a.msmr.co/?debug`) shows a small overlay at the top with the last touch, pointer and scroll events, the time, the swipe state (`sw`) and the lock (`lock`). It shows which events reach the page while it is still scrolling after a swipe, to find out why a tap shortly before the scroll ends activates the section late. Remove it again once that is solved.
 

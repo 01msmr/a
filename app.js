@@ -449,17 +449,20 @@ document.addEventListener('pointerup', function (e) {
 document.addEventListener('pointercancel', function () { tapStart = null; }, true);
 // The same tap detection from touch events: while the page is scrolling (also gliding on its own) iOS may cancel the pointer events
 // (pointercancel), but touchend still arrives, so a tap into a section activates it at once and the scrolling goes on untouched.
-var touchTap = null;
+var touchTap = null, pendingTap = null;   // pendingTap: a touch during a scroll that may still need its activation
 document.addEventListener('touchstart', function (e) {
     var t = e.touches && e.touches[0];
     touchTap = t ? { x: t.clientX, y: t.clientY, t: performance.now(), target: e.target } : null;
     // While the page is still scrolling after a swipe (coasting, then settling on the snap point) a touch can only halt the scroll, be a tap,
     // or start a new swipe (which releases the lock again): activate right at the touch, otherwise several taps get lost until the scroll has ended
     if (touchTap && swiping) lockFromEvent({ target: e.target, clientX: t.clientX, clientY: t.clientY, button: 0 }, true);
+    // Remember the touch as well: if iOS cancels or swallows it while the page glides (touchcancel), it is activated when the scroll has ended
+    pendingTap = touchTap && swiping ? { target: e.target, x: t.clientX, y: t.clientY, t: performance.now() } : null;
 }, { passive: true, capture: true });
 document.addEventListener('touchend', function (e) {
     var start = touchTap, t = e.changedTouches && e.changedTouches[0];
     touchTap = null;
+    pendingTap = null;   // handled here (a cancelled touch never gets here and stays pending)
     if (!start || !t) return;
     if (Math.hypot(t.clientX - start.x, t.clientY - start.y) < 10 && performance.now() - start.t < 600) {
         lockFromEvent({ target: start.target, clientX: t.clientX, clientY: t.clientY, button: 0 }, true);
@@ -512,6 +515,12 @@ function swipeEnd() {
     if (fingerDown) return;
     swiping = false;
     document.documentElement.classList.remove('swiping');
+    // A touch during the scroll that iOS swallowed or cancelled and that did not turn into a swipe: activate its section now
+    var tap = pendingTap;
+    pendingTap = null;
+    if (tap && performance.now() - tap.t < 2500 && tap.target && tap.target.closest) {
+        lockFromEvent({ target: tap.target, clientX: tap.x, clientY: tap.y, button: 0 }, true);
+    }
     glowSync();
 }
 document.addEventListener('scrollend', function () { if (swiping) swipeEnd(); }, true);
@@ -519,6 +528,7 @@ document.addEventListener('scrollend', function () { if (swiping) swipeEnd(); },
 document.addEventListener('touchmove', function (e) {
     var t = e.touches && e.touches[0];
     if (touchTap && t && Math.hypot(t.clientX - touchTap.x, t.clientY - touchTap.y) < 10) return;   // finger jitter of a tap is no swipe
+    pendingTap = null;   // a real swipe: no tap any more
     if (lock.sec) lockOff();
 }, { passive: true });
 document.addEventListener('scroll', function () {
