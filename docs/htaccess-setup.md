@@ -65,6 +65,24 @@ The password file is in `edit/.htpasswd`, the path is in `edit/.htaccess`. Creat
 
 `-B` forces bcrypt. Without `-c`, otherwise the file is overwritten instead of extended. The file must never go into the repo — it is in the `.gitignore`.
 
+## Root .htaccess (caching and hiding non-site files)
+
+`/.htaccess` does two things; every block sits in an `<IfModule>`, so a missing module cannot cause a 500:
+
+- `RedirectMatch 404` for `docs/`, `tools/`, `.claude/`, `.git*`, `*.md`, `LICENSE`, `links.default.json` (the PHP script reads that seed from disk, the browser never fetches it). This complements the deploy action below, which is not set up on the live server today (`/README.md` was public on 2026-10-18).
+- `Cache-Control`: HTML `no-cache`; CSS/JS one hour (the `?v=` bump busts them; a push without a bump can show old files for up to an hour); images and manifest one week; `.woff2` one year, immutable.
+
+Compression needs nothing: the server already sends `br`/`gzip`.
+
+The live server answers with `server: nginx`, and nginx may serve static files itself, in which case `.htaccess` is ignored for them. Check after every change to it with `curl -I` against the list in `docs/performance-baseline.md`. If static files ignore it, put the same rules into Plesk (Apache & nginx settings → Additional nginx directives):
+
+```
+location ~ ^/(docs|tools|\.claude|\.git|\.github)(/|$) { return 404; }
+location ~ ^/(.*\.md|LICENSE|links\.default\.json)$ { return 404; }
+location ~* \.(css|js)$ { add_header Cache-Control "public, max-age=3600"; }
+location ~* \.(png|ico|svg)$ { add_header Cache-Control "public, max-age=604800"; }
+```
+
 ## Automatic deploy from GitHub
 
 Plesk pulls `main` itself and puts the repo files into `httpdocs`. The live data survives that: `edit/links.json`, `edit/links.bak.json` and `edit/.htpasswd` are in the `.gitignore`, so they are not in the repo at all — Plesk only copies what is there and deletes nothing additional.
