@@ -188,7 +188,7 @@ Chips (`a.secname`), gear and dropdown (`.nav-btn`) sit in one flex row
 (`#section-nav-list`), the rest belongs to all equally (`flex: 1 1 auto`). If space
 is short, the row overflows to the left (`justify-content: flex-end`): gear and dropdown at the end
 stay reachable. The dropdown is a `<button>` (`aria-haspopup`, `aria-expanded`) with an icon and
-the word "sec", the chevron turns upward when open (on the smartphone, where the list opens upward from the bottom bar, it points up when closed and down when open).
+the word "sec", the chevron turns upward when open (on the smartphone the icon is a hamburger, `fa-bars`, which does not rotate).
 
 On the iPhone in portrait the chips give way; in the bottom bar dropdown, down and up buttons follow close behind the title, the gear sits at the very right edge
 (`#section-nav-list` is `display: contents` there, order via `order`).

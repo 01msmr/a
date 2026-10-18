@@ -1927,14 +1927,15 @@ body.touch li a::before {
     }
 }
 
-/* Smartphone: the sections list opens upward from the bottom bar, so the chevron points up when closed and down when open
-   (the other way round than on the desktop; after the desktop rule above, same specificity) */
+/* Smartphone: a hamburger (Font Awesome fa-bars, \f0c9) instead of the chevron on the sections dropdown, not rotated when open */
 @media only screen and (min-device-width: 350px) and (max-device-width: 812px) {
-    #section-jumper .secicon {
-        transform: rotate(180deg);
+    #section-jumper .secicon::before {
+        content: "\f0c9";
     }
 
+    #section-jumper .secicon,
     #section-jumper[aria-expanded="true"] .secicon {
         transform: none;
     }
 }
+
