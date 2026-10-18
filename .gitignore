@@ -4,3 +4,5 @@ config.php
 .github/workflows/a.msmr.copy/
 links.json
 links.bak.json
+node_modules/
+.superpowers/
