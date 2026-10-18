@@ -72,11 +72,11 @@ html[data-zoom="m"] {
        Light colors get darker, dark ones stay as they are */
     --text-l-min: 0;
     --text-l-max: .64;
-    --curs-img: url(c-point-light.png);
-    --curs-sec: url(c-point.png);   /* Square in the section: white, inverted in the dark */
+    --curs-img: url(assets/c-point-light.png);
+    --curs-sec: url(assets/c-point.png);   /* Square in the section: white, inverted in the dark */
     --curs-up: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='25' height='25'%3E%3Cpath d='M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z' fill='white' stroke='rgba(0,0,0,.45)' stroke-width='30' paint-order='stroke'/%3E%3C/svg%3E") 12 12, auto;
     --curs-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='25' height='25'%3E%3Cpath d='M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z' fill='white' stroke='rgba(0,0,0,.45)' stroke-width='30' paint-order='stroke'/%3E%3C/svg%3E") 12 12, auto;
-    --curs-hov: url(c-line-light.png);
+    --curs-hov: url(assets/c-line-light.png);
 }
 
 /* dark: one block for the system default and the explicit choice — the script in the <head> always sets data-theme (auto = system value) */
@@ -97,11 +97,11 @@ html[data-zoom="m"] {
     /* inverted in the dark: never darker than this value */
     --text-l-min: .72;
     --text-l-max: 1;
-    --curs-img: url(c-point.png);
-    --curs-sec: url(c-point-light.png);
+    --curs-img: url(assets/c-point.png);
+    --curs-sec: url(assets/c-point-light.png);
     --curs-up: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='25' height='25'%3E%3Cpath d='M233.4 105.4c12.5-12.5 32.8-12.5 45.3 0l192 192c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L256 173.3 86.6 342.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l192-192z' fill='%23111' stroke='rgba(255,255,255,.45)' stroke-width='30' paint-order='stroke'/%3E%3C/svg%3E") 12 12, auto;
     --curs-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='25' height='25'%3E%3Cpath d='M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z' fill='%23111' stroke='rgba(255,255,255,.45)' stroke-width='30' paint-order='stroke'/%3E%3C/svg%3E") 12 12, auto;
-    --curs-hov: url(c-line.png);
+    --curs-hov: url(assets/c-line.png);
 }
 
 body {

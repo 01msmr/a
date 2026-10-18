@@ -23,7 +23,7 @@ For AI agents and new contributors: `CLAUDE.md` has the file map, the rules and 
 | `tools/touch-icon.js` | Switches the iOS home screen icon between embedded as data: URIs in `favicon/touch-icon-inline.js` (`node tools/touch-icon.js inline`, the iOS 27.2 workaround, current) and linked (`… url`, the default); also copies the icon to `/apple-touch-icon.png` and `/apple-touch-icon-precomposed.png` |
 | `tools/smoke.js` | Smoke test without a browser (jsdom): loads the page, switches edit mode on, checks the nav structure, click lock, coupled highlight and re-sorting of sections; fails on page errors and infinite loops. `npm install --no-save jsdom && node tools/smoke.js` |
 | `favicon/` | Icons used by the page, manifest, `touch-icon-inline.js` |
-| `assets/` | Source images (not used by the page) |
+| `assets/` | Cursor images (used by `styles.css`) and source images |
 | `docs/` | Server, write protection, deploy; design draft for icons and settings |
 | `CHANGELOG.md` | What was changed when and why |
 
