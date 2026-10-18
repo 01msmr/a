@@ -22,11 +22,11 @@ vc.on('jsdomError', e => errors.push(e.message));
 vc.on('error', (...a) => errors.push(a.join(' ')));
 
 const rawHtml = fs.readFileSync(root + 'index.html', 'utf8');
-const scripts = [...rawHtml.matchAll(/<script src="(js\/[^"?]+)[^>]*><\/script>/g)].map(m => m[1]);   // load order = order in index.html
+const scripts = [...rawHtml.matchAll(/<script src="((?:js|favicon)\/[^"?]+\.js)[^>]*><\/script>/g)].map(m => m[1]);   // load order = order in index.html
 if (!scripts.length) { console.error('no js/ scripts found in index.html'); process.exit(1); }
 const html = rawHtml
     .replace(/<link[^>]*(googleapis|cdnjs)[^>]*>/g, '')
-    .replace(/<script src="js\/[^>]*><\/script>/g, '');
+    .replace(/<script src="(?:js|favicon)\/[^>]*><\/script>/g, '');
 const dom = new JSDOM(html, {
     url: 'http://localhost/', runScripts: 'dangerously', pretendToBeVisual: true, virtualConsole: vc,
     beforeParse(w) {
@@ -51,6 +51,10 @@ const pev = (t, o, kind) => { const e = ev(t, o); Object.defineProperty(e, 'poin
 const check = (ok, text) => { if (!ok) errors.push(text); };
 const afterMs = (fn, ms) => new Promise(r => setTimeout(() => { fn(); r(); }, ms));
 (async () => {
+    // Assets stay out of index.html; the icon script (favicon/touch-icon-inline.js) sets a data: URI link
+    check(!rawHtml.includes('data:image'), 'index.html embeds a data: URI');
+    const touch = d.querySelectorAll('link[rel="apple-touch-icon"]');
+    check(touch.length === 1 && touch[0].href.startsWith('data:image/png;base64,'), 'apple-touch-icon is not a single data: URI link after the icon script');
     await afterMs(() => check(d.querySelectorAll('section').length > 0, 'no sections rendered'), 500);
     // Nav: chips, gear and dropdown are in one row (same flex rules), the dropdown last
     await afterMs(() => {

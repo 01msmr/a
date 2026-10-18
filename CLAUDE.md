@@ -4,7 +4,7 @@ Personal start page: links in sections, shown as tiles. Static HTML, CSS and van
 
 ## File map
 
-- `index.html`: skeleton, inline theme/zoom scripts (run before first paint), ordered `<script src="js/…">` tags
+- `index.html`: skeleton, inline theme/zoom scripts (run before first paint), `favicon/touch-icon-inline.js` (sets the iOS icon as a data: URI, synchronous in the head, no assets inline), ordered `<script src="js/…">` tags
 - `styles.css`: all looks; tuning values in the first `:root`
 - `js/*.js`: classic scripts sharing globals, **loaded in this order** (the order in `index.html` is the single source of truth, `tools/smoke.js` reads it)
   - `prefs` view preferences and shared state (`lock`, `jumperValue`, `selJump`)

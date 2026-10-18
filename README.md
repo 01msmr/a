@@ -20,7 +20,7 @@ For AI agents and new contributors: `CLAUDE.md` has the file map, the rules and 
 | `never-dead.json` | Addresses that never count as dead (read by `edit/check.php` and the page) |
 | `links.default.json` | Seed, only on the very first request |
 | `tools/dev-router.php` | Demo server with `no-store`, local only |
-| `tools/touch-icon.js` | Switches the iOS home screen icon between embedded (`node tools/touch-icon.js inline`, the iOS 27.2 workaround, current) and linked (`… url`, the default); also copies the icon to `/apple-touch-icon.png` and `/apple-touch-icon-precomposed.png` |
+| `tools/touch-icon.js` | Switches the iOS home screen icon between embedded as data: URIs in `favicon/touch-icon-inline.js` (`node tools/touch-icon.js inline`, the iOS 27.2 workaround, current) and linked (`… url`, the default); also copies the icon to `/apple-touch-icon.png` and `/apple-touch-icon-precomposed.png` |
 | `tools/smoke.js` | Smoke test without a browser (jsdom): loads the page, switches edit mode on, checks the nav structure, click lock, coupled highlight and re-sorting of sections; fails on page errors and infinite loops. `npm install --no-save jsdom && node tools/smoke.js` |
 | `favicon/` | Icons and manifest |
 | `docs/` | Server, write protection, deploy; design draft for icons and settings |
@@ -264,7 +264,7 @@ although the file is fine and opens in a Safari tab. That is why `index.html` cu
 The switch is reversible:
 
 ```
-node tools/touch-icon.js inline   # embed the icon (current; run again after changing the icon file)
+node tools/touch-icon.js inline   # embed the icon as data: URI in favicon/touch-icon-inline.js (current; run again after changing the icon file)
 node tools/touch-icon.js url      # default variant: link ./favicon/ico-light-180.png
 ```
 
