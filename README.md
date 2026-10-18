@@ -13,7 +13,9 @@ For AI agents and new contributors: `CLAUDE.md` has the file map, the rules and 
 |---|---|
 | `index.html` | Skeleton: bar with nav chips, gear and sections dropdown (one button, all in one flex row), content, overlays. The `<head>` holds the scripts for zoom and color scheme (they run before the first paint) |
 | `js/*.js` | Rendering, navigation, settings, edit mode, split by area (15 files, loaded in order from `index.html`); file map in `CLAUDE.md` |
-| `styles.css` | All looks; color schemes, zoom and grid hang on variables and classes |
+| `styles.css` | All looks; color schemes, zoom and grid hang on variables and classes. Starts with the `@font-face` rules (Ubuntu, the Apple logo, the small Font Awesome font) |
+| `fonts/`, `vendor/fontawesome-6.7.2/` | Self-hosted fonts: Ubuntu Light, a tiny Apple-logo font, Font Awesome Free (details and update steps in `fonts/README.md`) |
+| `.htaccess` | Cache headers and 404 for files that are not part of the site (see Performance) |
 | `links.php` | Serves `edit/links.json` (public) |
 | `edit/save.php` | Writes the data (basic auth) |
 | `edit/check.php` | Checks all URLs and marks dead ones (basic auth); `?write=1` writes the marks |
@@ -27,7 +29,7 @@ For AI agents and new contributors: `CLAUDE.md` has the file map, the rules and 
 | `tools/browser-checks.mjs` | Checks that need a real browser (headless Chrome via puppeteer-core): no layout shift while loading, the words in the settings overlay as large as the word on the gear (phones, iPad, narrow phone), the Apple logo drawn by our own font, every section icon has a glyph. Starts `tools/dev-router.php` itself. `npm install --no-save jsdom puppeteer-core && node tools/browser-checks.mjs [url]` |
 | `favicon/` | Icons used by the page, manifest, `touch-icon-inline.js` |
 | `assets/` | Cursor images (used by `styles.css`) and source images |
-| `docs/` | Server, write protection, deploy; design draft for icons and settings |
+| `docs/` | Server, write protection, deploy; the plan for a later ES-modules migration; design draft for icons and settings |
 | `CHANGELOG.md` | What was changed when and why |
 
 The data lives in `edit/links.json` on the server and **not in the repo**
@@ -42,6 +44,17 @@ php -S 0.0.0.0:8080 tools/dev-router.php
 Then `http://localhost:8080/`. The router appends a version number to CSS and JS,
 so the browser never shows an old copy.
 
+## Tests
+
+```
+npm install --no-save jsdom puppeteer-core
+node tools/smoke.js            # the page in jsdom: nav, click lock, edit mode, re-sorting; no missing files, no mixed ?v= values
+node --test                    # unit tests for the pure logic in js/
+node tools/browser-checks.mjs  # real Chrome: layout shift, settings word size, Apple logo, icon glyphs
+```
+
+The browser checks need Chrome (`CHROME_PATH` names it) and start the dev router themselves. Run them after changes to `styles.css`, the settings overlay or the loading order. Touch and glide behavior is tuned on real iPhones and iPads; no automatic test sees it.
+
 ## Data
 
 `edit/links.json` is an array of sections:
@@ -53,7 +66,8 @@ so the browser never shows an old copy.
 ]
 ```
 
-- `icon` is a Font Awesome class (6.7.2, self-hosted); the APP section uses `fa-square`.
+- `icon` is a Font Awesome class (6.7.2, self-hosted); the APP section uses `fa-square`. A solid icon is written as `fa-briefcase`; a brand or regular icon with its style, e.g. `fa-brands fa-apple` or `fa-regular fa-star` (the page adds `fa-solid` itself, and a bare `fa-apple` shows nothing, because that glyph is not in the solid font). The 28 solid icons in use are in a 3 KB font; any other icon loads the full font on demand.
+- Link names may contain the Apple logo character (U+F8FF): our own tiny font draws it, so it also shows on devices that are not from Apple.
 - `dead` marks a link that was not reachable at the last test (red dot; in the grid a square, on the desktop a triangle with 8 px legs, moved 1 px inward and with a white 1 px border, in the top right corner). Exceptions that never count as dead are kept centrally in `never-dead.json` (`allIpAddresses`: every IP address; `hosts`: host names, currently `orderbox` and `kitchen.toolbox-bodensee.de`); `edit/check.php` and the page (`isNeverDead` in `js/links.js`, also for marks that are already saved) read the same file.
 - `color` is not displayed. The section color comes from the palette `SEC_COLORS`
   in `js/render.js` **by position**. Inserting or moving sections therefore changes
@@ -95,7 +109,7 @@ so the browser never shows an old copy.
 The gear is a nav button (`.nav-btn`) next to the sections dropdown. A click opens a
 narrow vertical stack with one button per setting. A click cycles to the next value. The button shows the **state**. In text mode that is
 a short English word, in icon mode an icon. The hover hint (`title`) names
-"now/next value", for the theme all values with the current one in brackets.
+"now/next value", for the theme all values with the current one in brackets. On touch devices the words are as large as the word `set` on the gear (only on very narrow phones, 320 px, they shrink to fit).
 
 | Setting | Values | Text mode | Icon mode |
 |---|---|---|---|
@@ -298,11 +312,22 @@ Requires a sign-in: open `https://a.msmr.co/edit/` once per browser
 Phone and iPad have their own layouts via `device-width` media queries (height grid in
 quarter steps, bottom bar with jump keys). Details in the [CHANGELOG](CHANGELOG.md).
 
+## Performance
+
+Measured with Lighthouse (mobile, simulated slow 4G) on 2026-10-18: score 100, first paint 1.1 s, 110 KB, layout shift 0.000; a returning visitor loads only `index.html` and `links.php` (about 4 KB). What gets it there:
+
+- Everything comes from this server: Ubuntu and Font Awesome are self-hosted, nothing is requested from Google or a CDN.
+- The 28 solid icons in use sit in a 3 KB font (`fa-solid-900-subset.woff2`); the full font loads only for another icon.
+- `links.php` and `never-dead.json` are requested from the `<head>`, in parallel with the scripts; the scripts are `defer`red.
+- No layout shift: the empty container shows no end spacer and the nav row stays hidden until `render()` has finished (`body.rendered`).
+- Cache headers (root `.htaccess`): HTML and `links.php` revalidate, CSS/JS/`never-dead.json` one hour (the `?v=` bump busts them), icons one week, fonts one year (immutable, so the Font Awesome folder carries its version).
+
 ## Deploy
 
-Plesk pulls `main` automatically. The real data and the password file are not in the repo.
+Plesk pulls `main` automatically; a push therefore deploys. The real data and the password file are not in the repo.
+For `.htaccess` to reach CSS, JS and fonts, **Serve static files directly by nginx** (in some Plesk versions: Smart static files processing) must be off for the domain.
 Which files do not belong in the web directory is described in
-[docs/htaccess-setup.md](docs/htaccess-setup.md).
+[docs/htaccess-setup.md](docs/htaccess-setup.md). The list itself is public by design: `links.php` serves it to every visitor; only writing (`edit/`) needs the sign-in.
 
 ## License
 
