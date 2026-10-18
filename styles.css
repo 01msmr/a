@@ -860,12 +860,18 @@ li.dead::after {
         margin-left: 0;
     }
 
+    /* a small distance between the down and the up button */
+    #step-prev {
+        margin-left: 4px;
+    }
+
     /* the four buttons (sections dropdown, up, down, settings) share the free width equally */
     #section-jumper,
     .stepper,
     #settings-btn {
         flex: 1 1 0;
         min-width: 0;
+        padding: 0;   /* unequal padding would make the widths unequal (basis 0 is raised to padding + border) */
     }
 
     /* order: dropdown, down, up, settings */

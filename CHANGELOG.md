@@ -68,6 +68,9 @@ Names in this log are the current English ones (the code was translated to Engli
 - Ghost headers (`ghostHeader.stack`) again form a stack of all sections between view and target (ordered by distance, target on top, those in between lying ready underneath): further away only the copy of the target glides in, nearer the ones above just glide out and uncover the ones below (before they first glided down). If the target jumped over several, they glide out together. Every change takes 400 ms, the next target waits, only the last one counts (fast hovering skips intermediate steps). Gliding in and out with ease-out; shadow and line fade out quickly at the end of gliding out during the last 25 %.
 - With keyboard navigation a resting mouse pointer over nav chips or headings triggers neither line/chevron nor a ghost header.
 
+**Smartphone: really equal widths, gap between down and up**
+- The four buttons were still unequal because their padding differed (0.8 em on dropdown and gear, 0.5 em on the steppers): with `flex-basis: 0` the base size is raised to padding plus border, so the equal share came on top of different bases. All four have `padding: 0` now, so they share the free width exactly equally. A 4 px gap separates the down and the up button (the width stays equal; the gap comes off the shared width).
+
 **Smartphone: down before up**
 - In the bottom bar the down button now comes before the up button (order: sections dropdown, down, up, settings), swapped via `order` in the CSS.
 
