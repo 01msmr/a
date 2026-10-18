@@ -837,12 +837,19 @@ li.dead::after {
         display: contents;
     }
 
+    /* less padding to the right of the domain, and the free width goes to the elements: dropdown and steppers grow, the gear keeps its size */
+    .home-link {
+        padding-right: 0.2em;
+    }
+
     #section-jumper {
         order: 1;
+        flex: 1 1 auto;
     }
 
     .stepper {
         order: 2;
+        flex: 1 1 auto;
     }
 
     #settings-btn {

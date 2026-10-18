@@ -68,6 +68,9 @@ Names in this log are the current English ones (the code was translated to Engli
 - Ghost headers (`ghostHeader.stack`) again form a stack of all sections between view and target (ordered by distance, target on top, those in between lying ready underneath): further away only the copy of the target glides in, nearer the ones above just glide out and uncover the ones below (before they first glided down). If the target jumped over several, they glide out together. Every change takes 400 ms, the next target waits, only the last one counts (fast hovering skips intermediate steps). Gliding in and out with ease-out; shadow and line fade out quickly at the end of gliding out during the last 25 %.
 - With keyboard navigation a resting mouse pointer over nav chips or headings triggers neither line/chevron nor a ghost header.
 
+**Smartphone: bar spacing**
+- In the bottom bar the padding to the right of the domain is smaller (0.2 em instead of 0.8 em), and the free width goes to the elements: the sections dropdown and the two steppers grow evenly (`flex: 1 1 auto`), the gear keeps its size at the right edge. Not measured on a device.
+
 **Touch: tapping a section after a swipe**
 - A tap into a section (background, heading, tile) is now detected from `pointerdown` + `pointerup` (little movement, under 0.6 s, no scroll in between; a scroll ends the pointer with `pointercancel`) instead of from the `click` event: iOS does not reliably fire `click` for non-interactive elements such as a section background, which made taps after a swipe appear to do nothing. In the jsdom test the lock was set after a swipe with the old code too, so the click event is the likely cause on the device; to be checked on the phone.
 
