@@ -68,6 +68,9 @@ Names in this log are the current English ones (the code was translated to Engli
 - Ghost headers (`ghostHeader.stack`) again form a stack of all sections between view and target (ordered by distance, target on top, those in between lying ready underneath): further away only the copy of the target glides in, nearer the ones above just glide out and uncover the ones below (before they first glided down). If the target jumped over several, they glide out together. Every change takes 400 ms, the next target waits, only the last one counts (fast hovering skips intermediate steps). Gliding in and out with ease-out; shadow and line fade out quickly at the end of gliding out during the last 25 %.
 - With keyboard navigation a resting mouse pointer over nav chips or headings triggers neither line/chevron nor a ghost header.
 
+**Smartphone: the four buttons look the same**
+- Checked the computed styles: the four bottom bar buttons already had equal widths in the CSS (padding 0, equal borders, `flex: 1 1 0`). They only looked unequal because the steppers are filled boxes with a visible edge, while the dropdown and gear were plain text. All four are now the same filled box (`--text-col` background, `--front-body` text, 1 px edge, 6 px radius) with a 4 px distance in front of each. Not measured in a browser (the layout engines available here could not be driven).
+
 **Smartphone: hamburger on the sections dropdown**
 - On the smartphone the sections dropdown shows a hamburger (Font Awesome `fa-bars`) instead of the chevron, and it no longer rotates when open (the earlier up/down chevron rule for the phone is gone). The text mode still shows the word "sec".
 

@@ -837,10 +837,13 @@ li.dead::after {
         display: contents;
     }
 
-    /* no divider lines between the bar elements: the light/dark side edges of the nav buttons (button bevel) are off */
+    /* all four buttons look the same: the filled box with a thin edge and rounded corners of the steppers, so their equal widths are visible
+       (before, only the steppers had a visible box and the dropdown and gear looked narrower) */
     .nav-btn {
-        border-left-color: transparent;
-        border-right-color: transparent;
+        background-color: var(--text-col);
+        color: var(--front-body);
+        border: 1px solid var(--text-col);
+        border-radius: 6px;
     }
 
     /* less padding to the right of the domain, and the free width goes to the elements: dropdown and steppers grow, the gear keeps its size */
@@ -856,12 +859,9 @@ li.dead::after {
         padding-right: 0;
     }
 
+    /* the same small distance in front of each of the four buttons */
+    .nav-btn,
     .stepper {
-        margin-left: 0;
-    }
-
-    /* a small distance between the down and the up button */
-    #step-prev {
         margin-left: 4px;
     }
 
