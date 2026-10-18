@@ -68,6 +68,9 @@ Names in this log are the current English ones (the code was translated to Engli
 - Ghost headers (`ghostHeader.stack`) again form a stack of all sections between view and target (ordered by distance, target on top, those in between lying ready underneath): further away only the copy of the target glides in, nearer the ones above just glide out and uncover the ones below (before they first glided down). If the target jumped over several, they glide out together. Every change takes 400 ms, the next target waits, only the last one counts (fast hovering skips intermediate steps). Gliding in and out with ease-out; shadow and line fade out quickly at the end of gliding out during the last 25 %.
 - With keyboard navigation a resting mouse pointer over nav chips or headings triggers neither line/chevron nor a ghost header.
 
+**Touch: no shadows in the dropdowns**
+- On touch devices the settings overlay and the sections list have no drop shadow, and the entries of the sections list lose the light/dark bevel edges on their left and right (`border-color: transparent`). The inner shadows of the active entry and the hover shadows were already off in the list.
+
 **Touch: settings overlay as tall as the sections list**
 - On touch devices the buttons of the settings overlay are 2.75 rem tall, like the entries of the sections dropdown (before: the width of the gear).
 
