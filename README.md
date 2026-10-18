@@ -50,7 +50,7 @@ so the browser never shows an old copy.
 ]
 ```
 
-- `icon` is a Font Awesome class (6.7.2, self-hosted) or `icon-squircle`, a custom icon.
+- `icon` is a Font Awesome class (6.7.2, self-hosted); the APP section uses `fa-square`.
 - `dead` marks a link that was not reachable at the last test (red dot; in the grid a square, on the desktop a triangle with 8 px legs, moved 1 px inward and with a white 1 px border, in the top right corner). Exceptions that never count as dead are kept centrally in `never-dead.json` (`allIpAddresses`: every IP address; `hosts`: host names, currently `orderbox` and `kitchen.toolbox-bodensee.de`); `edit/check.php` and the page (`isNeverDead` in `js/links.js`, also for marks that are already saved) read the same file.
 - `color` is not displayed. The section color comes from the palette `SEC_COLORS`
   in `js/render.js` **by position**. Inserting or moving sections therefore changes
@@ -99,7 +99,7 @@ a short English word, in icon mode an icon. The hover hint (`title`) names
 | Zoom | S, M | `S`, `M` | `S`, `M` |
 | Theme | auto, light, dark | `aut`, `light`, `dark` | circle (auto), sun, moon; in auto the icon of the system value small at the bottom right |
 | Color | vivid, pale | `col`, `pale` | circle in a section color |
-| Navigation | text, icons | `text` | squircle |
+| Navigation | text, icons | `text` | square (`fa-square`) |
 | View | chips, grid | `chip`, `grid` | four round tiles or square outlines |
 | Align | left, center | `left`, `cen` (in the grid `full`) | `fa-align-left`, `fa-align-center` |
 | Edit | off, on | `edit`, `save` | two chevrons; floppy disk while editing |

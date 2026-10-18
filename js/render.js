@@ -12,8 +12,6 @@ function sectionColor(idx, intensity) {
 
 function makeIcon(icon) {
     var i = document.createElement('i');
-    // APP section: Font Awesome's fa-square (closest rounded rectangle) instead of our own squircle mask
-    if (icon === 'icon-squircle') icon = 'fa-square';
     i.className = 'fa-solid ' + (icon || 'fa-hashtag') + ' secicon';
     i.setAttribute('aria-hidden', 'true');
     return i;

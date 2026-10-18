@@ -6,7 +6,7 @@
 
 ## Icons
 
-All four Font Awesome Free fonts are shipped (`fa-solid-900`, `fa-regular-400`, `fa-brands-400`, `fa-v4compatibility`), so any free icon can be used for a section. The browser only downloads a font file when a glyph from it is shown.
+Three Font Awesome Free fonts are shipped (`fa-solid-900`, `fa-regular-400`, `fa-brands-400`), so any free icon can be used for a section. The v4-compatibility font is not shipped: nothing uses the old `fa fa-…` classes. The browser only downloads a font file when a glyph from it is shown.
 
 - Solid icons: write the class as before (`fa-briefcase`). The page adds `fa-solid` itself.
 - Brand and regular icons: write the style too, e.g. `fa-brands fa-apple` or `fa-regular fa-star` (the page adds `fa-solid` in front; the style you write wins). A bare `fa-apple` shows nothing, because the Apple logo is not in the solid font.

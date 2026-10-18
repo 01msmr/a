@@ -80,6 +80,14 @@ const afterMs = (fn, ms) => new Promise(r => setTimeout(() => { fn(); r(); }, ms
         entry.dispatchEvent(pev('pointerleave'));
         check(!chip.classList.contains('with-hover') && !heading.classList.contains('with-hover'), 'coupling is not undone');
     }, 0);
+    // Icon mode: no custom squircle anywhere, the APP section and the Navigation entry use Font Awesome's fa-square
+    await afterMs(() => {
+        d.body.classList.add('nav-icons'); w.settingsDisplay();
+        check(!d.querySelector('.icon-squircle'), 'a custom icon-squircle element is still used');
+        check(d.querySelector('#settings-pop .fa-square') !== null, 'the Navigation entry does not show fa-square in icon mode');
+        check(d.querySelector('a.secname .fa-square') !== null, 'the APP section does not show fa-square');
+        d.body.classList.remove('nav-icons'); w.settingsDisplay();
+    }, 0);
     // Switch edit mode on and let the observers (microtasks) run: the page once hung here
     await afterMs(() => { d.body.classList.add('edit-mode'); w.gridInit(); w.releaseLinks(); w.settingsDisplay(); }, 0);
     // Re-sort sections: handle on the heading, dragging over the second section puts the first behind it, the comparison reports it

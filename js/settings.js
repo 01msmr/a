@@ -32,8 +32,8 @@ var SETTINGS = [
     {
         label: 'Navigation',
         values: [['short', 'text'], ['icons', 'icons']],
-        // Text mode: the word "text"; icon mode: squircle like APP
-        squircle: true,
+        // Text mode: the word "text"; icon mode: fa-square like APP
+        icons: { short: 'fa-square', icons: 'fa-square' },
         get: function () { return getPref('navMode'); },
         set: function (w) { setPref('navMode', w); }
     },
@@ -120,9 +120,6 @@ function drawIcon(ic, e, w) {
         ic.className = 'set-icon set-circle';
         ic.textContent = '';
         ic.style.setProperty('--k', sectionColor(6, e.circle[w]));
-    } else if (e.squircle) {
-        ic.className = 'set-icon icon-squircle';
-        ic.textContent = '';
     } else if (e.tiles) {
         ic.className = 'set-icon set-tiles' + (e.tiles[w] ? ' square' : '');
         ic.textContent = '';

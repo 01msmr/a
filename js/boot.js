@@ -5,12 +5,9 @@
 function withApp(data) {
     var app = data.filter(function (s) { return s.id === 'app'; })[0];
     if (!app) {
-        data.splice(2, 0, { id: 'app', title: 'app', icon: 'icon-squircle', links: [] });
+        data.splice(2, 0, { id: 'app', title: 'app', icon: 'fa-square', links: [] });
     } else if (app.title === 'APP') {
         app.title = 'app';   // lowercase like the others; CSS makes the capitals
-    }
-    if (app && app.icon === 'fa-mobile-screen') {
-        app.icon = 'icon-squircle';   // replace previously saved phone icon
     }
     return data;
 }
