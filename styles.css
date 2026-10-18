@@ -829,13 +829,9 @@ li.dead::after {
         display: contents;
     }
 
-    /* all four buttons look the same: the filled box with a thin edge and rounded corners of the steppers, so their equal widths are visible
-       (before, only the steppers had a visible box and the dropdown and gear looked narrower) */
+    /* dropdown and gear: just the icon, no visible edges (the bevel colors of the nav buttons are transparent); the width is the same as the steppers' */
     .nav-btn {
-        background-color: var(--text-col);
-        color: var(--front-body);
-        border: 1px solid var(--text-col);
-        border-radius: 6px;
+        border-color: transparent;
     }
 
     /* less padding to the right of the domain, and the free width goes to the elements: dropdown and steppers grow, the gear keeps its size */
