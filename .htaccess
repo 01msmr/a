@@ -5,6 +5,8 @@
 <IfModule mod_alias.c>
     RedirectMatch 404 ^/(docs|tools|\.claude|\.git|\.github|\.superpowers|node_modules)(/|$)
     RedirectMatch 404 ^/(.*\.md|LICENSE|links\.default\.json|package(-lock)?\.json|\.gitignore)$
+    # the data lives in edit/ (behind the sign-in); stray copies in the root must not be readable
+    RedirectMatch 404 ^/(links\.json|[^/]+\.bak\.json)$
 </IfModule>
 
 # Caching. The page is revalidated every time; CSS/JS and never-dead.json for an hour (?v= busts them on the day-end bump);
