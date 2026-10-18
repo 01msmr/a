@@ -1,10 +1,9 @@
 // Owns: line pointer
-// Defines globals: cursor, cursorTarget, chipDirection, cursorSet, cursorSecInit, cursorPlan
-// Uses: prefs, touch, light
+// Defines globals: cursorTarget, chipDirection, cursorSet, cursorSecInit, cursorPlan
+// Uses: state
 // ── Line pointer ──────────────────────────────────────────────────
 // The vertical line replaces the dot: height of the row under the pointer (heading, nav chip),
 // in the section outside heading and tile its height at 33 % opacity. On tiles the tile draws it itself.
-var cursor = { el: null, secEl: null, x: 0, y: 0, dest: null, raf: 0, on: false };
 
 function cursorTarget(t) {
     if (!t || !t.closest || document.body.classList.contains('edit-mode') || document.body.classList.contains('keyboard')) return null;   // keyboard: a resting pointer does not count

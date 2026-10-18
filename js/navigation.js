@@ -1,8 +1,7 @@
 // Owns: jumping between sections and links (keys, mouse tile)
-// Defines globals: jumpTarget, jumpBy, mouseTile, mouseMoved, mousePoint, mouseSection, tileIn, linkBy
-// Uses: touch, cursor, grid
+// Defines globals: jumpBy, mouseSection, tileIn, linkBy
+// Uses: state, touch, grid
 // arrow keys add up to one target instead of waiting for the animation
-var jumpTarget = null;
 
 function jumpBy(delta, wrap) {
     var sections = document.querySelectorAll('#container section');
@@ -40,10 +39,6 @@ function jumpBy(delta, wrap) {
 // Arrow left/right: from tile to tile, across section boundaries.
 // Starting point: the tile last touched with the mouse if the mouse has moved since the
 // last key press; otherwise the focused one; otherwise the first of the section
-var mouseTile = null;
-var mouseMoved = false;
-
-var mousePoint = null;   // last mouse position in the window
 
 function mouseSection() {
     var el = mousePoint && document.elementFromPoint(mousePoint.x, mousePoint.y);

@@ -1,6 +1,6 @@
 // Owns: highlight glow, pages on the phone, scroll sync
 // Defines globals: glowTarget, glowMeasure, glowPaint, glowFrame, glowStep, glowTo, buildPages, pageStart, glowScroll, glowSync, glowLayout, glowPlan, safeObserve, glowInit
-// Uses: prefs, touch, ghost-header, light (and the edit-mode class on body)
+// Uses: state, touch, ghost-header, light (and the edit-mode class on body)
 function glowTarget() {
     var c = glow.container, s = null, hot = true;
     if (document.body.classList.contains('keyboard')) {

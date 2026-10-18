@@ -1,13 +1,11 @@
 // Owns: hover light gliding from tile to tile
-// Defines globals: light, lightActive, lightFrame, lightPaint, lightRadius, lightLine, lightCoverage, lightInverted, lightCells, lightStep, lightRun, lightEdge, lightOutside, lightReset, lightTo, lightOff, lightInit, lightMouse, lightSync, lightPlan, lightPlanRaf
-// Uses: prefs, touch, cursor
+// Defines globals: lightActive, lightFrame, lightPaint, lightRadius, lightLine, lightCoverage, lightInverted, lightCells, lightStep, lightRun, lightEdge, lightOutside, lightReset, lightTo, lightOff, lightInit, lightPlanRaf, lightSync, lightPlan
+// Uses: state, touch
 // ── Tile light (chips and grid) ───────────────────────────────────
 // The hover area of the tile is a single element that glides from tile to tile
 // (accelerating, ends hard). Out of nowhere it comes in full size from outside into the tile
 // and leaves it the same way, clipped to the tile; nothing scales. It lies in the content and scrolls with it.
 // mode: 'off' (invisible), 'on' (on a tile or on the way there), 'out' (leaves the tile).
-var light = { el: null, mode: 'off', tile: null, old: null, inverted: new Set(), cur: null, from: null, to: null,
-    clip: null, radius: 0, t0: 0, duration: 0, linear: false, raf: 0, end: null, cursor: null };
 
 function lightActive() {
     return !document.body.classList.contains('edit-mode');
@@ -204,7 +202,7 @@ document.documentElement.addEventListener('mouseleave', function (e) {
 
 // Safety net: the light always follows the tile under the pointer, even if no mouseover came
 // (scrolling under a resting pointer, switch from keyboard to mouse, layout change)
-var lightMouse = null, lightPlanRaf = 0;
+var lightPlanRaf = 0;
 function lightSync() {
     lightPlanRaf = 0;
     if (!lightMouse || document.body.classList.contains('keyboard') || isTouch()) return;

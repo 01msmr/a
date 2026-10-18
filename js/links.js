@@ -1,9 +1,8 @@
 // Owns: never-dead addresses, link list items, mouse tile
-// Defines globals: neverDead, isNeverDead, makeLi, setMouseTile
-// Uses: navigation
+// Defines globals: isNeverDead, makeLi, setMouseTile
+// Uses: state
 // Addresses that never count as unreachable (even if the data marks them): centrally in never-dead.json
 // (allIpAddresses: every IP address; hosts: host names). edit/check.php reads the same file.
-var neverDead = { allIpAddresses: true, hosts: [] };
 
 function isNeverDead(url) {
     var h;

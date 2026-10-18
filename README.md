@@ -12,7 +12,7 @@ For AI agents and new contributors: `CLAUDE.md` has the file map, the rules and 
 | File | Purpose |
 |---|---|
 | `index.html` | Skeleton: bar with nav chips, gear and sections dropdown (one button, all in one flex row), content, overlays. The `<head>` holds the scripts for zoom and color scheme (they run before the first paint) |
-| `js/*.js` | Rendering, navigation, settings, edit mode, split by area (14 files, loaded in order from `index.html`); file map in `CLAUDE.md` |
+| `js/*.js` | Rendering, navigation, settings, edit mode, split by area (15 files, loaded in order from `index.html`); file map in `CLAUDE.md` |
 | `styles.css` | All looks; color schemes, zoom and grid hang on variables and classes |
 | `links.php` | Serves `edit/links.json` (public) |
 | `edit/save.php` | Writes the data (basic auth) |

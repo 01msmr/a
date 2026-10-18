@@ -1,6 +1,6 @@
 // Owns: grid layout, focus on content
 // Defines globals: gridBase, gridInit, gridTimer, focusContent
-// Uses: touch, ghost-header (and the edit-mode class on body)
+// Uses: ghost-header (and the edit-mode class on body)
 // Sections occupy a whole multiple of a quarter of the content height
 var gridBase = 0;
 

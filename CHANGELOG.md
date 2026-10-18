@@ -7,6 +7,7 @@ Names in this log are the current English ones (the code was translated to Engli
 ## 2026-10-18 — Structure, performance and AI-readiness (nothing visible changes)
 
 - `app.js` cut into 14 files in `js/` (prefs, render, active-section, touch, glow, ghost-header, light, cursor, grid, navigation, links, settings, boot, edit), same order and same code; proven byte for byte against the old file. Each file starts with three header lines (owns, defines, uses). `index.html` loads them in order; `tools/smoke.js` and `tools/dev-router.php` read the file list from there.
+- The 16 variables that several files share moved into `js/state.js` (loaded first); the lines moved unchanged (checked line by line), only one combined declaration was split. `docs/es-modules-plan.md` is updated.
 - `CLAUDE.md` added (file map, rules, commands); `docs/es-modules-plan.md` (later migration).
 - The iOS icon data URIs moved out of `index.html` into `favicon/touch-icon-inline.js` (synchronous script in the head, same behavior); `tools/touch-icon.js` writes there.
 - Ubuntu and Font Awesome 6.7.2 self-hosted (`fonts/`, `vendor/fontawesome-6.7.2/`): no Google Fonts or cdnjs requests any more.

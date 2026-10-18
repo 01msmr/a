@@ -4,7 +4,7 @@ Status: not started. Written 2026-10-18 after `app.js` was split into classic sc
 
 ## Why not now
 
-The 14 files share 38 top-level `var` names (below) and about 150 functions as globals, and register their event listeners while loading. A direct conversion would turn that coupling into circular imports or one large shared object. Touch, glide and glow behavior is tuned on iOS and only the jsdom smoke test guards it. So the split came first; modules come file by file, only if the benefit (explicit dependencies, editor and type-checker support, importing one unit in a test) is worth it.
+The 14 files share 38 top-level `var` names (the 16 that other files use are collected in `js/state.js`, loaded first) (below) and about 150 functions as globals, and register their event listeners while loading. A direct conversion would turn that coupling into circular imports or one large shared object. Touch, glide and glow behavior is tuned on iOS and only the jsdom smoke test guards it. So the split came first; modules come file by file, only if the benefit (explicit dependencies, editor and type-checker support, importing one unit in a test) is worth it.
 
 ## Order
 
@@ -20,10 +20,9 @@ The 14 files share 38 top-level `var` names (below) and about 150 functions as g
 4. Replace shared mutable globals by exports of an object (`export const lock = {…}`), never by reassigned `export let`.
 5. Run `node tools/smoke.js` (update it to evaluate modules, e.g. via dynamic `import()` in jsdom or a small loader), then check on iPhone and desktop. Ship each file alone.
 
-## Moves to do first
+## Moves done already
 
-- `glow` is defined in `touch.js` but belongs to `glow.js`; `syncActive`, `lock`, `jumperValue`, `selJump` sit in `prefs.js` as shared state. Give them an owner (a small `state.js`) before converting their readers.
-- `mouseTile`/`mouseMoved`/`mousePoint` live in `navigation.js` but are set from `links.js`; decide the owner.
+The variables that several files read or write (`lock`, `glow`, `light`, `cursor`, `measures`, `mouseTile`, …) now live in `js/state.js`, loaded first, so every cross-file variable has one place and one owner. In a module migration `state.js` becomes the first module, exporting these objects (never reassigned `export let`); `syncActive` and the other function-valued entries become registrations.
 
 ## Open decision: cache busting
 
@@ -39,40 +38,40 @@ Readers are textual matches in other files (comments excluded); verify when migr
 
 | Name | Defined in | Read in |
 |---|---|---|
+| `syncActive` | `state` | `render`, `active-section`, `touch` |
+| `lock` | `state` | `active-section`, `touch`, `glow`, `light`, `cursor` |
+| `jumperValue` | `state` | `render`, `active-section` |
+| `selJump` | `state` | `render`, `active-section` |
+| `measures` | `state` | `touch`, `glow`, `ghost-header`, `light`, `cursor` |
+| `glow` | `state` | `touch`, `glow`, `ghost-header`, `light`, `grid`, `navigation` |
+| `swiping` | `state` | `active-section`, `touch`, `glow` |
+| `light` | `state` | `active-section`, `touch`, `light`, `settings` |
+| `lightMouse` | `state` | `touch`, `light` |
+| `cursor` | `state` | `touch`, `light`, `cursor`, `settings` |
+| `jumpTarget` | `state` | `active-section`, `navigation` |
+| `mouseTile` | `state` | `links` |
+| `mouseMoved` | `state` | `navigation`, `settings` |
+| `mousePoint` | `state` | `render`, `touch`, `navigation`, `settings` |
+| `neverDead` | `state` | `links`, `boot` |
+| `dragged` | `state` | `settings`, `edit` |
 | `PREF_DEFAULTS` | `prefs` | (only own file) |
-| `syncActive` | `prefs` | `render`, `active-section`, `touch` |
-| `lock` | `prefs` | `active-section`, `touch`, `glow`, `light`, `cursor` |
-| `jumperValue` | `prefs` | `render`, `active-section` |
-| `selJump` | `prefs` | `render`, `active-section` |
 | `SEC_COLORS` | `render` | (only own file) |
 | `stillRaf` | `active-section` | (only own file) |
-| `measures` | `touch` | `glow`, `ghost-header`, `light`, `cursor` |
-| `glow` | `touch` | `glow`, `ghost-header`, `light`, `grid`, `navigation` |
 | `PHONE_QUERY` | `touch` | (only own file) |
 | `pointerKind` | `touch` | (only own file) |
 | `tapStart` | `touch` | (only own file) |
 | `touchTap` | `touch` | (only own file) |
 | `pendingTap` | `touch` | (only own file) |
-| `swiping` | `touch` | `active-section`, `glow` |
 | `fingerDown` | `touch` | (only own file) |
 | `tailLast` | `touch` | (only own file) |
 | `tailAnim` | `touch` | (only own file) |
 | `ghostHeader` | `ghost-header` | (only own file) |
-| `light` | `light` | `active-section`, `touch`, `settings` |
-| `lightMouse` | `light` | `touch` |
 | `lightPlanRaf` | `light` | (only own file) |
-| `cursor` | `cursor` | `touch`, `light`, `settings` |
 | `gridBase` | `grid` | (only own file) |
 | `gridTimer` | `grid` | (only own file) |
-| `jumpTarget` | `navigation` | `active-section` |
-| `mouseTile` | `navigation` | `links` |
-| `mouseMoved` | `navigation` | `settings` |
-| `mousePoint` | `navigation` | `render`, `touch`, `settings` |
-| `neverDead` | `links` | `boot` |
+| `SETTINGS` | `settings` | (only own file) |
 | `neverDeadReq` | `boot` | (only own file) |
 | `linksReq` | `boot` | (only own file) |
-| `SETTINGS` | `settings` | (only own file) |
-| `dragged` | `edit` | (only own file) |
 | `prepared` | `edit` | (only own file) |
 | `startPlace` | `edit` | (only own file) |
 | `startList` | `edit` | (only own file) |

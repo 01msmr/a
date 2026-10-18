@@ -1,6 +1,6 @@
 // Owns: copies of the section heading at the edges (ghost headers)
 // Defines globals: ghostHeader, ghostHeaderOffscreen, ghostHeaderDuration, ghostHeaderLayer, ghostHeaderJump, ghostHeaderSection, ghostHeaderRemove, ghostHeaderRender, ghostHeaderEdge, ghostHeaderRank, ghostHeaderMake, ghostHeaderIndex, ghostHeaderReset
-// Uses: touch (and the edit-mode class on body)
+// Uses: state, touch (and the edit-mode class on body)
 // ── Ghost headers ─────────────────────────────────────────────────
 // If the heading of the target section (nav chip under the mouse or jump after a click) lies outside the view,
 // a copy sticks to the top or bottom edge until the real heading arrives there and moves on naturally.

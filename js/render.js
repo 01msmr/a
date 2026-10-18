@@ -1,6 +1,6 @@
 // Owns: section colors, icons, section buttons, the sections list, render(data)
 // Defines globals: SEC_COLORS, sectionColor, makeIcon, coupleHover, sectionButton, jumpTo, jumperList, render
-// Uses: prefs, active-section, touch, glow, light, cursor, grid, navigation, links, settings
+// Uses: state, prefs, active-section, touch, glow, light, cursor, grid, links, settings
 // strong, saturated colors (no gray): white text (light) or dark text (dark) stays readable
 var SEC_COLORS = ['#f85a5a', '#fb8f2a', '#e2a800', '#8ac430', '#2fc16c', '#22b59f', '#18b4d6',
     '#4a92f0', '#6c70f2', '#9a62f0', '#c456e8', '#ea4fa8', '#f4587a', '#f67a3a', '#2fae82'];

@@ -1,6 +1,6 @@
 // Owns: settings overlay and its icons
 // Defines globals: SETTINGS, valueName, valueTo, drawScheme, drawIcon, settingsDisplay, navButtonHeight, settingsPlace
-// Uses: prefs, render, touch, light, cursor, navigation, edit
+// Uses: state, prefs, render, touch, cursor, edit
 // ── Settings: gear in the bar, overlay with one button per setting ──
 // One icon per setting shows the current value; each click switches to the other of two values. The API for zoom/color scheme is in the <head>.
 // icon: Font Awesome class or letter (zoom); shows the current value

@@ -1,6 +1,6 @@
 // Owns: whenStill and trackActiveSection (which section is current)
 // Defines globals: stillRaf, whenStill, trackActiveSection
-// Uses: prefs, touch, light, navigation
+// Uses: state
 // Replacement for scrollend without waiting: calls fn as soon as the scroll position has been still for two frames
 var stillRaf = new Map();
 function whenStill(fn) {

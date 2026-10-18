@@ -1,6 +1,6 @@
 // Owns: adding the APP section, loading never-dead.json and links.php (started in the head), starting the page
 // Defines globals: withApp, neverDeadReq, linksReq
-// Uses: render, links
+// Uses: state, render
 // APP belongs as the 3rd section in the row; if it is missing in the saved data, it is added empty
 function withApp(data) {
     var app = data.filter(function (s) { return s.id === 'app'; })[0];

@@ -1,8 +1,7 @@
-// Owns: CSS measures, pointer kind, click lock, swipe, tail snap after the glide, glow state
-// Defines globals: measures, readMeasures, glide, glow, PHONE_QUERY, isPhone, pointerKind, isTouch, setPointerKind, lockOn, lockOff, lockFromEvent, tapStart, touchTap, swiping, fingerDown, swipeEnd, tailLast, tailRestore, cutTail, pendingTap, tailAnim
-// Uses: prefs, active-section, glow, light, cursor, navigation (and the edit-mode class on body)
+// Owns: CSS measures, pointer kind, click lock, swipe, tail snap after the glide
+// Defines globals: readMeasures, glide, PHONE_QUERY, isPhone, pointerKind, isTouch, setPointerKind, lockOn, lockOff, lockFromEvent, tapStart, touchTap, pendingTap, fingerDown, swipeEnd, tailLast, tailAnim, tailRestore, cutTail
+// Uses: state, active-section, glow, light (and the edit-mode class on body)
 // Numbers from the CSS variables (:root in styles.css), read once
-var measures = {};
 function readMeasures() {
     var cs = getComputedStyle(document.documentElement);
     ['glow-duration', 'glow-duration-short', 'glide-power', 'light-duration', 'light-power', 'light-edge-duration', 'light-coverage',
@@ -18,10 +17,6 @@ readMeasures();
 // next one, growing or shrinking on the way. The color changes abruptly at the section edges:
 // each section paints only its part of the window as its background. Rows (heading, group, tiles)
 // get .covered as soon as their middle lies inside the window. Measures live in the content, scrolling does not change them.
-var glow = {
-    container: null, secs: [], rows: [], sig: '', top: 0, bot: 0, dest: null, instant: true,
-    from: null, to: null, t0: 0, duration: 0, raf: 0, obs: []
-};
 
 // ── Pointer kind ──────────────────────────────────────────────────
 // Mouse or finger/pen, as of the last pointerdown (mouse movement resets it). Touch has no hover: the :hover that iOS
@@ -121,7 +116,6 @@ document.addEventListener('pointermove', function (e) {
 
 // ── Touch swiping ─────────────────────────────────────────────────
 // While the content scrolls (including the coasting), the window is tied to the scroll position (glowScroll) and the chips show no hover look (html.swiping).
-var swiping = false;
 // Swiping only ends when the finger is up: if it pauses while dragging, scrolling rests, but it goes on right away
 var fingerDown = false;
 document.addEventListener('touchstart', function () { fingerDown = true; }, { passive: true, capture: true });

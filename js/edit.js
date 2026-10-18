@@ -1,6 +1,6 @@
 // Owns: edit mode, drag and sort, change detection, saving
-// Defines globals: preventEnter, makeDelButton, canSave, enterEditMode, releaseLinks, createFields, addLink, makeDraggable, dragged, prepared, startPlace, startList, makeMoveHandle, sortable, draggedSection, sectionsSortable, collectData, changes, changesText, finishEditing, save
-// Uses: grid, links, settings
+// Defines globals: preventEnter, makeDelButton, canSave, enterEditMode, releaseLinks, createFields, addLink, makeDraggable, prepared, startPlace, startList, makeMoveHandle, sortable, draggedSection, sectionsSortable, collectData, changes, changesText, finishEditing, save
+// Uses: state, grid, links, settings
 // ── Edit Mode ─────────────────────────────────────────────────────
 
 function preventEnter(e) { if (e.key === 'Enter') e.preventDefault(); }
@@ -84,7 +84,6 @@ function addLink(ul, addBtn) {
 // Dragging needs a mouse; with a finger the handle would be ineffective
 function makeDraggable() { return matchMedia('(pointer: fine)').matches; }
 
-var dragged = null;      // tile that is being dragged
 var prepared = null;  // tile whose handle is pressed
 var startPlace = null;   // neighbor at the start of the drag, for the return on abort
 var startList = null;   // list at the start of the drag: a tile may move into any section
