@@ -68,6 +68,9 @@ Names in this log are the current English ones (the code was translated to Engli
 - Ghost headers (`ghostHeader.stack`) again form a stack of all sections between view and target (ordered by distance, target on top, those in between lying ready underneath): further away only the copy of the target glides in, nearer the ones above just glide out and uncover the ones below (before they first glided down). If the target jumped over several, they glide out together. Every change takes 400 ms, the next target waits, only the last one counts (fast hovering skips intermediate steps). Gliding in and out with ease-out; shadow and line fade out quickly at the end of gliding out during the last 25 %.
 - With keyboard navigation a resting mouse pointer over nav chips or headings triggers neither line/chevron nor a ghost header.
 
+**Result on the phone**
+- With the animated end of the glide (`cutTail`) a tap now activates the section sooner (confirmed on the phone). The `?debug` overlay stays available (it only shows with `?debug`).
+
 **Event log: tail lines**
 - With `?debug` the overlay also logs `tail? step=… dist=…` (every 8th scroll event while the page is slow and within 120 px of a snap point: the speed per scroll event and the distance) and `tail cut …` / `tail done` when the finishing animation of the glide runs. It shows whether the takeover triggers at all.
 

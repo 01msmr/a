@@ -216,6 +216,14 @@ list and scrolled into view. Names lose a suffix (`tbx.li` → `tbx`).
   without its own time (no running ahead, lagging or twitching). Only a tap on a section animates it (fixed duration). On the transition from the tap target into the coupling the distance to the frame of the scroll position fades out over 280 ms (smoothstep), the window does not jump. On touch the tile light is off: there is no pointer, and mouse events pushed in by iOS do not count (otherwise the light stayed stuck at the touch point on the screen while the content scrolled underneath). In portrait on the iPhone `scroll-snap-stop` is
   normal: a swipe may skip several sections.
 
+**Taps while the page glides:** iOS passes no touch event to the page while it glides after a swipe (a touch only halts the scroll), so
+taps during the glide were lost. The page therefore finishes the glide itself (`cutTail` in `app.js`): once the finger is up, the page
+moves at most 3 px per scroll event and is within 60 px of a snap point, the native scrolling and the snapping are switched off for a
+moment and the last stretch is animated onto the snap point in 60 to 180 ms (ease-out); a touch ends that animation at once. A tap into
+a section is read from `pointerup` and `touchend`, and a touch during a scroll activates its section right at the touch; a touch that iOS
+cancels is remembered and activated when the scroll ends. Opening the page with `?debug` shows an overlay with the latest touch,
+pointer and scroll events and the `tail` lines of the finishing animation, for diagnosing such problems on the phone.
+
 ### Pages on the smartphone
 
 On the smartphone (`isPhone()`, `PHONE_QUERY`) not all sections snap, but **pages** (`buildPages` in `app.js`, during
