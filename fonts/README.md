@@ -1,6 +1,7 @@
 # Self-hosted fonts
 
 - `ubuntu-300-latin.woff2`, `ubuntu-300-latin-ext.woff2`: Ubuntu Light from Google Fonts (v21), Ubuntu Font Licence 1.0. The `@font-face` rules are at the top of `styles.css`; Cyrillic and Greek fall back to the system font. The latin file is preloaded in `index.html`.
+- `ubuntu-apple-logo.woff2` (0.6 KB): Font Awesome's Apple glyph moved to the character U+F8FF (the Apple logo, used in two link names). Without it only Apple's system fonts can draw that character. Declared as a third `Ubuntu` face in `styles.css`. Made with `pyftsubset fa-brands-400.woff2 --unicodes=U+f179`, then the cmap entry 0xF179 renamed to 0xF8FF with fontTools.
 - `../vendor/fontawesome-6.7.2/`: Font Awesome Free 6.7.2 (`css/all.min.css` with its licence header, `webfonts/fa-solid-900.woff2`). Fonts: SIL OFL 1.1, icons CC BY 4.0, code MIT.
 
 ## Icons

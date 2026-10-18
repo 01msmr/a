@@ -14,6 +14,8 @@ Names in this log are the current English ones (the code was translated to Engli
 - Faster first load (Lighthouse mobile, simulated slow 4G, local HTTP/2 copy: score 72 -> 99, first paint 2.1 s -> 1.2 s, 332 KB -> 194 KB): small Font Awesome solid font (3 KB, the full one only loads for other icons), `links.php` and `never-dead.json` requested from the head in parallel, scripts `defer`red in the head.
 - Layout shift 0.9 -> 0: the empty `#container` no longer shows its end spacer (`#container:empty::after`), and the nav row stays hidden until `render()` has set `body.rendered`.
 - Settings overlay on touch devices: the words in the entries (`S`, `aut`, `col`, `text`, `chip`, `left`, `edit`) have the same size as the word `set` on the gear (23.6 px on current iPhones, before 17.8 px and 20 px). `settingsPlace()` passes the gear's size as `--set-font`; on very narrow screens (a 35 px button, 320 px phones) the words shrink to fit.
+- The Apple logo character (U+F8FF) in two link names is drawn by our own tiny font (`fonts/ubuntu-apple-logo.woff2`), so it shows on every device and not only on Apple's.
+- `tools/smoke.js` also fails when a file named in `styles.css` or `index.html` is missing.
 - Brand and regular icons work again: all four Font Awesome fonts are shipped; write `fa-brands fa-apple` as the section icon.
 - Removed the unused generated icon set from `favicon/`; cursor and source images moved to `assets/`.
 - `tools/smoke.js` also checks: no data URIs and no third-party hosts in `index.html`, one `?v=` value, a versioned Font Awesome path.

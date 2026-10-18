@@ -53,6 +53,10 @@ const afterMs = (fn, ms) => new Promise(r => setTimeout(() => { fn(); r(); }, ms
 (async () => {
     // Assets stay out of index.html; the icon script (favicon/touch-icon-inline.js) sets a data: URI link
     check(!rawHtml.includes('data:image'), 'index.html embeds a data: URI');
+    // every local file that styles.css and index.html point to must exist (a missing font fails silently in the browser)
+    const refs = [...fs.readFileSync(root + 'styles.css', 'utf8').matchAll(/url\(\s*['"]?(?!data:|https?:|#)([^'")?]+)/g)].map(m => m[1])
+        .concat([...rawHtml.matchAll(/(?:href|src)="(?!data:|https?:|#)([^"?]+)/g)].map(m => m[1]));
+    refs.filter(f => f !== './' && !fs.existsSync(root + f.replace(/^\.\//, ''))).forEach(f => check(false, 'referenced file is missing: ' + f));
     check(new Set(rawHtml.match(/\?v=[^"]*/g)).size === 1, 'index.html has more than one ?v= value');   // old and new files must not mix
     check(/href="vendor\/fontawesome-\d[^"]*\/css\//.test(rawHtml), 'Font Awesome path has no version (its fonts are cached for a year)');
     check(!/googleapis|gstatic|cdnjs/.test(rawHtml), 'index.html loads fonts or CSS from a third-party host');
