@@ -307,5 +307,5 @@ GNU GPL v3, see [LICENSE](LICENSE).
 
 ## Note on the version
 
-In `index.html` a version (`?v=…`) hangs on `styles.css` and on every `js/*.js` file (the same value on all): increase it on changes,
+In `index.html` a version (`?v=…`) hangs on `styles.css`, every `js/*.js` file, `favicon/touch-icon-inline.js` and the Font Awesome stylesheet (the same value on all; the smoke test checks it): increase it on changes,
 otherwise browsers mix old and new files.

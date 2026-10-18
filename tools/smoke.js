@@ -53,6 +53,8 @@ const afterMs = (fn, ms) => new Promise(r => setTimeout(() => { fn(); r(); }, ms
 (async () => {
     // Assets stay out of index.html; the icon script (favicon/touch-icon-inline.js) sets a data: URI link
     check(!rawHtml.includes('data:image'), 'index.html embeds a data: URI');
+    check(new Set(rawHtml.match(/\?v=[^"]*/g)).size === 1, 'index.html has more than one ?v= value');   // old and new files must not mix
+    check(/href="vendor\/fontawesome-\d[^"]*\/css\//.test(rawHtml), 'Font Awesome path has no version (its fonts are cached for a year)');
     check(!/googleapis|gstatic|cdnjs/.test(rawHtml), 'index.html loads fonts or CSS from a third-party host');
     const touch = d.querySelectorAll('link[rel="apple-touch-icon"]');
     check(touch.length === 1 && touch[0].href.startsWith('data:image/png;base64,'), 'apple-touch-icon is not a single data: URI link after the icon script');
