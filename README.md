@@ -7,6 +7,8 @@ Built for mouse and keyboard on the desktop, iPad and iPhone, and for the browse
 
 ## Structure
 
+For AI agents and new contributors: `CLAUDE.md` has the file map, the rules and the commands.
+
 | File | Purpose |
 |---|---|
 | `index.html` | Skeleton: bar with nav chips, gear and sections dropdown (one button, all in one flex row), content, overlays. The `<head>` holds the scripts for zoom and color scheme (they run before the first paint) |
