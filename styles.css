@@ -844,8 +844,20 @@ li.dead::after {
     }
 
     /* less padding to the right of the domain, and the free width goes to the elements: dropdown and steppers grow, the gear keeps its size */
+    .title {
+        column-gap: 0;
+    }
+
     .home-link {
-        padding-right: 0.2em;
+        padding-right: 0;
+    }
+
+    .titledomain {
+        padding-right: 0;
+    }
+
+    .stepper {
+        margin-left: 0;
     }
 
     #section-jumper {

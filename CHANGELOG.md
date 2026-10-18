@@ -68,6 +68,10 @@ Names in this log are the current English ones (the code was translated to Engli
 - Ghost headers (`ghostHeader.stack`) again form a stack of all sections between view and target (ordered by distance, target on top, those in between lying ready underneath): further away only the copy of the target glides in, nearer the ones above just glide out and uncover the ones below (before they first glided down). If the target jumped over several, they glide out together. Every change takes 400 ms, the next target waits, only the last one counts (fast hovering skips intermediate steps). Gliding in and out with ease-out; shadow and line fade out quickly at the end of gliding out during the last 25 %.
 - With keyboard navigation a resting mouse pointer over nav chips or headings triggers neither line/chevron nor a ghost header.
 
+**Touch: tap during coasting, bar spacing**
+- A tap into a section activates it at once, also while the page is still coasting after a swipe: the glow window no longer insists on following the scroll when the lock comes from a tap (kind `title`); a jump via chip or list (kind `nav`) still follows the scroll.
+- Bottom bar on the smartphone: no padding to the right of the domain at all (`.home-link` and `.titledomain` padding-right 0, `column-gap: 0`, no left margin on the steppers). The dropdown and the steppers use the free width.
+
 **Smartphone: no divider lines in the bar**
 - The light and dark side edges of the nav buttons (dropdown and gear), which showed as thin divider lines between some elements of the bottom bar, are transparent now (`border-left/right-color: transparent`).
 
