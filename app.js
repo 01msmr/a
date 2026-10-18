@@ -452,6 +452,7 @@ document.addEventListener('pointercancel', function () { tapStart = null; }, tru
 var touchTap = null, pendingTap = null;   // pendingTap: a touch during a scroll that may still need its activation
 document.addEventListener('touchstart', function (e) {
     var t = e.touches && e.touches[0];
+    if (tailAnim) tailRestore();   // a touch ends the finishing animation at once
     touchTap = t ? { x: t.clientX, y: t.clientY, t: performance.now(), target: e.target } : null;
     // While the page is still scrolling after a swipe (coasting, then settling on the snap point) a touch can only halt the scroll, be a tap,
     // or start a new swipe (which releases the lock again): activate right at the touch, otherwise several taps get lost until the scroll has ended
@@ -541,25 +542,38 @@ document.addEventListener('scroll', function () {
 }, true);
 
 // iOS swallows every touch while the page glides (it only halts the scroll, the page gets no touchstart), and the slow end of the glide
-// onto the snap point is long. When the finger is up, the page crawls (at most 1.5 px per scroll event) and is within 8 px of a snap point,
-// it jumps to that point at once: the swallowing window ends a few pixels early, the scroll itself stays untouched.
-var tailLast = null;
+// onto the snap point is long. When the finger is up, the page crawls (at most 3 px per scroll event) and is within 60 px of a snap point,
+// we take over: the native scrolling is switched off for a moment (a jump during iOS' own deceleration is ignored) and the last stretch is
+// animated here in 60 to 180 ms (ease-out) onto the snap point. A touch during that animation ends it at once and gives the scrolling back.
+var tailLast = null, tailAnim = 0;
+function tailRestore() {
+    var c = glow.container;
+    cancelAnimationFrame(tailAnim); tailAnim = 0;
+    if (c) { c.style.overflowY = ''; c.style.scrollSnapType = ''; }
+}
 function cutTail() {
     var c = glow.container;
+    if (tailAnim) return;   // the scroll events of our own animation
     if (!c || fingerDown || !isPhone() || document.body.classList.contains('edit-mode') || !glow.pageIdx) { tailLast = null; return; }
     var top = c.scrollTop, last = tailLast;
     tailLast = top;
-    if (last === null || Math.abs(top - last) > 1.5) return;
+    if (last === null || Math.abs(top - last) > 3) return;
     var best = null;
     glow.pageIdx.forEach(function (p) {
         var y = glow.secs[p[0]].y;
         if (best === null || Math.abs(y - top) < Math.abs(best - top)) best = y;
     });
-    var max = c.scrollHeight - c.clientHeight;
-    if (best !== null && best <= max && Math.abs(best - top) <= 8 && Math.abs(best - top) > 0.5) {
-        tailLast = null;
-        c.scrollTo({ top: best, behavior: 'instant' });
-    }
+    var max = c.scrollHeight - c.clientHeight, dist = best === null ? 0 : best - top;
+    if (best === null || best > max || Math.abs(dist) > 60 || Math.abs(dist) < 0.5) return;
+    var from = top, t0 = performance.now(), duration = Math.min(180, 60 + Math.abs(dist) * 2);
+    c.style.overflowY = 'hidden';
+    c.style.scrollSnapType = 'none';
+    (function step(now) {
+        var t = Math.min(1, (now - t0) / duration), e = 1 - Math.pow(1 - t, 3);
+        c.scrollTo({ top: from + dist * e, behavior: 'instant' });
+        if (t < 1) tailAnim = requestAnimationFrame(step);
+        else { tailRestore(); tailLast = null; }
+    })(t0);
 }
 
 function glowTarget() {
