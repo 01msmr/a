@@ -1,0 +1,142 @@
+/* Grid view (js/grid.js): square tiles, the bar across the whole page, the dead-link triangle. Listed after base.css in styles.css */
+
+/* ── Grid view ───────────────────────────────────────────────────── */
+
+/* The lines are gray (25 % opacity); on a colored section the text color on it */
+section {
+    --line: color-mix(in srgb, var(--sect-col) 25%, transparent);
+}
+
+body section :is(.group, li).covered,
+body.tile-light section li.inverted {
+    --line: color-mix(in srgb, var(--on-c) 25%, transparent);
+}
+
+/* Columns fill the width (full width) or, when centered, stay in the fixed column width;
+   in edit mode the tile layout of the chips still applies */
+body.view-grid:not(.edit-mode) .group {
+    display: grid;
+    /* at most 6 columns, at least 2: on narrow screens (smartphone) there are always two tiles side by side, more when there is room */
+    grid-template-columns: repeat(auto-fill, minmax(min(max(var(--tile), calc(100% / 6)), calc(50% - 1px)), 1fr));
+    gap: 0;
+    padding-left: 0;
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+}
+
+/* the lines of the group win against the general border color of the active section */
+body.view-grid:not(.edit-mode) #container section .group {
+    border-top-color: var(--line);
+    border-left-color: var(--line);
+}
+
+body.view-grid:not(.edit-mode):not(.align-center) .group {
+    max-width: none;
+}
+
+body.view-grid:not(.edit-mode) li {
+    display: block;
+    width: auto;
+    min-width: 0;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+
+/* bottom grid line: switches with the window at the bottom edge of the row (.covered-bottom, js/glow.js) */
+body.view-grid:not(.edit-mode) li {
+    border-bottom-color: color-mix(in srgb, var(--sect-col) 25%, transparent);
+}
+
+body.view-grid:not(.edit-mode) li.covered-bottom {
+    border-bottom-color: color-mix(in srgb, var(--on-c) 25%, transparent);
+}
+
+/* no extra line between heading and grid (the top edge of the group is already a line),
+   no padding below the group */
+body.view-grid:not(.edit-mode) #container section .name {
+    border-bottom-width: 0;
+}
+
+body.view-grid:not(.edit-mode) .group {
+    padding-bottom: 0;
+}
+
+/* All devices: an isosceles right triangle in the top right corner, legs 8 px (x and y), moved 1 px inward;
+   below it a larger white triangle as a 1 px border, so it contrasts on colored sections */
+body.view-grid:not(.edit-mode) li.dead::after {
+    top: 1px;
+    right: 1px;
+    width: 8px;
+    height: 8px;
+    border-radius: 0;
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+    z-index: 3;
+}
+
+body.view-grid:not(.edit-mode) li.dead::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 11.42px;   /* 8 px + 2 × 1 px border on the legs and 1 px on the hypotenuse (8 + 1.42 + 2) */
+    height: 11.42px;
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+    background: #fff;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* full width (grid, not centered): the bar also runs across the whole page */
+body.view-grid:not(.align-center) .title {
+    max-width: none;
+}
+
+/* square, without gloss */
+body.view-grid:not(.edit-mode) li a::before {
+    border-radius: 0;
+    background-image: none;
+}
+
+/* Hover area of the tile as its own element (#tile-light, js/light.js) that glides from tile to tile;
+   the text inverts (.inverted) as soon as the light covers 95 % of the tile */
+#container {
+    position: relative;
+}
+
+#tile-light {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+    background-color: var(--chip-inv);   /* the pointer always lies in the glowing section */
+}
+
+body:not(.touch).tile-light:not(.edit-mode) #container li a:hover::before,
+body.tile-light:not(.edit-mode).keyboard #container li a:not([contenteditable]):focus-visible::before {
+    background-color: transparent;
+    background-image: none;
+}
+
+/* Line cursor in the light: color of the section (the line image serves as a mask), full height; mouse only */
+.tile-light-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    margin-left: -1.5px;
+    background: var(--sc, var(--sect-col));
+    -webkit-mask: var(--curs-hov) no-repeat 0 0 / 100% 100%;
+    mask: var(--curs-hov) no-repeat 0 0 / 100% 100%;
+    transition: none;   /* cursor changes color and position immediately */
+}
+
+body.keyboard .tile-light-line {
+    display: none;
+}
+
+/* Chips: the light is rounded and glossy like the hover area of the tile (--hl: 1) */
+body:not(.view-grid) #tile-light {
+    --hl: 1;
+    border-radius: .35em;
+    background-image: linear-gradient(rgba(255, 255, 255, calc(.46 * var(--hl) * var(--gloss))), rgba(255, 255, 255, calc(.12 * var(--hl) * var(--gloss))) 36%, rgba(255, 255, 255, 0) 38%, rgba(0, 0, 0, calc(.2 * var(--hl) * var(--gloss))));
+}

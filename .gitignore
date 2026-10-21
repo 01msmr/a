@@ -6,3 +6,4 @@ links.json
 links.bak.json
 node_modules/
 .superpowers/
+*.snapshot.json.gz

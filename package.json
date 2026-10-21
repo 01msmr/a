@@ -1,0 +1,16 @@
+{
+  "name": "a.msmr.co",
+  "private": true,
+  "description": "Personal start page. No build step: this file only lists the tools for the tests.",
+  "scripts": {
+    "test": "node --test",
+    "smoke": "node tools/smoke.js",
+    "check": "node --test && node tools/smoke.js",
+    "browser": "node tools/browser-checks.mjs",
+    "bump": "node tools/bump-version.js"
+  },
+  "devDependencies": {
+    "jsdom": "^29.1.1",
+    "puppeteer-core": "^25.14.0"
+  }
+}

@@ -1,0 +1,297 @@
+/* Settings overlay and sections list (js/settings.js, js/render.js): the gear, the dropdown and their overlays. Listed after base.css in styles.css */
+
+/* ── Settings: gear in the bar + overlay ─────────────────────────── */
+
+.nav-btn {
+    /* Width, padding and edges come from the nav chips (see a.secname) */
+    background: transparent;
+    font-family: inherit;
+    cursor: inherit;
+}
+
+body:not(.touch):not(.keyboard) .nav-btn:hover,
+.nav-btn:focus-visible {
+    color: var(--title-col);
+    background-color: color-mix(in srgb, var(--sect-col) 15%, transparent);
+    outline: none;
+}
+
+/* pressed or overlay open: inverted, flush with the overlay below; the change switches immediately */
+.nav-btn,
+.nav-btn *,
+.nav-btn *::before,
+.nav-btn *::after {
+    transition: none;   /* also the children (icon, word): their color would otherwise inherit the change with a transition */
+}
+
+.nav-btn:active,
+.nav-btn.open,
+body:not(.keyboard) .nav-btn:active,
+body:not(.keyboard) .nav-btn.open {
+    color: var(--front-body);
+    background-color: var(--sect-col);
+}
+
+/* vertical stack of buttons: each shows the state of a setting, a click cycles through */
+.settings-pop,
+.jumper-pop {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    border: 0;
+    /* attached to the gear: flush at the top, only the free corners at the bottom are rounded */
+    border-radius: 0 0 .49rem .49rem;   /* like the tiles: .35em at 1.4rem text */
+    overflow: hidden;
+    /* closed: colors of the bar; open = inverted: area in text color, icons in area color.
+       On opening the overlay grows away from the gear to its height, on closing (also automatic) it shrinks back to it;
+       the buttons stay at the gear, the colors change on the way */
+    interpolate-size: allow-keywords;
+    height: 0;
+    background: var(--front-body);
+    color: var(--sect-col);
+    transition: var(--pop-closed);
+    flex-direction: column;
+}
+
+.settings-pop.upward,
+.jumper-pop.upward {
+    border-radius: .49rem .49rem 0 0;
+    justify-content: flex-end;   /* anchored at the bottom of the gear */
+}
+
+.settings-pop:popover-open,
+.jumper-pop:popover-open {
+    display: flex;
+    height: auto;
+    transition: var(--pop-transition);
+    box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .35);
+}
+
+.settings-pop:popover-open {
+    background: var(--sect-col);
+    color: var(--front-body);
+}
+
+/* Starting state on opening = folded shut */
+@starting-style {
+    .settings-pop:popover-open,
+    .jumper-pop:popover-open {
+        height: 0;
+    }
+}
+
+.set-btn {
+    flex: none;   /* when the overlay shrinks, the buttons keep their height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: var(--set-height, auto);   /* square without a value */
+    aspect-ratio: 1;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: inherit;
+}
+
+.set-btn {
+    position: relative;
+}
+
+.set-icon {
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+/* Color scheme: large the active value (light/dark or auto), small at the bottom right the other part (auto or the system value) */
+.set-corner {
+    position: absolute;
+    right: .35rem;
+    bottom: .3rem;
+    font-size: .8rem;
+    line-height: 1;
+}
+
+.set-letter {
+    font-family: Ubuntu, "Helvetica neue", Helvetica, Arial, sans-serif;
+}
+
+/* Text mode: each setting shows a short word */
+.set-btn {
+    container-type: inline-size;
+}
+
+.set-text {
+    font-size: clamp(1rem, 30cqw, 1.7rem);   /* uses the width of the button */
+}
+
+/* View: four tiles. Chips = filled, rounded, with gap; grid = outline, square, joined */
+.set-tiles {
+    display: grid;
+    grid-template: 1fr 1fr / 1fr 1fr;
+    gap: .14em;
+    width: 1em;
+    height: 1em;
+}
+
+.set-tiles i {
+    background: currentColor;
+    border-radius: .3em;
+}
+
+.set-tiles.square {
+    gap: 0;
+}
+
+.set-tiles.square i {
+    background: none;
+    border: 1.5px solid currentColor;
+    border-radius: 0;
+    margin: 0 -.75px -.75px 0;   /* neighboring edges coincide */
+}
+
+/* several symbols on top of each other as one icon */
+.set-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: .8rem;
+}
+
+.set-stack i {
+    line-height: .85;
+}
+
+/* Switching and hover without transition (the overlay itself grows and shrinks) */
+.settings-pop *,
+.settings-pop *::before,
+.settings-pop *::after,
+.jumper-pop *,
+.jumper-pop *::before,
+.jumper-pop *::after {
+    transition: none;
+}
+
+/* Hover and keyboard focus invert again: area in area color, icon in text color */
+body:not(.touch):not(.keyboard) .set-btn:hover,
+body.keyboard .set-btn:focus-visible {
+    background-color: var(--front-body);
+    color: var(--sect-col);
+    outline: none;
+}
+
+.set-btn:focus-visible {
+    background-color: var(--front-body);
+    color: var(--sect-col);
+    outline: none;
+}
+
+.set-btn:focus-visible {
+    outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+        transition: none !important;
+    }
+}
+
+/* reduced means shorter, not none: the settings overlay keeps gliding, just faster */
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --pop-duration: 90;
+    }
+
+    .settings-pop,
+    .jumper-pop {
+        transition: var(--pop-closed) !important;
+    }
+
+    .settings-pop:popover-open,
+    .jumper-pop:popover-open {
+        transition: var(--pop-transition) !important;
+    }
+}
+
+
+
+/* Sections list: same shape and technique as the settings overlay (see there), but not inverted;
+   icon mode shows only icons, text mode only names in the normal font size */
+.jumper-pop {
+    overflow-y: auto;
+}
+
+/* Shape, edges and effects come from a.sec-btn (see there); here only what the list does differently:
+   flat, without shadow (the --sb-* variables switch them off there) */
+.jumper-pop a {
+    --sb-hover-shadow: none;
+    --sb-press-shadow: none;
+    --sb-active-image: none;
+    --sb-inner: 0;
+    flex: none;   /* when shrinking, the entries keep their height */
+    width: 100%;
+    height: var(--set-height, auto);   /* Height like the buttons of the settings */
+    padding: 0 .15rem;
+    outline: none;
+}
+
+/* Touch: no hover state, more compact entries; the settings buttons get the same height (vertical padding) as the sections entries */
+@media (hover: none) {
+    .jumper-pop a,
+    .settings-pop .set-btn {
+        height: 2.75rem;
+    }
+
+    /* the words in the settings entries are as large as the word on the gear (--set-font is set in settingsPlace);
+       only on very narrow screens (a button of about 35px) they shrink to what fits */
+    .settings-pop .set-letter,
+    .settings-pop .set-text {
+        font-size: min(var(--set-font, 1.25rem), 44cqw);
+    }
+    .jumper-pop a:hover:not(.active):not(.with-hover) {
+        background: none;
+        box-shadow: none;
+    }
+
+    /* no shadows in or around the two dropdowns: neither the drop shadow of the overlay nor the bevel edges of the entries */
+    .settings-pop:popover-open,
+    .jumper-pop:popover-open {
+        box-shadow: none;
+    }
+
+    .jumper-pop a {
+        border-color: transparent;
+    }
+}
+
+body.nav-icons .jumper-pop .secshort,
+body:not(.nav-icons) .jumper-pop .secicon {
+    display: none;
+}
+
+.jumper-pop .secicon {
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+/* Dropdown open: the chevron points up */
+#section-jumper[aria-expanded="true"] .secicon {
+    transform: rotate(180deg);
+}
+
+/* Smartphone: a hamburger (Font Awesome fa-bars, \f0c9) instead of the chevron on the sections dropdown, not rotated when open */
+@media only screen and (min-device-width: 350px) and (max-device-width: 812px) {
+    #section-jumper .secicon::before {
+        content: "\f0c9";
+    }
+
+    #section-jumper .secicon,
+    #section-jumper[aria-expanded="true"] .secicon {
+        transform: none;
+    }
+}

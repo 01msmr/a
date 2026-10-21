@@ -1,0 +1,114 @@
+/* Line pointer (js/cursor.js). Listed after base.css in styles.css */
+
+/* ── Line pointer (js/cursor.js): vertical line instead of the dot ── */
+#cursor {
+    position: fixed;
+    z-index: 50;
+    width: var(--cursor-line-width);
+    margin-left: calc(var(--cursor-line-width) / -2);
+    opacity: 0;
+    pointer-events: none;
+    background: var(--curs-hov) no-repeat;
+    background-size: 100% 100%;
+    transition: none;   /* full height immediately, no scaling */
+}
+
+html.cursor-on,
+html.cursor-on * {
+    cursor: none !important;
+}
+
+/* Chevron as a real image pointer (heading, nav chip, sections list): shows where a click scrolls (js/cursor.js sets data-arrow) */
+html.cursor-on[data-arrow="up"],
+html.cursor-on[data-arrow="up"] * {
+    cursor: var(--curs-up) !important;
+}
+
+html.cursor-on[data-arrow="down"],
+html.cursor-on[data-arrow="down"] * {
+    cursor: var(--curs-down) !important;
+}
+
+html.cursor-on.cursor-std,
+html.cursor-on.cursor-std * {
+    cursor: var(--curs-img) 1 1, auto !important;
+}
+
+html.cursor-on.cursor-dot,
+html.cursor-on.cursor-dot * {
+    cursor: var(--curs-sec) 1 1, auto !important;
+}
+
+/* Grid: empty cells of the last row (one area up to the end of the row, --empty is set by js/glow.js) carry the lines of the tiles */
+body.view-grid:not(.edit-mode) .group::after {
+    content: "";
+    grid-column: span var(--empty, 1);
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+
+body.view-grid:not(.edit-mode) .group.full::after {
+    display: none;
+}
+
+body.view-grid:not(.edit-mode) .group.end-covered::after {
+    border-color: color-mix(in srgb, var(--on-c) 25%, transparent);
+}
+
+/* Line of the whole section: in the content behind heading, tiles and light, scrolls along */
+#cursor-sec {
+    position: absolute;
+    z-index: 0;
+    width: var(--cursor-line-width);
+    margin-left: calc(var(--cursor-line-width) / -2);
+    opacity: 0;
+    pointer-events: none;
+    background: var(--curs-hov) no-repeat;
+    background-size: 100% 100%;
+    transition: none;   /* full height immediately, no scaling */
+}
+
+/* "Color" setting: pale = almost colorless at the same lightness */
+:root[data-color-mode="pale"] {
+    --color-intensity: var(--color-pale);
+}
+
+.set-circle {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    border-radius: 50%;
+    background: var(--k);
+}
+
+/* the cell under the tile light carries the section color immediately (areas in the content behind the light, js/light.js) */
+.tile-cell {
+    position: absolute;
+    z-index: 0;
+    display: none;
+    pointer-events: none;
+}
+
+/* Touch dragging from the field into the list: no scrolling/zooming in between */
+#section-jumper {
+    touch-action: none;
+}
+
+/* Swiping with a finger: chips and entries show no hover/press state */
+html.swiping a.sec-btn:not(.active) {
+    background-color: transparent;
+    background-image: none;
+    box-shadow: none;
+}
+
+/* Touch: neither tap highlight nor press state on touch (a swipe must show nothing) */
+a.sec-btn,
+#container section a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Touch (smartphone, tablet): the hover color of the tile appears immediately, without transition */
+body.touch li a,
+body.touch li a::before {
+    transition: none;
+}

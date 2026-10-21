@@ -1,0 +1,179 @@
+/* Section strip: the bottom bar of narrow touch devices (js/strip.js). Listed after base.css in styles.css, which holds the bar it replaces parts of */
+
+/* ── Section strip (narrow touch devices) ────────────────────────────
+   Bottom bar: "a." | strip | gear. Like the narrow nav of msmr.dev: a window in the section color shows the title of the active section, the numbers
+   (icons in icon mode) sit beside it; pressing the strip aims, the numbers follow the finger and hold at the window's edge (js/strip.js). */
+.strip {
+    display: none;
+}
+
+@media only screen and (min-device-width: 350px) and (max-device-width: 812px) and (hover: none) {
+    .title {
+        --strip-w: 2.375rem;   /* width (pitch) of one strip item and height of the bar items */
+        --btn-w: 3.35rem;      /* "a." and the gear: the width the settings overlay needs for its words at the size of "set" (that size / 0.44, see .set-btn): the overlay is as wide as the gear */
+        column-gap: 0;
+        padding-left: 0;
+    }
+
+    .strip:not(.ready) {
+        visibility: hidden;   /* until js/strip.js has placed the items once: no layout shift while loading */
+    }
+
+    .strip {
+        display: block;
+        position: relative;
+        flex: 1 1 0;
+        min-width: 0;
+        height: var(--strip-w);
+        margin: 0 4px;
+        order: 1;
+        overflow: hidden;
+        touch-action: none;
+        font-size: 0.9em;   /* the size of "set" on the gear and of the words in the settings overlay (.title is the base of both) */
+    }
+
+    /* items are placed by js/strip.js (left); the transform belongs to the glide animations */
+    .strip-item {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: var(--strip-w);
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--title-col);   /* dark text in light mode, light text in dark mode (central values in :root) */
+        text-decoration: none;
+    }
+
+    /* no fades: at rest the numbers are cut off two items beyond the window's edge (--reach, js/strip.js); the clip closes with the glide after a release.
+       The clip is on an inner layer, so a press anywhere on the strip still aims */
+    .strip-clip {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        clip-path: inset(0 max(0px, calc(50% - var(--reach, 50%))));
+        transition: clip-path 0.45s cubic-bezier(.33, 1, .68, 1);
+    }
+
+    /* while the finger moves, all numbers show (the strip's own edge cuts them) */
+    .strip.is-aiming .strip-clip {
+        clip-path: inset(0 0);
+        transition: none;
+    }
+
+    /* the item in the window shows as its title there (the number is hidden at once) */
+    .strip-item.active {
+        opacity: 0;
+    }
+
+    .strip-item .secicon,
+    body.nav-icons .strip-item .strip-no {
+        display: none;
+    }
+
+    body.nav-icons .strip-item .secicon {
+        display: inline;
+    }
+
+    /* the window: the title of the active section; it resizes around it (and between two titles while the finger moves) */
+    #strip-window {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        min-width: var(--strip-w);
+        max-width: 100%;
+        box-sizing: border-box;
+        padding: 0 0.8em;   /* counts into the window width (js/strip.js) */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        white-space: nowrap;
+        background-color: var(--c, var(--sect-col));
+        color: var(--title-col);
+        transition: background-color 0.66s, width 0.45s cubic-bezier(.33, 1, .68, 1);   /* the fill fades from section to section, the text switches at once (like msmr.dev) */
+        pointer-events: none;
+    }
+
+    /* "a." in the window: neutral fill, text in the page's body color, a text in icon mode too */
+    #strip-window.is-home {
+        color: var(--front-body);
+    }
+
+    body.nav-icons #strip-window.is-home .strip-title {
+        display: inline;
+    }
+
+    body.nav-icons #strip-window.is-home .secicon {
+        display: none;
+    }
+
+    /* while the finger moves the width follows it at once */
+    .strip.is-aiming #strip-window {
+        transition: background-color 0.66s;
+    }
+
+    /* the old title (or icon) while it is pushed out of the window (js/strip.js) */
+    .strip-ghost {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        pointer-events: none;
+    }
+
+    #strip-window .secicon,
+    body.nav-icons #strip-window .strip-title {
+        display: none;
+    }
+
+    body.nav-icons #strip-window .secicon {
+        display: inline;
+    }
+
+    /* no link preview or callout menu on a long press */
+    .strip-item,
+    .home-link {
+        -webkit-touch-callout: none;
+        -webkit-user-drag: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    /* "a." is the first item of the strip; the gear keeps its width (at least that of the nav buttons in icon mode) */
+    .home-link {
+        display: none;
+    }
+
+    .titledomain {
+        display: none;
+    }
+
+    #settings-btn {
+        order: 2;
+        flex: 0 0 auto;
+        width: auto;
+        min-width: var(--btn-w);
+        padding: 0 0.3em;
+        margin-left: 0;
+    }
+
+    /* the nav row dissolves into the bar so that the gear takes its place by order */
+    #section-nav-list {
+        display: contents;
+    }
+
+    /* chips give way to the strip; the dropdown is hidden: delete #section-jumper from this rule to bring it back (it needs a width, e.g. flex: 0 0 var(--strip-w)) */
+    #section-nav-list .secname,
+    #section-jumper {
+        display: none;
+    }
+}

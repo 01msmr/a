@@ -25,11 +25,14 @@ const afterMs = (fn, ms) => new Promise(r => setTimeout(() => { fn(); r(); }, ms
 (async () => {
     // Assets stay out of index.html; the icon script (favicon/touch-icon-inline.js) sets a data: URI link
     check(!rawHtml.includes('data:image'), 'index.html embeds a data: URI');
-    // every local file that styles.css and index.html point to must exist (a missing font fails silently in the browser)
-    const refs = [...fs.readFileSync(root + 'styles.css', 'utf8').matchAll(/url\(\s*['"]?(?!data:|https?:|#)([^'")?]+)/g)].map(m => m[1])
+    // every local file that the stylesheets and index.html point to must exist (a missing font fails silently in the browser)
+    const sheets = [...rawHtml.matchAll(/<link rel="stylesheet" href="([^"?:/]+\.css)/g)].map(m => m[1]);   // the page's own sheets and what they @import
+    for (let k = 0; k < sheets.length; k++) fs.existsSync(root + sheets[k]) && [...fs.readFileSync(root + sheets[k], 'utf8').matchAll(/@import url\("([^"?]+)/g)].forEach(m => sheets.push(m[1]));
+    const css = sheets.filter(f => fs.existsSync(root + f)).map(f => fs.readFileSync(root + f, 'utf8')).join('\n');
+    const refs = [...css.matchAll(/url\(\s*['"]?(?!data:|https?:|#)([^'")?]+)/g)].map(m => m[1])
         .concat([...rawHtml.matchAll(/(?:href|src)="(?!data:|https?:|#)([^"?]+)/g)].map(m => m[1]));
     refs.filter(f => f !== './' && !fs.existsSync(root + f.replace(/^\.\//, ''))).forEach(f => check(false, 'referenced file is missing: ' + f));
-    check(new Set(rawHtml.match(/\?v=[^"]*/g)).size === 1, 'index.html has more than one ?v= value');   // old and new files must not mix
+    check(new Set((rawHtml + fs.readFileSync(root + 'styles.css', 'utf8')).match(/\?v=[^"')]*/g)).size === 1, 'index.html and styles.css have more than one ?v= value');   // old and new files must not mix
     check(/href="vendor\/fontawesome-\d[^"]*\/css\//.test(rawHtml), 'Font Awesome path has no version (its fonts are cached for a year)');
     check(!/googleapis|gstatic|cdnjs/.test(rawHtml), 'index.html loads fonts or CSS from a third-party host');
     // both manifests: the icons they name exist; the ?app one is the standalone web app that starts at /?app (js: favicon/app-mode.js)

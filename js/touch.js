@@ -1,7 +1,7 @@
 // Owns: CSS measures, pointer kind, click lock, swipe, tail snap after the glide
 // Defines globals: readMeasures, glide, PHONE_QUERY, isPhone, pointerKind, isTouch, setPointerKind, lockOn, lockOff, lockFromEvent, tapStart, touchTap, pendingTap, fingerDown, swipeEnd, tailLast, tailAnim, tailRestore, cutTail
 // Uses: state, active-section, glow, light (and the edit-mode class on body)
-// Numbers from the CSS variables (:root in styles.css), read once
+// Numbers from the CSS variables (:root in tokens.css), read once
 function readMeasures() {
     var cs = getComputedStyle(document.documentElement);
     ['glow-duration', 'glow-duration-short', 'glide-power', 'light-duration', 'light-power', 'light-edge-duration', 'light-coverage',

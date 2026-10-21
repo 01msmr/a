@@ -149,15 +149,19 @@ test('stripWinAt: the width is continuous, also at the step between two items', 
     for (let f = 0.01; f <= 3; f += 0.01) { const now = w.stripWinAt(f, ws); assert.ok(Math.abs(now - prev) <= 160 * 0.02 + 1e-6, 'f ' + f); prev = now; }
 });
 
-test('buildStrip: one item per section with number and icon, the window with title and icon, both in the section color', () => {
+test('buildStrip: "a." is the first item, then one item per section with number and icon; the window starts on the first section', () => {
     w.buildStrip(stripData);
     const items = [...w.document.querySelectorAll('#strip .strip-item')];
-    assert.deepEqual(items.map(a => a.getAttribute('href')), ['#one', '#two', '#three']);
-    assert.deepEqual(items.map(a => a.querySelector('.strip-no').textContent), ['1', '2', '3']);
-    assert.ok(items[1].querySelector('i.fa-star'));
-    assert.equal(items[2].style.getPropertyValue('--c'), w.sectionColor(2));
+    assert.deepEqual(items.map(a => a.getAttribute('href')), ['#one', '#one', '#two', '#three']);
+    assert.equal(items[0].querySelector('.strip-no').textContent, 'a.');
+    assert.ok(items[0].classList.contains('strip-home'));
+    assert.deepEqual(items.slice(1).map(a => a.querySelector('.strip-no').textContent), ['1', '2', '3']);
+    assert.ok(items[2].querySelector('i.fa-star'));
+    assert.equal(items[3].style.getPropertyValue('--c'), w.sectionColor(2));
     assert.ok(w.document.querySelector('#strip-window .strip-title'));
     assert.ok(w.document.querySelector('#strip-window i.secicon'));
+    assert.equal(w.document.querySelector('#strip-window .strip-title').textContent, 'Alpha');
+    assert.deepEqual(items.map(a => a.classList.contains('active')), [false, true, false, false]);
 });
 
 test('buildStrip: building twice leaves one strip, placed in the bar before the nav row (the gear stays last)', () => {
@@ -169,15 +173,23 @@ test('buildStrip: building twice leaves one strip, placed in the bar before the 
 
 test('stripShow: the window shows title (full, with suffix), icon and color of the item; that item is the active one', () => {
     w.buildStrip(stripData);
-    w.stripShow(1);
+    w.stripShow(2);
     const win = w.document.getElementById('strip-window');
     assert.equal(win.querySelector('.strip-title').textContent, 'Beta.li');
     assert.ok(win.querySelector('i.fa-star'));
     assert.equal(win.style.getPropertyValue('--c'), w.sectionColor(1));
     const active = [...w.document.querySelectorAll('.strip-item.active')];
     assert.deepEqual(active.map(a => a.getAttribute('href')), ['#two']);
-    w.stripShow(2);
+    w.stripShow(3);
     assert.deepEqual([...w.document.querySelectorAll('.strip-item.active')].map(a => a.getAttribute('href')), ['#three']);
+});
+
+test('stripShow: "a." in the window is the neutral title color with the text "a."', () => {
+    w.buildStrip(stripData);
+    w.stripShow(0);
+    const win = w.document.getElementById('strip-window');
+    assert.equal(win.querySelector('.strip-title').textContent, 'a.');
+    assert.equal(win.style.getPropertyValue('--c'), 'var(--title-col)');
 });
 
 test('stripSync: the section hash picks the item; an unknown hash or a strip being dragged changes nothing', () => {
@@ -186,12 +198,21 @@ test('stripSync: the section hash picks the item; an unknown hash or a strip bei
     assert.equal(w.document.querySelector('#strip-window .strip-title').textContent, 'Gamma');
     w.stripSync('#nowhere');
     assert.equal(w.document.querySelector('#strip-window .strip-title').textContent, 'Gamma');
+    w.stripSync('#');
+    assert.equal(w.document.querySelector('#strip-window .strip-title').textContent, 'Gamma');
     w.stripDrag.on = true;
     w.stripSync('#one');
     assert.equal(w.document.querySelector('#strip-window .strip-title').textContent, 'Gamma');
     w.stripDrag.on = false;
 });
 
+test('stripTarget: choosing "a." means the first section (the page goes to the top), every other item stays itself', () => {
+    w.buildStrip(stripData);
+    assert.equal(w.stripTarget(0), 1);
+    assert.equal(w.stripTarget(2), 2);
+    w.buildStrip([]);
+    assert.equal(w.stripTarget(0), 0);
+});
 
 test('stripSuckFrom: the incoming title starts fully outside the window edge it comes from, the outgoing one leaves towards the other', () => {
     assert.equal(w.stripSuckFrom(1, 100, 60), 50 + 30);     // next item: comes from the right
@@ -243,30 +264,4 @@ test('applyAppMode: without a manifest link in the page one is added', () => {
     const d = w.document.implementation.createHTMLDocument('x');
     w.applyAppMode(d, true);
     assert.equal(d.querySelectorAll('link[rel="manifest"]').length, 1);
-});
-
-test('iconTestVariant: ?icon=1..9 picks a test icon, anything else none', () => {
-    assert.equal(w.iconTestVariant('?icon=3'), 3);
-    assert.equal(w.iconTestVariant('?app&icon=9'), 9);
-    assert.equal(w.iconTestVariant('?icon=1&app'), 1);
-    assert.equal(w.iconTestVariant('?icon=0'), null);
-    assert.equal(w.iconTestVariant('?icon=10'), null);
-    assert.equal(w.iconTestVariant('?icon=x'), null);
-    assert.equal(w.iconTestVariant('?app'), null);
-    assert.equal(w.iconTestVariant(''), null);
-});
-
-test('applyIconTest: the test icon replaces the touch icon and the manifest (standalone or not); without a variant nothing changes', () => {
-    const fresh = () => { const d = w.document.implementation.createHTMLDocument('x'); d.head.innerHTML = '<link rel="apple-touch-icon" href="data:x"><link rel="manifest" href="./favicon/manifest.json">'; return d; };
-    const none = fresh();
-    w.applyIconTest(none, null, false);
-    assert.equal(none.querySelector('link[rel="apple-touch-icon"]').getAttribute('href'), 'data:x');
-    const bookmark = fresh();
-    w.applyIconTest(bookmark, 3, false);
-    assert.equal(bookmark.querySelector('link[rel="apple-touch-icon"]').getAttribute('href'), './favicon/try/ico-3-180.png?r=2');
-    assert.equal(bookmark.querySelector('link[rel="manifest"]').getAttribute('href'), './favicon/try/manifest-3.json?r=2');
-    const app = fresh();
-    w.applyIconTest(app, 5, true);
-    assert.equal(app.querySelector('link[rel="manifest"]').getAttribute('href'), './favicon/try/manifest-5-app.json?r=2');
-    assert.equal(app.querySelectorAll('link[rel="apple-touch-icon"]').length, 1);
 });

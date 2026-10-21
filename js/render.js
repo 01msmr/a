@@ -5,7 +5,7 @@
 var SEC_COLORS = ['#f85a5a', '#fb8f2a', '#e2a800', '#8ac430', '#2fc16c', '#22b59f', '#18b4d6',
     '#4a92f0', '#6c70f2', '#9a62f0', '#c456e8', '#ea4fa8', '#f4587a', '#f67a3a', '#2fae82'];
 
-// Section color: same lightness and tint, saturation follows --color-intensity (styles.css, "Color" setting)
+// Section color: same lightness and tint, saturation follows --color-intensity (tokens.css, "Color" setting)
 function sectionColor(idx, intensity) {
     return 'oklch(from ' + SEC_COLORS[idx % SEC_COLORS.length] + ' l calc(c * ' + (intensity || 'var(--color-intensity, 1)') + ') h)';
 }

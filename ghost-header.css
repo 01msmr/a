@@ -1,0 +1,71 @@
+/* Ghost headers (js/ghost-header.js). Listed after base.css in styles.css */
+
+/* ── Ghost headers (js/ghost-header.js): copy of the target heading at the edge of the view ── */
+#ghost-header-layer {
+    position: fixed;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.ghost-header {
+    position: absolute;
+    left: 0;
+    right: 0;
+    background: var(--c, var(--sect-col));
+}
+
+.ghost-header .name,
+.ghost-header .name a {
+    color: var(--on-c);
+}
+
+.ghost-header .name a {
+    text-decoration: none;
+}
+
+.ghost-header .name {
+    border-bottom-color: color-mix(in srgb, var(--c, var(--sect-col)) 75%, var(--front-body));
+}
+
+body.view-grid .ghost-header .name {
+    border-bottom-width: 0;
+}
+
+/* soft shadow onto the content, 66 % of a tile height (--shadow, set by js/ghost-header.js); it starts with a thin dark line (1 px) */
+.ghost-header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: var(--shadow, 1.5rem);
+    opacity: var(--strength, 1);
+    pointer-events: none;
+    background: linear-gradient(var(--direction, to bottom),
+        rgba(0, 0, 0, .55), rgba(0, 0, 0, .55) 1px, rgba(0, 0, 0, .3) 1px, rgba(0, 0, 0, .22) 20%, rgba(0, 0, 0, .12) 45%, rgba(0, 0, 0, .04) 75%, rgba(0, 0, 0, 0));
+}
+
+.ghost-header.top::after {
+    top: 100%;
+}
+
+.ghost-header.bottom::after {
+    bottom: 100%;
+    --direction: to top;
+}
+
+/* a copy under another one keeps its color, but casts no shadow and has no line any more */
+.ghost-header.under {
+    filter: none;
+}
+
+/* copy gliding out: shadow and line fade quickly to 0 during the last quarter of the movement */
+.ghost-header.out::after {
+    opacity: 0;
+    transition: opacity var(--fade-duration, 100ms) linear var(--fade-delay, 300ms);
+}
+
+/* copy underneath: neither shadow nor line, so it does not get darker and darker with several */
+.ghost-header.under::after {
+    display: none;
+}

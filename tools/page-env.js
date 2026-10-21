@@ -1,5 +1,6 @@
 // Shared by tools/smoke.js and tools/unit.test.js: loads index.html and its scripts into jsdom, with the browser features jsdom lacks stubbed.
-// Returns { w, d, errors, rawHtml, root }: w is the window with every script evaluated, in the order of the <script> tags in index.html.
+// Returns { w, d, errors, rawHtml, root, globalsByFile }: w is the window with every script evaluated, in the order of the <script> tags in index.html;
+// globalsByFile lists the global names each script defined (tools/headers.test.js compares them with the header lines).
 const fs = require('fs');
 const path = require('path');
 const root = path.join(__dirname, '..') + path.sep;
@@ -32,6 +33,11 @@ module.exports = function loadPage() {
         }
     });
     const w = dom.window;
-    scripts.forEach(f => w.eval(fs.readFileSync(root + f, 'utf8')));
-    return { w, d: w.document, errors, rawHtml, root };
+    const globalsByFile = {};
+    scripts.forEach(f => {
+        const before = new Set(Object.getOwnPropertyNames(w));
+        w.eval(fs.readFileSync(root + f, 'utf8'));
+        globalsByFile[f] = Object.getOwnPropertyNames(w).filter(k => !before.has(k));
+    });
+    return { w, d: w.document, errors, rawHtml, root, globalsByFile };
 };

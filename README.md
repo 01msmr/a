@@ -11,10 +11,10 @@ For AI agents and new contributors: `CLAUDE.md` has the file map, the rules and 
 
 | File | Purpose |
 |---|---|
-| `index.html` | Skeleton: bar with nav chips, gear and sections dropdown (one button, all in one flex row), content, overlays. The `<head>` holds the scripts for zoom and color scheme (they run before the first paint) |
-| `js/*.js` | Rendering, navigation, settings, edit mode, split by area (15 files, loaded in order from `index.html`); file map in `CLAUDE.md` |
-| `styles.css` | All looks; color schemes, zoom and grid hang on variables and classes. Starts with the `@font-face` rules (Ubuntu, the Apple logo, the small Font Awesome font) |
-| `fonts/`, `vendor/fontawesome-6.7.2/` | Self-hosted fonts: Ubuntu Light, a tiny Apple-logo font, Font Awesome Free (details and update steps in `fonts/README.md`) |
+| `index.html` | Skeleton: bar (home link, nav chips or the section strip, gear, sections dropdown), content, overlays. The `<head>` holds the scripts that must run before the first paint: zoom, color scheme, the iOS home screen icon and the `?app` switch |
+| `js/*.js` | Rendering, navigation, the section strip, settings, edit mode, split by area (16 files, loaded in order from `index.html`); file map in `CLAUDE.md` |
+| `tokens.css` + `styles.css` + `strip.css`, `edit.css`, `grid.css`, `settings.css`, `ghost-header.css`, `cursor.css` | All looks; color schemes, zoom and grid hang on variables and classes. `tokens.css` (linked first) holds the `@font-face` rules (Ubuntu, the Apple logo, the small Font Awesome font), the tuning values and the color schemes; `styles.css` is the base with the device media blocks; the other files hold one area each (named in the first lines of `styles.css`) and are linked after it, in that order |
+| `fonts/`, `vendor/fontawesome-6.7.2/` | Self-hosted fonts: Ubuntu Regular, a tiny Apple-logo font, Font Awesome Free (details and update steps in `fonts/README.md`) |
 | `.htaccess` | Cache headers and 404 for files that are not part of the site (see Performance) |
 | `links.php` | Serves `edit/links.json` (public) |
 | `edit/save.php` | Writes the data (basic auth) |
@@ -23,12 +23,15 @@ For AI agents and new contributors: `CLAUDE.md` has the file map, the rules and 
 | `links.default.json` | Seed, only on the very first request |
 | `tools/dev-router.php` | Demo server with `no-store`, local only |
 | `tools/touch-icon.js` | Switches the iOS home screen icon between embedded as data: URIs in `favicon/touch-icon-inline.js` (`node tools/touch-icon.js inline`, the iOS 27.2 workaround, current) and linked (`… url`, the default); also copies the icon to `/apple-touch-icon.png` and `/apple-touch-icon-precomposed.png` |
-| `tools/smoke.js` | Smoke test without a browser (jsdom): loads the page, switches edit mode on, checks the nav structure, click lock, coupled highlight and re-sorting of sections; fails on page errors and infinite loops. `npm install --no-save jsdom && node tools/smoke.js` |
-| `tools/unit.test.js` | Unit tests (Node's test runner) for the pure logic: never-dead addresses, adding the APP section, section colors, preferences, the shared state. `npm install --no-save jsdom && node --test` |
-| `tools/page-env.js` | The jsdom setup shared by the smoke test and the unit tests (loads `index.html` and its scripts) |
-| `tools/browser-checks.mjs` | Checks that need a real browser (headless Chrome via puppeteer-core): no layout shift while loading, the words in the settings overlay as large as the word on the gear (phones, iPad, narrow phone), the Apple logo drawn by our own font, every section icon has a glyph. Starts `tools/dev-router.php` itself. `npm install --no-save jsdom puppeteer-core && node tools/browser-checks.mjs [url]` |
-| `favicon/` | Icons used by the page, manifest, `touch-icon-inline.js` |
-| `assets/` | Cursor images (used by `styles.css`) and source images |
+| `tools/smoke.js` | Smoke test without a browser (jsdom): loads the page, switches edit mode on, checks the nav structure, click lock, coupled highlight, re-sorting of sections, both manifests and the `?v=` values; fails on page errors and infinite loops |
+| `tools/style-snapshot.mjs` | Safety net for CSS changes: saves the computed style of every element in 24 views (`node tools/style-snapshot.mjs save FILE.json.gz`, later `check FILE.json.gz` lists every difference; keep FILE outside the repo) |
+| `tools/*.test.js` | Unit tests (Node's test runner) for the pure logic: `unit.test.js` (never-dead addresses, section colors, preferences, the section strip's geometry, the `?app` switch), `headers.test.js` (the "Defines globals" line of every `js/*.js` is true), `bump-version.test.js` |
+| `tools/page-env.js` | The jsdom setup shared by the smoke test and the tests (loads `index.html` and its scripts, records the globals each file defines) |
+| `tools/bump-version.js` | Raises the cache version `?v=` on every file of `index.html` (`npm run bump`): next letter on the same day, the date alone on a new day |
+| `tools/browser-checks.mjs` | Checks that need a real browser (headless Chrome via puppeteer-core): no layout shift while loading, the words in the settings overlay as large as the word on the gear (phones, iPad, narrow phone), the Apple logo drawn by our own font, every section icon has a glyph. Starts `tools/dev-router.php` itself |
+| `package.json`, `.github/workflows/tests.yml` | The tools for the tests (`jsdom`, `puppeteer-core`) and their scripts; no build step. The workflow runs `npm run check` (unit tests and smoke test) on every push |
+| `favicon/` | Icons used by the page, the two manifests, `touch-icon-inline.js` (home screen icon) and `app-mode.js` (`?app`) |
+| `assets/` | Cursor images (used by `styles.css`) and the source images of the icon |
 | `docs/` | Server, write protection, deploy; the plan for a later ES-modules migration; design draft for icons and settings |
 | `CHANGELOG.md` | What was changed when and why |
 
@@ -47,13 +50,14 @@ so the browser never shows an old copy.
 ## Tests
 
 ```
-npm install --no-save jsdom puppeteer-core
-node tools/smoke.js            # the page in jsdom: nav, click lock, edit mode, re-sorting; no missing files, no mixed ?v= values
-node --test                    # unit tests for the pure logic in js/
-node tools/browser-checks.mjs  # real Chrome: layout shift, settings word size, Apple logo, icon glyphs
+npm install                    # once: jsdom and puppeteer-core
+npm run check                  # unit tests + smoke test (what the CI runs)
+npm test                       # node --test: the pure logic in js/, the headers of js/*.js, the version helper
+npm run smoke                  # the page in jsdom: nav, click lock, edit mode, re-sorting; no missing files, no mixed ?v= values
+npm run browser                # real Chrome: layout shift, settings word size, Apple logo, icon glyphs
 ```
 
-The browser checks need Chrome (`CHROME_PATH` names it) and start the dev router themselves. Run them after changes to `styles.css`, the settings overlay or the loading order. Touch and glide behavior is tuned on real iPhones and iPads; no automatic test sees it.
+The browser checks need Chrome (`CHROME_PATH` names it) and start the dev router themselves. Run them after changes to `styles.css`, the settings overlay or the loading order. Touch and glide behavior is tuned on real iPhones and iPads; no automatic test sees it. Note that the layout queries use `device-width`, so a narrow desktop window never gets the phone layout; test it with device emulation.
 
 ## Data
 
@@ -208,14 +212,9 @@ Chips (`a.secname`), gear and dropdown (`.nav-btn`) sit in one flex row
 (`#section-nav-list`), the rest belongs to all equally (`flex: 1 1 auto`). If space
 is short, the row overflows to the left (`justify-content: flex-end`): gear and dropdown at the end
 stay reachable. The dropdown is a `<button>` (`aria-haspopup`, `aria-expanded`) with an icon and
-the word "sec", the chevron turns upward when open (on the smartphone the icon is a hamburger, `fa-bars`, which does not rotate).
+the word "sec", the chevron turns upward when open.
 
-On the iPhone in portrait the chips give way. The bottom bar then holds the address "a.msmr.co" (no padding to its right) and four buttons of
-exactly the same width: the sections dropdown (a hamburger icon in icon mode, the word "sec" in text mode), down, up and the settings
-gear (`#section-nav-list` is `display: contents` there, the order comes from `order`: dropdown, down, up, settings). The four share the
-free width equally (`flex: 1 1 0`, padding 0, 4 px distance in front of each); only down and up are filled boxes, the dropdown and the
-gear are plain icons without visible edges. A click on a section heading jumps to the snap point of its page (`pageStart`), so the
-second section of a pair is not scrolled out of the view by the snapping.
+On narrow touch devices (`device-width` 350–812 px, `hover: none`) the chips and the dropdown give way to the section strip (below); the dropdown stays in the page, hidden by one CSS rule.
 
 Chips and entries of the sections list share the class `a.sec-btn` (built by `sectionButton`):
 same base shape, same hover, active and press effects (flat, without shadow in the list, controlled
@@ -236,7 +235,7 @@ list and scrolled into view. Names lose a suffix (`tbx.li` → `tbx`).
   (`html.swiping`, ends only with the finger up; not on the `body`: its class change triggers the re-measure)
   the chips have no hover look. The glow window is a function of the scroll position while scrolling
   (`glowScroll`): between two section top edges it moves from the frame of one to that of the next (top edge =
-  scroll position), at the snap point it covers exactly the section. So it runs with the finger, coasting, stepper and chip jumps,
+  scroll position), at the snap point it covers exactly the section. So it runs with the finger, coasting and chip jumps,
   without its own time (no running ahead, lagging or twitching). Only a tap on a section animates it (fixed duration). On the transition from the tap target into the coupling the distance to the frame of the scroll position fades out over 280 ms (smoothstep), the window does not jump. On touch the tile light is off: there is no pointer, and mouse events pushed in by iOS do not count (otherwise the light stayed stuck at the touch point on the screen while the content scrolled underneath). In portrait on the iPhone `scroll-snap-stop` is
   normal: a swipe may skip several sections.
 
@@ -258,12 +257,21 @@ measuring in `glowMeasure`):
 - A remaining half-height section stays alone. It gets an empty half-height section behind it (`margin-bottom`, also as the last one), so the page is full
   and a following larger section starts on its own page (three half-height, then a large one: page 1 = two, page 2 = the third with an empty lower half, page 3 = the large one).
 - A larger section always starts its own page; if it is taller than the screen, it scrolls freely inside it (the snap point is at its start).
-- The snap point is the first section of each page (`.page-start`, `scroll-snap-align: start`). The glow window always covers exactly one section, never the whole page: the first one on screen while scrolling, or the tapped one; steppers, arrows and dropdown jump from page to page or to the start of the page of the target (`pageStart`, `jumpBy`).
+- The snap point is the first section of each page (`.page-start`, `scroll-snap-align: start`). The glow window always covers exactly one section, never the whole page: the first one on screen while scrolling, or the tapped one; arrows, dropdown and strip jump from page to page or to the start of the page of the target (`pageStart`, `jumpBy`).
 - There are no pages in edit mode.
+
+### Section strip (narrow touch devices)
+
+The bottom bar is strip | gear; `a.` is the first item of the strip (the home link is hidden there). The gear is `--btn-w` wide (3.35 rem: what the settings overlay needs for its words), so the overlay is exactly as wide as the gear. Choosing `a.` takes the page to the top and activates the first section (`stripTarget`); `a.` itself is never the active item, so the window shows it only while aiming. In the window it is neutral (`--title-col` fill, `--front-body` text), also in icon mode; the sections keep their numbers and colors (`stripColor`). The strip (`js/strip.js`, the strip block of `styles.css`) works like the narrow nav of msmr.dev: a window in the section color shows the full title of the active section (its icon in icon mode), the other sections are numbers (icons) beside it, up to two per side at rest.
+
+- **Aiming:** pressing the strip aims from the active item and the numbers follow the finger one to one. A number holds at the window's edge and steps into the window when it is half a "0" under the edge (in icon mode a quarter of the icon, measured from the visible glyph); the old title is pushed out on the other side in the same 0.15 s (ease-in). The window resizes to the title, never narrower than it; its fill fades over 0.66 s.
+- **Choosing:** on release (or a tap on a neighbour) the page scrolls to the page of the chosen section (`jumpTo`), also for the second section of a pair. The section highlight in the page is placed on it at once and then only travels with the page (lock kind `strip`, `js/glow.js`). When the user scrolls the content, the strip follows (`stripSync`).
+- **Glides add up:** a second change while the strip moves adds a glide for the difference (`composite: add`) instead of restarting the first. Numbers beyond two items from the window are cut off by a clip that closes with the movement, never faded.
+- No long-press menu on the strip items and `a.`. Text and icon size are those of `set` on the gear (`.strip` is 0.9 em of the bar); the text color is `--title-col`.
 
 ### Central variables
 
-The first `:root` of `styles.css` holds the tuning values; `js/touch.js` reads them once
+The first `:root` of `tokens.css` holds the tuning values; `js/touch.js` reads them once
 (`readMeasures`): `--glow-duration` (200), `--glow-duration-short` (60), `--glide-power` (2),
 `--light-duration` (90), `--light-power` (1.4), `--light-edge-duration` (90), `--light-coverage` (.95),
 `--ghost-header-shadow` (.66), `--ghost-header-fade` (2), `--ghost-header-hold` (2500), `--cursor-line-faint` (.33),
@@ -278,35 +286,18 @@ The pointers belong there too (`--curs-img`, `--curs-sec`, `--curs-hov`, `--curs
 
 `https://a.msmr.co/` stays an ordinary page: added to the iOS home screen it is a bookmark that opens in Safari. `https://a.msmr.co/?app` is the same page as a standalone web app: `favicon/app-mode.js` (a script in the head, right after the manifest link) sees the query key `app`, points the manifest link at `favicon/manifest-app.json` (`display: standalone`, `start_url: /?app`, scope `/`) and adds `apple-mobile-web-app-capable` and `apple-mobile-web-app-title` ("a."). iOS reads the manifest and the tags at the moment of "Add to Home Screen", so open `/?app` in Safari and add it from there; both entries can exist side by side. Without `?app` nothing is touched.
 
-Things that change in the web app: it has its own storage (the settings in `localStorage` start with their defaults; the edit mode's login is separate from Safari's), no address bar, back button or reload gesture, and after sleeping in the background it shows the old version until it is closed fully. Links to other sites (the tiles) open in a sheet over the app, per Apple's WWDC23 talk; how `base target="_blank"` behaves there is not verified, and neither is the edit mode in the web app. Tested in headless Chrome only (manifest chosen by the browser, display `standalone`, no errors); not yet on an iPhone or iPad (iOS/iPadOS 27.2 RC).
-
-## Icon test variants (temporary)
-
-To find out what iOS recolors in dark mode, `https://a.msmr.co/?icon=N` (a bookmark) and `https://a.msmr.co/?app&icon=N` (the web app) load test icon N (1–9) from `favicon/try/` instead of the real icon (`favicon/icon-try.js`, the touch icon and the manifest are replaced). Add each address you want to compare to the home screen, in light or dark mode as you like (the icon is taken when you add it), and look at them in both modes. Round 1 (a halo in the tile color, a lighter tone, white 3 % and 6 %, a not-quite-black letter, white on dark grey, a gradient tile): the 3 % halos in a lighter tone, in white and with the dark grey letter looked right, but thinner would be better. Round 2 (`ICON_ROUND` = 2, the files carry `?r=2`) is those three styles thinner, on the light grey tile #e6e6e9:
-
-| N | Letter | Halo around the letter |
-|---|---|---|
-| 1, 2, 3 | black | a little lighter than the tile (#f6f6f8), 2 %, 1.5 %, 1 % of the icon width |
-| 4, 5, 6 | black | white, 2 %, 1.5 %, 1 % |
-| 7, 8, 9 | dark grey #2c2c30 | white, 2 %, 1.5 %, 1 % |
-
-When the icon is chosen: copy it over `favicon/ico-light-*`/`ico-dark-*`, run `node tools/touch-icon.js inline`, and delete `favicon/icon-try.js`, its script tag in `index.html`, its tests and `favicon/try/`.
+What changes in the web app: its own storage (the settings start with their defaults; the edit mode's login is separate from Safari's), no address bar, back button or reload gesture, and after sleeping in the background it shows the old version until it is closed fully. Links to other sites open in a sheet over the app (Apple's WWDC23 talk); `base target="_blank"` and the edit mode there are not verified. Tested in headless Chrome only, not yet on an iPhone or iPad (iOS/iPadOS 27.2 RC).
 
 ## Home screen icon (iOS)
 
-Currently the pair is: `ico-light-*` a black "a." on light grey (#e6e6e9), `ico-dark-*` a white "a." on dark grey (#2a2a2e); the shape of the letter is the one of the transparent version it replaced. The pair is used where `media` is honoured (browser-tab favicon links, with `?v=` so the daily cache bump refreshes them) and by `favicon/touch-icon-inline.js`, which sets the `apple-touch-icon` from script by color scheme when the page loads (iOS ignores `media` on `apple-touch-icon` itself, tested on 27.2, and takes the icon at the moment of "Add to Home Screen"). The root copies and `manifest.json` carry the light icon.
-Add to Home Screen sheet loads the icon with its own loader that fails on any network URL and then shows a letter tile,
-although the file is fine and opens in a Safari tab. That is why `index.html` currently embeds both icons as `data:` URIs.
-The switch is reversible:
+`favicon/ico-light-*`: a black "a." (Ubuntu Regular 400) on light grey #e6e6e9 with a thin crisp white outline (1.25 % of the width). `favicon/ico-dark-*`: the same letter in white on dark grey #2a2a2e. The outline is there because iOS darkens the tile of a home screen icon in dark mode but leaves the black letter alone (found on the phone: white outlines survive from 1.25 %, lighter-grey ones from 2 %, thinner ones vanish). The tab favicon links use `media`; iOS ignores `media` on `apple-touch-icon`, so `favicon/touch-icon-inline.js` sets it from script by color scheme when the page loads (iOS takes the icon at the moment of "Add to Home Screen"). The Add to Home Screen sheet of iOS 27.2 fails to load an icon from a network URL and shows a letter tile, so `index.html` embeds both icons as `data:` URIs. The switch is reversible:
 
 ```
-node tools/touch-icon.js inline   # embed the icon as data: URI in favicon/touch-icon-inline.js (current; run again after changing the icon file)
-node tools/touch-icon.js url      # default variant: link ./favicon/ico-light-180.png
+node tools/touch-icon.js inline   # embed both icons as data: URIs in favicon/touch-icon-inline.js (current; run again after changing an icon file)
+node tools/touch-icon.js url      # link ./favicon/ico-light-180.png instead
 ```
 
-Both versions are switched together by the script (the `ICONS` line) and the fallback link.
-Both variants also copy the icon to `/apple-touch-icon.png` and `/apple-touch-icon-precomposed.png`. iOS keeps the icon from
-the moment a shortcut is added: to see a change, delete the shortcut, clear the website data for a.msmr.co in Safari and add it again.
+Both variants also copy the light icon to `/apple-touch-icon.png` and `/apple-touch-icon-precomposed.png`; `manifest.json` carries it too. iOS keeps the icon from the moment a shortcut is added: to see a change, delete the shortcut, clear the website data for a.msmr.co in Safari and add it again. To make the icons again: render "a." in Ubuntu Regular 400 into the ink box of the old icon (left edge, bottom, width), grow its alpha mask by 1.25 % at 4x, average down and threshold for the crisp outline, then run the `inline` command.
 
 ## Editing
 
@@ -327,8 +318,7 @@ Requires a sign-in: open `https://a.msmr.co/edit/` once per browser
 
 ## Devices
 
-Phone and iPad have their own layouts via `device-width` media queries (height grid in
-quarter steps, bottom bar with jump keys). Details in the [CHANGELOG](CHANGELOG.md).
+Phone and iPad have their own layouts via `device-width` media queries (height grid in quarter steps; on narrow touch devices the bottom bar is the section strip). Details in the [CHANGELOG](CHANGELOG.md).
 
 ## Performance
 
@@ -353,5 +343,4 @@ GNU GPL v3, see [LICENSE](LICENSE).
 
 ## Note on the version
 
-In `index.html` a version (`?v=…`) hangs on `styles.css`, every `js/*.js` file, `favicon/touch-icon-inline.js` and the Font Awesome stylesheet (the same value on all; the smoke test checks it): increase it on changes,
-otherwise browsers mix old and new files.
+In `index.html` a version (`?v=…`) hangs on `styles.css`, every `js/*.js` file, the head scripts in `favicon/`, the tab favicon links and the Font Awesome stylesheet (the same value on all; the smoke test checks it). Raise it once per working session with `npm run bump` (the next letter on the same day, e.g. `2026-10-21l` → `m`; a new day starts as the date alone), otherwise browsers mix old and new files.

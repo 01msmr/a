@@ -1,0 +1,14 @@
+# Unit tests and the jsdom smoke test on every push and pull request (the browser checks need Chrome and stay local: npm run browser)
+name: tests
+on: [push, pull_request]
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check

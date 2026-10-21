@@ -1,0 +1,884 @@
+/* Base looks: page, bar, tiles, chips, section headings and the device media blocks. Fonts, tuning values and color schemes are in tokens.css (listed before this file in styles.css) */
+
+
+body {
+    font-family: Ubuntu, "Helvetica neue", Helvetica, Arial, sans-serif;
+    background: var(--front-body);
+    color: var(--text-col);
+    font-size: 1.4em;
+    cursor: var(--curs-img) 1 1, auto;
+}
+
+/* no rubber band at document level */
+html,
+body {
+    overscroll-behavior: none;
+    height: 100%;
+    margin: 0;
+    /* div.app-frame is fixed and scrolls itself */
+    overflow: hidden;
+}
+
+.title {
+    color: var(--title-col);
+    /* Text as before when this was an h3 (now header), so all em measures inside stay the same */
+    font-size: 1.17em;
+    margin: 0;
+    box-sizing: border-box;
+    padding: 0 0 0 1em;
+    height: 3.125rem;
+    /* Outer edge flush with the tile row: column + left padding of .group */
+    max-width: calc(var(--column) + 0.12em);
+    /* otherwise squeezed as a flex item */
+    flex-shrink: 0;
+    position: sticky;
+    display: flex;
+    align-items: center;
+    /* Dropdown behind the chips, wraps when space is short */
+    flex-wrap: wrap;
+    column-gap: 0.375rem;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.title::-webkit-scrollbar {
+    display: none;
+}
+
+.titledomain {
+    color: var(--title-dom);
+    display: inline-block;
+    position: relative;
+    top: 0px;
+    padding-right: 0.3em;
+}
+
+/* takes the rest below the title bar instead of estimating it at 94% */
+.container {
+    scroll-behavior: smooth;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    /* the overscroll stays here and does not travel outward */
+    overscroll-behavior: contain;
+    scroll-snap-type: y mandatory;
+}
+
+section {
+    scroll-snap-align: start;
+    height: auto;
+}
+
+/* Empty space as an element — a margin does not count as scrollable area */
+#container::after {
+    content: "";
+    display: block;
+    height: 100%;
+}
+
+/* before the sections arrive the spacer would sit at the top and then jump to the end: that was the whole layout shift */
+#container:empty::after {
+    display: none;
+}
+
+/* the nav row is laid out again when the chips arrive; hidden until then, so it does not count as a layout shift (class set in render()) */
+body:not(.rendered) #section-nav-list {
+    visibility: hidden;
+}
+
+section {
+    color: var(--text-col);
+}
+
+/* high contrast on hover, keyboard focus or as the topmost section — mouse-click focus does not count,
+   otherwise the section still looks hovered after returning from a link */
+body section .name.covered a {
+    color: var(--sect-col);
+}
+
+li,
+.secname {
+    display: inline-block;
+    list-style-type: none;
+    color: var(--back-body);
+    min-width: var(--tile);
+    font-family: "Ubuntu", "Helvetica neue", Helvetica, Arial, sans-serif;
+}
+
+/* long names are cut off hard instead of wrapped — no ellipsis */
+li a {
+    display: flex;
+    align-items: center;   /* text centered in the area */
+    /* fills the tile completely — the cursor also hits the corners */
+    height: 100%;
+    box-sizing: border-box;
+    /* no padding on the right: so 16 characters fit into the 190px tile */
+    /* text optically centered: ink from ascender (l, d) to descender (q, g) sits
+       in Ubuntu about .068em lower than the middle of the line box — less padding above, more below */
+    padding: .352em 0 .488em 0.3em;
+    margin: 0;
+    text-decoration: none;
+    cursor: var(--curs-hov) 1 30, auto;   /* fallback without a hover medium; otherwise drawn, see .tile-light-line */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    /* own stack so the area (::before) lies behind the text */
+    position: relative;
+    z-index: 0;
+}
+
+/* The link stays square (hit area), only the hover area is rounded:
+   otherwise the browser clips the hit area to the rounding */
+li a::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: .35em;
+}
+
+/* after section:hover a, so the own tile wins.
+   Keyboard (Tab, arrow left/right) shows the same area; not while editing.
+   Only one tile lights up: body.keyboard (js/settings.js) switches between mouse and keyboard */
+body:not(.touch):not(.keyboard):not(.tile-light):not(.locked) li a:hover,
+body.keyboard:not(.tile-light) li a:not([contenteditable]):focus-visible {
+    color: var(--text-hov);
+}
+
+li a:focus-visible {
+    outline: none;
+}
+
+body:not(.touch):not(.keyboard):not(.locked) li a:hover::before,
+body.keyboard li a:not([contenteditable]):focus-visible::before {
+    background-color: var(--back-hov);
+}
+
+/* The line cursor of the tile sits in the light (.tile-light-line, js/light.js) and glides along with it; here only the system pointer */
+@media (hover: hover) {
+    li a {
+        cursor: none;
+    }
+}
+
+section a {
+    color: var(--text-col);
+}
+
+/* common base shape of all nav buttons: chips, entries of the sections list (a.sec-btn), gear and dropdown (.nav-btn) */
+a.sec-btn,
+.nav-btn {
+    box-sizing: border-box;
+    /* full height of the bar, full width: the chips share the space */
+    align-self: stretch;
+    flex: 1 1 auto;
+    text-align: center;
+    padding: 0 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1em;
+    min-width: 2.1875rem;
+    color: var(--sect-col);
+    text-decoration: none;
+    /* edges like a real button: light on the left, shadow on the right; top/bottom only visible on hover */
+    border: 1px solid transparent;
+    border-left-color: rgba(255, 255, 255, .35);
+    border-right-color: rgba(0, 0, 0, .15);
+    position: relative;
+    transition: none;   /* buttons react immediately */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    line-height: 1.4em;
+}
+
+/* everything fades quickly; the tile area even faster (0 specificity, single rules win) */
+*,
+::before,
+::after {
+    transition: color .3s ease, background-color .3s ease, border-color .3s ease, box-shadow .3s ease, transform .3s ease;
+}
+
+/* URL tile: text immediately, only the area fades in briefly (--hl = strength of the gloss) */
+@property --hl {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 0;
+}
+
+li a {
+    transition: none;
+}
+
+li a::before {
+    background-image: linear-gradient(rgba(255, 255, 255, calc(.46 * var(--hl) * var(--gloss))), rgba(255, 255, 255, calc(.12 * var(--hl) * var(--gloss))) 36%, rgba(255, 255, 255, 0) 38%, rgba(0, 0, 0, calc(.2 * var(--hl) * var(--gloss))));
+    transition: background-color .12s ease, --hl .12s ease;
+}
+
+body:not(.touch):not(.keyboard):not(.locked) li a:hover::before,
+body.keyboard li a:not([contenteditable]):focus-visible::before {
+    --hl: 1;
+}
+
+html {
+    cursor: var(--curs-img) 1 1, auto;
+    font-family: "ubuntu condensed", "helvetica neue", helvetica, arial, sans-serif;
+}
+
+body {
+    background-color: var(--back-body);
+}
+
+div.app-frame {
+    inset: 0;   /* fills the whole window, no stripe of the background */
+    width: 100%;
+    height: 100%;
+    /* Column: bar on top, container fills the rest exactly */
+    display: flex;
+    flex-direction: column;
+    overscroll-behavior: none;
+    overflow-x: hidden;
+    margin: 0px;
+    background-color: var(--front-body);
+    position: fixed;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    overflow-y: scroll;
+}
+
+div.app-frame::-webkit-scrollbar {
+    display: none;
+}
+
+/* fixed width: 6 tiles = one column */
+li {
+    margin: 0;
+    width: var(--tile);
+    height: 2.25rem;
+    /* top instead of baseline: otherwise the descender gap (5px) remains under every row */
+    vertical-align: top;
+    overflow: hidden;
+    clear: both;
+}
+
+.name {
+    color: var(--text-col);
+    box-sizing: border-box;
+    width: 100%;
+    padding-top: 0.25em;
+    padding-bottom: .1em;   /* the other half (.1em × 1.4 of the heading) lies below the tile group */
+    margin-top: 0px;
+    margin-bottom: 0px;
+    font-family: "Helvetica Neue", helvetica, arial, sans-serif;
+    font-size: 1.4em;
+    text-transform: uppercase;
+    border-bottom: .06em solid var(--text-col);
+    background: none;
+    padding-left: 0.2em;
+}
+
+.group {
+    width: 100%;
+    max-width: var(--column);
+    /* no gap between heading, tiles and next section */
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0.12em;
+    padding-bottom: .14em;
+    font-family: "helvetica neue", helvetica, arial, sans-serif;
+    color: var(--sect-col);
+    border-bottom-width: 1px;
+    background: none;
+}
+
+body section.covered,
+body section .name.covered,
+body section .group.covered {
+    color: var(--title-col);
+    border-color: var(--title-col);
+    cursor: var(--curs-img) 1 1, auto;
+}
+
+/* Bottom edge of the covered heading row: merges with the area */
+body #container section .name.covered {
+    border-bottom-color: color-mix(in srgb, var(--c, var(--sect-col)) 75%, var(--front-body));
+}
+
+#container:focus,
+#container section:focus {
+    outline: none;
+}
+
+#container {
+    clear: both;
+    color: var(--title-col);
+    font-family: "helvetica neue", helvetica, arial, sans-serif;
+    font-size: 1em;
+    margin: 0;
+}
+
+/* The link fills the remaining width next to the icon */
+.name {
+    display: flex;
+    align-items: baseline;
+}
+
+section h3 a {
+    text-decoration: none;
+    cursor: crosshair;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* the whole heading row is the link (also padding above/below) */
+body:not(.edit-mode) section h3.name {
+    position: relative;
+}
+
+body:not(.edit-mode) section h3.name a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+}
+
+.home-link {
+    white-space: nowrap;
+    text-decoration: none;
+    color: var(--title-col);
+    vertical-align: middle;
+    line-height: 1.4em;
+}
+
+/* keeps its content width; the free space ends up to the right of it */
+#section-nav-list {
+    display: flex;
+    margin-right: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    min-width: 0;
+    font-size: 0.9em;
+    align-self: stretch;
+    /* Basis 0: the chips share the rest and do not wrap to a second row even at large zoom */
+    flex: 1 1 0;
+    /* if space is short, the row overflows to the left: gear and dropdown at the end stay reachable */
+    justify-content: flex-end;
+}
+
+a.sec-btn:visited {
+    color: var(--sect-col);
+}
+
+/* Chip content (abbreviation, icon including ::before) also switches immediately */
+a.sec-btn *,
+a.sec-btn *::before,
+a.sec-btn *::after,
+a.sec-btn::before,
+a.sec-btn::after {
+    transition: none;
+}
+
+/* Every section has its own color (--c, set by js/render.js):
+   hover = area with opacity, active = full opacity with contrast text.
+   .with-hover couples chip and heading: one lights up when the mouse is on the other */
+section {
+    --c-text: oklch(from var(--c, var(--sect-col)) clamp(var(--text-l-min), l, var(--text-l-max)) c h);
+}
+
+a.sec-btn,
+#container section .name {
+    --c-hov: color-mix(in srgb, var(--c, var(--sect-col)) 28%, transparent);
+}
+
+body:not(.touch):not(.keyboard) #container section .name.covered:hover {
+    background-color: var(--c-hov);
+}
+
+body:not(.touch):not(.keyboard):not(.locked) a.sec-btn:not(.active):is(:hover, .with-hover, .sec-hover) {
+    color: var(--sect-col);
+}
+
+a.sec-btn.active {
+    background-color: var(--c, var(--sect-col));
+}
+
+/* Buttons over the full height: flat at rest, raised on hover (also coupled),
+   pressed in when active or pressed. The heading of the section mirrors hover and press
+   of the chip — and vice versa */
+body:not(.touch):not(.keyboard):not(.locked) a.sec-btn:not(.active):is(:hover, .with-hover, .sec-hover) {
+    z-index: 1;
+    background-color: color-mix(in srgb, var(--c, var(--sect-col)) 30%, var(--front-body));
+    background-image: linear-gradient(rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 45%, rgba(0, 0, 0, .15));
+    border-color: rgba(255, 255, 255, .85) rgba(0, 0, 0, .5) color-mix(in srgb, var(--c, var(--sect-col)) 30%, var(--front-body)) rgba(255, 255, 255, .75);
+    background-origin: border-box;
+    /* Glow only at the top and sides: no shadow at the bottom (towards the heading) */
+    box-shadow: var(--sb-hover-shadow, 0 -0.1875rem 0.4375rem -0.0625rem rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .6));
+}
+
+/* active: chip and heading are one continuous area — no edge, no shadow in between */
+a.sec-btn.active {
+    /* no side edges: otherwise a colored line remains next to the inner shadow */
+    border-width: 0;
+    padding: 1px 9px 0;
+}
+
+a.sec-btn.active {
+    z-index: 0;
+    background-color: var(--c, var(--sect-col));
+    background-image: none;
+    border-color: var(--c, var(--sect-col));
+    box-shadow: none;
+}
+
+/* active button: inner shadow left, top, right. The side shadows run all the way down
+   and get narrower (tip at the bottom); there is no shadow at the bottom */
+a.sec-btn.active {
+    background-image: var(--sb-active-image, linear-gradient(rgba(70, 70, 70, .4) 0.1562rem, rgba(70, 70, 70, 0) 0.1562rem));   /* hard, gray opacity */
+    /* only between the side strips, otherwise the upper corners get dark twice */
+    background-repeat: no-repeat;
+    background-size: calc(100% - 0.375rem) 100%;
+    background-position: 0.1875rem 0;
+}
+
+a.sec-btn.active::before,
+a.sec-btn.active::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0.2188rem;
+    background: rgba(70, 70, 70, .4);
+    opacity: var(--sb-inner, 1);
+    pointer-events: none;
+}
+
+a.sec-btn.active::before {
+    left: 0;
+    /* full width until shortly before the end, only the last ~5px curve in */
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 0.3125rem), 85% calc(100% - 0.1875rem), 55% calc(100% - 0.0938rem), 25% calc(100% - 0.0312rem), 0 100%);
+}
+
+a.sec-btn.active::after {
+    right: 0;
+    clip-path: polygon(100% 0, 0 0, 0 calc(100% - 0.3125rem), 15% calc(100% - 0.1875rem), 45% calc(100% - 0.0938rem), 75% calc(100% - 0.0312rem), 100% 100%);
+}
+
+a.sec-btn:has(+ .active) {
+    border-right-color: transparent;
+}
+
+a.sec-btn.active + a.sec-btn {
+    border-left-color: transparent;
+}
+
+/* Section, heading and group always switch immediately on hover/active — no cross-fade, no flicker */
+#container section,
+#container section *,
+#container section .name *::before,
+#container section .name *::after {   /* the Font Awesome icon sits in ::before */
+    transition: none;
+}
+
+/* Click: the button sinks into depth (smaller), no movement downward; the heading yields slightly */
+body:not(.touch) a.sec-btn:is(:active, .with-press):not(.active) {
+    transform: scale(.96);
+    box-shadow: var(--sb-press-shadow, 0 -0.125rem 0.25rem -0.0625rem rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .6));
+}
+
+#container section .name.with-press {
+    box-shadow: inset 0 0.0625rem 0.1875rem rgba(0, 0, 0, .3);
+}
+
+a.sec-btn.active {
+    color: var(--on-c);
+}
+
+/* no light gap between bar and docked header */
+body.docked .title {
+    border-bottom-color: var(--sect-col);
+}
+
+/* covered rows (js/glow.js: the window of the glowing section, js/glow.js paints the area as the section background):
+   text white; only the tile under the cursor inverts: light area, text in section color */
+body #container section .name.covered,
+body #container section .name.covered a,
+body section li.covered a {
+    color: var(--on-c);
+}
+
+body:not(.touch):not(.keyboard):not(.tile-light):not(.locked) section li.covered a:hover,
+body.keyboard:not(.tile-light) section li.covered a:not([contenteditable]):focus-visible,
+body.tile-light section li.inverted a {
+    color: var(--c-text, var(--sect-col));
+}
+
+body:not(.touch):not(.keyboard):not(.locked) section li.covered a:hover::before,
+body.keyboard section li.covered a:not([contenteditable]):focus-visible::before {
+    background-color: var(--chip-inv);
+}
+
+/* ── Unreachable links ───────────────────────────────────────────── */
+
+/* dead links look like all the others, just a red dot (5px) at the top right, concentric in the corner rounding */
+li.dead {
+    position: relative;
+}
+
+li.dead::after {
+    content: "";
+    position: absolute;
+    /* center = center of the tile's corner rounding (.35em, see li a::before) */
+    top: calc(.35em - .15625rem);
+    right: calc(.35em - .15625rem);
+    width: .3125rem;
+    height: .3125rem;
+    border-radius: 50%;
+    background: #c00;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* iPad */
+@media only screen and (max-device-width: 1024px) {
+
+    /* Grid unit: a quarter of the content height */
+    :root {
+        --grid: 4;
+    }
+
+    /* 54px to 35px. Does not bring an additional tile row */
+    .name {
+        font-size: 0.9em;
+    }
+    li {
+        width: auto;
+        min-width: 0;
+        font-size: 0.95em;
+        padding: 2px 0px;
+        margin: 0;
+    }
+
+    /* The number of columns follows the width: four in portrait, six in landscape */
+    .group {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(var(--tile), 1fr));
+        gap: 0;
+    }
+
+    /* Exactly four sections per screen, never a cut-off fifth */
+    section {
+        min-height: 25%;
+        scroll-snap-align: start;
+    }
+}
+
+/* Smartphone combined */
+@media only screen and (min-device-width: 350px) and (max-device-width: 812px) {
+
+    /* Grid unit: half a screen */
+    :root {
+        --grid: 2;
+    }
+
+    .name {
+        font-size: 0.9em;
+    }
+
+    /* floor, no ceiling — otherwise long content overflows into the next section */
+    section {
+        min-height: 50%;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    div.app-frame {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        top: 0;
+        left: 0;
+        border-radius: 0;
+    }
+
+    .container {
+        height: 100%;
+        padding: 10px 0 50px 0;   /* the side space is the padding of the sections, so that the highlight (their background) runs to the screen edge */
+        box-sizing: border-box;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .title {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+        margin: 0;
+        border-radius: 0;
+        border: none;
+        padding: 0;
+        height: auto;
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        background-color: var(--front-body);
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .title::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* pad only at the sides, otherwise the bar gets too tall */
+    .home-link,
+    #section-nav-list,
+    .secname,
+    .nav-btn {
+        flex-shrink: 0;
+        padding: 0 0.8em;
+    }
+
+    /* lower: the 48px chip used to dictate the bar height */
+    a.secname,
+    .nav-btn {
+        height: 2.375rem;
+    }
+
+    /* reaches to the screen edge with viewport-fit=cover */
+    .title {
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    li a {
+        padding: .05em;
+    }
+
+    .group {
+        padding-top: 0.12em;
+    }
+}
+
+/* iPhone landscape */
+@media only screen and (min-device-width: 350px) and (max-device-width: 812px) and (orientation: landscape) {
+    .name {
+        display: none;
+    }
+
+    li {
+        width: 30%;
+        font-size: 0.9em;
+        padding: 0px;
+        clear: none;
+    }
+
+    section {
+        min-height: 50%;
+    }
+
+    .group {
+        line-height: 1.0em;
+    }
+
+    .title {
+        display: flex;
+    }
+}
+
+/* iPhone portrait */
+@media only screen and (min-device-width: 375px) and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: portrait) {
+    section {
+        scroll-snap-stop: normal;   /* a swipe may skip several sections, snapping only happens at the end */
+    }
+
+    .group {
+        display: flex;
+        flex-wrap: wrap;
+        /* holds: beats margin-inline: auto of the centered layout */
+        margin: 0 !important;
+    }
+
+    /* without height: auto the tiles stay equally tall */
+    li {
+        width: calc(50% - 4px);
+        font-size: 0.9em;
+        margin: 0px;
+        padding: 0;
+        clear: none;
+        min-width: 0;
+    }
+
+    li a {
+        margin: 0;
+        padding: 4px 6px;
+    }
+
+    /* the chips give way; gear and dropdown stay (an older rule `#section-nav-list .nav-btn { flex: 0 0 auto }` outranked the equal widths below and was removed) */
+    #section-nav-list .secname {
+        display: none;
+    }
+
+    /* display: contents lifts the dropdown and gear into the bar so that order takes effect */
+    #section-nav-list {
+        display: contents;
+    }
+
+    /* dropdown and gear: just the icon, no visible edges (the bevel colors of the nav buttons are transparent) */
+    .nav-btn {
+        border-color: transparent;
+    }
+
+    .title {
+        column-gap: 0;
+    }
+
+    .home-link {
+        padding-right: 0;
+    }
+
+    .titledomain {
+        padding-right: 0;
+    }
+}
+
+/* Blocks that belong to one JS module are in their own file next to it, listed after this one in styles.css: strip.css, edit.css, grid.css,
+   settings.css, ghost-header.css, cursor.css */
+
+/* ── Section icons ───────────────────────────────────────────────── */
+
+/* Nav chips: icon or abbreviation, never both */
+.secname .secicon {
+    display: none;
+}
+
+body.nav-icons .secname .secicon {
+    display: inline-block;
+    font-size: 1.5625rem;
+}
+
+/* square chip, icon horizontally centered */
+body.nav-icons a.secname,
+body.nav-icons .nav-btn {
+    width: 3rem;
+    text-align: center;
+    /* no side padding — otherwise the larger icon is clipped */
+    padding-left: 0;
+    padding-right: 0;
+}
+
+body.nav-icons .secname .secshort,
+body.nav-icons .nav-btn .secshort,
+body:not(.nav-icons) .nav-btn .secicon {
+    display: none;
+}
+
+/* Section header: always icon + title */
+.name .secicon {
+    display: inline-block;
+    flex: 0 0 auto;
+    width: 1.3em;
+    margin-right: .3em;
+    font-size: .7em;
+    /* in a flex container vertical-align no longer has an effect */
+    position: relative;
+    top: -.14em;
+    text-align: center;
+}
+
+/* ── Page alignment ──────────────────────────────────────────────── */
+
+/* ── Title bar ───────────────────────────────────────────────────── */
+
+/* display, flex-wrap and column-gap are now in the .title rule at the very top */
+
+/* The content is centered, not #container */
+body.align-center .title {
+    max-width: calc(var(--column) + 0.12em);
+    /* as a flex item, auto margins would otherwise prevent stretching */
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+body.align-center .name {
+    padding-left: max(0.2em, (100% - var(--column)) / 2);
+    padding-right: max(0px, (100% - var(--column)) / 2);
+}
+
+/* Phone and tablet (device width up to 1024 px): heading icon slightly larger (.7 -> .8); the space left of the icon (heading padding)
+   equals the space between icon and title (icon margin). After the base rules above so that it wins at equal specificity */
+@media only screen and (max-device-width: 1024px) {
+    .name {
+        --head-icon: 0.8;
+        --head-gap: 0.3em;
+        padding-left: calc(var(--head-icon) * var(--head-gap));
+    }
+
+    body.align-center .name {
+        padding-left: max(calc(var(--head-icon) * var(--head-gap)), (100% - var(--column)) / 2);
+    }
+
+    .name .secicon {
+        font-size: calc(var(--head-icon) * 1em);
+        margin-right: var(--head-gap);
+    }
+}
+
+body.align-center .group {
+    max-width: var(--column);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ── iPad: all 15 chips in one row ───────────────────────────────── */
+
+/* must come after body.nav-icons a.secname — same specificity */
+@media only screen and (min-device-width: 813px) and (max-device-width: 1024px) {
+
+    /* "a.msmr.co" → "a." — saves 107px that the chips need */
+    .titledomain {
+        display: none;
+    }
+
+    .title {
+        padding: 0 0.4em;
+    }
+
+    a.secname,
+    .nav-btn {
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+        font-size: 0.75em;
+    }
+
+    /* the icon stays 25px, only the tap area shrinks */
+    body.nav-icons a.secname,
+    body.nav-icons .nav-btn {
+        width: 2.5rem;
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+/* in landscape there is room for the full address */
+@media only screen and (min-device-width: 813px) and (max-device-width: 1024px) and (orientation: landscape) {
+    .titledomain {
+        display: inline-block;
+    }
+}
+/* Smartphone: snap points only at the first section of each page (js/glow.js, buildPages): two consecutive half-height sections
+   are one page, a larger one always starts its own */
+@media only screen and (min-device-width: 350px) and (max-device-width: 812px) {
+    body:not(.edit-mode) section {
+        scroll-snap-align: none;
+    }
+
+    body:not(.edit-mode) section.page-start {
+        scroll-snap-align: start;
+    }
+}
