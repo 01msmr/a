@@ -245,12 +245,12 @@ test('applyAppMode: without a manifest link in the page one is added', () => {
     assert.equal(d.querySelectorAll('link[rel="manifest"]').length, 1);
 });
 
-test('iconTestVariant: ?icon=1..8 picks a test icon, anything else none', () => {
+test('iconTestVariant: ?icon=1..9 picks a test icon, anything else none', () => {
     assert.equal(w.iconTestVariant('?icon=3'), 3);
-    assert.equal(w.iconTestVariant('?app&icon=8'), 8);
+    assert.equal(w.iconTestVariant('?app&icon=9'), 9);
     assert.equal(w.iconTestVariant('?icon=1&app'), 1);
     assert.equal(w.iconTestVariant('?icon=0'), null);
-    assert.equal(w.iconTestVariant('?icon=9'), null);
+    assert.equal(w.iconTestVariant('?icon=10'), null);
     assert.equal(w.iconTestVariant('?icon=x'), null);
     assert.equal(w.iconTestVariant('?app'), null);
     assert.equal(w.iconTestVariant(''), null);
@@ -263,10 +263,10 @@ test('applyIconTest: the test icon replaces the touch icon and the manifest (sta
     assert.equal(none.querySelector('link[rel="apple-touch-icon"]').getAttribute('href'), 'data:x');
     const bookmark = fresh();
     w.applyIconTest(bookmark, 3, false);
-    assert.equal(bookmark.querySelector('link[rel="apple-touch-icon"]').getAttribute('href'), './favicon/try/ico-3-180.png');
-    assert.equal(bookmark.querySelector('link[rel="manifest"]').getAttribute('href'), './favicon/try/manifest-3.json');
+    assert.equal(bookmark.querySelector('link[rel="apple-touch-icon"]').getAttribute('href'), './favicon/try/ico-3-180.png?r=2');
+    assert.equal(bookmark.querySelector('link[rel="manifest"]').getAttribute('href'), './favicon/try/manifest-3.json?r=2');
     const app = fresh();
     w.applyIconTest(app, 5, true);
-    assert.equal(app.querySelector('link[rel="manifest"]').getAttribute('href'), './favicon/try/manifest-5-app.json');
+    assert.equal(app.querySelector('link[rel="manifest"]').getAttribute('href'), './favicon/try/manifest-5-app.json?r=2');
     assert.equal(app.querySelectorAll('link[rel="apple-touch-icon"]').length, 1);
 });

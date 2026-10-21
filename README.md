@@ -282,18 +282,13 @@ Things that change in the web app: it has its own storage (the settings in `loca
 
 ## Icon test variants (temporary)
 
-To find out what iOS recolors in dark mode, `https://a.msmr.co/?icon=N` (a bookmark) and `https://a.msmr.co/?app&icon=N` (the web app) load test icon N (1–8) from `favicon/try/` instead of the real icon (`favicon/icon-try.js`, the touch icon and the manifest are replaced). Add each address you want to compare to the home screen, in light or dark mode as you like (the icon is taken when you add it), and look at them in both modes. The variants:
+To find out what iOS recolors in dark mode, `https://a.msmr.co/?icon=N` (a bookmark) and `https://a.msmr.co/?app&icon=N` (the web app) load test icon N (1–9) from `favicon/try/` instead of the real icon (`favicon/icon-try.js`, the touch icon and the manifest are replaced). Add each address you want to compare to the home screen, in light or dark mode as you like (the icon is taken when you add it), and look at them in both modes. Round 1 (a halo in the tile color, a lighter tone, white 3 % and 6 %, a not-quite-black letter, white on dark grey, a gradient tile): the 3 % halos in a lighter tone, in white and with the dark grey letter looked right, but thinner would be better. Round 2 (`ICON_ROUND` = 2, the files carry `?r=2`) is those three styles thinner, on the light grey tile #e6e6e9:
 
-| N | Letter | Halo around the letter | Tile |
-|---|---|---|---|
-| 1 | black | none | light grey #e6e6e9 (the current icon) |
-| 2 | black | exactly the tile color, 3 % | light grey |
-| 3 | black | a little lighter than the tile (#f6f6f8), 3 % | light grey |
-| 4 | black | white, 3 % | light grey |
-| 5 | black | white, 6 % (thick) | light grey |
-| 6 | dark grey #2c2c30 | white, 3 % | light grey |
-| 7 | white | none | dark grey #3a3a3e |
-| 8 | black | none | light grey gradient (not flat) |
+| N | Letter | Halo around the letter |
+|---|---|---|
+| 1, 2, 3 | black | a little lighter than the tile (#f6f6f8), 2 %, 1.5 %, 1 % of the icon width |
+| 4, 5, 6 | black | white, 2 %, 1.5 %, 1 % |
+| 7, 8, 9 | dark grey #2c2c30 | white, 2 %, 1.5 %, 1 % |
 
 When the icon is chosen: copy it over `favicon/ico-light-*`/`ico-dark-*`, run `node tools/touch-icon.js inline`, and delete `favicon/icon-try.js`, its script tag in `index.html`, its tests and `favicon/try/`.
 
