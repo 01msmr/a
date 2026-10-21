@@ -205,7 +205,8 @@ function glowSync() {
     ghostHeaderRender();
     // While scrolling the window follows the scroll position, except after a tap into a section (lock kind 'title'): that tap activates the
     // section at once, also while the page is still coasting. A jump via chip or list (kind 'nav') still follows the scroll.
-    if (isTouch() && !document.body.classList.contains('keyboard') && (!lock.sec || (swiping && lock.kind !== 'title'))) {
+    // A choice on the section strip (kind 'strip') stays on its section: the window is placed there at once and only travels with the page.
+    if (isTouch() && !document.body.classList.contains('keyboard') && (!lock.sec || (swiping && lock.kind === 'nav'))) {
         f.container.querySelectorAll('section.hot').forEach(function (s) { s.classList.remove('hot'); });
         glowScroll();
         f.instant = false;   // the scroll-driven placement is the first placement; the next change glides

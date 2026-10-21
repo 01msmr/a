@@ -1,5 +1,5 @@
 // Owns: the section strip in the bottom bar of narrow touch devices (aiming like msmr.dev: numbers beside a window that shows the title)
-// Defines globals: stripDrag, stripSections, stripWidths, stripSlots, stripTitleX, stripAimF, stripWinAt, stripShownAtRest, stripOn, stripMeasure, stripShow, buildStrip, stripSync
+// Defines globals: stripDrag, stripSections, stripWidths, stripSlots, stripTitleX, stripAimF, stripWinAt, stripOn, stripMeasure, stripShow, buildStrip, stripSync
 // Uses: state, render
 // Pressing the strip aims from the active item; the finger moves f (a fraction of the item index) one to one. Outside the window the numbers follow the finger; the item
 // nearest to f crosses the window faster (the window width per item pitch) as its title: it turns from number to title at one border and back to a number at the other,
@@ -11,6 +11,7 @@ var stripWidths = [];   // window width per item (its title, or the icon)
 var stripTitleWs = [];  // width of the title (or icon) itself per item
 var stripWinW = 0;      // width of the window now
 var stripMode = null;   // watches the Navigation setting (class nav-icons on the body)
+// At rest the numbers show two items beyond the window's edge (cut off there, they glide in and out through that edge while the strip moves)
 var STRIP_MS = 450, STRIP_EASE = 'cubic-bezier(.33,1,.68,1)';   // the pace of msmr.dev's narrow nav (--nav-t, --nav-ease)
 
 // A number may reach this far (a fraction of its width) under the window's edge before it turns into the title; the outgoing item turns back into a number at the same depth
@@ -40,9 +41,6 @@ function stripWinAt(f, widths) {
     var g = Math.max(0, Math.min(n - 1, f)), a = Math.floor(g), b = Math.min(n - 1, a + 1);
     return widths[a] + (widths[b] - widths[a]) * (g - a);
 }
-
-// At rest up to two numbers show beside the window
-function stripShownAtRest(j, k) { return Math.abs(j - k) <= 2; }
 
 function stripItems() { return Array.prototype.slice.call(document.querySelectorAll('#strip .strip-item')); }
 
@@ -98,36 +96,22 @@ function stripPlace(f, aim) {
     document.getElementById('strip-window').style.width = stripWinW + 'px';
     stripDrag.tx = stripTitleX(f, s.k, stripWinW, gap, stripTitleWs[s.k] || 0);
     document.querySelector('#strip-window .strip-slide').style.left = 'calc(50% + ' + stripDrag.tx.toFixed(1) + 'px)';
+    stripItems().forEach(function (a, j) { a.style.left = (c + s.x[j] - gap / 2).toFixed(1) + 'px'; });
+    strip.style.setProperty('--reach', (stripWinW / 2 + 2.25 * gap).toFixed(1) + 'px');   // the numbers are cut off two items beyond the window's edge (CSS: .strip-clip)
+    strip.classList.add('ready');   // visible from the first placement on: before, the items sit at left 0 and would count as a layout shift
+}
+
+function stripLefts() { return stripItems().map(function (a) { return parseFloat(a.style.left) || 0; }); }
+
+// After a change of the places (release, page scroll): nothing is cancelled or restarted. Every item gets one more glide for the difference between its
+// old and its new place, added to whatever glide is still running, so a second change while the strip moves bends the movement instead of redirecting it.
+// No fades: whatever is not meant to be seen is cut off at the clip edge (.strip-clip) while it glides
+function stripFollow(before) {
+    if (!stripItemW()) return;
+    var opt = { duration: STRIP_MS, easing: STRIP_EASE, composite: 'add' };
     stripItems().forEach(function (a, j) {
-        a.style.left = (c + s.x[j] - gap / 2).toFixed(1) + 'px';
-        a.classList.toggle('far', !aim && !stripShownAtRest(j, s.k));
-    });
-}
-
-function stripSpots() {   // where every item is on the screen now, and its state
-    return stripItems().map(function (a) {
-        var r = a.getBoundingClientRect();
-        return { x: r.left + r.width / 2, shown: !a.classList.contains('far'), inWin: a.classList.contains('active') };
-    });
-}
-
-// After a switch (release, page scroll): the new item stands in the window at once, the previous one starts at the window's old edge and slides out,
-// the others glide from their old places to the new ones; whoever disappears fades first, whoever appears fades in afterwards, never two on top of each other
-function stripFollow(before, wOld) {
-    var gap = stripItemW(), strip = document.getElementById('strip');
-    if (!gap || !before || !strip.getBoundingClientRect().width) return;
-    var items = stripItems();
-    items.forEach(function (a) { a.getAnimations().forEach(function (x) { x.cancel(); }); });
-    var now = stripSpots(), r = strip.getBoundingClientRect(), mid = r.left + r.width / 2, k = stripDrag.idx;
-    var opt = { duration: STRIP_MS, easing: STRIP_EASE }, move = function (dx) { return 'translateX(' + dx + 'px)'; };
-    items.forEach(function (a, j) {
-        if (j === k) return;
-        var o = before[j], n = now[j], dx = o.x - n.x;
-        if (o.inWin) dx = mid + (Math.sign(n.x - mid) || 1) * (wOld / 2 + gap / 2) - n.x;
-        if (!n.shown) {
-            if (o.shown) a.animate([{ transform: move(dx), opacity: 1 }, { opacity: 0, offset: 0.4 }, { transform: move(dx - Math.sign(dx) * gap), opacity: 0 }], opt);
-        } else if (!o.shown) a.animate([{ transform: move(Math.sign(dx) * gap), opacity: 0 }, { opacity: 0, offset: 0.4 }, { transform: 'none', opacity: 1 }], opt);
-        else if (Math.abs(dx) > 0.5) a.animate([{ transform: move(dx) }, { transform: 'none' }], opt);
+        var dx = (before[j] || 0) - (parseFloat(a.style.left) || 0);
+        if (Math.abs(dx) > 0.5 && a.animate) a.animate([{ transform: 'translateX(' + dx + 'px)' }, { transform: 'translateX(0px)' }], opt);
     });
 }
 
@@ -136,23 +120,28 @@ function stripSync(hash) {
     if (stripDrag.on) return;
     var i = stripSections.findIndex(function (s) { return '#' + s.id === hash; });
     if (i < 0 || i === stripDrag.idx) return;
-    var before = stripSpots(), wOld = stripWinW;
+    var before = stripLefts();
     stripShow(i);
     stripPlace(i, false);
-    stripFollow(before, wOld);
+    stripFollow(before);
 }
 
 // Leave aiming (or a tap/key): item j becomes active, the window shrinks to its title, the numbers glide to their places, the page scrolls to its page
 function stripChoose(j, x, y) {
-    var before = stripSpots(), wOld = stripWinW, sec = stripSections[j], tx0 = stripDrag.tx, same = j === stripDrag.idx;
+    var before = stripLefts(), sec = stripSections[j], tx0 = stripDrag.tx, same = j === stripDrag.idx;
     stripDrag.on = false; stripDrag.end = performance.now();
     document.getElementById('strip').classList.remove('is-aiming');
     stripShow(j);
     stripPlace(j, false);
-    stripFollow(before, wOld);
+    stripFollow(before);
     var slide = document.querySelector('#strip-window .strip-slide');
-    if (same && Math.abs(tx0) > 0.5 && slide.animate) slide.animate([{ left: 'calc(50% + ' + tx0 + 'px)' }, { left: '50%' }], { duration: STRIP_MS, easing: STRIP_EASE });   // the title in the window slides to the middle
-    if (sec && '#' + sec.id !== jumperValue) jumpTo('#' + sec.id);
+    if (same && Math.abs(tx0) > 0.5 && slide.animate) slide.animate([{ translate: tx0 + 'px 0' }, { translate: '0px 0' }], { duration: STRIP_MS, easing: STRIP_EASE, composite: 'add' });   // the title in the window slides to the middle
+    if (sec && '#' + sec.id !== jumperValue) {
+        glow.instant = true;   // the section highlight is placed on the target at once and then only travels with the page, without a glide of its own
+        jumpTo('#' + sec.id);   // lockOn runs glowSync at once, which uses the flag
+        glow.instant = false;   // (not used up if the section was already the highlighted one: it must not stay set)
+        if (lock.sec) lock.kind = 'strip';   // js/glow.js: stays on the chosen section while the page scrolls there
+    }
     if (lock.sec && x !== undefined) { lock.x = x; lock.y = y; }   // the lock sits where the finger was, like after a tap on a chip: the mouse events iOS adds after a tap must not release it
 }
 
@@ -161,8 +150,10 @@ function buildStrip(data) {
     if (old) old.remove();
     stripSections = data.slice();
     stripDrag.on = false; stripDrag.idx = -1; stripWidths = []; stripTitleWs = []; stripWinW = 0;
-    var strip = document.createElement('div'), win = document.createElement('div');
+    var strip = document.createElement('div'), win = document.createElement('div'), clip = document.createElement('div');
     strip.id = 'strip'; strip.className = 'strip';
+    clip.className = 'strip-clip';
+    strip.appendChild(clip);
     data.forEach(function (sec, idx) {
         var a = document.createElement('a'), no = document.createElement('span');
         a.className = 'strip-item'; a.href = '#' + sec.id; a.target = '_self'; a.title = sec.title;
@@ -170,7 +161,7 @@ function buildStrip(data) {
         no.className = 'strip-no'; no.textContent = idx + 1;
         a.appendChild(no);
         a.appendChild(makeIcon(sec.icon));
-        strip.appendChild(a);
+        clip.appendChild(a);
     });
     win.id = 'strip-window'; win.setAttribute('aria-hidden', 'true');
     var slide = document.createElement('div'), title = document.createElement('span');

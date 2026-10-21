@@ -149,10 +149,6 @@ test('stripAimF: dragging left moves f forward by the drag in item pitches, clam
     assert.equal(w.stripAimF(5, -400, 40, 6), 5);
 });
 
-test('stripShownAtRest: up to two numbers each side of the active item, the others stay invisible', () => {
-    assert.deepEqual([0, 1, 2, 3, 4, 5, 6].map(j => w.stripShownAtRest(j, 3)), [false, true, true, true, true, true, false]);
-});
-
 test('stripWinAt: the window width follows f between the widths of the two items it is between', () => {
     const widths = [40, 100, 60];
     assert.equal(w.stripWinAt(0, widths), 40);

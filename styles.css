@@ -886,6 +886,10 @@ li.dead::after {
         padding-left: 0;
     }
 
+    .strip:not(.ready) {
+        visibility: hidden;   /* until js/strip.js has placed the items once: no layout shift while loading */
+    }
+
     .strip {
         display: block;
         position: relative;
@@ -914,12 +918,25 @@ li.dead::after {
         font-weight: normal;
     }
 
-    .strip-item.far {
-        opacity: 0;
-        pointer-events: none;
+    /* no fades: at rest the numbers are cut off two items beyond the window's edge (--reach, js/strip.js); the clip closes with the glide after a release.
+       The clip is on an inner layer, so a press anywhere on the strip still aims */
+    .strip-clip {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        clip-path: inset(0 max(0px, calc(50% - var(--reach, 50%))));
+        transition: clip-path 0.45s cubic-bezier(.33, 1, .68, 1);
     }
 
-    /* the item in the window shows as its title there (the number is hidden) */
+    /* while the finger moves, all numbers show (the strip's own edge cuts them) */
+    .strip.is-aiming .strip-clip {
+        clip-path: inset(0 0);
+        transition: none;
+    }
+
+    /* the item in the window shows as its title there (the number is hidden at once) */
     .strip-item.active {
         opacity: 0;
     }

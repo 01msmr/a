@@ -7,7 +7,7 @@
 var syncActive = function () { };
 
 // from prefs.js
-var lock = { sec: null, x: 0, y: 0, kind: '' };   // section locked after a click on heading, chip or list entry (see glowTarget); kind: 'title' or 'nav'
+var lock = { sec: null, x: 0, y: 0, kind: '' };   // section locked after a click on heading, chip or list entry (see glowTarget); kind: 'title', 'nav' or 'strip'
 
 // from prefs.js
 var jumperValue = '';   // hash of the active section (or of the jump target); the list marks it
