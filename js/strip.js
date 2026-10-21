@@ -1,59 +1,42 @@
-// Owns: the section strip in the bottom bar of touch phones (numbers scroll under a fixed window that shows the title)
-// Defines globals: stripDrag, stripIndexAt, stripLeftFor, stripLens, stripMeasure, stripReach, stripItemVisible, stripPick, stripOn, buildStrip, stripShow, stripSync
+// Owns: the section strip in the bottom bar of narrow touch devices (aiming like msmr.dev: numbers beside a window that shows the title)
+// Defines globals: stripDrag, stripSections, stripWidths, stripSlots, stripAimF, stripWinAt, stripShownAtRest, stripOn, stripMeasure, stripShow, buildStrip, stripSync
 // Uses: state, render
-// on: the user moves the strip (finger down or coasting); finger: still touching; idx: item in the window; timer: waits for the strip to come to rest; dir: last direction of the scrolling; left: its last position
-var stripDrag = { on: false, finger: false, idx: -1, timer: 0, dir: 0, left: 0 };
+// Pressing the strip aims from the active item; the finger moves f (a fraction of the item index) one to one. The item nearest to f stands in the window as its title,
+// the others are numbers beside it; a number holds at the window's edge and the switch moves it into the window in one step (the outgoing one steps out at the same time).
+// on: the strip is pressed (aiming); idx: item in the window; f0/f: aim at the start / now; x0: finger start; touched: item under the finger; end: time of the last release
+var stripDrag = { on: false, idx: -1, f: 0, f0: 0, x0: 0, pid: null, dragged: false, touched: null, end: -1e9 };
 var stripSections = [];
-var stripMode = null;   // watches the Navigation setting (class nav-icons on the body)
 var stripWidths = [];   // window width per item (its title, or the icon)
 var stripWinW = 0;      // width of the window now
+var stripMode = null;   // watches the Navigation setting (class nav-icons on the body)
+var STRIP_MS = 450, STRIP_EASE = 'cubic-bezier(.33,1,.68,1)';   // the pace of msmr.dev's narrow nav (--nav-t, --nav-ease)
 
-// Item in the window for a scroll position; the items have equal width and the first one is in the window at 0
-function stripIndexAt(left, itemW, count) {
-    if (!count || !(itemW > 0)) return 0;
-    return Math.max(0, Math.min(count - 1, Math.round(left / itemW)));
+// Centre of every item relative to the strip centre for the aim f: the nearest item stands in the window (0), the others sit beside it
+// at the pace of the finger, half an item away from the window's edge; none reaches into the window. Items are gap wide
+function stripSlots(f, count, winW, gap) {
+    var k = count ? Math.max(0, Math.min(count - 1, Math.round(f))) : 0, x = [];
+    for (var j = 0; j < count; j++) {
+        var d = j - f, s = Math.sign(d);
+        x.push(j === k ? 0 : s * (winW / 2 + gap / 2) + (d - s / 2) * gap);
+    }
+    return { k: k, x: x };
 }
 
-function stripLeftFor(index, itemW) { return index * itemW; }
+// The aim for a finger that moved dx (px) since it was pressed on item f0
+function stripAimF(f0, dx, gap, count) { return Math.max(0, Math.min(count - 1, f0 - dx / gap)); }
 
-// Lens: while the strip moves, the items around the window are pushed away from it; d = item distance from the window (px), speed in px per frame
-function stripLens(d, speed, itemW) {
-    if (!(itemW > 0)) return 0;
-    var x = d / (itemW * 2.5), power = Math.min(1, Math.abs(speed) / (itemW * 0.5));
-    return itemW * 0.8 * power * x * Math.exp(0.5 - x * x);
+// The window follows its content: between two items its width runs from one title to the other
+function stripWinAt(f, widths) {
+    var n = widths.length;
+    if (!n) return 0;
+    var g = Math.max(0, Math.min(n - 1, f)), a = Math.floor(g), b = Math.min(n - 1, a + 1);
+    return widths[a] + (widths[b] - widths[a]) * (g - a);
 }
 
-// Distance from the window centre under which an item counts as covered: more than 25 % of it is under the window
-function stripReach(winW, itemW) { return winW / 2 + itemW * 0.25; }
+// At rest up to two numbers show beside the window
+function stripShownAtRest(j, k) { return Math.abs(j - k) <= 2; }
 
-// An item sliding under the window shows only while at least 75 % of it is outside, and only the next two items beyond the window's edge show; d = distance from the window centre
-function stripItemVisible(d, winW, itemW) {
-    var edge = Math.abs(d) - winW / 2;
-    return edge >= itemW * 0.25 && edge <= itemW * 2;
-}
-
-// Item in the window: the one that has just vanished at the window's edge on the side the strip moves towards (dir 1: right, -1: left), so
-// the title and the number leaving the view switch at the same moment; each item is tested against a window of its own width.
-// Without a direction it is the item at the centre. widths: window width per item
-function stripPick(left, itemW, widths, dir) {
-    var n = widths.length, i;
-    if (!n || !(itemW > 0)) return 0;
-    if (dir > 0) { for (i = n - 1; i > 0; i--) if (i * itemW - left < stripReach(widths[i], itemW)) break; }
-    else if (dir < 0) { for (i = 0; i < n - 1; i++) if (left - i * itemW < stripReach(widths[i], itemW)) break; }
-    else i = Math.max(0, Math.min(n - 1, Math.round(left / itemW)));
-    return i;
-}
-
-function stripLensApply(left, speed) {
-    var itemW = stripItemW();
-    var winW = stripWinW;
-    stripItems().forEach(function (a, i) {
-        if (winW) a.classList.toggle('gone', !stripItemVisible(i * itemW - left, winW, itemW));
-        a.style.transform = speed ? 'translateX(' + stripLens(i * itemW - left, speed, itemW).toFixed(1) + 'px)' : '';
-    });
-}
-
-function stripItems() { return document.querySelectorAll('#strip .strip-item'); }
+function stripItems() { return Array.prototype.slice.call(document.querySelectorAll('#strip .strip-item')); }
 
 function stripItemW() {
     var a = document.querySelector('#strip .strip-item');
@@ -66,78 +49,110 @@ function stripOn() {
     return !!(s && s.offsetWidth);
 }
 
+// Window: title (text mode) or icon (icon mode) and color of item i; that item counts as active
+function stripShow(i) {
+    var sec = stripSections[i];
+    if (!sec) return;
+    stripItems().forEach(function (a, k) {
+        a.classList.toggle('active', k === i);
+        if (k === i) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+    });
+    var win = document.getElementById('strip-window');
+    win.querySelector('.strip-title').textContent = sec.title;
+    win.querySelector('.secicon').className = makeIcon(sec.icon).className;
+    win.style.setProperty('--c', sectionColor(i));
+    stripDrag.idx = i;
+}
+
 // Window width per item: its title (the icon only in icon mode), at most 70 % of the strip; measured again when the size or the mode changes
 function stripMeasure() {
-    var win = document.getElementById('strip-window'), track = document.getElementById('strip-track'), itemW = stripItemW();
-    if (!win || !itemW) return;
-    var title = win.querySelector('.strip-title'), keep = title.textContent, max = Math.max(itemW, track.clientWidth * 0.7);
+    var strip = document.getElementById('strip'), win = document.getElementById('strip-window'), itemW = stripItemW();
+    if (!strip || !itemW) return;
+    var title = win.querySelector('.strip-title'), keep = title.textContent, max = Math.max(itemW, strip.clientWidth * 0.7);
     var icons = document.body.classList.contains('nav-icons'), cs = getComputedStyle(win), pad = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
-    var keepW = win.style.width, keepT = win.style.transition;
+    var keepW = win.style.width;
     win.style.transition = 'none'; win.style.width = 'auto';
     stripWidths = stripSections.map(function (sec) {
         if (icons) return itemW;
         title.textContent = sec.title;
         return Math.min(max, Math.max(itemW, title.offsetWidth + pad));
     });
-    title.textContent = keep; win.style.width = keepW; win.style.transition = keepT;
-    stripShow(Math.max(stripDrag.idx, 0));
+    title.textContent = keep; win.style.width = keepW;
+    void win.offsetWidth;
+    win.style.transition = '';
+    stripPlace(Math.max(stripDrag.idx, 0), false);
 }
 
-// Window: title (text mode) or icon (icon mode) and color of item i; that item counts as active
-function stripShow(i) {
-    var sec = stripSections[i];
-    if (!sec) return;
-    stripItems().forEach(function (a, k) { a.classList.toggle('active', k === i); });
-    var win = document.getElementById('strip-window');
-    win.querySelector('.strip-title').textContent = sec.title;
-    win.querySelector('.secicon').className = makeIcon(sec.icon).className;
-    win.style.setProperty('--c', sectionColor(i));
-    stripDrag.idx = i;
-    stripWinW = stripWidths[i] || 0;
-    if (stripWinW) win.style.width = stripWinW + 'px';
-    var track = document.getElementById('strip-track');
-    if (track) stripLensApply(track.scrollLeft, 0);   // the window width changed: items under its edge hide or show again
+// Put the items and the window where the aim f wants them (aim: all numbers show, at rest only the nearest ones)
+function stripPlace(f, aim) {
+    var strip = document.getElementById('strip'), gap = stripItemW(), c = strip ? strip.clientWidth / 2 : 0, n = stripSections.length;
+    if (!n || !gap || !c || stripWidths.length !== n) return;
+    stripWinW = stripWinAt(f, stripWidths);
+    var s = stripSlots(f, n, stripWinW, gap);
+    if (s.k !== stripDrag.idx) stripShow(s.k);
+    document.getElementById('strip-window').style.width = stripWinW + 'px';
+    stripItems().forEach(function (a, j) {
+        a.style.left = (c + s.x[j] - gap / 2).toFixed(1) + 'px';
+        a.classList.toggle('far', !aim && !stripShownAtRest(j, s.k));
+    });
 }
 
-function stripScrollTo(i, instant) {
-    var track = document.getElementById('strip-track'), itemW = stripItemW();
-    if (!track || !itemW) return;
-    var left = stripLeftFor(i, itemW);
-    if (Math.abs(track.scrollLeft - left) < 1) return;
-    track.scrollTo({ left: left, behavior: instant ? 'instant' : 'smooth' });
+function stripSpots() {   // where every item is on the screen now, and its state
+    return stripItems().map(function (a) {
+        var r = a.getBoundingClientRect();
+        return { x: r.left + r.width / 2, shown: !a.classList.contains('far'), inWin: a.classList.contains('active') };
+    });
 }
 
-// The active section changed (page scroll, tap, dropdown): the strip follows, unless the user is moving it
+// After a switch (release, page scroll): the new item stands in the window at once, the previous one starts at the window's old edge and slides out,
+// the others glide from their old places to the new ones; whoever disappears fades first, whoever appears fades in afterwards, never two on top of each other
+function stripFollow(before, wOld) {
+    var gap = stripItemW(), strip = document.getElementById('strip');
+    if (!gap || !before || !strip.getBoundingClientRect().width) return;
+    var items = stripItems();
+    items.forEach(function (a) { a.getAnimations().forEach(function (x) { x.cancel(); }); });
+    var now = stripSpots(), r = strip.getBoundingClientRect(), mid = r.left + r.width / 2, k = stripDrag.idx;
+    var opt = { duration: STRIP_MS, easing: STRIP_EASE }, move = function (dx) { return 'translateX(' + dx + 'px)'; };
+    items.forEach(function (a, j) {
+        if (j === k) return;
+        var o = before[j], n = now[j], dx = o.x - n.x;
+        if (o.inWin) dx = mid + (Math.sign(n.x - mid) || 1) * (wOld / 2 + gap / 2) - n.x;
+        if (!n.shown) {
+            if (o.shown) a.animate([{ transform: move(dx), opacity: 1 }, { opacity: 0, offset: 0.4 }, { transform: move(dx - Math.sign(dx) * gap), opacity: 0 }], opt);
+        } else if (!o.shown) a.animate([{ transform: move(Math.sign(dx) * gap), opacity: 0 }, { opacity: 0, offset: 0.4 }, { transform: 'none', opacity: 1 }], opt);
+        else if (Math.abs(dx) > 0.5) a.animate([{ transform: move(dx) }, { transform: 'none' }], opt);
+    });
+}
+
+// The active section changed (page scroll, tap, dropdown): the strip follows, unless the user is aiming
 function stripSync(hash) {
     if (stripDrag.on) return;
     var i = stripSections.findIndex(function (s) { return '#' + s.id === hash; });
-    if (i < 0) return;
+    if (i < 0 || i === stripDrag.idx) return;
+    var before = stripSpots(), wOld = stripWinW;
     stripShow(i);
-    stripScrollTo(i);
+    stripPlace(i, false);
+    stripFollow(before, wOld);
 }
 
-// The strip came to rest: the section in the window becomes active, the page scrolls to its page (jumpTo)
-function stripSettle() {
-    if (stripDrag.finger) return;
-    stripDrag.on = false; stripDrag.dir = 0;
-    var sec = stripSections[stripDrag.idx];
+// Leave aiming (or a tap/key): item j becomes active, the window shrinks to its title, the numbers glide to their places, the page scrolls to its page
+function stripChoose(j) {
+    var before = stripSpots(), wOld = stripWinW, sec = stripSections[j];
+    stripDrag.on = false; stripDrag.end = performance.now();
+    document.getElementById('strip').classList.remove('is-aiming');
+    stripShow(j);
+    stripPlace(j, false);
+    stripFollow(before, wOld);
     if (sec && '#' + sec.id !== jumperValue) jumpTo('#' + sec.id);
-    stripScrollTo(stripDrag.idx);   // the shown item glides into the window
-}
-
-function stripArm() {
-    clearTimeout(stripDrag.timer);
-    stripDrag.timer = setTimeout(stripSettle, 140);
 }
 
 function buildStrip(data) {
     var old = document.getElementById('strip');
     if (old) old.remove();
     stripSections = data.slice();
-    stripDrag.on = false; stripDrag.finger = false; stripDrag.idx = -1; stripWidths = []; stripWinW = 0;
-    var strip = document.createElement('div'), track = document.createElement('div'), win = document.createElement('div');
+    stripDrag.on = false; stripDrag.idx = -1; stripWidths = []; stripWinW = 0;
+    var strip = document.createElement('div'), win = document.createElement('div');
     strip.id = 'strip'; strip.className = 'strip';
-    track.id = 'strip-track';
     data.forEach(function (sec, idx) {
         var a = document.createElement('a'), no = document.createElement('span');
         a.className = 'strip-item'; a.href = '#' + sec.id; a.target = '_self'; a.title = sec.title;
@@ -145,52 +160,49 @@ function buildStrip(data) {
         no.className = 'strip-no'; no.textContent = idx + 1;
         a.appendChild(no);
         a.appendChild(makeIcon(sec.icon));
-        track.appendChild(a);
+        strip.appendChild(a);
     });
     win.id = 'strip-window'; win.setAttribute('aria-hidden', 'true');
     var title = document.createElement('span');
     title.className = 'strip-title';
     win.appendChild(title);
     win.appendChild(makeIcon(''));
-    strip.appendChild(track);
     strip.appendChild(win);
     document.querySelector('.title').insertBefore(strip, document.getElementById('section-nav-list'));
+    stripShow(0);
 
-    track.addEventListener('touchstart', function () {
-        if (!stripDrag.on) stripDrag.dir = 0;   // touching a strip at rest starts without a direction
-        stripDrag.on = true; stripDrag.finger = true; stripDrag.left = track.scrollLeft; clearTimeout(stripDrag.timer);
-    }, { passive: true });
-    track.addEventListener('touchend', function () { stripDrag.finger = false; stripArm(); }, { passive: true });
-    track.addEventListener('touchcancel', function () { stripDrag.finger = false; stripArm(); }, { passive: true });
-    track.addEventListener('scroll', function () {
-        if (!stripDrag.on) return;   // scrolling that we started ourselves (stripScrollTo) changes nothing
-        var left = track.scrollLeft;
-        if (left !== stripDrag.left) { stripDrag.dir = left > stripDrag.left ? 1 : -1; stripDrag.left = left; }
-        var i = stripPick(left, stripItemW(), stripWidths, stripDrag.dir);
-        if (i !== stripDrag.idx) stripShow(i);
-        if (!stripDrag.finger) stripArm();
-    }, { passive: true });
-    track.addEventListener('contextmenu', function (e) { e.preventDefault(); });   // no long-press menu on the links
-    var last = { left: 0, t: 0, timer: 0 };
-    track.addEventListener('scroll', function () {   // every scroll counts, also our own: the lens only depends on speed and position
-        var now = performance.now(), left = track.scrollLeft;
-        stripLensApply(left, (left - last.left) / Math.max(1, now - last.t) * 16);
-        last.left = left; last.t = now;
-        clearTimeout(last.timer);
-        last.timer = setTimeout(function () { stripLensApply(track.scrollLeft, 0); }, 90);
-    }, { passive: true });
-    track.addEventListener('click', function (e) {
+    // Aiming: the finger anywhere on the strip starts from the active item; a tap on a neighbour chooses it
+    strip.addEventListener('pointerdown', function (ev) {
+        if (stripDrag.on || !stripOn()) return;
+        stripDrag.on = true; stripDrag.dragged = false; stripDrag.pid = ev.pointerId;
+        stripDrag.touched = ev.target.closest('.strip-item');
+        stripDrag.f = stripDrag.f0 = Math.max(stripDrag.idx, 0); stripDrag.x0 = ev.clientX;
+        try { strip.setPointerCapture(ev.pointerId); } catch (e) { }
+        strip.classList.add('is-aiming');
+        stripPlace(stripDrag.f, true);
+    });
+    strip.addEventListener('pointermove', function (ev) {
+        if (!stripDrag.on || ev.pointerId !== stripDrag.pid) return;
+        if (Math.abs(ev.clientX - stripDrag.x0) > 8) stripDrag.dragged = true;
+        stripDrag.f = stripAimF(stripDrag.f0, ev.clientX - stripDrag.x0, stripItemW(), stripSections.length);
+        stripPlace(stripDrag.f, true);
+    });
+    function release(cancel) {
+        var d = stripDrag, items = stripItems();
+        if (cancel) d.f = d.f0;
+        var tapped = !d.dragged && d.touched ? items.indexOf(d.touched) : -1;
+        stripChoose(tapped >= 0 ? tapped : Math.max(0, Math.min(items.length - 1, Math.round(d.f))));
+    }
+    strip.addEventListener('pointerup', function (ev) { if (stripDrag.on && ev.pointerId === stripDrag.pid) release(false); });
+    strip.addEventListener('pointercancel', function (ev) { if (stripDrag.on && ev.pointerId === stripDrag.pid) release(true); });
+    strip.addEventListener('contextmenu', function (e) { e.preventDefault(); });   // no long-press menu on the links
+    strip.addEventListener('click', function (e) {   // the choice was made on release; a click only comes from the keyboard
         var a = e.target.closest('.strip-item');
         if (!a) return;
         e.preventDefault();
-        clearTimeout(stripDrag.timer);
-        stripDrag.on = false; stripDrag.finger = false;
-        var i = Array.prototype.indexOf.call(stripItems(), a);
-        stripShow(i);
-        stripScrollTo(i);
-        jumpTo(a.getAttribute('href'));
+        if (performance.now() - stripDrag.end > 400) stripChoose(stripItems().indexOf(a));
     });
-    new ResizeObserver(function () { stripMeasure(); stripScrollTo(Math.max(stripDrag.idx, 0), true); }).observe(track);   // rotation, zoom: measure again and put the item back into the window
+    new ResizeObserver(function () { stripMeasure(); }).observe(strip);   // rotation, zoom: measure again
     if (!stripMode) {   // Navigation setting (text or icons): measure again, but only when it changes (the body class changes all the time)
         var icons = document.body.classList.contains('nav-icons');
         stripMode = new MutationObserver(function () {
@@ -199,5 +211,4 @@ function buildStrip(data) {
         });
         stripMode.observe(document.body, { attributes: true, attributeFilter: ['class'] });
     }
-    stripShow(0);
 }

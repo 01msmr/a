@@ -872,8 +872,8 @@ li.dead::after {
 }
 
 /* ── Section strip (narrow touch devices) ────────────────────────────
-   Bottom bar: "a." | strip | gear. The strip scrolls natively; the numbers (icons in icon mode) slide under a fixed window
-   that shows the title of the item in it. js/strip.js picks the item when the strip comes to rest. */
+   Bottom bar: "a." | strip | gear. Like the narrow nav of msmr.dev: a window in the section color shows the title of the active section, the numbers
+   (icons in icon mode) sit beside it; pressing the strip aims, the numbers follow the finger and hold at the window's edge (js/strip.js). */
 .strip {
     display: none;
 }
@@ -893,51 +893,27 @@ li.dead::after {
         height: var(--strip-w);
         margin: 0 4px;
         order: 1;
+        overflow: hidden;
+        touch-action: none;
         font-size: 0.9em;   /* the size of "set" on the gear and of the words in the settings overlay (.title is the base of both) */
     }
 
-    #strip-track {
-        display: flex;
-        height: 100%;
-        overflow-x: auto;
-        overscroll-behavior-x: contain;
-        scrollbar-width: none;
-        touch-action: pan-x;
-    }
-
-    #strip-track::-webkit-scrollbar {
-        display: none;
-    }
-
-    /* half a strip of space on both sides: the first and the last item can reach the window */
-    #strip-track::before,
-    #strip-track::after {
-        content: "";
-        flex: 0 0 calc(50% - var(--strip-w) / 2);
-    }
-
+    /* items are placed by js/strip.js (left); the transform belongs to the glide animations */
     .strip-item {
-        flex: 0 0 var(--strip-w);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: var(--strip-w);
+        height: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
         color: var(--title-col);   /* dark text in light mode, light text in dark mode (central values in :root) */
         text-decoration: none;
         font-weight: normal;
-        transition: transform 0.12s ease-out, opacity 0.12s;   /* the lens shift (js/strip.js) eases out when the strip stops */
     }
 
-    /* no link preview or callout menu on a long press */
-    .strip-item,
-    .home-link {
-        -webkit-touch-callout: none;
-        -webkit-user-drag: none;
-        -webkit-user-select: none;
-        user-select: none;
-    }
-
-    /* under the window edge (more than 25 % covered) or beyond the next two items: hidden, only the window shows it */
-    .strip-item.gone {
+    .strip-item.far {
         opacity: 0;
         pointer-events: none;
     }
@@ -951,7 +927,7 @@ li.dead::after {
         display: inline;
     }
 
-    /* the window covers the item in the middle; an item sliding under its edge switches from number to title */
+    /* the window: the title of the active section; it resizes around it (and between two titles while the finger moves) */
     #strip-window {
         position: absolute;
         top: 0;
@@ -970,8 +946,13 @@ li.dead::after {
         background-color: var(--c, var(--sect-col));
         color: var(--title-col);
         font-weight: normal;
-        transition: background-color 0.66s, width 0.2s ease-out;   /* the fill fades from section to section, the text switches at once, the window resizes around its title (like msmr.dev) */
+        transition: background-color 0.66s, width 0.45s cubic-bezier(.33, 1, .68, 1);   /* the fill fades from section to section, the text switches at once (like msmr.dev) */
         pointer-events: none;
+    }
+
+    /* while the finger moves the width follows it at once */
+    .strip.is-aiming #strip-window {
+        transition: background-color 0.66s;
     }
 
     #strip-window .strip-title {
@@ -986,6 +967,15 @@ li.dead::after {
 
     body.nav-icons #strip-window .secicon {
         display: inline;
+    }
+
+    /* no link preview or callout menu on a long press */
+    .strip-item,
+    .home-link {
+        -webkit-touch-callout: none;
+        -webkit-user-drag: none;
+        -webkit-user-select: none;
+        user-select: none;
     }
 
     /* "a." and the gear: squares of the same width */
@@ -1429,25 +1419,19 @@ body.view-grid:not(.edit-mode) .group {
     padding-bottom: 0;
 }
 
-/* dead link in the grid: the red dot becomes a square of the same size, flush in the top right corner inside */
-body.view-grid:not(.edit-mode) li.dead::after {
-    top: 0;
-    right: 0;
-    border-radius: 0;
-}
-
-/* Desktop: an isosceles right triangle in the top right corner, legs 8 px (x and y), moved 1 px inward;
+/* All devices: an isosceles right triangle in the top right corner, legs 8 px (x and y), moved 1 px inward;
    below it a larger white triangle as a 1 px border, so it contrasts on colored sections */
-body.view-grid:not(.edit-mode):not(.touch) li.dead::after {
+body.view-grid:not(.edit-mode) li.dead::after {
     top: 1px;
     right: 1px;
     width: 8px;
     height: 8px;
+    border-radius: 0;
     clip-path: polygon(0 0, 100% 0, 100% 100%);
     z-index: 3;
 }
 
-body.view-grid:not(.edit-mode):not(.touch) li.dead::before {
+body.view-grid:not(.edit-mode) li.dead::before {
     content: "";
     position: absolute;
     top: 0;

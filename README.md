@@ -68,7 +68,7 @@ The browser checks need Chrome (`CHROME_PATH` names it) and start the dev router
 
 - `icon` is a Font Awesome class (6.7.2, self-hosted); the APP section uses `fa-square`. A solid icon is written as `fa-briefcase`; a brand or regular icon with its style, e.g. `fa-brands fa-apple` or `fa-regular fa-star` (the page adds `fa-solid` itself, and a bare `fa-apple` shows nothing, because that glyph is not in the solid font). The 28 solid icons in use are in a 3 KB font; any other icon loads the full font on demand.
 - Link names may contain the Apple logo character (U+F8FF): our own tiny font draws it, so it also shows on devices that are not from Apple.
-- `dead` marks a link that was not reachable at the last test (red dot; in the grid a square, on the desktop a triangle with 8 px legs, moved 1 px inward and with a white 1 px border, in the top right corner). Exceptions that never count as dead are kept centrally in `never-dead.json` (`allIpAddresses`: every IP address; `hosts`: host names, currently `orderbox` and `kitchen.toolbox-bodensee.de`); `edit/check.php` and the page (`isNeverDead` in `js/links.js`, also for marks that are already saved) read the same file.
+- `dead` marks a link that was not reachable at the last test (red dot; in the grid, on every device, a triangle with 8 px legs, moved 1 px inward and with a white 1 px border, in the top right corner). Exceptions that never count as dead are kept centrally in `never-dead.json` (`allIpAddresses`: every IP address; `hosts`: host names, currently `orderbox` and `kitchen.toolbox-bodensee.de`); `edit/check.php` and the page (`isNeverDead` in `js/links.js`, also for marks that are already saved) read the same file.
 - `color` is not displayed. The section color comes from the palette `SEC_COLORS`
   in `js/render.js` **by position**. Inserting or moving sections therefore changes
   the colors of the following ones.
@@ -151,7 +151,7 @@ iPad and iPhone remain device properties and do not follow the zoom.
 
 Square tiles without gloss, 1 px lines. In inactive sections they are gray, in the
 colored section light. "Left" means full width here, the bar also runs
-across the whole page; the tiles of the sections stay at at most 6 columns and get wider, on narrow screens (smartphone) at least two sit side by side. Empty cells of the last row carry the lines of the tiles. A dead link shows a red square in the corner (on the desktop a triangle with 8 px legs). Edit mode
+across the whole page; the tiles of the sections stay at at most 6 columns and get wider, on narrow screens (smartphone) at least two sit side by side. Empty cells of the last row carry the lines of the tiles. A dead link shows a red triangle with 8 px legs in the corner (on every device). Edit mode
 keeps using the chip layout.
 
 ### Glow window and ghost headers

@@ -79,24 +79,59 @@ test('state.js: the shared state objects exist with their initial values', () =>
 
 const stripData = [{ id: 'one', title: 'Alpha', icon: 'fa-house' }, { id: 'two', title: 'Beta.li', icon: 'fa-star' }, { id: 'three', title: 'Gamma', icon: 'fa-gear' }];
 
-test('stripIndexAt: the item nearest to the window, clamped to the first and last item', () => {
-    assert.equal(w.stripIndexAt(0, 40, 5), 0);
-    assert.equal(w.stripIndexAt(59, 40, 5), 1);
-    assert.equal(w.stripIndexAt(61, 40, 5), 2);
-    assert.equal(w.stripIndexAt(-30, 40, 5), 0);
-    assert.equal(w.stripIndexAt(9999, 40, 5), 4);
+test('stripSlots: the item nearest to f stands in the window, the others sit beside it, half an item away from its edge', () => {
+    const r = w.stripSlots(2, 6, 100, 40);
+    assert.equal(r.k, 2);
+    assert.equal(r.x[2], 0);
+    assert.deepEqual([r.x[3], r.x[1], r.x[4], r.x[0]].map(Math.round), [90, -90, 130, -130]);
 });
 
-test('stripIndexAt: no items or no measured width give 0', () => {
-    assert.equal(w.stripIndexAt(80, 40, 0), 0);
-    assert.equal(w.stripIndexAt(80, 0, 5), 0);
-    assert.equal(w.stripIndexAt(80, NaN, 5), 0);
+test('stripSlots: f is clamped to the items; no items gives an empty list', () => {
+    assert.equal(w.stripSlots(-3, 6, 100, 40).k, 0);
+    assert.equal(w.stripSlots(99, 6, 100, 40).k, 5);
+    assert.deepEqual(plain(w.stripSlots(0, 0, 100, 40).x), []);
 });
 
-test('stripLeftFor: scroll position that puts an item into the window, the inverse of stripIndexAt', () => {
-    assert.equal(w.stripLeftFor(0, 40), 0);
-    assert.equal(w.stripLeftFor(3, 40), 120);
-    for (let i = 0; i < 5; i++) assert.equal(w.stripIndexAt(w.stripLeftFor(i, 38.5), 38.5, 5), i);
+test('stripSlots: at the switch the incoming number holds at the window edge and the outgoing one appears at the opposite edge', () => {
+    const r = w.stripSlots(2.5, 6, 100, 40);   // k becomes 3: item 3 steps into the window, item 2 steps out
+    assert.equal(r.k, 3);
+    assert.equal(r.x[3], 0);
+    assert.equal(r.x[2], -(100 / 2 + 40 / 2));   // the outgoing item: its inner edge touches the left window edge
+    const before = w.stripSlots(2.4999, 6, 100, 40);   // just before: item 3 was the number at the right window edge
+    assert.ok(Math.abs(before.x[3] - (100 / 2 + 40 / 2)) < 0.01);
+});
+
+test('stripSlots: no number ever reaches into the window, for any f and any window width', () => {
+    for (const W of [40, 100, 230]) for (let f = 0; f <= 5; f += 0.05) {
+        const r = w.stripSlots(f, 6, W, 40);
+        r.x.forEach((x, j) => { if (j !== r.k) assert.ok(Math.abs(x) >= W / 2 + 20 - 1e-9, 'W ' + W + ' f ' + f + ' item ' + j); });
+    }
+});
+
+test('stripSlots: the numbers follow the finger one to one (a drag of one item pitch moves them by one pitch)', () => {
+    const a = w.stripSlots(1.1, 8, 100, 40), b = w.stripSlots(2.1, 8, 100, 40);
+    for (const j of [4, 5, 6]) assert.ok(Math.abs((a.x[j] - b.x[j]) - 40) < 1e-9);
+});
+
+test('stripAimF: dragging left moves f forward by the drag in item pitches, clamped to the items', () => {
+    assert.equal(w.stripAimF(2, -40, 40, 6), 3);
+    assert.equal(w.stripAimF(2, 20, 40, 6), 1.5);
+    assert.equal(w.stripAimF(0, 400, 40, 6), 0);
+    assert.equal(w.stripAimF(5, -400, 40, 6), 5);
+});
+
+test('stripShownAtRest: up to two numbers each side of the active item, the others stay invisible', () => {
+    assert.deepEqual([0, 1, 2, 3, 4, 5, 6].map(j => w.stripShownAtRest(j, 3)), [false, true, true, true, true, true, false]);
+});
+
+test('stripWinAt: the window width follows f between the widths of the two items it is between', () => {
+    const widths = [40, 100, 60];
+    assert.equal(w.stripWinAt(0, widths), 40);
+    assert.equal(w.stripWinAt(0.5, widths), 70);
+    assert.equal(w.stripWinAt(1, widths), 100);
+    assert.equal(w.stripWinAt(1.5, widths), 80);
+    assert.equal(w.stripWinAt(9, widths), 60);
+    assert.equal(w.stripWinAt(0, []), 0);
 });
 
 test('buildStrip: one item per section with number and icon, the window with title and icon, both in the section color', () => {
@@ -142,69 +177,3 @@ test('stripSync: the section hash picks the item; an unknown hash or a strip bei
     w.stripDrag.on = false;
 });
 
-test('stripLens: no speed or an item exactly in the window gives no shift', () => {
-    assert.ok(Math.abs(w.stripLens(60, 0, 40)) < 1e-9);
-    assert.ok(Math.abs(w.stripLens(0, 30, 40)) < 1e-9);
-    assert.ok(Math.abs(w.stripLens(60, 30, 0)) < 1e-9);
-});
-
-test('stripLens: items are pushed away from the window, symmetrically, in either scroll direction', () => {
-    assert.ok(w.stripLens(60, 10, 40) > 0);
-    assert.ok(w.stripLens(-60, 10, 40) < 0);
-    assert.ok(Math.abs(w.stripLens(60, 10, 40) + w.stripLens(-60, 10, 40)) < 1e-9);
-    assert.ok(Math.abs(w.stripLens(60, 10, 40) - w.stripLens(60, -10, 40)) < 1e-9);
-});
-
-test('stripLens: faster means a stronger shift up to a cap; far items hardly move', () => {
-    assert.ok(w.stripLens(60, 20, 40) > w.stripLens(60, 5, 40));
-    assert.ok(Math.abs(w.stripLens(60, 500, 40) - w.stripLens(60, 5000, 40)) < 1e-9);
-    assert.ok(Math.abs(w.stripLens(60, 5000, 40)) < 40);
-    assert.ok(Math.abs(w.stripLens(400, 5000, 40)) < 0.02 * 40);
-});
-
-test('stripItemVisible: an item shows only while at least 75 % of it is outside the window', () => {
-    // itemW 40, window 100 wide (half 50): the item is visible from a centre distance of 50 + 10
-    assert.equal(w.stripItemVisible(60, 100, 40), true);
-    assert.equal(w.stripItemVisible(59, 100, 40), false);
-    assert.equal(w.stripItemVisible(0, 100, 40), false);
-});
-
-test('stripItemVisible: only the next two items beyond the window edge show, on both sides', () => {
-    assert.equal(w.stripItemVisible(130, 100, 40), true);
-    assert.equal(w.stripItemVisible(131, 100, 40), false);
-    assert.equal(w.stripItemVisible(-60, 100, 40), true);
-    assert.equal(w.stripItemVisible(-131, 100, 40), false);
-});
-
-test('stripItemVisible: a narrow window shows two neighbours per side, a wide one covers the nearest', () => {
-    const shown = (win) => [1, 2, 3, 4].filter(k => w.stripItemVisible(k * 40, win, 40));
-    assert.deepEqual(shown(40), [1, 2]);
-    assert.deepEqual(shown(150), [3]);
-});
-
-test('stripReach: an item vanishes when its centre is closer to the window centre than half the window plus a quarter item', () => {
-    assert.equal(w.stripReach(40, 40), 30);
-    assert.equal(w.stripReach(100, 40), 60);
-});
-
-test('stripPick: the window shows the item that just vanished at its edge on the side the strip moves towards', () => {
-    const widths = [100, 100, 100, 100, 100, 100];   // itemW 40: an item vanishes when it is less than 50 + 10 from the window centre
-    assert.equal(w.stripPick(0, 40, widths, 0), 0);
-    assert.equal(w.stripPick(0, 40, widths, 1), 1);
-    assert.equal(w.stripPick(200, 40, widths, -1), 4);
-    assert.equal(w.stripPick(200, 40, widths, 0), 5);
-});
-
-test('stripPick: the item switches exactly when its number becomes hidden under a window of its own width', () => {
-    const itemW = 40, widths = [60, 140, 40, 100, 80, 120, 40, 90];
-    for (const dir of [1, -1]) for (let left = 0; left < 300; left += 1) {
-        const i = w.stripPick(left, itemW, widths, dir);
-        assert.equal(w.stripItemVisible(i * itemW - left, widths[i], itemW), false, 'dir ' + dir + ' left ' + left);
-    }
-});
-
-test('stripPick: the result depends only on position, direction and the widths (no jitter when the window resizes)', () => {
-    const widths = [40, 200, 40, 200, 40, 200];
-    for (let left = 0; left < 200; left += 7) assert.equal(w.stripPick(left, 40, widths, 1), w.stripPick(left, 40, widths.slice(), 1));
-    assert.equal(w.stripPick(0, 40, [], 1), 0);
-});
