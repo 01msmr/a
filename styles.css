@@ -961,6 +961,9 @@ li.dead::after {
         max-width: 100%;
         box-sizing: border-box;
         padding: 0 0.8em;   /* counts into the window width (js/strip.js) */
+        display: flex;
+        align-items: center;
+        justify-content: center;
         overflow: hidden;
         white-space: nowrap;
         background-color: var(--c, var(--sect-col));
@@ -975,15 +978,9 @@ li.dead::after {
         transition: background-color 0.66s;
     }
 
-    /* the title slides across the window (left is set by js/strip.js); the window clips it at its borders */
-    .strip-slide {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        display: flex;
-        align-items: center;
-        white-space: nowrap;
+    #strip-window .strip-title {
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     #strip-window .secicon,
