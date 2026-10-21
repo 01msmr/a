@@ -60,6 +60,7 @@ function lockOff() {
 // already on press, so the chip is active immediately (no hover/press state) and the pointer disappears when scrolling up
 // Mouse: already on press. Touch: only on click, so a swipe over the chips or the heading activates nothing
 function lockFromEvent(e, touch) {
+    if (e.target.closest && e.target.closest('#strip')) return;   // the section strip makes its own choice (js/strip.js) and keeps the lock it sets
     var dest = (touch || e.button === 0) && !document.body.classList.contains('edit-mode') && e.target.closest && e.target.closest('#container .name a, a.sec-btn');
     var sec = dest && (dest.matches('a.sec-btn') ? (document.querySelector(dest.getAttribute('href')) || dest).closest('section') : dest.closest('section'));
     // Touch: a tap on the background or a tile also activates the section (there is no hover)

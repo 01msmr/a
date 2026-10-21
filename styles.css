@@ -880,7 +880,8 @@ li.dead::after {
 
 @media only screen and (min-device-width: 350px) and (max-device-width: 812px) and (hover: none) {
     .title {
-        --strip-w: 2.375rem;   /* width of one strip item = width of "a." and of the gear */
+        --strip-w: 2.375rem;   /* width (pitch) of one strip item and height of the bar items */
+        --btn-w: 3rem;         /* "a." and the gear: as wide as the nav buttons in icon mode, the gear wider if its text needs it */
         column-gap: 0;
         padding-left: 0;
     }
@@ -978,11 +979,11 @@ li.dead::after {
         user-select: none;
     }
 
-    /* "a." and the gear: squares of the same width */
+    /* "a." and the gear: the same width, at least that of the nav buttons in icon mode */
     .home-link {
         order: 0;
-        flex: 0 0 var(--strip-w);
-        width: var(--strip-w);
+        flex: 0 0 var(--btn-w);
+        width: var(--btn-w);
         height: var(--strip-w);
         padding: 0;
         display: flex;
@@ -996,10 +997,10 @@ li.dead::after {
 
     #settings-btn {
         order: 2;
-        flex: 0 0 var(--strip-w);
-        width: var(--strip-w);
-        min-width: 0;
-        padding: 0;
+        flex: 0 0 auto;
+        width: auto;
+        min-width: var(--btn-w);
+        padding: 0 0.3em;
         margin-left: 0;
     }
 

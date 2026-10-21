@@ -79,11 +79,11 @@ test('state.js: the shared state objects exist with their initial values', () =>
 
 const stripData = [{ id: 'one', title: 'Alpha', icon: 'fa-house' }, { id: 'two', title: 'Beta.li', icon: 'fa-star' }, { id: 'three', title: 'Gamma', icon: 'fa-gear' }];
 
-test('stripSlots: the item nearest to f stands in the window, the others sit beside it, half an item away from its edge', () => {
+test('stripSlots: the item nearest to f stands in the window, the others sit beside it, a quarter item away from its edge', () => {
     const r = w.stripSlots(2, 6, 100, 40);
     assert.equal(r.k, 2);
     assert.equal(r.x[2], 0);
-    assert.deepEqual([r.x[3], r.x[1], r.x[4], r.x[0]].map(Math.round), [90, -90, 130, -130]);
+    assert.deepEqual([r.x[3], r.x[1], r.x[4], r.x[0]].map(Math.round), [80, -80, 120, -120]);
 });
 
 test('stripSlots: f is clamped to the items; no items gives an empty list', () => {
@@ -96,15 +96,15 @@ test('stripSlots: at the switch the incoming number holds at the window edge and
     const r = w.stripSlots(2.5, 6, 100, 40);   // k becomes 3: item 3 steps into the window, item 2 steps out
     assert.equal(r.k, 3);
     assert.equal(r.x[3], 0);
-    assert.equal(r.x[2], -(100 / 2 + 40 / 2));   // the outgoing item: its inner edge touches the left window edge
+    assert.equal(r.x[2], -(100 / 2 + 40 / 4));   // the outgoing item: a quarter of it is under the left window edge, the same as the incoming one at the switch
     const before = w.stripSlots(2.4999, 6, 100, 40);   // just before: item 3 was the number at the right window edge
-    assert.ok(Math.abs(before.x[3] - (100 / 2 + 40 / 2)) < 0.01);
+    assert.ok(Math.abs(before.x[3] - (100 / 2 + 40 / 4)) < 0.01);
 });
 
-test('stripSlots: no number ever reaches into the window, for any f and any window width', () => {
+test('stripSlots: a number reaches at most a quarter of its width into the window, for any f and any window width', () => {
     for (const W of [40, 100, 230]) for (let f = 0; f <= 5; f += 0.05) {
         const r = w.stripSlots(f, 6, W, 40);
-        r.x.forEach((x, j) => { if (j !== r.k) assert.ok(Math.abs(x) >= W / 2 + 20 - 1e-9, 'W ' + W + ' f ' + f + ' item ' + j); });
+        r.x.forEach((x, j) => { if (j !== r.k) assert.ok(Math.abs(x) >= W / 2 + 10 - 1e-9, 'W ' + W + ' f ' + f + ' item ' + j); });
     }
 });
 

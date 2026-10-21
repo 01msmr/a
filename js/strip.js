@@ -11,13 +11,16 @@ var stripWinW = 0;      // width of the window now
 var stripMode = null;   // watches the Navigation setting (class nav-icons on the body)
 var STRIP_MS = 450, STRIP_EASE = 'cubic-bezier(.33,1,.68,1)';   // the pace of msmr.dev's narrow nav (--nav-t, --nav-ease)
 
+// A number may reach this far (a fraction of its width) under the window's edge before it steps into the window; the outgoing item appears at the same depth
+var STRIP_UNDER = 0.25;
+
 // Centre of every item relative to the strip centre for the aim f: the nearest item stands in the window (0), the others sit beside it
-// at the pace of the finger, half an item away from the window's edge; none reaches into the window. Items are gap wide
+// at the pace of the finger; the incoming number holds a quarter of its width under the window's edge, then steps in. Items are gap wide
 function stripSlots(f, count, winW, gap) {
     var k = count ? Math.max(0, Math.min(count - 1, Math.round(f))) : 0, x = [];
     for (var j = 0; j < count; j++) {
         var d = j - f, s = Math.sign(d);
-        x.push(j === k ? 0 : s * (winW / 2 + gap / 2) + (d - s / 2) * gap);
+        x.push(j === k ? 0 : s * (winW / 2 + gap / 2 - STRIP_UNDER * gap) + (d - s / 2) * gap);
     }
     return { k: k, x: x };
 }
@@ -136,7 +139,7 @@ function stripSync(hash) {
 }
 
 // Leave aiming (or a tap/key): item j becomes active, the window shrinks to its title, the numbers glide to their places, the page scrolls to its page
-function stripChoose(j) {
+function stripChoose(j, x, y) {
     var before = stripSpots(), wOld = stripWinW, sec = stripSections[j];
     stripDrag.on = false; stripDrag.end = performance.now();
     document.getElementById('strip').classList.remove('is-aiming');
@@ -144,6 +147,7 @@ function stripChoose(j) {
     stripPlace(j, false);
     stripFollow(before, wOld);
     if (sec && '#' + sec.id !== jumperValue) jumpTo('#' + sec.id);
+    if (lock.sec && x !== undefined) { lock.x = x; lock.y = y; }   // the lock sits where the finger was, like after a tap on a chip: the mouse events iOS adds after a tap must not release it
 }
 
 function buildStrip(data) {
@@ -187,14 +191,14 @@ function buildStrip(data) {
         stripDrag.f = stripAimF(stripDrag.f0, ev.clientX - stripDrag.x0, stripItemW(), stripSections.length);
         stripPlace(stripDrag.f, true);
     });
-    function release(cancel) {
+    function release(cancel, x, y) {
         var d = stripDrag, items = stripItems();
         if (cancel) d.f = d.f0;
         var tapped = !d.dragged && d.touched ? items.indexOf(d.touched) : -1;
-        stripChoose(tapped >= 0 ? tapped : Math.max(0, Math.min(items.length - 1, Math.round(d.f))));
+        stripChoose(tapped >= 0 ? tapped : Math.max(0, Math.min(items.length - 1, Math.round(d.f))), x, y);
     }
-    strip.addEventListener('pointerup', function (ev) { if (stripDrag.on && ev.pointerId === stripDrag.pid) release(false); });
-    strip.addEventListener('pointercancel', function (ev) { if (stripDrag.on && ev.pointerId === stripDrag.pid) release(true); });
+    strip.addEventListener('pointerup', function (ev) { if (stripDrag.on && ev.pointerId === stripDrag.pid) release(false, ev.clientX, ev.clientY); });
+    strip.addEventListener('pointercancel', function (ev) { if (stripDrag.on && ev.pointerId === stripDrag.pid) release(true, ev.clientX, ev.clientY); });
     strip.addEventListener('contextmenu', function (e) { e.preventDefault(); });   // no long-press menu on the links
     strip.addEventListener('click', function (e) {   // the choice was made on release; a click only comes from the keyboard
         var a = e.target.closest('.strip-item');
