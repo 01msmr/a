@@ -1,0 +1,16 @@
+{
+ "name": "a.",
+ "short_name": "a.",
+ "icons": [
+  {
+   "src": "ico-4-180.png",
+   "sizes": "180x180",
+   "type": "image/png"
+  },
+  {
+   "src": "ico-4-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  }
+ ]
+}

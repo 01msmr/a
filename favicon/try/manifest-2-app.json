@@ -1,0 +1,21 @@
+{
+ "name": "a.",
+ "short_name": "a.",
+ "icons": [
+  {
+   "src": "ico-2-180.png",
+   "sizes": "180x180",
+   "type": "image/png"
+  },
+  {
+   "src": "ico-2-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  }
+ ],
+ "start_url": "/?app&icon=2",
+ "scope": "/",
+ "display": "standalone",
+ "background_color": "#ffffff",
+ "theme_color": "#ffffff"
+}

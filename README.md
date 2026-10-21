@@ -280,6 +280,23 @@ The pointers belong there too (`--curs-img`, `--curs-sec`, `--curs-hov`, `--curs
 
 Things that change in the web app: it has its own storage (the settings in `localStorage` start with their defaults; the edit mode's login is separate from Safari's), no address bar, back button or reload gesture, and after sleeping in the background it shows the old version until it is closed fully. Links to other sites (the tiles) open in a sheet over the app, per Apple's WWDC23 talk; how `base target="_blank"` behaves there is not verified, and neither is the edit mode in the web app. Tested in headless Chrome only (manifest chosen by the browser, display `standalone`, no errors); not yet on an iPhone or iPad (iOS/iPadOS 27.2 RC).
 
+## Icon test variants (temporary)
+
+To find out what iOS recolors in dark mode, `https://a.msmr.co/?icon=N` (a bookmark) and `https://a.msmr.co/?app&icon=N` (the web app) load test icon N (1–8) from `favicon/try/` instead of the real icon (`favicon/icon-try.js`, the touch icon and the manifest are replaced). Add each address you want to compare to the home screen, in light or dark mode as you like (the icon is taken when you add it), and look at them in both modes. The variants:
+
+| N | Letter | Halo around the letter | Tile |
+|---|---|---|---|
+| 1 | black | none | light grey #e6e6e9 (the current icon) |
+| 2 | black | exactly the tile color, 3 % | light grey |
+| 3 | black | a little lighter than the tile (#f6f6f8), 3 % | light grey |
+| 4 | black | white, 3 % | light grey |
+| 5 | black | white, 6 % (thick) | light grey |
+| 6 | dark grey #2c2c30 | white, 3 % | light grey |
+| 7 | white | none | dark grey #3a3a3e |
+| 8 | black | none | light grey gradient (not flat) |
+
+When the icon is chosen: copy it over `favicon/ico-light-*`/`ico-dark-*`, run `node tools/touch-icon.js inline`, and delete `favicon/icon-try.js`, its script tag in `index.html`, its tests and `favicon/try/`.
+
 ## Home screen icon (iOS)
 
 Currently the pair is: `ico-light-*` a black "a." on light grey (#e6e6e9), `ico-dark-*` a white "a." on dark grey (#2a2a2e); the shape of the letter is the one of the transparent version it replaced. The pair is used where `media` is honoured (browser-tab favicon links, with `?v=` so the daily cache bump refreshes them) and by `favicon/touch-icon-inline.js`, which sets the `apple-touch-icon` from script by color scheme when the page loads (iOS ignores `media` on `apple-touch-icon` itself, tested on 27.2, and takes the icon at the moment of "Add to Home Screen"). The root copies and `manifest.json` carry the light icon.
