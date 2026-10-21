@@ -919,6 +919,11 @@ li.dead::after {
         pointer-events: none;
     }
 
+    /* the item in the window shows as its title there (the number is hidden) */
+    .strip-item.active {
+        opacity: 0;
+    }
+
     .strip-item .secicon,
     body.nav-icons .strip-item .strip-no {
         display: none;
@@ -938,10 +943,7 @@ li.dead::after {
         min-width: var(--strip-w);
         max-width: 100%;
         box-sizing: border-box;
-        padding: 0 0.8em;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        padding: 0 0.8em;   /* counts into the window width (js/strip.js) */
         overflow: hidden;
         white-space: nowrap;
         background-color: var(--c, var(--sect-col));
@@ -956,9 +958,15 @@ li.dead::after {
         transition: background-color 0.66s;
     }
 
-    #strip-window .strip-title {
-        overflow: hidden;
-        text-overflow: ellipsis;
+    /* the title slides across the window (left is set by js/strip.js); the window clips it at its borders */
+    .strip-slide {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
     }
 
     #strip-window .secicon,

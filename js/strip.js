@@ -1,29 +1,34 @@
 // Owns: the section strip in the bottom bar of narrow touch devices (aiming like msmr.dev: numbers beside a window that shows the title)
-// Defines globals: stripDrag, stripSections, stripWidths, stripSlots, stripAimF, stripWinAt, stripShownAtRest, stripOn, stripMeasure, stripShow, buildStrip, stripSync
+// Defines globals: stripDrag, stripSections, stripWidths, stripSlots, stripTitleX, stripAimF, stripWinAt, stripShownAtRest, stripOn, stripMeasure, stripShow, buildStrip, stripSync
 // Uses: state, render
-// Pressing the strip aims from the active item; the finger moves f (a fraction of the item index) one to one. The item nearest to f stands in the window as its title,
-// the others are numbers beside it; a number holds at the window's edge and the switch moves it into the window in one step (the outgoing one steps out at the same time).
+// Pressing the strip aims from the active item; the finger moves f (a fraction of the item index) one to one. Outside the window the numbers follow the finger; the item
+// nearest to f crosses the window faster (the window width per item pitch) as its title: it turns from number to title at one border and back to a number at the other,
+// and the next item enters at that very moment.
 // on: the strip is pressed (aiming); idx: item in the window; f0/f: aim at the start / now; x0: finger start; touched: item under the finger; end: time of the last release
-var stripDrag = { on: false, idx: -1, f: 0, f0: 0, x0: 0, pid: null, dragged: false, touched: null, end: -1e9 };
+var stripDrag = { on: false, idx: -1, tx: 0, f: 0, f0: 0, x0: 0, pid: null, dragged: false, touched: null, end: -1e9 };
 var stripSections = [];
 var stripWidths = [];   // window width per item (its title, or the icon)
+var stripTitleWs = [];  // width of the title (or icon) itself per item
 var stripWinW = 0;      // width of the window now
 var stripMode = null;   // watches the Navigation setting (class nav-icons on the body)
 var STRIP_MS = 450, STRIP_EASE = 'cubic-bezier(.33,1,.68,1)';   // the pace of msmr.dev's narrow nav (--nav-t, --nav-ease)
 
-// A number may reach this far (a fraction of its width) under the window's edge before it steps into the window; the outgoing item appears at the same depth
+// A number may reach this far (a fraction of its width) under the window's edge before it turns into the title; the outgoing item turns back into a number at the same depth
 var STRIP_UNDER = 0.25;
 
-// Centre of every item relative to the strip centre for the aim f: the nearest item stands in the window (0), the others sit beside it
-// at the pace of the finger; the incoming number holds a quarter of its width under the window's edge, then steps in. Items are gap wide
+// Centre of every item relative to the strip centre for the aim f. Outside the window the items sit at the pace of the finger; the item nearest to f (k) crosses the
+// window faster: from one border, where it is a number a quarter of its width under the window's edge, to the other in the pace of one item pitch. Items are gap wide
 function stripSlots(f, count, winW, gap) {
-    var k = count ? Math.max(0, Math.min(count - 1, Math.round(f))) : 0, x = [];
+    var k = count ? Math.max(0, Math.min(count - 1, Math.round(f))) : 0, x = [], xb = winW / 2 + gap * (0.5 - STRIP_UNDER);
     for (var j = 0; j < count; j++) {
         var d = j - f, s = Math.sign(d);
-        x.push(j === k ? 0 : s * (winW / 2 + gap / 2 - STRIP_UNDER * gap) + (d - s / 2) * gap);
+        x.push(j === k ? 2 * xb * d : s * xb + (d - s / 2) * gap);
     }
     return { k: k, x: x };
 }
+
+// Centre of the title of item k (w wide) relative to the window centre: it slides in from outside one border (its inner edge at the border) to the other
+function stripTitleX(f, k, winW, gap, w) { return (k - f) * (winW + gap * (1 - 2 * STRIP_UNDER) + w); }
 
 // The aim for a finger that moved dx (px) since it was pressed on item f0
 function stripAimF(f0, dx, gap, count) { return Math.max(0, Math.min(count - 1, f0 - dx / gap)); }
@@ -73,17 +78,14 @@ function stripMeasure() {
     if (!strip || !itemW) return;
     var title = win.querySelector('.strip-title'), keep = title.textContent, max = Math.max(itemW, strip.clientWidth * 0.7);
     var icons = document.body.classList.contains('nav-icons'), cs = getComputedStyle(win), pad = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
-    var keepW = win.style.width;
-    win.style.transition = 'none'; win.style.width = 'auto';
-    stripWidths = stripSections.map(function (sec) {
+    stripTitleWs = stripSections.map(function (sec) {
         if (icons) return itemW;
         title.textContent = sec.title;
-        return Math.min(max, Math.max(itemW, title.offsetWidth + pad));
+        return title.offsetWidth;
     });
-    title.textContent = keep; win.style.width = keepW;
-    void win.offsetWidth;
-    win.style.transition = '';
-    stripPlace(Math.max(stripDrag.idx, 0), false);
+    title.textContent = keep;
+    stripWidths = stripTitleWs.map(function (t) { return icons ? itemW : Math.min(max, Math.max(itemW, t + pad)); });
+    stripPlace(stripDrag.on ? stripDrag.f : Math.max(stripDrag.idx, 0), stripDrag.on);   // a resize while the finger is down keeps the aim
 }
 
 // Put the items and the window where the aim f wants them (aim: all numbers show, at rest only the nearest ones)
@@ -94,6 +96,8 @@ function stripPlace(f, aim) {
     var s = stripSlots(f, n, stripWinW, gap);
     if (s.k !== stripDrag.idx) stripShow(s.k);
     document.getElementById('strip-window').style.width = stripWinW + 'px';
+    stripDrag.tx = stripTitleX(f, s.k, stripWinW, gap, stripTitleWs[s.k] || 0);
+    document.querySelector('#strip-window .strip-slide').style.left = 'calc(50% + ' + stripDrag.tx.toFixed(1) + 'px)';
     stripItems().forEach(function (a, j) {
         a.style.left = (c + s.x[j] - gap / 2).toFixed(1) + 'px';
         a.classList.toggle('far', !aim && !stripShownAtRest(j, s.k));
@@ -140,12 +144,14 @@ function stripSync(hash) {
 
 // Leave aiming (or a tap/key): item j becomes active, the window shrinks to its title, the numbers glide to their places, the page scrolls to its page
 function stripChoose(j, x, y) {
-    var before = stripSpots(), wOld = stripWinW, sec = stripSections[j];
+    var before = stripSpots(), wOld = stripWinW, sec = stripSections[j], tx0 = stripDrag.tx, same = j === stripDrag.idx;
     stripDrag.on = false; stripDrag.end = performance.now();
     document.getElementById('strip').classList.remove('is-aiming');
     stripShow(j);
     stripPlace(j, false);
     stripFollow(before, wOld);
+    var slide = document.querySelector('#strip-window .strip-slide');
+    if (same && Math.abs(tx0) > 0.5 && slide.animate) slide.animate([{ left: 'calc(50% + ' + tx0 + 'px)' }, { left: '50%' }], { duration: STRIP_MS, easing: STRIP_EASE });   // the title in the window slides to the middle
     if (sec && '#' + sec.id !== jumperValue) jumpTo('#' + sec.id);
     if (lock.sec && x !== undefined) { lock.x = x; lock.y = y; }   // the lock sits where the finger was, like after a tap on a chip: the mouse events iOS adds after a tap must not release it
 }
@@ -154,7 +160,7 @@ function buildStrip(data) {
     var old = document.getElementById('strip');
     if (old) old.remove();
     stripSections = data.slice();
-    stripDrag.on = false; stripDrag.idx = -1; stripWidths = []; stripWinW = 0;
+    stripDrag.on = false; stripDrag.idx = -1; stripWidths = []; stripTitleWs = []; stripWinW = 0;
     var strip = document.createElement('div'), win = document.createElement('div');
     strip.id = 'strip'; strip.className = 'strip';
     data.forEach(function (sec, idx) {
@@ -167,10 +173,12 @@ function buildStrip(data) {
         strip.appendChild(a);
     });
     win.id = 'strip-window'; win.setAttribute('aria-hidden', 'true');
-    var title = document.createElement('span');
+    var slide = document.createElement('div'), title = document.createElement('span');
+    slide.className = 'strip-slide';
     title.className = 'strip-title';
-    win.appendChild(title);
-    win.appendChild(makeIcon(''));
+    slide.appendChild(title);
+    slide.appendChild(makeIcon(''));
+    win.appendChild(slide);
     strip.appendChild(win);
     document.querySelector('.title').insertBefore(strip, document.getElementById('section-nav-list'));
     stripShow(0);
