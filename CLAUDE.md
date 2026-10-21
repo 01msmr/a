@@ -1,11 +1,11 @@
 # a.msmr.co
 
-Personal start page: links in sections, shown as tiles. Static HTML, CSS and vanilla JS, two small PHP scripts for the data. No framework, no build step. Details: `README.md`; server and write protection: `docs/htaccess-setup.md`.
+Personal start page: links in sections, shown as tiles. Static HTML, CSS and vanilla JS, two small PHP scripts for the data. No framework, no build step. Overview: `README.md`; details: `docs/reference.md`; server and write protection: `docs/htaccess-setup.md`.
 
 ## File map
 
 - `index.html`: skeleton, inline theme/zoom scripts (run before first paint), `favicon/touch-icon-inline.js` (sets the iOS icon as a data: URI) and `favicon/app-mode.js` (`?app`, the standalone web app variant), both synchronous in the head, ordered `<script src="js/…">` tags
-- `tokens.css` (fonts, tuning values in the first `:root`, color schemes, linked first), `styles.css` (base looks, device media blocks); one area each in `strip.css`, `edit.css`, `grid.css`, `settings.css`, `ghost-header.css`, `cursor.css` (linked after it, in that order). After a CSS change run `node tools/style-snapshot.mjs check FILE.json.gz` against a snapshot taken before (see the tool's header)
+- `styles.css`: the one stylesheet `index.html` links; it only `@import`s, in cascade order, `tokens.css` (fonts, tuning values in the first `:root`, color schemes), `base.css` (base looks, device media blocks) and one file per area: `strip.css`, `edit.css`, `grid.css`, `settings.css`, `ghost-header.css`, `cursor.css`. After a CSS change run `node tools/style-snapshot.mjs check FILE.json.gz` against a snapshot taken before (see the tool's header)
 - `js/*.js`: classic scripts sharing globals, **loaded in this order** (the order in `index.html` is the single source of truth, `tools/smoke.js` reads it)
   - `state` the variables several files share (`lock`, `glow`, `light`, `cursor`, `measures`, …); every initial value is a plain literal, so it loads first. New cross-file state goes here
   - `prefs` view preferences
@@ -34,7 +34,7 @@ Each `js/*.js` starts with three header lines: what it owns, which globals it de
 - Code comments: one line. Put reasons in your reply or the CHANGELOG.
 - Top-level statements run at load, so the file order matters. A call at the top of one file must only use things defined in earlier files or in the same file.
 - Touch, swipe, glide and glow behavior is tuned on real iOS devices. Do not change it without checking on an iPhone/iPad; `tools/smoke.js` cannot see it.
-- Cache version: the `?v=` value is increased once at the end of the day's session with `npm run bump`, on **every** `?v=` in `index.html` (styles, all `js/*.js`, the head scripts, favicon links, Font Awesome CSS) with one value; `tools/smoke.js` fails on mixed values.
+- Cache version: the `?v=` value is increased once at the end of the day's session with `npm run bump`, on **every** `?v=` in `index.html` (`styles.css` and its `@import` lines, all `js/*.js`, the head scripts, favicon links, Font Awesome CSS) with one value; `tools/smoke.js` fails on mixed values.
 - The server pulls this repo, so a push deploys. Never push without the user saying so.
 - `edit/links.json` is server data and not in git. Never commit it.
 - Logic changes: write a test first when it can be tested (see global TDD rule); CSS, layout and texts are checked by hand.
