@@ -181,3 +181,30 @@ test('stripItemVisible: a narrow window shows two neighbours per side, a wide on
     assert.deepEqual(shown(40), [1, 2]);
     assert.deepEqual(shown(150), [3]);
 });
+
+test('stripReach: an item vanishes when its centre is closer to the window centre than half the window plus a quarter item', () => {
+    assert.equal(w.stripReach(40, 40), 30);
+    assert.equal(w.stripReach(100, 40), 60);
+});
+
+test('stripPick: the window shows the item that just vanished at its edge on the side the strip moves towards', () => {
+    const widths = [100, 100, 100, 100, 100, 100];   // itemW 40: an item vanishes when it is less than 50 + 10 from the window centre
+    assert.equal(w.stripPick(0, 40, widths, 0), 0);
+    assert.equal(w.stripPick(0, 40, widths, 1), 1);
+    assert.equal(w.stripPick(200, 40, widths, -1), 4);
+    assert.equal(w.stripPick(200, 40, widths, 0), 5);
+});
+
+test('stripPick: the item switches exactly when its number becomes hidden under a window of its own width', () => {
+    const itemW = 40, widths = [60, 140, 40, 100, 80, 120, 40, 90];
+    for (const dir of [1, -1]) for (let left = 0; left < 300; left += 1) {
+        const i = w.stripPick(left, itemW, widths, dir);
+        assert.equal(w.stripItemVisible(i * itemW - left, widths[i], itemW), false, 'dir ' + dir + ' left ' + left);
+    }
+});
+
+test('stripPick: the result depends only on position, direction and the widths (no jitter when the window resizes)', () => {
+    const widths = [40, 200, 40, 200, 40, 200];
+    for (let left = 0; left < 200; left += 7) assert.equal(w.stripPick(left, 40, widths, 1), w.stripPick(left, 40, widths.slice(), 1));
+    assert.equal(w.stripPick(0, 40, [], 1), 0);
+});

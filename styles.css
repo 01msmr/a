@@ -893,7 +893,7 @@ li.dead::after {
         height: var(--strip-w);
         margin: 0 4px;
         order: 1;
-        font-size: 0.9rem;
+        font-size: 0.9em;   /* the size of "set" on the gear and of the words in the settings overlay (.title is the base of both) */
     }
 
     #strip-track {
@@ -901,7 +901,6 @@ li.dead::after {
         height: 100%;
         overflow-x: auto;
         overscroll-behavior-x: contain;
-        scroll-snap-type: x mandatory;
         scrollbar-width: none;
         touch-action: pan-x;
     }
@@ -919,7 +918,6 @@ li.dead::after {
 
     .strip-item {
         flex: 0 0 var(--strip-w);
-        scroll-snap-align: center;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -971,6 +969,8 @@ li.dead::after {
         white-space: nowrap;
         background-color: var(--c, var(--sect-col));
         color: var(--title-col);
+        font-weight: normal;
+        transition: background-color 0.66s, width 0.2s ease-out;   /* the fill fades from section to section, the text switches at once, the window resizes around its title (like msmr.dev) */
         pointer-events: none;
     }
 
