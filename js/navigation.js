@@ -94,13 +94,3 @@ document.addEventListener('keydown', function (e) {
     else if (e.key === 'ArrowRight') { e.preventDefault(); linkBy(1); }
     else if (e.key === 'ArrowLeft') { e.preventDefault(); linkBy(-1); }
 });
-
-// Jump keys of the bottom bar
-['step-prev', 'step-next'].forEach(function (id, i) {
-    var el = document.getElementById(id);
-    if (el) el.addEventListener('click', function (e) {
-        e.preventDefault();
-        jumpBy(i ? 1 : -1, true);
-    });
-});
-

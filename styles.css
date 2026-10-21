@@ -646,11 +646,6 @@ body.keyboard section li.covered a:not([contenteditable]):focus-visible::before 
     background-color: var(--chip-inv);
 }
 
-/* jump keys only in the smartphone/small view */
-.stepper {
-    display: none;
-}
-
 /* ── Unreachable links ───────────────────────────────────────────── */
 
 /* dead links look like all the others, just a red dot (5px) at the top right, concentric in the corner rounding */
@@ -769,40 +764,20 @@ li.dead::after {
     .home-link,
     #section-nav-list,
     .secname,
-    .nav-btn,
-    .stepper {
+    .nav-btn {
         flex-shrink: 0;
         padding: 0 0.8em;
     }
 
     /* lower: the 48px chip used to dictate the bar height */
     a.secname,
-    .nav-btn,
-    .stepper {
+    .nav-btn {
         height: 2.375rem;
     }
 
     /* reaches to the screen edge with viewport-fit=cover */
     .title {
         padding-bottom: env(safe-area-inset-bottom, 0px);
-    }
-
-    /* each with its own border */
-    .stepper {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        box-sizing: border-box;
-        min-width: 2.375rem;
-        padding: 0 0.5em;
-        margin-left: 5px;
-        /* filled: area in border color, chevron in area color */
-        background-color: var(--text-col);
-        color: var(--front-body);
-        text-decoration: none;
-        border: 1px solid var(--text-col);
-        border-radius: 6px;
-        font-size: 0.9em;
     }
 
     li a {
@@ -873,18 +848,16 @@ li.dead::after {
         display: none;
     }
 
-    /* Dropdown right behind the title, the steppers close behind it; the gear at the very right edge.
-       display: contents lifts dropdown and gear into the bar so that order and margin-left: auto take effect */
+    /* display: contents lifts the dropdown and gear into the bar so that order takes effect */
     #section-nav-list {
         display: contents;
     }
 
-    /* dropdown and gear: just the icon, no visible edges (the bevel colors of the nav buttons are transparent); the width is the same as the steppers' */
+    /* dropdown and gear: just the icon, no visible edges (the bevel colors of the nav buttons are transparent) */
     .nav-btn {
         border-color: transparent;
     }
 
-    /* less padding to the right of the domain, and the free width goes to the elements: dropdown and steppers grow, the gear keeps its size */
     .title {
         column-gap: 0;
     }
@@ -896,37 +869,144 @@ li.dead::after {
     .titledomain {
         padding-right: 0;
     }
+}
 
-    /* the same small distance in front of each of the four buttons */
-    .nav-btn,
-    .stepper {
-        margin-left: 4px;
+/* ── Section strip (narrow touch devices) ────────────────────────────
+   Bottom bar: "a." | strip | gear. The strip scrolls natively; the numbers (icons in icon mode) slide under a fixed window
+   that shows the title of the item in it. js/strip.js picks the item when the strip comes to rest. */
+.strip {
+    display: none;
+}
+
+@media only screen and (min-device-width: 350px) and (max-device-width: 812px) and (hover: none) {
+    .title {
+        --strip-w: 2.375rem;   /* width of one strip item = width of "a." and of the gear */
+        column-gap: 0;
+        padding-left: 0;
     }
 
-    /* the four buttons (sections dropdown, up, down, settings) share the free width equally */
-    #section-jumper,
-    .stepper,
-    #settings-btn {
+    .strip {
+        display: block;
+        position: relative;
         flex: 1 1 0;
         min-width: 0;
-        padding: 0;   /* unequal padding would make the widths unequal (basis 0 is raised to padding + border) */
-    }
-
-    /* order: dropdown, down, up, settings */
-    #section-jumper {
+        height: var(--strip-w);
+        margin: 0 4px;
         order: 1;
+        font-size: 0.9rem;
     }
 
-    #step-next {
-        order: 2;
+    #strip-track {
+        display: flex;
+        height: 100%;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        touch-action: pan-x;
     }
 
-    #step-prev {
-        order: 3;
+    #strip-track::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* half a strip of space on both sides: the first and the last item can reach the window */
+    #strip-track::before,
+    #strip-track::after {
+        content: "";
+        flex: 0 0 calc(50% - var(--strip-w) / 2);
+    }
+
+    .strip-item {
+        flex: 0 0 var(--strip-w);
+        scroll-snap-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-col);
+        text-decoration: none;
+        font-weight: normal;
+        transition: transform 0.12s ease-out;   /* the lens shift (js/strip.js) eases out when the strip stops */
+    }
+
+    .strip-item .secicon,
+    body.nav-icons .strip-item .strip-no {
+        display: none;
+    }
+
+    body.nav-icons .strip-item .secicon {
+        display: inline;
+    }
+
+    /* the window covers the item in the middle; an item sliding under its edge switches from number to title */
+    #strip-window {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        min-width: var(--strip-w);
+        max-width: 100%;
+        box-sizing: border-box;
+        padding: 0 0.8em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        white-space: nowrap;
+        background-color: var(--c, var(--sect-col));
+        color: var(--sect-col);
+        pointer-events: none;
+    }
+
+    #strip-window .strip-title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    #strip-window .secicon,
+    body.nav-icons #strip-window .strip-title {
+        display: none;
+    }
+
+    body.nav-icons #strip-window .secicon {
+        display: inline;
+    }
+
+    /* "a." and the gear: squares of the same width */
+    .home-link {
+        order: 0;
+        flex: 0 0 var(--strip-w);
+        width: var(--strip-w);
+        height: var(--strip-w);
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .titledomain {
+        display: none;
     }
 
     #settings-btn {
-        order: 4;
+        order: 2;
+        flex: 0 0 var(--strip-w);
+        width: var(--strip-w);
+        min-width: 0;
+        padding: 0;
+        margin-left: 0;
+    }
+
+    /* the nav row dissolves into the bar so that the gear takes its place by order */
+    #section-nav-list {
+        display: contents;
+    }
+
+    /* chips give way to the strip; the dropdown is hidden: delete #section-jumper from this rule to bring it back (it needs a width, e.g. flex: 0 0 var(--strip-w)) */
+    #section-nav-list .secname,
+    #section-jumper {
+        display: none;
     }
 }
 

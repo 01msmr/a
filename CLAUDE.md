@@ -18,6 +18,7 @@ Personal start page: links in sections, shown as tiles. Static HTML, CSS and van
   - `cursor` line pointer
   - `grid` grid layout, focus on content
   - `navigation` jumping between sections and links (keys, mouse tile)
+  - `strip` section strip in the bottom bar of narrow touch devices (numbers under a fixed window, lens effect)
   - `links` never-dead check, link items
   - `settings` settings overlay
   - `boot` loads data, starts the page

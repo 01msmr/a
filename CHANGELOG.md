@@ -4,6 +4,14 @@ Newest first. One heading per working session. Older states are in
 `git log`; the record starts here with the session of 25/26 July 2026.
 Names in this log are the current English ones (the code was translated to English on 2026-10-17).
 
+## 2026-10-21 — Section strip in the bottom bar (narrow touch devices)
+
+- On narrow touch devices (device width 350–812 px, `hover: none`) the bottom bar is now `a.` | strip | gear. `a.` and the gear are squares of the same width. The strip is a natively scrolling row (`js/strip.js`): one item per section, numbers (icons in icon mode), sliding under a fixed window in the section color that shows the full title (icon only in icon mode). When the strip comes to rest the item in the window becomes the active section and the page scrolls to its page (`jumpTo`); a tap on an item does the same. The strip follows the page scroll (`stripSync`, called from `syncActive`).
+- Lens effect only from speed and position: while the strip moves, items near the window are pushed away from it (`stripLens`), nothing changes size, nothing is decorated at rest.
+- The up/down steppers are removed (markup, CSS, key handlers). The sections dropdown is hidden by CSS only (`#section-jumper` in the strip block of `styles.css`): delete it from that rule to bring it back. Chips stay in the DOM, hidden.
+- The gear stays a small square and keeps the original size of "set" (32 px wide, fits the 38 px square). The settings overlay is as wide as its words need at that size (font ÷ 0.44, `settingsMinWidth`) and ends at the gear's right edge.
+- Tests: `stripIndexAt`, `stripLeftFor`, `stripLens`, `buildStrip`, `stripShow`, `stripSync`. Not tested (needs an iPhone): the feel of scrolling, snapping, the settle delay (140 ms) and the lens strength.
+
 ## 2026-10-18 — Structure, performance and AI-readiness (nothing visible changes)
 
 - `app.js` cut into 14 files in `js/` (prefs, render, active-section, touch, glow, ghost-header, light, cursor, grid, navigation, links, settings, boot, edit), same order and same code; proven byte for byte against the old file. Each file starts with three header lines (owns, defines, uses). `index.html` loads them in order; `tools/smoke.js` and `tools/dev-router.php` read the file list from there.

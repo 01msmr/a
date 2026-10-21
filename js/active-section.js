@@ -1,6 +1,6 @@
 // Owns: whenStill and trackActiveSection (which section is current)
 // Defines globals: stillRaf, whenStill, trackActiveSection
-// Uses: state
+// Uses: state, strip
 // Replacement for scrollend without waiting: calls fn as soon as the scroll position has been still for two frames
 var stillRaf = new Map();
 function whenStill(fn) {
@@ -38,6 +38,7 @@ function trackActiveSection() {
         // after a click on a heading or chip its chip stays active until the mouse or keyboard moves
         var locked = lock.sec && !document.body.classList.contains('keyboard') && lock.sec.querySelector('h3.name');
         if (locked) nav = '#' + locked.id;
+        stripSync(nav);
         chips.forEach(function (chip) {
             chip.classList.toggle('active', chip.hash === nav);
         });

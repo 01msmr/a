@@ -1,6 +1,6 @@
 // Owns: settings overlay and its icons
-// Defines globals: SETTINGS, valueName, valueTo, drawScheme, drawIcon, settingsDisplay, navButtonHeight, settingsPlace
-// Uses: state, prefs, render, touch, cursor, edit
+// Defines globals: SETTINGS, valueName, valueTo, drawScheme, drawIcon, settingsDisplay, navButtonHeight, settingsMinWidth, settingsPlace
+// Uses: state, prefs, render, touch, cursor, edit, strip
 // ── Settings: gear in the bar, overlay with one button per setting ──
 // One icon per setting shows the current value; each click switches to the other of two values. The API for zoom/color scheme is in the <head>.
 // icon: Font Awesome class or letter (zoom); shows the current value
@@ -154,13 +154,19 @@ function settingsDisplay() {
 // In the full-width grid the gear stretches: measure it briefly with the bar width of the chips
 function navButtonHeight() {
     var gearEl = document.getElementById('settings-btn'), bar = document.querySelector('.title');
-    var widthPx = gearEl.getBoundingClientRect().width;
+    var widthPx = Math.max(gearEl.getBoundingClientRect().width, settingsMinWidth());
     if (document.body.classList.contains('view-grid') && !document.body.classList.contains('align-center') && bar) {
         bar.style.maxWidth = 'calc(var(--column) + 0.12em)';
         widthPx = gearEl.getBoundingClientRect().width;
         bar.style.maxWidth = '';
     }
     return widthPx;
+}
+
+// With the section strip the gear is a small square: the overlay is as wide as its words need at the size of "set"
+// (they keep that size from a width of font / 0.44, see .set-btn) and ends at the gear's right edge
+function settingsMinWidth() {
+    return stripOn() ? parseFloat(getComputedStyle(document.querySelector('#settings-btn .secshort')).fontSize) / 0.44 : 0;
 }
 
 // flush below the gear, same width; in the bottom bar (smartphone/small view) flush above it
@@ -171,11 +177,12 @@ function settingsPlace() {
     var upper = r.top > window.innerHeight / 2;
     // In the grid the bar runs across the whole width and the gear stretches: the width stays that of the gear,
     // the button height (and with it the overlay height) the same as for chips; measure it briefly with the bar width of the chips
-    pop.style.width = r.width + 'px';   // flush with the gear, even if it stretches in the grid
+    var popW = Math.max(r.width, settingsMinWidth());
+    pop.style.width = popW + 'px';   // flush with the gear, even if it stretches in the grid
     pop.style.setProperty('--set-height', navButtonHeight() + 'px');   // button height as for chips
     var label = gearEl.querySelector('.secshort');
     pop.style.setProperty('--set-font', getComputedStyle(label).fontSize);   // the entries' words as large as the word on the gear
-    pop.style.left = r.left + 'px';
+    pop.style.left = (r.right - popW) + 'px';   // flush with the gear (right edge for a wider overlay)
     pop.style.right = 'auto';
     pop.style.top = upper ? 'auto' : r.bottom + 'px';
     pop.style.bottom = upper ? (window.innerHeight - r.top) + 'px' : 'auto';
