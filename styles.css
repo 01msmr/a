@@ -881,7 +881,7 @@ li.dead::after {
 @media only screen and (min-device-width: 350px) and (max-device-width: 812px) and (hover: none) {
     .title {
         --strip-w: 2.375rem;   /* width (pitch) of one strip item and height of the bar items */
-        --btn-w: 3rem;         /* "a." and the gear: as wide as the nav buttons in icon mode, the gear wider if its text needs it */
+        --btn-w: 3.35rem;      /* "a." and the gear: the width the settings overlay needs for its words at the size of "set" (that size / 0.44, see .set-btn): the overlay is as wide as the gear */
         column-gap: 0;
         padding-left: 0;
     }
@@ -900,6 +900,7 @@ li.dead::after {
         order: 1;
         overflow: hidden;
         touch-action: none;
+        font-weight: 700;   /* text mode: bold; icon mode: below */
         font-size: 0.9em;   /* the size of "set" on the gear and of the words in the settings overlay (.title is the base of both) */
     }
 
@@ -915,7 +916,7 @@ li.dead::after {
         justify-content: center;
         color: var(--title-col);   /* dark text in light mode, light text in dark mode (central values in :root) */
         text-decoration: none;
-        font-weight: normal;
+        font-weight: inherit;   /* bold in text mode (.strip), normal in icon mode */
     }
 
     /* no fades: at rest the numbers are cut off two items beyond the window's edge (--reach, js/strip.js); the clip closes with the glide after a release.
@@ -968,7 +969,7 @@ li.dead::after {
         white-space: nowrap;
         background-color: var(--c, var(--sect-col));
         color: var(--title-col);
-        font-weight: normal;
+        font-weight: inherit;   /* bold in text mode (.strip), normal in icon mode */
         transition: background-color 0.66s, width 0.45s cubic-bezier(.33, 1, .68, 1);   /* the fill fades from section to section, the text switches at once (like msmr.dev) */
         pointer-events: none;
     }
@@ -978,9 +979,20 @@ li.dead::after {
         transition: background-color 0.66s;
     }
 
-    #strip-window .strip-title {
-        overflow: hidden;
-        text-overflow: ellipsis;
+    body.nav-icons .strip {
+        font-weight: 400;
+    }
+
+    /* the old title (or icon) while it is pushed out of the window (js/strip.js) */
+    .strip-ghost {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        pointer-events: none;
     }
 
     #strip-window .secicon,

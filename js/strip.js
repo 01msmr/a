@@ -1,28 +1,29 @@
 // Owns: the section strip in the bottom bar of narrow touch devices (aiming like msmr.dev: numbers beside a window that shows the title)
-// Defines globals: stripDrag, stripSections, stripWidths, stripSlots, stripSuckFrom, stripAimF, stripWinAt, stripOn, stripMeasure, stripShow, buildStrip, stripSync
+// Defines globals: stripDrag, stripSections, stripWidths, stripSlots, stripSuckFrom, stripPushTo, stripAimF, stripWinAt, stripOn, stripMeasure, stripShow, buildStrip, stripSync
 // Uses: state, render
 // Pressing the strip aims from the active item; the finger moves f (a fraction of the item index) one to one. The numbers follow the finger and hold at the window's edge;
-// when the number is a fixed depth (half the width of a "0") under the edge, it steps into the window as its title and the outgoing title steps out as a number at the same depth, at that very moment.
+// when the number is a fixed depth under the edge (half the width of a "0"; in icon mode a quarter of the icon), it steps into the window as its title and the outgoing title steps out as a number at the same depth, at that very moment.
 // on: the strip is pressed (aiming); idx: item in the window; f0/f: aim at the start / now; x0: finger start; touched: item under the finger; end: time of the last release
 var stripDrag = { on: false, idx: -1, suck: null, f: 0, f0: 0, x0: 0, pid: null, dragged: false, touched: null, end: -1e9 };
 var stripSections = [];
 var stripWidths = [];   // window width per item (its title, or the icon)
 var stripVis = [];      // visible width per item (its number or icon, without the invisible padding of the item)
-var stripUnder = 0;     // how far a number may be under the window's edge before it steps in: half the width of a "0" in the strip's font
+var stripUnders = [];   // per item: how far its number may be under the window's edge before it steps in: half the width of a "0" in the strip's font (text) or a quarter of the icon's width (icons)
 var stripWinW = 0;      // width of the window now
 var stripMode = null;   // watches the Navigation setting (class nav-icons on the body)
 // At rest the numbers show two items beyond the window's edge (cut off there, they glide in and out through that edge while the strip moves)
 var STRIP_MS = 450, STRIP_EASE = 'cubic-bezier(.33,1,.68,1)';   // the pace of msmr.dev's narrow nav (--nav-t, --nav-ease)
+var STRIP_UNDER_ICON = 0.25;   // icon mode: the depth under the window's edge is this fraction of the icon's width
 var STRIP_SUCK_MS = 150, STRIP_SUCK_EASE = 'cubic-bezier(.5,0,1,1)';   // a number stepping into the window is sucked in: ease-in, short enough to keep up with a finger
 
 // Centre of every item relative to the strip centre for the aim f. The item nearest to f (k) stands in the window; the others follow the finger one to one and hold
 // at the window's edge, their visible part (vis, default: the item's width) the fixed depth `under` under it, until they step in; the outgoing item appears at the same
-// depth. Items are gap wide. msmr.dev has the same rule
+// depth. under is one length for all or one per item. Items are gap wide. msmr.dev has the same rule
 function stripSlots(f, count, winW, gap, vis, under) {
     var k = count ? Math.max(0, Math.min(count - 1, Math.round(f))) : 0, x = [];
     for (var j = 0; j < count; j++) {
         var d = j - f, s = Math.sign(d), v = (vis && vis[j]) || gap;
-        x.push(j === k ? 0 : s * (winW / 2 + v / 2 - (under || 0)) + (d - s / 2) * gap);
+        x.push(j === k ? 0 : s * (winW / 2 + v / 2 - ((Array.isArray(under) ? under[j] : under) || 0)) + (d - s / 2) * gap);
     }
     return { k: k, x: x };
 }
@@ -30,15 +31,19 @@ function stripSlots(f, count, winW, gap, vis, under) {
 // Where the incoming title starts, relative to the window centre: fully outside the edge its number was at (dir 1: from the right, -1: from the left)
 function stripSuckFrom(dir, winW, titleW) { return dir * (winW / 2 + titleW / 2); }
 
+// Where the outgoing title ends, relative to the window centre: fully outside the edge opposite to the one the incoming title comes from
+function stripPushTo(dir, winW, titleW) { return -stripSuckFrom(dir, winW, titleW); }
+
 // The aim for a finger that moved dx (px) since it was pressed on item f0
 function stripAimF(f0, dx, gap, count) { return Math.max(0, Math.min(count - 1, f0 - dx / gap)); }
 
-// The window follows its content: between two items its width runs from one title to the other
+// The window follows its content: from the width of its title, growing to the wider of the two titles at the step between two items, then on to the other title,
+// so it is never narrower than the title it shows (nothing is cut off) and never jumps
 function stripWinAt(f, widths) {
     var n = widths.length;
     if (!n) return 0;
-    var g = Math.max(0, Math.min(n - 1, f)), a = Math.floor(g), b = Math.min(n - 1, a + 1);
-    return widths[a] + (widths[b] - widths[a]) * (g - a);
+    var g = Math.max(0, Math.min(n - 1, f)), a = Math.floor(g), b = Math.min(n - 1, a + 1), t = g - a, m = Math.max(widths[a], widths[b]);
+    return t < 0.5 ? widths[a] + (m - widths[a]) * 2 * t : m + (widths[b] - m) * (2 * t - 1);
 }
 
 function stripItems() { return Array.prototype.slice.call(document.querySelectorAll('#strip .strip-item')); }
@@ -59,7 +64,11 @@ function stripShow(i) {
     var sec = stripSections[i];
     if (!sec) return;
     var old = stripDrag.idx, items = stripItems();
-    if (old >= 0 && old !== i && stripItemW()) stripDrag.suck = { old: old, dir: i > old ? 1 : -1, left: parseFloat(items[old].style.left) || 0 };   // played by stripPlace
+    if (old >= 0 && old !== i && stripItemW()) {   // played by stripPlace: what is in the window now leaves, the new one enters
+        var wn = document.getElementById('strip-window');
+        stripDrag.suck = { old: old, dir: i > old ? 1 : -1, left: parseFloat(items[old].style.left) || 0, winW: stripWinW,
+            title: wn.querySelector('.strip-title').textContent, icon: wn.querySelector('.secicon').className };
+    }
     stripItems().forEach(function (a, k) {
         a.classList.toggle('active', k === i);
         if (k === i) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
@@ -71,12 +80,12 @@ function stripShow(i) {
     stripDrag.idx = i;
 }
 
-// Window width per item: its title (the icon only in icon mode), at most 70 % of the strip; visible width per item: its number or icon.
+// Window width per item: its title (the icon only in icon mode), at most the width of the strip; visible width per item: its number or icon.
 // Measured again when the size or the mode changes
 function stripMeasure() {
     var strip = document.getElementById('strip'), win = document.getElementById('strip-window'), itemW = stripItemW();
     if (!strip || !itemW) return;
-    var title = win.querySelector('.strip-title'), keep = title.textContent, max = Math.max(itemW, strip.clientWidth * 0.7);
+    var title = win.querySelector('.strip-title'), keep = title.textContent, max = Math.max(itemW, strip.clientWidth);
     var icons = document.body.classList.contains('nav-icons'), cs = getComputedStyle(win), pad = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
     var keepW = win.style.width;
     win.style.transition = 'none'; win.style.width = 'auto';   // natural width: a narrow window would squeeze the title
@@ -88,15 +97,16 @@ function stripMeasure() {
     title.textContent = keep; win.style.width = keepW;
     void win.offsetWidth;
     win.style.transition = '';
-    var zero = document.createElement('span');   // half the width of a "0" in the strip's font is the depth
+    var zero = document.createElement('span');   // half the width of a "0" in the strip's font is the depth in text mode
     zero.textContent = '0'; zero.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap';
     strip.appendChild(zero);
-    stripUnder = zero.getBoundingClientRect().width / 2;
+    var halfZero = zero.getBoundingClientRect().width / 2;
     zero.remove();
     stripVis = stripItems().map(function (a) {
         var v = a.querySelector(icons ? '.secicon' : '.strip-no');
         return (v && v.getBoundingClientRect().width) || itemW;
     });
+    stripUnders = stripVis.map(function (v) { return icons ? v * STRIP_UNDER_ICON : halfZero; });
     stripPlace(stripDrag.on ? stripDrag.f : Math.max(stripDrag.idx, 0), stripDrag.on);   // a resize while the finger is down keeps the aim
 }
 
@@ -112,6 +122,13 @@ function stripSuck() {
     [win.querySelector('.strip-title'), win.querySelector('.secicon')].forEach(function (el) {
         if (el.animate && el.offsetWidth) el.animate([{ translate: stripSuckFrom(su.dir, stripWinW, el.offsetWidth) + 'px 0' }, { translate: '0px 0' }], opt);
     });
+    // the old title (or icon) is pushed out on the opposite side in the same motion, the window clips it: always one in the window at the end
+    var ghost = document.createElement('div'), t = document.createElement('span'), ic = document.createElement('i');
+    ghost.className = 'strip-ghost'; t.className = 'strip-title'; t.textContent = su.title; ic.className = su.icon;
+    ghost.appendChild(t); ghost.appendChild(ic); win.appendChild(ghost);
+    if (!ghost.animate) { ghost.remove(); return; }
+    var a = ghost.animate([{ translate: '0px 0' }, { translate: stripPushTo(su.dir, Math.max(su.winW, stripWinW), ghost.offsetWidth) + 'px 0' }], opt);
+    a.onfinish = a.oncancel = function () { ghost.remove(); };
 }
 
 // Put the items and the window where the aim f wants them (aim: all numbers show, at rest only the nearest ones)
@@ -119,7 +136,7 @@ function stripPlace(f, aim) {
     var strip = document.getElementById('strip'), gap = stripItemW(), c = strip ? strip.clientWidth / 2 : 0, n = stripSections.length;
     if (!n || !gap || !c || stripWidths.length !== n) return;
     stripWinW = stripWinAt(f, stripWidths);
-    var s = stripSlots(f, n, stripWinW, gap, stripVis, stripUnder);
+    var s = stripSlots(f, n, stripWinW, gap, stripVis, stripUnders);
     if (s.k !== stripDrag.idx) stripShow(s.k);
     document.getElementById('strip-window').style.width = stripWinW + 'px';
     stripItems().forEach(function (a, j) { a.style.left = (c + s.x[j] - gap / 2).toFixed(1) + 'px'; });

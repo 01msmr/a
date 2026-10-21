@@ -129,14 +129,24 @@ test('stripAimF: dragging left moves f forward by the drag in item pitches, clam
     assert.equal(w.stripAimF(5, -400, 40, 6), 5);
 });
 
-test('stripWinAt: the window width follows f between the widths of the two items it is between', () => {
+test('stripWinAt: the window follows f between the widths of two items and is never narrower than the title it shows', () => {
     const widths = [40, 100, 60];
     assert.equal(w.stripWinAt(0, widths), 40);
-    assert.equal(w.stripWinAt(0.5, widths), 70);
     assert.equal(w.stripWinAt(1, widths), 100);
-    assert.equal(w.stripWinAt(1.5, widths), 80);
+    assert.equal(w.stripWinAt(2, widths), 60);
+    assert.equal(w.stripWinAt(0.25, widths), 70);   // on the way to the wider neighbour it grows to the wider of the two at the step
+    assert.equal(w.stripWinAt(1.75, widths), 80);   // and shrinks again towards the narrower one after it
     assert.equal(w.stripWinAt(9, widths), 60);
     assert.equal(w.stripWinAt(0, []), 0);
+    for (const ws of [[40, 100, 60, 90, 30], [120, 40, 40, 200, 80]]) for (let f = 0; f <= ws.length - 1; f += 0.01) {
+        assert.ok(w.stripWinAt(f, ws) >= ws[Math.max(0, Math.min(ws.length - 1, Math.round(f)))] - 1e-9, 'f ' + f);
+    }
+});
+
+test('stripWinAt: the width is continuous, also at the step between two items', () => {
+    const ws = [40, 200, 40, 120];
+    let prev = w.stripWinAt(0, ws);
+    for (let f = 0.01; f <= 3; f += 0.01) { const now = w.stripWinAt(f, ws); assert.ok(Math.abs(now - prev) <= 160 * 0.02 + 1e-6, 'f ' + f); prev = now; }
 });
 
 test('buildStrip: one item per section with number and icon, the window with title and icon, both in the section color', () => {
@@ -187,4 +197,18 @@ test('stripSuckFrom: the incoming title starts fully outside the window edge it 
     assert.equal(w.stripSuckFrom(1, 100, 60), 50 + 30);     // next item: comes from the right
     assert.equal(w.stripSuckFrom(-1, 100, 60), -(50 + 30)); // previous item: comes from the left
     assert.equal(w.stripSuckFrom(1, 40, 14), 20 + 7);
+});
+
+test('stripSlots: the depth can be given per item (icon mode: a quarter of the width of each icon)', () => {
+    const vis = [40, 40, 40, 20, 24, 40], under = vis.map(v => v / 4);   // icons of different widths
+    const incoming = w.stripSlots(2.4999, 6, 100, 40, vis, under);
+    assert.ok(Math.abs(incoming.x[3] - (100 / 2 + 20 / 2 - 20 / 4)) < 0.01);   // the 20 px icon is 5 px under the edge
+    const outgoing = w.stripSlots(4.5001, 6, 100, 40, vis, under);   // item 4 (24 px) steps out
+    assert.ok(Math.abs(outgoing.x[4] - -(100 / 2 + 24 / 2 - 24 / 4)) < 0.01);   // 6 px under, the same depth as on the way in
+});
+
+test('stripPushTo: the outgoing title leaves fully outside the window on the side it came from, opposite to the incoming one', () => {
+    assert.equal(w.stripPushTo(1, 100, 60), -(50 + 30));    // next item came from the right: the old one leaves to the left
+    assert.equal(w.stripPushTo(-1, 100, 60), 50 + 30);
+    assert.equal(w.stripPushTo(1, 100, 60), -w.stripSuckFrom(1, 100, 60));   // as far as the incoming one starts away: both travel the same way
 });
