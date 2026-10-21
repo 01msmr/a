@@ -923,10 +923,25 @@ li.dead::after {
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--text-col);
+        color: var(--title-col);   /* dark text in light mode, light text in dark mode (central values in :root) */
         text-decoration: none;
         font-weight: normal;
-        transition: transform 0.12s ease-out;   /* the lens shift (js/strip.js) eases out when the strip stops */
+        transition: transform 0.12s ease-out, opacity 0.12s;   /* the lens shift (js/strip.js) eases out when the strip stops */
+    }
+
+    /* no link preview or callout menu on a long press */
+    .strip-item,
+    .home-link {
+        -webkit-touch-callout: none;
+        -webkit-user-drag: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    /* under the window edge (more than 25 % covered) or beyond the next two items: hidden, only the window shows it */
+    .strip-item.gone {
+        opacity: 0;
+        pointer-events: none;
     }
 
     .strip-item .secicon,
@@ -955,7 +970,7 @@ li.dead::after {
         overflow: hidden;
         white-space: nowrap;
         background-color: var(--c, var(--sect-col));
-        color: var(--sect-col);
+        color: var(--title-col);
         pointer-events: none;
     }
 
@@ -1326,6 +1341,25 @@ body.align-center .title {
 body.align-center .name {
     padding-left: max(0.2em, (100% - var(--column)) / 2);
     padding-right: max(0px, (100% - var(--column)) / 2);
+}
+
+/* Phone and tablet (device width up to 1024 px): heading icon slightly larger (.7 -> .8); the space left of the icon (heading padding)
+   equals the space between icon and title (icon margin). After the base rules above so that it wins at equal specificity */
+@media only screen and (max-device-width: 1024px) {
+    .name {
+        --head-icon: 0.8;
+        --head-gap: 0.3em;
+        padding-left: calc(var(--head-icon) * var(--head-gap));
+    }
+
+    body.align-center .name {
+        padding-left: max(calc(var(--head-icon) * var(--head-gap)), (100% - var(--column)) / 2);
+    }
+
+    .name .secicon {
+        font-size: calc(var(--head-icon) * 1em);
+        margin-right: var(--head-gap);
+    }
 }
 
 body.align-center .group {

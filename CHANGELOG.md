@@ -10,7 +10,9 @@ Names in this log are the current English ones (the code was translated to Engli
 - Lens effect only from speed and position: while the strip moves, items near the window are pushed away from it (`stripLens`), nothing changes size, nothing is decorated at rest.
 - The up/down steppers are removed (markup, CSS, key handlers). The sections dropdown is hidden by CSS only (`#section-jumper` in the strip block of `styles.css`): delete it from that rule to bring it back. Chips stay in the DOM, hidden.
 - The gear stays a small square and keeps the original size of "set" (32 px wide, fits the 38 px square). The settings overlay is as wide as its words need at that size (font ÷ 0.44, `settingsMinWidth`) and ends at the gear's right edge.
-- Tests: `stripIndexAt`, `stripLeftFor`, `stripLens`, `buildStrip`, `stripShow`, `stripSync`. Not tested (needs an iPhone): the feel of scrolling, snapping, the settle delay (140 ms) and the lens strength.
+- An item under the window stays visible only while at least 75 % of it is outside; only the next two items beyond the window's edge show (`stripItemVisible`, class `.gone`), so one or two neighbours per side, depending on the width of the title. Item and window text use `--title-col` (dark in light mode, light in dark mode; the color values are central in the two `:root` blocks at the top of `styles.css`, the choice is kept in `localStorage` as `msmr.theme`). No long-press preview or menu on the strip items and `a.` (`-webkit-touch-callout`, `contextmenu`).
+- Section heading icons on phone and tablet (device width up to 1024 px): slightly larger (0.8 instead of 0.7) and the space left of the icon equals the space between icon and title (`--head-icon`, `--head-gap`).
+- Tests: `stripItemVisible`, `stripIndexAt`, `stripLeftFor`, `stripLens`, `buildStrip`, `stripShow`, `stripSync`. Not tested (needs an iPhone): the feel of scrolling, snapping, the settle delay (140 ms) and the lens strength.
 
 ## 2026-10-18 — Structure, performance and AI-readiness (nothing visible changes)
 

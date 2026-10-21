@@ -1,5 +1,5 @@
 // Owns: the section strip in the bottom bar of touch phones (numbers scroll under a fixed window that shows the title)
-// Defines globals: stripDrag, stripIndexAt, stripLeftFor, stripLens, stripOn, buildStrip, stripShow, stripSync
+// Defines globals: stripDrag, stripIndexAt, stripLeftFor, stripLens, stripItemVisible, stripOn, buildStrip, stripShow, stripSync
 // Uses: state, render
 // on: the user moves the strip (finger down or coasting); finger: still touching; idx: item in the window; timer: waits for the strip to come to rest
 var stripDrag = { on: false, finger: false, idx: -1, timer: 0 };
@@ -20,9 +20,17 @@ function stripLens(d, speed, itemW) {
     return itemW * 0.8 * power * x * Math.exp(0.5 - x * x);
 }
 
+// An item sliding under the window shows only while at least 75 % of it is outside, and only the next two items beyond the window's edge show; d = distance from the window centre
+function stripItemVisible(d, winW, itemW) {
+    var edge = Math.abs(d) - winW / 2;
+    return edge >= itemW * 0.25 && edge <= itemW * 2;
+}
+
 function stripLensApply(left, speed) {
     var itemW = stripItemW();
+    var winW = document.getElementById('strip-window').offsetWidth;
     stripItems().forEach(function (a, i) {
+        if (winW) a.classList.toggle('gone', !stripItemVisible(i * itemW - left, winW, itemW));
         a.style.transform = speed ? 'translateX(' + stripLens(i * itemW - left, speed, itemW).toFixed(1) + 'px)' : '';
     });
 }
@@ -50,6 +58,8 @@ function stripShow(i) {
     win.querySelector('.secicon').className = makeIcon(sec.icon).className;
     win.style.setProperty('--c', sectionColor(i));
     stripDrag.idx = i;
+    var track = document.getElementById('strip-track');
+    if (track) stripLensApply(track.scrollLeft, 0);   // the window width changed: items under its edge hide or show again
 }
 
 function stripScrollTo(i, instant) {
@@ -118,6 +128,7 @@ function buildStrip(data) {
         if (i !== stripDrag.idx) stripShow(i);
         if (!stripDrag.finger) stripArm();
     }, { passive: true });
+    track.addEventListener('contextmenu', function (e) { e.preventDefault(); });   // no long-press menu on the links
     var last = { left: 0, t: 0, timer: 0 };
     track.addEventListener('scroll', function () {   // every scroll counts, also our own: the lens only depends on speed and position
         var now = performance.now(), left = track.scrollLeft;

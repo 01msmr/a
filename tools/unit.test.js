@@ -161,3 +161,23 @@ test('stripLens: faster means a stronger shift up to a cap; far items hardly mov
     assert.ok(Math.abs(w.stripLens(60, 5000, 40)) < 40);
     assert.ok(Math.abs(w.stripLens(400, 5000, 40)) < 0.02 * 40);
 });
+
+test('stripItemVisible: an item shows only while at least 75 % of it is outside the window', () => {
+    // itemW 40, window 100 wide (half 50): the item is visible from a centre distance of 50 + 10
+    assert.equal(w.stripItemVisible(60, 100, 40), true);
+    assert.equal(w.stripItemVisible(59, 100, 40), false);
+    assert.equal(w.stripItemVisible(0, 100, 40), false);
+});
+
+test('stripItemVisible: only the next two items beyond the window edge show, on both sides', () => {
+    assert.equal(w.stripItemVisible(130, 100, 40), true);
+    assert.equal(w.stripItemVisible(131, 100, 40), false);
+    assert.equal(w.stripItemVisible(-60, 100, 40), true);
+    assert.equal(w.stripItemVisible(-131, 100, 40), false);
+});
+
+test('stripItemVisible: a narrow window shows two neighbours per side, a wide one covers the nearest', () => {
+    const shown = (win) => [1, 2, 3, 4].filter(k => w.stripItemVisible(k * 40, win, 40));
+    assert.deepEqual(shown(40), [1, 2]);
+    assert.deepEqual(shown(150), [3]);
+});
