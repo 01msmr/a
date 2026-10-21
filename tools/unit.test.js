@@ -212,3 +212,35 @@ test('stripPushTo: the outgoing title leaves fully outside the window on the sid
     assert.equal(w.stripPushTo(-1, 100, 60), 50 + 30);
     assert.equal(w.stripPushTo(1, 100, 60), -w.stripSuckFrom(1, 100, 60));   // as far as the incoming one starts away: both travel the same way
 });
+
+test('isAppMode: only the query key "app" switches the web app setup on', () => {
+    assert.equal(w.isAppMode('?app'), true);
+    assert.equal(w.isAppMode('?app=1'), true);
+    assert.equal(w.isAppMode('?x=1&app'), true);
+    assert.equal(w.isAppMode(''), false);
+    assert.equal(w.isAppMode('?application'), false);
+    assert.equal(w.isAppMode('?xapp'), false);
+    assert.equal(w.isAppMode('#app'), false);
+});
+
+test('applyAppMode: in app mode the manifest becomes the standalone one and the iOS web app tags are set; otherwise nothing changes', () => {
+    const fresh = () => { const d = w.document.implementation.createHTMLDocument('x'); d.head.innerHTML = '<link rel="manifest" href="./favicon/manifest.json">'; return d; };
+    const off = fresh();
+    w.applyAppMode(off, false);
+    assert.equal(off.querySelector('link[rel="manifest"]').getAttribute('href'), './favicon/manifest.json');
+    assert.equal(off.querySelectorAll('meta').length, 0);
+    const on = fresh();
+    w.applyAppMode(on, true);
+    assert.equal(on.querySelector('link[rel="manifest"]').getAttribute('href'), './favicon/manifest-app.json');
+    assert.equal(on.querySelector('meta[name="apple-mobile-web-app-capable"]').getAttribute('content'), 'yes');
+    assert.equal(on.querySelector('meta[name="apple-mobile-web-app-title"]').getAttribute('content'), 'a.');
+    w.applyAppMode(on, true);   // twice: no duplicate tags
+    assert.equal(on.querySelectorAll('meta[name="apple-mobile-web-app-capable"]').length, 1);
+    assert.equal(on.querySelectorAll('link[rel="manifest"]').length, 1);
+});
+
+test('applyAppMode: without a manifest link in the page one is added', () => {
+    const d = w.document.implementation.createHTMLDocument('x');
+    w.applyAppMode(d, true);
+    assert.equal(d.querySelectorAll('link[rel="manifest"]').length, 1);
+});

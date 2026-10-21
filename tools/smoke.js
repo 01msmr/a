@@ -32,6 +32,13 @@ const afterMs = (fn, ms) => new Promise(r => setTimeout(() => { fn(); r(); }, ms
     check(new Set(rawHtml.match(/\?v=[^"]*/g)).size === 1, 'index.html has more than one ?v= value');   // old and new files must not mix
     check(/href="vendor\/fontawesome-\d[^"]*\/css\//.test(rawHtml), 'Font Awesome path has no version (its fonts are cached for a year)');
     check(!/googleapis|gstatic|cdnjs/.test(rawHtml), 'index.html loads fonts or CSS from a third-party host');
+    // both manifests: the icons they name exist; the ?app one is the standalone web app that starts at /?app (js: favicon/app-mode.js)
+    for (const f of ['favicon/manifest.json', 'favicon/manifest-app.json']) {
+        const m = JSON.parse(fs.readFileSync(root + f, 'utf8'));
+        (m.icons || []).forEach(i => check(fs.existsSync(root + 'favicon/' + i.src), f + ': icon is missing: ' + i.src));
+    }
+    const app = JSON.parse(fs.readFileSync(root + 'favicon/manifest-app.json', 'utf8'));
+    check(app.display === 'standalone' && app.start_url === '/?app' && app.scope === '/', 'favicon/manifest-app.json is not the standalone web app starting at /?app');
     const touch = d.querySelectorAll('link[rel="apple-touch-icon"]');
     check(touch.length === 1 && touch[0].href.startsWith('data:image/png;base64,'), 'apple-touch-icon is not a single data: URI link after the icon script');
     await afterMs(() => {
