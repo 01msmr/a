@@ -106,6 +106,7 @@ The browser checks need Chrome (`CHROME_PATH` names it) and start the dev router
 - Tab runs through the tiles. The arrows also work with focus on nav chips and gear,
   not in the dropdown and not in edit mode. In the open dropdown the arrows move the focus
   between the entries, Enter selects; the focus has no highlight of its own there.
+- `+` / `=` and `-` / `0`: zoom M / S. `p` / `b`: the bar at the top / bottom (not with Ctrl, Cmd or Alt, not in a field).
 - Only the most recently used input counts (mouse **or** keyboard), the other one
   is ignored for the highlight.
 - `+` / `-` change the zoom, `0` sets it to S. Ctrl/Cmd stay with the browser zoom.

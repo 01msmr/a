@@ -1,9 +1,12 @@
 // Owns: settings overlay and its icons
-// Defines globals: SETTINGS, valueName, valueTo, drawScheme, drawIcon, settingsDisplay, navButtonHeight, settingsPlace
+// Defines globals: setNavPos, SETTINGS, valueName, valueTo, drawScheme, drawIcon, settingsDisplay, navButtonHeight, settingsPlace
 // Uses: state, prefs, render, touch, cursor, edit, grid
 // ── Settings: gear in the bar, overlay with one button per setting ──
 // One icon per setting shows the current value; each click switches to the other of two values. The API for zoom/color scheme is in the <head>.
 // icon: Font Awesome class or letter (zoom); shows the current value
+// Stores the bar position; the grid reserves its room beside the bar
+function setNavPos(w) { setPref('navPos', w); gridInit(); }
+
 var SETTINGS = [
     {
         label: 'Zoom',
@@ -45,7 +48,7 @@ var SETTINGS = [
         lined: { bottom: ['fa-arrow-up', 'over'], top: ['fa-arrow-down', 'under'] },   // icon mode: an arrow with a line beside it that does not count into its size
         order: function (w) { return w === 'bottom' ? -1 : 1; },   // first in the overlay while the bar is at the bottom, last while it is at the top
         get: function () { return effectiveNavPos(); },
-        set: function (w) { setPref('navPos', w); gridInit(); }   // the grid reserves room beside the bar
+        set: function (w) { setNavPos(w); }
     },
     {
         label: 'View',
@@ -292,6 +295,8 @@ document.addEventListener('keydown', function (e) {
     if (e.target.closest('input, select, textarea, [contenteditable]')) return;
     if (e.key === '+' || e.key === '=') window.msmrZoom.set('m');
     else if (e.key === '-' || e.key === '0') window.msmrZoom.set('s');
+    else if (e.key === 'p' || e.key === 'P') setNavPos('top');
+    else if (e.key === 'b' || e.key === 'B') setNavPos('bottom');
 });
 
 // ── Mouse or keyboard: only the most recently used device highlights a tile ──

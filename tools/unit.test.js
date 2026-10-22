@@ -301,3 +301,26 @@ test('effectiveNavPos: the stored value, else bottom on the compact bar and top 
     w.localStorage.clear();
     w.applyPrefs();
 });
+
+test('keys p and b put the bar at the top and the bottom; not with a modifier and not in a field', () => {
+    const key = (k, init = {}, target = w.document.body) => target.dispatchEvent(new w.KeyboardEvent('keydown', { key: k, bubbles: true, ...init }));
+    const html = w.document.documentElement.classList;
+    w.localStorage.clear();
+    key('p');
+    assert.equal(html.contains('nav-top'), true);
+    assert.equal(w.getPref('navPos'), 'top');
+    key('b');
+    assert.equal(html.contains('nav-bottom'), true);
+    assert.equal(w.getPref('navPos'), 'bottom');
+    key('P');
+    assert.equal(w.getPref('navPos'), 'top');
+    key('b', { metaKey: true });
+    assert.equal(w.getPref('navPos'), 'top');
+    const field = w.document.createElement('input');
+    w.document.body.appendChild(field);
+    key('b', {}, field);
+    assert.equal(w.getPref('navPos'), 'top');
+    field.remove();
+    w.localStorage.clear();
+    w.applyPrefs();
+});
