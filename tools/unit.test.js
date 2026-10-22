@@ -149,19 +149,30 @@ test('stripWinAt: the width is continuous, also at the step between two items', 
     for (let f = 0.01; f <= 3; f += 0.01) { const now = w.stripWinAt(f, ws); assert.ok(Math.abs(now - prev) <= 160 * 0.02 + 1e-6, 'f ' + f); prev = now; }
 });
 
-test('buildStrip: "a." is the first item, then one item per section with number and icon; the window starts on the first section', () => {
+test('buildStrip: one item per section with number and icon, no "a." item (the home link stays at the left of the bar); the window starts on the first section', () => {
     w.buildStrip(stripData);
     const items = [...w.document.querySelectorAll('#strip .strip-item')];
-    assert.deepEqual(items.map(a => a.getAttribute('href')), ['#one', '#one', '#two', '#three']);
-    assert.equal(items[0].querySelector('.strip-no').textContent, 'a.');
-    assert.ok(items[0].classList.contains('strip-home'));
-    assert.deepEqual(items.slice(1).map(a => a.querySelector('.strip-no').textContent), ['1', '2', '3']);
-    assert.ok(items[2].querySelector('i.fa-star'));
-    assert.equal(items[3].style.getPropertyValue('--c'), w.sectionColor(2));
+    assert.deepEqual(items.map(a => a.getAttribute('href')), ['#one', '#two', '#three']);
+    assert.deepEqual(items.map(a => a.querySelector('.strip-no').textContent), ['1', '2', '3']);
+    assert.ok(items[1].querySelector('i.fa-star'));
+    assert.equal(items[2].style.getPropertyValue('--c'), w.sectionColor(2));
     assert.ok(w.document.querySelector('#strip-window .strip-title'));
     assert.ok(w.document.querySelector('#strip-window i.secicon'));
     assert.equal(w.document.querySelector('#strip-window .strip-title').textContent, 'Alpha');
-    assert.deepEqual(items.map(a => a.classList.contains('active')), [false, true, false, false]);
+    assert.deepEqual(items.map(a => a.classList.contains('active')), [true, false, false]);
+});
+
+test('stripShow: the window shows title (full, with suffix), icon and color of the item; that item is the active one', () => {
+    w.buildStrip(stripData);
+    w.stripShow(1);
+    const win = w.document.getElementById('strip-window');
+    assert.equal(win.querySelector('.strip-title').textContent, 'Beta.li');
+    assert.ok(win.querySelector('i.fa-star'));
+    assert.equal(win.style.getPropertyValue('--c'), w.sectionColor(1));
+    const active = [...w.document.querySelectorAll('.strip-item.active')];
+    assert.deepEqual(active.map(a => a.getAttribute('href')), ['#two']);
+    w.stripShow(2);
+    assert.deepEqual([...w.document.querySelectorAll('.strip-item.active')].map(a => a.getAttribute('href')), ['#three']);
 });
 
 test('buildStrip: building twice leaves one strip, placed in the bar before the nav row (the gear stays last)', () => {
@@ -169,27 +180,6 @@ test('buildStrip: building twice leaves one strip, placed in the bar before the 
     w.buildStrip(stripData);
     assert.equal(w.document.querySelectorAll('#strip').length, 1);
     assert.equal(w.document.querySelector('#strip').nextElementSibling.id, 'section-nav-list');
-});
-
-test('stripShow: the window shows title (full, with suffix), icon and color of the item; that item is the active one', () => {
-    w.buildStrip(stripData);
-    w.stripShow(2);
-    const win = w.document.getElementById('strip-window');
-    assert.equal(win.querySelector('.strip-title').textContent, 'Beta.li');
-    assert.ok(win.querySelector('i.fa-star'));
-    assert.equal(win.style.getPropertyValue('--c'), w.sectionColor(1));
-    const active = [...w.document.querySelectorAll('.strip-item.active')];
-    assert.deepEqual(active.map(a => a.getAttribute('href')), ['#two']);
-    w.stripShow(3);
-    assert.deepEqual([...w.document.querySelectorAll('.strip-item.active')].map(a => a.getAttribute('href')), ['#three']);
-});
-
-test('stripShow: "a." in the window is the neutral title color with the text "a."', () => {
-    w.buildStrip(stripData);
-    w.stripShow(0);
-    const win = w.document.getElementById('strip-window');
-    assert.equal(win.querySelector('.strip-title').textContent, 'a.');
-    assert.equal(win.style.getPropertyValue('--c'), 'var(--title-col)');
 });
 
 test('stripSync: the section hash picks the item; an unknown hash or a strip being dragged changes nothing', () => {
@@ -204,14 +194,6 @@ test('stripSync: the section hash picks the item; an unknown hash or a strip bei
     w.stripSync('#one');
     assert.equal(w.document.querySelector('#strip-window .strip-title').textContent, 'Gamma');
     w.stripDrag.on = false;
-});
-
-test('stripTarget: choosing "a." means the first section (the page goes to the top), every other item stays itself', () => {
-    w.buildStrip(stripData);
-    assert.equal(w.stripTarget(0), 1);
-    assert.equal(w.stripTarget(2), 2);
-    w.buildStrip([]);
-    assert.equal(w.stripTarget(0), 0);
 });
 
 test('stripSuckFrom: the incoming title starts fully outside the window edge it comes from, the outgoing one leaves towards the other', () => {

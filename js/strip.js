@@ -1,11 +1,11 @@
 // Owns: the section strip in the bottom bar of narrow touch devices (aiming like msmr.dev: numbers beside a window that shows the title)
-// Defines globals: stripDrag, stripSections, stripWidths, stripVis, stripUnders, stripWinW, stripMode, STRIP_MS, STRIP_EASE, STRIP_UNDER_ICON, STRIP_SUCK_MS, STRIP_SUCK_EASE, stripSlots, stripSuckFrom, stripPushTo, stripColor, stripTarget, stripAimF, stripWinAt, stripItems, stripItemW, stripOn, stripShow, stripMeasure, stripSuck, stripPlace, stripLefts, stripFollow, stripSync, stripChoose, buildStrip
+// Defines globals: stripDrag, stripSections, stripWidths, stripVis, stripUnders, stripWinW, stripMode, STRIP_MS, STRIP_EASE, STRIP_UNDER_ICON, STRIP_SUCK_MS, STRIP_SUCK_EASE, stripSlots, stripSuckFrom, stripPushTo, stripAimF, stripWinAt, stripItems, stripItemW, stripOn, stripShow, stripMeasure, stripSuck, stripPlace, stripLefts, stripFollow, stripSync, stripChoose, buildStrip
 // Uses: state, render
 // Pressing the strip aims from the active item; the finger moves f (a fraction of the item index) one to one. The numbers follow the finger and hold at the window's edge;
 // when the number is a fixed depth under the edge (half the width of a "0"; in icon mode a quarter of the icon), it steps into the window as its title and the outgoing title steps out as a number at the same depth, at that very moment.
 // on: the strip is pressed (aiming); idx: item in the window; f0/f: aim at the start / now; x0: finger start; touched: item under the finger; end: time of the last release
 var stripDrag = { on: false, idx: -1, suck: null, f: 0, f0: 0, x0: 0, pid: null, dragged: false, touched: null, end: -1e9 };
-var stripSections = [];   // item 0 is "a." ({ home: true }), then the sections; the number of section k is k
+var stripSections = [];
 var stripWidths = [];   // window width per item (its title, or the icon)
 var stripVis = [];      // visible width per item (its number or icon, without the invisible padding of the item)
 var stripUnders = [];   // per item: how far its number may be under the window's edge before it steps in: half the width of a "0" in the strip's font (text) or a quarter of the icon's width (icons)
@@ -35,12 +35,6 @@ function stripSuckFrom(dir, winW, titleW) { return dir * (winW / 2 + titleW / 2)
 function stripPushTo(dir, winW, titleW) { return -stripSuckFrom(dir, winW, titleW); }
 
 // The aim for a finger that moved dx (px) since it was pressed on item f0
-// The color of item i: the section color (item 0 is "a.", the sections count from item 1), neutral for "a."
-function stripColor(i) { return stripSections[i] && stripSections[i].home ? 'var(--title-col)' : sectionColor(i - 1); }
-
-// What a choice of item j activates: "a." takes the page to the top, the first section is the active one then (like the start item of msmr.dev, "a." is never active)
-function stripTarget(j) { return stripSections[j] && stripSections[j].home && stripSections.length > 1 ? 1 : j; }
-
 function stripAimF(f0, dx, gap, count) { return Math.max(0, Math.min(count - 1, f0 - dx / gap)); }
 
 // The window follows its content: from the width of its title, growing to the wider of the two titles at the step between two items, then on to the other title,
@@ -82,8 +76,7 @@ function stripShow(i) {
     var win = document.getElementById('strip-window');
     win.querySelector('.strip-title').textContent = sec.title;
     win.querySelector('.secicon').className = makeIcon(sec.icon).className;
-    win.classList.toggle('is-home', !!sec.home);
-    win.style.setProperty('--c', stripColor(i));
+    win.style.setProperty('--c', sectionColor(i));
     stripDrag.idx = i;
 }
 
@@ -97,7 +90,7 @@ function stripMeasure() {
     var keepW = win.style.width;
     win.style.transition = 'none'; win.style.width = 'auto';   // natural width: a narrow window would squeeze the title
     stripWidths = stripSections.map(function (sec) {
-        if (icons && !sec.home) return itemW;   // "a." is a text in both modes
+        if (icons) return itemW;
         title.textContent = sec.title;
         return Math.min(max, Math.max(itemW, title.offsetWidth + pad));
     });
@@ -110,10 +103,10 @@ function stripMeasure() {
     var halfZero = zero.getBoundingClientRect().width / 2;
     zero.remove();
     stripVis = stripItems().map(function (a) {
-        var v = a.querySelector(icons && !a.classList.contains('strip-home') ? '.secicon' : '.strip-no');
+        var v = a.querySelector(icons ? '.secicon' : '.strip-no');
         return (v && v.getBoundingClientRect().width) || itemW;
     });
-    stripUnders = stripVis.map(function (v, j) { return icons && !stripSections[j].home ? v * STRIP_UNDER_ICON : halfZero; });
+    stripUnders = stripVis.map(function (v) { return icons ? v * STRIP_UNDER_ICON : halfZero; });
     stripPlace(stripDrag.on ? stripDrag.f : Math.max(stripDrag.idx, 0), stripDrag.on);   // a resize while the finger is down keeps the aim
 }
 
@@ -169,7 +162,7 @@ function stripFollow(before) {
 // The active section changed (page scroll, tap, dropdown): the strip follows, unless the user is aiming
 function stripSync(hash) {
     if (stripDrag.on) return;
-    var i = stripSections.findIndex(function (s) { return !s.home && '#' + s.id === hash; });
+    var i = stripSections.findIndex(function (s) { return '#' + s.id === hash; });
     if (i < 0 || i === stripDrag.idx) return;
     var before = stripLefts();
     stripShow(i);
@@ -179,9 +172,7 @@ function stripSync(hash) {
 
 // Leave aiming (or a tap/key): item j becomes active, the window shrinks to its title, the numbers glide to their places, the page scrolls to its page
 function stripChoose(j, x, y) {
-    var before = stripLefts();
-    j = stripTarget(j);
-    var sec = stripSections[j];
+    var before = stripLefts(), sec = stripSections[j];
     stripDrag.on = false; stripDrag.end = performance.now();
     document.getElementById('strip').classList.remove('is-aiming');
     stripShow(j);
@@ -199,19 +190,19 @@ function stripChoose(j, x, y) {
 function buildStrip(data) {
     var old = document.getElementById('strip');
     if (old) old.remove();
-    stripSections = [{ home: true, id: '', title: 'a.', icon: '' }].concat(data);
+    stripSections = data.slice();
     stripDrag.on = false; stripDrag.idx = -1; stripWidths = []; stripVis = []; stripWinW = 0;
     var strip = document.createElement('div'), win = document.createElement('div'), clip = document.createElement('div');
     strip.id = 'strip'; strip.className = 'strip';
     clip.className = 'strip-clip';
     strip.appendChild(clip);
-    stripSections.forEach(function (sec, idx) {
+    data.forEach(function (sec, idx) {
         var a = document.createElement('a'), no = document.createElement('span');
-        a.className = 'strip-item' + (sec.home ? ' strip-home' : ''); a.href = '#' + (sec.home && data.length ? data[0].id : sec.id); a.target = '_self'; setHint(a, sec.title);
-        a.style.setProperty('--c', stripColor(idx));
-        no.className = 'strip-no'; no.textContent = sec.home ? sec.title : idx;
+        a.className = 'strip-item'; a.href = '#' + sec.id; a.target = '_self'; setHint(a, sec.title);
+        a.style.setProperty('--c', sectionColor(idx));
+        no.className = 'strip-no'; no.textContent = idx + 1;
         a.appendChild(no);
-        if (!sec.home) a.appendChild(makeIcon(sec.icon));
+        a.appendChild(makeIcon(sec.icon));
         clip.appendChild(a);
     });
     win.id = 'strip-window'; win.setAttribute('aria-hidden', 'true');
@@ -221,7 +212,7 @@ function buildStrip(data) {
     win.appendChild(makeIcon(''));
     strip.appendChild(win);
     document.querySelector('.title').insertBefore(strip, document.getElementById('section-nav-list'));
-    stripShow(stripTarget(0));
+    stripShow(0);
 
     // Aiming: the finger anywhere on the strip starts from the active item; a tap on a neighbour chooses it
     strip.addEventListener('pointerdown', function (ev) {

@@ -100,19 +100,6 @@
         pointer-events: none;
     }
 
-    /* "a." in the window: neutral fill, text in the page's body color, a text in icon mode too */
-    #strip-window.is-home {
-        color: var(--front-body);
-    }
-
-    body.nav-icons #strip-window.is-home .strip-title {
-        display: inline;
-    }
-
-    body.nav-icons #strip-window.is-home .secicon {
-        display: none;
-    }
-
     /* while the finger moves the width follows it at once */
     .strip.is-aiming #strip-window {
         transition: background-color 0.66s;
@@ -148,9 +135,16 @@
         user-select: none;
     }
 
-    /* "a." is the first item of the strip; the gear keeps its width (at least that of the nav buttons in icon mode) */
+    /* "a." and the gear: the same width, at least that of the nav buttons in icon mode; "a." stays at the left of the bar, outside the strip */
     .home-link {
-        display: none;
+        order: 0;
+        flex: 0 0 var(--btn-w);
+        width: var(--btn-w);
+        height: var(--strip-w);
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .titledomain {
