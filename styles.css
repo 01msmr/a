@@ -1,9 +1,9 @@
 /* The stylesheet of the page: the only one index.html links. It lists the files in cascade order; the version after the file names is the cache version (npm run bump) */
-@import url("tokens.css?v=2026-10-21m");
-@import url("base.css?v=2026-10-21m");
-@import url("strip.css?v=2026-10-21m");
-@import url("edit.css?v=2026-10-21m");
-@import url("grid.css?v=2026-10-21m");
-@import url("settings.css?v=2026-10-21m");
-@import url("ghost-header.css?v=2026-10-21m");
-@import url("cursor.css?v=2026-10-21m");
+@import url("tokens.css?v=2026-10-22");
+@import url("base.css?v=2026-10-22");
+@import url("strip.css?v=2026-10-22");
+@import url("edit.css?v=2026-10-22");
+@import url("grid.css?v=2026-10-22");
+@import url("settings.css?v=2026-10-22");
+@import url("ghost-header.css?v=2026-10-22");
+@import url("cursor.css?v=2026-10-22");
