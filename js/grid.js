@@ -19,13 +19,13 @@ function gridInit(onlyOnChange) {
         return;
     }
 
-    // free space at the bottom must match the bar height exactly
+    // free space beside the fixed bar (bottom, or top with nav-top) must match the bar height exactly
     var bar = document.querySelector('.title');
+    var side = document.documentElement.classList.contains('nav-top') ? 'paddingTop' : 'paddingBottom';
+    container.style.paddingTop = '';
+    container.style.paddingBottom = '';
     if (bar && getComputedStyle(bar).position === 'fixed') {
-        container.style.paddingBottom =
-            Math.ceil(bar.getBoundingClientRect().height) + 'px';
-    } else {
-        container.style.paddingBottom = '';
+        container.style[side] = Math.ceil(bar.getBoundingClientRect().height) + 'px';
     }
 
     var cs = getComputedStyle(container);

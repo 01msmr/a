@@ -1,6 +1,6 @@
 // Owns: settings overlay and its icons
 // Defines globals: SETTINGS, valueName, valueTo, drawScheme, drawIcon, settingsDisplay, navButtonHeight, settingsPlace
-// Uses: state, prefs, render, touch, cursor, edit
+// Uses: state, prefs, render, touch, cursor, edit, grid
 // ── Settings: gear in the bar, overlay with one button per setting ──
 // One icon per setting shows the current value; each click switches to the other of two values. The API for zoom/color scheme is in the <head>.
 // icon: Font Awesome class or letter (zoom); shows the current value
@@ -36,6 +36,15 @@ var SETTINGS = [
         icons: { short: 'fa-square', icons: 'fa-square' },
         get: function () { return getPref('navMode'); },
         set: function (w) { setPref('navMode', w); }
+    },
+    {
+        label: 'Bar',
+        values: [['bottom', 'bottom'], ['top', 'top']],
+        text: { bottom: 'bot', top: 'top' },
+        // an arrow against a horizontal line
+        icons: { bottom: ['fa-arrow-down', 'fa-minus'], top: ['fa-minus', 'fa-arrow-up'] },
+        get: function () { return effectiveNavPos(); },
+        set: function (w) { setPref('navPos', w); gridInit(); }   // the grid reserves room beside the bar
     },
     {
         label: 'View',
@@ -240,6 +249,8 @@ function settingsPlace() {
     window.addEventListener('resize', function () { if (pop.matches(':popover-open')) settingsPlace(); });
 
     // With a mouse: closes 3 s after leaving overlay and gear (touch/without pointer: never)
+    // The unstored bar position follows the layout (rotation, Split View)
+    matchMedia(COMPACT_QUERY).addEventListener('change', settingsDisplay);
     var pointer = matchMedia('(hover: hover) and (pointer: fine)');
     var closeTimer = null;
     function autoCloseStop() { clearTimeout(closeTimer); closeTimer = null; }

@@ -605,54 +605,10 @@ li.dead::after {
 
     .container {
         height: 100%;
-        padding: 10px 0 50px 0;   /* the side space is the padding of the sections, so that the highlight (their background) runs to the screen edge */
+        padding: 10px 0 0 0;   /* the side space is the padding of the sections, so that the highlight (their background) runs to the screen edge */
         box-sizing: border-box;
         overflow-y: auto;
         overflow-x: hidden;
-    }
-
-    .title {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        z-index: 100;
-        margin: 0;
-        border-radius: 0;
-        border: none;
-        padding: 0;
-        height: auto;
-        display: flex;
-        align-items: center;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        background-color: var(--front-body);
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-    }
-
-    .title::-webkit-scrollbar {
-        display: none;
-    }
-
-    /* pad only at the sides, otherwise the bar gets too tall */
-    .home-link,
-    #section-nav-list,
-    .secname,
-    .nav-btn {
-        flex-shrink: 0;
-        padding: 0 0.8em;
-    }
-
-    /* lower: the 48px chip used to dictate the bar height */
-    a.secname,
-    .nav-btn {
-        height: 2.375rem;
-    }
-
-    /* reaches to the screen edge with viewport-fit=cover */
-    .title {
-        padding-bottom: env(safe-area-inset-bottom, 0px);
     }
 
     li a {
@@ -726,15 +682,6 @@ li.dead::after {
     /* display: contents lifts the dropdown and gear into the bar so that order takes effect */
     #section-nav-list {
         display: contents;
-    }
-
-    /* dropdown and gear: just the icon, no visible edges (the bevel colors of the nav buttons are transparent) */
-    .nav-btn {
-        border-color: transparent;
-    }
-
-    .title {
-        column-gap: 0;
     }
 
     .home-link {
@@ -881,4 +828,77 @@ body.align-center .group {
     body:not(.edit-mode) section.page-start {
         scroll-snap-align: start;
     }
+}
+
+/* ── Compact bar: fixed to the bottom (or top with nav-top) with the section strip (strip.css) ─────────
+   Same query as COMPACT_QUERY in js/touch.js. After the iPad block, so it wins at equal specificity */
+@media only screen and (min-device-width: 350px) and (max-device-width: 812px) and (hover: none), only screen and (min-width: 350px) and (hover: none) and ((orientation: portrait) or (max-width: 812px)) {
+    .title {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        max-width: none;
+        z-index: 100;
+        margin: 0;
+        border-radius: 0;
+        border: none;
+        padding: 0 0 env(safe-area-inset-bottom, 0px);   /* reaches to the screen edge with viewport-fit=cover */
+        height: auto;
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap;
+        column-gap: 0;
+        overflow-x: auto;
+        background-color: var(--front-body);
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .nav-top .title {
+        top: 0;
+        bottom: auto;
+        padding: env(safe-area-inset-top, 0px) 0 0;
+    }
+
+    /* pad only at the sides, otherwise the bar gets too tall */
+    .home-link,
+    #section-nav-list,
+    .secname,
+    .nav-btn {
+        flex-shrink: 0;
+        padding: 0 0.8em;
+    }
+
+    /* lower: the 48px chip used to dictate the bar height; the iPad block's smaller font does not apply */
+    a.secname,
+    .nav-btn {
+        height: 2.375rem;
+        font-size: 1em;
+    }
+
+    body.nav-icons a.secname,
+    body.nav-icons .nav-btn {
+        width: 3rem;
+    }
+
+    /* dropdown and gear: just the icon, no visible edges */
+    .nav-btn {
+        border-color: transparent;
+    }
+
+    /* the reserve for the bar (grid view: measured by js/grid.js) */
+    .container {
+        padding-bottom: 50px;
+    }
+
+    .nav-top .container {
+        padding-top: 60px;
+        padding-bottom: 0;
+    }
+}
+
+/* Desktop and full-width tablets: the bar below the content instead of above it */
+.nav-bottom .title {
+    order: 1;
 }

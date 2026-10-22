@@ -123,6 +123,7 @@ a short English word, in icon mode an icon. The hover hint (`title`) names
 | Theme | auto, light, dark | `aut`, `light`, `dark` | circle (auto), sun, moon; in auto the icon of the system value small at the bottom right |
 | Color | vivid, pale | `col`, `pale` | circle in a section color |
 | Navigation | text, icons | `text` | square (`fa-square`) |
+| Bar | bottom, top | `bot`, `top` | `fa-arrow-down` over `fa-minus`, `fa-minus` over `fa-arrow-up` |
 | View | chips, grid | `chip`, `grid` | four round tiles or square outlines |
 | Align | left, center | `left`, `cen` (in the grid `full`) | `fa-align-left`, `fa-align-center` |
 | Edit | off, on | `edit`, `save` | two chevrons; floppy disk while editing |
@@ -146,6 +147,7 @@ Where the choice is kept (per device in `localStorage`, none of it is saved with
 | `msmr.theme` | `light` or `dark`; without an entry "auto" applies: the script in the `<head>` sets `data-theme` to the value of the system and follows changes |
 | `a.colorMode` | `vivid` or `pale` |
 | `a.navMode` | `short` or `icons` |
+| `a.navPos` | `bottom` or `top`; without an entry the layout decides: bottom on the compact bar, top elsewhere (`effectiveNavPos`); the class `nav-top` / `nav-bottom` is on `<html>` only for a stored value |
 | `a.align` | `left` or `center` |
 | `a.view` | `chips` or `grid` |
 
@@ -263,6 +265,8 @@ measuring in `glowMeasure`):
 - There are no pages in edit mode.
 
 ### Section strip (narrow touch devices)
+
+The compact bar (fixed, with the strip) applies on touch devices (`hover: none`) that are phones by screen size (device width 350–812 px), or at least 350 px wide in portrait or up to 812 px wide (iPad portrait, Split View). `COMPACT_QUERY` in `js/touch.js` and the media query in `base.css` / `strip.css` are the same; page layout and gestures (`isPhone`) stay on the device-width query. The bar position is the `navPos` setting: at the top the container reserves the room above (`js/grid.js` in grid view), on desktop `order: 1` puts the bar under the container.
 
 The bottom bar is strip | gear; `a.` is the first item of the strip (the home link is hidden there). The gear is `--btn-w` wide (3.35 rem: what the settings overlay needs for its words), so the overlay is exactly as wide as the gear. Choosing `a.` takes the page to the top and activates the first section (`stripTarget`); `a.` itself is never the active item, so the window shows it only while aiming. In the window it is neutral (`--title-col` fill, `--front-body` text), also in icon mode; the sections keep their numbers and colors (`stripColor`). The strip (`js/strip.js`, the strip block of `styles.css`) works like the narrow nav of msmr.dev: a window in the section color shows the full title of the active section (its icon in icon mode), the other sections are numbers (icons) beside it, up to two per side at rest.
 

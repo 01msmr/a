@@ -265,3 +265,39 @@ test('applyAppMode: without a manifest link in the page one is added', () => {
     w.applyAppMode(d, true);
     assert.equal(d.querySelectorAll('link[rel="manifest"]').length, 1);
 });
+
+test('navPos: no class without a stored value; setPref sets nav-top / nav-bottom; the value survives a re-read', () => {
+    w.localStorage.clear();
+    w.applyPrefs();
+    assert.equal(w.getPref('navPos'), 'auto');
+    assert.equal(w.document.documentElement.classList.contains('nav-top'), false);
+    assert.equal(w.document.documentElement.classList.contains('nav-bottom'), false);
+    w.setPref('navPos', 'top');
+    assert.equal(w.document.documentElement.classList.contains('nav-top'), true);
+    assert.equal(w.document.documentElement.classList.contains('nav-bottom'), false);
+    w.setPref('navPos', 'bottom');
+    assert.equal(w.document.documentElement.classList.contains('nav-top'), false);
+    assert.equal(w.document.documentElement.classList.contains('nav-bottom'), true);
+    assert.equal(w.localStorage.getItem('a.navPos'), 'bottom');
+    w.localStorage.clear();
+    w.applyPrefs();
+    assert.equal(w.document.documentElement.classList.contains('nav-bottom'), false);
+});
+
+test('effectiveNavPos: the stored value, else bottom on the compact bar and top otherwise', () => {
+    const real = w.matchMedia;
+    const compact = on => { w.matchMedia = q => ({ matches: q === w.COMPACT_QUERY ? on : real(q).matches, addEventListener() { }, addListener() { } }); };
+    w.localStorage.clear();
+    compact(true);
+    assert.equal(w.effectiveNavPos(), 'bottom');
+    compact(false);
+    assert.equal(w.effectiveNavPos(), 'top');
+    w.setPref('navPos', 'bottom');
+    assert.equal(w.effectiveNavPos(), 'bottom');
+    compact(true);
+    w.setPref('navPos', 'top');
+    assert.equal(w.effectiveNavPos(), 'top');
+    w.matchMedia = real;
+    w.localStorage.clear();
+    w.applyPrefs();
+});

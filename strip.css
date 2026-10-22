@@ -7,7 +7,7 @@
     display: none;
 }
 
-@media only screen and (min-device-width: 350px) and (max-device-width: 812px) and (hover: none) {
+@media only screen and (min-device-width: 350px) and (max-device-width: 812px) and (hover: none), only screen and (min-width: 350px) and (hover: none) and ((orientation: portrait) or (max-width: 812px)) {
     .title {
         --strip-w: 2.375rem;   /* width (pitch) of one strip item and height of the bar items */
         --btn-w: 3.35rem;      /* "a." and the gear: the width the settings overlay needs for its words at the size of "set" (that size / 0.44, see .set-btn): the overlay is as wide as the gear */

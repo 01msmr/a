@@ -1,5 +1,5 @@
 // Owns: CSS measures, pointer kind, click lock, swipe, tail snap after the glide
-// Defines globals: readMeasures, glide, PHONE_QUERY, isPhone, pointerKind, isTouch, setPointerKind, lockOn, lockOff, lockFromEvent, tapStart, touchTap, pendingTap, fingerDown, swipeEnd, tailLast, tailAnim, tailRestore, cutTail
+// Defines globals: readMeasures, glide, PHONE_QUERY, COMPACT_QUERY, isPhone, pointerKind, isTouch, setPointerKind, lockOn, lockOff, lockFromEvent, tapStart, touchTap, pendingTap, fingerDown, swipeEnd, tailLast, tailAnim, tailRestore, cutTail
 // Uses: state, active-section, glow, light (and the edit-mode class on body)
 // Numbers from the CSS variables (:root in tokens.css), read once
 function readMeasures() {
@@ -22,6 +22,8 @@ readMeasures();
 // Mouse or finger/pen, as of the last pointerdown (mouse movement resets it). Touch has no hover: the :hover that iOS
 // leaves hanging does not count, which is why body.touch in styles.css switches off all hover and press effects.
 var PHONE_QUERY = 'only screen and (min-device-width: 350px) and (max-device-width: 812px)';
+// The compact bar (section strip): touch phones by screen size, or any touch device in portrait or up to 812px wide (iPad portrait, Split View); keep in sync with the CSS
+var COMPACT_QUERY = PHONE_QUERY.replace('only screen and ', 'only screen and (hover: none) and ') + ', only screen and (min-width: 350px) and (hover: none) and ((orientation: portrait) or (max-width: 812px))';
 function isPhone() { return matchMedia(PHONE_QUERY).matches; }
 
 var pointerKind = 'mouse';

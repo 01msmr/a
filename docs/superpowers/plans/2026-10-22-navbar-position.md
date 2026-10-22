@@ -1,6 +1,6 @@
 # Plan: bar position setting and compact bar on narrow tablets
 
-Status: not started. Written 2026-10-22.
+Status: implemented on branch `navbar-position` (2026-10-22); device checks and the ghost header/strip shadow check (Part 1, item 7) are open. Rulings: the class sits on `<html>` (the head script runs before `<body>` exists); `COMPACT_QUERY` is the old device-width phone query OR the new branch, so large phones in landscape keep the strip; the strip re-measures through its existing `ResizeObserver`, no extra listener; bounds decided: 350 px, every touch tablet in portrait.
 
 ## Goal
 

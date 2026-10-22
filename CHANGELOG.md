@@ -4,6 +4,12 @@ Newest first. One heading per working session. Older states are in
 `git log`; the record starts here with the session of 25/26 July 2026.
 Names in this log are the current English ones (the code was translated to English on 2026-10-17).
 
+## 2026-10-22 — Bar position setting, compact bar on portrait and narrow tablets
+
+- New setting `Bar` (`navPos`: bottom or top) on all devices. Default without a stored value: bottom on the compact bar, top on desktop and full-width tablets; the first click flips what the device shows (`effectiveNavPos`). The class `nav-top` / `nav-bottom` is on `<html>`, set by a head script before the first paint, so there is no flash. Tests first: `unit.test.js` (`navPos`, `effectiveNavPos`).
+- The compact bar (fixed bar with the section strip) now also applies to touch tablets in portrait and in narrow windows (Split View) via `COMPACT_QUERY`; the old device-width phone query stays as the first branch, so phones keep the strip in landscape. The bar-only rules moved from the phone blocks into one compact block at the end of `base.css`; page layout and gestures stay on `isPhone()`.
+- `js/grid.js` reserves the room above the bar with `nav-top`. Measured in headless Chrome (bar and container rectangles, defaults and both stored values, chips and grid) on desktop, iPhone 15, iPad Mini, iPad Pro portrait and landscape, a 700 px touch window and a 700 px desktop window. Not tested on a device: touch behavior on iPad, Split View, rotation; the ghost header and strip shadows against a bar on the other side are not checked yet.
+
 ## 2026-10-21 — Section strip in the bottom bar (narrow touch devices)
 
 - Docs: `README.md` is now a short overview (what it is for, how it is made, how to run and test, deploy); the full former README is `docs/reference.md`. `CLAUDE.md` points to both.

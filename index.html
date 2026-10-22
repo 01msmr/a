@@ -52,6 +52,11 @@
         })();
     </script>
 
+    <!-- Bar position top/bottom: set before the first paint; without a stored value the CSS decides per layout (js/prefs.js keeps it) -->
+    <script>
+        try { const p = localStorage.getItem('a.navPos'); if (p === 'top' || p === 'bottom') document.documentElement.classList.add('nav-' + p); } catch { }
+    </script>
+
     <!-- Start the data requests now, while the scripts load; js/boot.js takes these promises -->
     <script>
         window.msmrLinks = fetch('links.php?t=' + Date.now());
