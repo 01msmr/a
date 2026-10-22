@@ -478,3 +478,9 @@ test('hover on the Bar button fills the hint element; leaving empties it; a clic
     w.localStorage.clear();
     w.applyPrefs();
 });
+
+test('ghostHeaderCurve: gliding in is the ease-out curve, gliding out is exactly its time reverse over the same time', () => {
+    assert.equal(w.ghostHeaderCurve(400, false), 'transform 400ms cubic-bezier(.215, .61, .355, 1)');
+    assert.equal(w.ghostHeaderCurve(400, true), 'transform 400ms cubic-bezier(.645, 0, .785, .39)');
+    assert.equal(w.ghostHeaderCurve(60, true), 'transform 60ms cubic-bezier(.645, 0, .785, .39)');
+});

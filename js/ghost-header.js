@@ -1,5 +1,5 @@
 // Owns: copies of the section heading at the edges (ghost headers)
-// Defines globals: ghostHeader, ghostHeaderOffscreen, ghostHeaderDuration, ghostHeaderLayer, ghostHeaderJump, ghostHeaderSection, ghostHeaderRemove, ghostHeaderRender, ghostHeaderEdge, ghostHeaderRank, ghostHeaderMake, ghostHeaderIndex, ghostHeaderReset
+// Defines globals: ghostHeader, ghostHeaderOffscreen, ghostHeaderDuration, GHOST_HEADER_EASE, ghostHeaderCurve, ghostHeaderLayer, ghostHeaderJump, ghostHeaderSection, ghostHeaderRemove, ghostHeaderRender, ghostHeaderEdge, ghostHeaderRank, ghostHeaderMake, ghostHeaderIndex, ghostHeaderReset
 // Uses: state, touch (and the edit-mode class on body)
 // ── Ghost headers ─────────────────────────────────────────────────
 // If the heading of the target section (nav chip under the mouse or jump after a click) lies outside the view,
@@ -18,6 +18,14 @@ function ghostHeaderOffscreen(edge) {
 function ghostHeaderDuration() {
     // 400 ms, short like the window for reduced motion
     return matchMedia('(prefers-reduced-motion: reduce)').matches ? measures['glow-duration-short'] : 400;
+}
+
+// The glide of a copy: in with an ease-out curve (fast at the start, slow at the end); out with its exact time reverse (the control points mirrored), over the same time
+var GHOST_HEADER_EASE = [.215, .61, .355, 1];
+function ghostHeaderCurve(ms, out) {
+    var e = GHOST_HEADER_EASE;
+    var p = out ? [1 - e[2], 1 - e[3], 1 - e[0], 1 - e[1]] : e;
+    return 'transform ' + ms + 'ms cubic-bezier(' + p.map(function (v) { return String(+v.toFixed(3)).replace(/^0\./, '.'); }).join(', ') + ')';
 }
 
 function ghostHeaderLayer() {
@@ -97,10 +105,10 @@ function ghostHeaderRender() {
         clearTimeout(ghostHeader.followTimer);
         ghostHeader.followTimer = setTimeout(ghostHeaderRender, ghostHeader.free - performance.now() + 10);
     }
-    // glide in and out: ease-out (fast at the start, slow at the end)
-    var curve = 'transform ' + ghostHeaderDuration() + 'ms cubic-bezier(.215, .61, .355, 1)';
+    // glide in: ease-out (fast at the start, slow at the end); glide out: its time reverse
+    var curve = ghostHeaderCurve(ghostHeaderDuration(), false), curveOut = ghostHeaderCurve(ghostHeaderDuration(), true);
     function slideOut(g) {   // glides out including shadow and line and is removed afterwards
-        g.el.style.transition = curve;
+        g.el.style.transition = curveOut;
         g.el.style.transform = ghostHeaderOffscreen(g.edge);
         g.el.classList.add('out');   // shadow and line fade out quickly at the end of gliding out (styles.css)
         g.el.style.setProperty('--fade-delay', Math.round(ghostHeaderDuration() * 0.75) + 'ms');
