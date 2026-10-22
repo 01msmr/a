@@ -46,7 +46,7 @@
         text-decoration: none;
     }
 
-    /* no fades: at rest the numbers are cut off three items beyond the window's edge, while aiming all show (--reach, js/strip.js); the clip widens with the glide when the interaction begins and closes with it after a release.
+    /* no fades: at rest the numbers are cut off three items beyond the window's edge, while aiming all show (--reach, js/strip.js); the clip widens (0.9 s) when the interaction begins and closes with the glide (0.45 s) after a release.
        The clip is on an inner layer, so a press anywhere on the strip still aims */
     .strip-clip {
         position: absolute;
@@ -61,6 +61,7 @@
     /* while the finger is down, all numbers show (the strip's own edge cuts them); the frame widens with the glide of the clip */
     .strip.is-aiming .strip-clip {
         clip-path: inset(0 0);
+        transition-duration: 0.9s;   /* widening at half the speed of the closing glide */
     }
 
     /* the item in the window shows as its title there (the number is hidden at once) */
