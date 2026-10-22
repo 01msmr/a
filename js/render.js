@@ -37,7 +37,7 @@ function sectionButton(sec, idx, withoutSuffix) {
     a.style.setProperty('--c', sectionColor(idx));
     a.href = '#' + sec.id;
     a.target = '_self';
-    a.title = sec.title;
+    setHint(a, sec.title);
     a.appendChild(makeIcon(sec.icon));
     var t = document.createElement('span');
     t.className = 'secshort';

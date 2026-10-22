@@ -83,6 +83,7 @@
     <!-- deferred: download starts in the head, they run in this order after the page is parsed -->
     <script src="js/state.js?v=2026-10-22" defer></script>
     <script src="js/prefs.js?v=2026-10-22" defer></script>
+    <script src="js/hint.js?v=2026-10-22" defer></script>
     <script src="js/render.js?v=2026-10-22" defer></script>
     <script src="js/active-section.js?v=2026-10-22" defer></script>
     <script src="js/touch.js?v=2026-10-22" defer></script>
@@ -108,12 +109,12 @@
             </a>
             <nav id="section-nav-list">
                 <button type="button" id="settings-btn" class="nav-btn"
-                aria-label="Settings" title="Settings">
+                aria-label="Settings" data-hint="Settings">
                 <i class="fa-solid fa-gear secicon" aria-hidden="true"></i><span class="secshort">set</span>
             </button>
                 <!-- Sections list: gear and dropdown share a flex row with the chips (same rules, same widths) -->
                 <button type="button" id="section-jumper" class="nav-btn" aria-haspopup="true" aria-expanded="false"
-                aria-controls="jumper-pop" aria-label="Sections" title="Sections">
+                aria-controls="jumper-pop" aria-label="Sections" data-hint="Sections">
                 <i class="fa-solid fa-chevron-down secicon" aria-hidden="true"></i><span class="secshort">sec</span>
             </button>
             </nav>

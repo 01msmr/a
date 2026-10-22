@@ -5,10 +5,11 @@ Personal start page: links in sections, shown as tiles. Static HTML, CSS and van
 ## File map
 
 - `index.html`: skeleton, inline theme/zoom scripts (run before first paint), `favicon/touch-icon-inline.js` (sets the iOS icon as a data: URI) and `favicon/app-mode.js` (`?app`, the standalone web app variant), both synchronous in the head, ordered `<script src="js/…">` tags
-- `styles.css`: the one stylesheet `index.html` links; it only `@import`s, in cascade order, `tokens.css` (fonts, tuning values in the first `:root`, color schemes), `base.css` (base looks, device media blocks) and one file per area: `strip.css`, `edit.css`, `grid.css`, `settings.css`, `ghost-header.css`, `cursor.css`. After a CSS change run `node tools/style-snapshot.mjs check FILE.json.gz` against a snapshot taken before (see the tool's header)
+- `styles.css`: the one stylesheet `index.html` links; it only `@import`s, in cascade order, `tokens.css` (fonts, tuning values in the first `:root`, color schemes), `base.css` (base looks, device media blocks) and one file per area: `strip.css`, `edit.css`, `grid.css`, `settings.css`, `hint.css`, `ghost-header.css`, `cursor.css`. After a CSS change run `node tools/style-snapshot.mjs check FILE.json.gz` against a snapshot taken before (see the tool's header)
 - `js/*.js`: classic scripts sharing globals, **loaded in this order** (the order in `index.html` is the single source of truth, `tools/smoke.js` reads it)
   - `state` the variables several files share (`lock`, `glow`, `light`, `cursor`, `measures`, …); every initial value is a plain literal, so it loads first. New cross-file state goes here
   - `prefs` view preferences
+  - `hint` the hint element (tooltip), `setHint` for elements with a hint
   - `render` section colors, icons, sections list, `render(data)`
   - `active-section` which section is current (`whenStill`, `trackActiveSection`)
   - `touch` CSS measures, pointer kind, click lock, swipe, tail snap after the glide

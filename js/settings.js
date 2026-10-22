@@ -1,6 +1,6 @@
 // Owns: settings overlay and its icons
-// Defines globals: setNavPos, tipText, hintHtml, hintLeft, SETTINGS, valueName, valueTo, drawScheme, drawIcon, settingsDisplay, navButtonHeight, settingsPlace
-// Uses: state, prefs, render, touch, cursor, edit, grid
+// Defines globals: setNavPos, tipText, hintHtml, SETTINGS, valueName, valueTo, drawScheme, drawIcon, settingsDisplay, navButtonHeight, settingsPlace
+// Uses: state, prefs, hint, render, touch, cursor, edit, grid
 // ── Settings: gear in the bar, overlay with one button per setting ──
 // One icon per setting shows the current value; each click switches to the other of two values. The API for zoom/color scheme is in the <head>.
 // icon: Font Awesome class or letter (zoom); shows the current value
@@ -101,11 +101,6 @@ function hintHtml(e, w) {
         var t = e.hint ? e.hint[p[0]] : valueName(e, p[0]).replace(/&/g, '&amp;').replace(/</g, '&lt;');
         return '<span' + (p[0] === w ? ' class="on"' : '') + '>' + t + '</span>';
     }).join('');
-}
-
-// Left edge of the hint beside a button: right of it when it fits in the window, otherwise left of it
-function hintLeft(r, width, windowWidth) {
-    return r.right + 6 + width <= windowWidth ? r.right + 6 : r.left - 6 - width;
 }
 
 function valueTo(e, w) {
@@ -221,32 +216,12 @@ function settingsPlace() {
 
 (function () {
     var pop = document.getElementById('settings-pop');
-    // One hint element outside the overlay (which clips); with a mouse only, beside the button
-    var hint = document.createElement('div');
-    hint.id = 'set-hint';
-    hint.popover = 'manual';
-    document.body.appendChild(hint);
-    var hintOn = false;
-    function hintHide() {
-        hint.innerHTML = '';
-        if (hintOn) hint.hidePopover();
-        hintOn = false;
-    }
-    function hintShow(b, e) {
-        if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-        var r = b.getBoundingClientRect();
-        hint.innerHTML = hintHtml(e, e.get());
-        if (!hintOn) hint.showPopover();
-        hintOn = true;
-        hint.style.top = (r.top + r.height / 2) + 'px';
-        hint.style.left = hintLeft(r, hint.offsetWidth, document.documentElement.clientWidth) + 'px';
-    }
     SETTINGS.forEach(function (e) {
         var b = document.createElement('button');
         b.type = 'button';
         b.className = 'set-btn';
         b.innerHTML = '<span class="set-icon" aria-hidden="true"></span>';
-        b.addEventListener('mouseenter', function () { hintShow(b, e); });
+        b.addEventListener('mouseenter', function () { hintShow(b, hintHtml(e, e.get()), true); });
         b.addEventListener('mouseleave', hintHide);
         b.addEventListener('click', function () {
             hintHide();

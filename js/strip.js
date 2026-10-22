@@ -207,7 +207,7 @@ function buildStrip(data) {
     strip.appendChild(clip);
     stripSections.forEach(function (sec, idx) {
         var a = document.createElement('a'), no = document.createElement('span');
-        a.className = 'strip-item' + (sec.home ? ' strip-home' : ''); a.href = '#' + (sec.home && data.length ? data[0].id : sec.id); a.target = '_self'; a.title = sec.title;
+        a.className = 'strip-item' + (sec.home ? ' strip-home' : ''); a.href = '#' + (sec.home && data.length ? data[0].id : sec.id); a.target = '_self'; setHint(a, sec.title);
         a.style.setProperty('--c', stripColor(idx));
         no.className = 'strip-no'; no.textContent = sec.home ? sec.title : idx;
         a.appendChild(no);

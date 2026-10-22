@@ -1,0 +1,32 @@
+/* The hint element (js/hint.js), a tooltip in the inverted colors of the page. Listed after settings.css in styles.css */
+
+/* a manual popover: in the top layer, so it also shows above the overlays that would clip it */
+#hint {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    border: 0;
+    padding: .35rem .6rem;
+    border-radius: .35rem;
+    background: var(--title-col);
+    color: var(--front-body);
+    font: inherit;
+    font-size: .85rem;
+    white-space: nowrap;
+    box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .35);
+    pointer-events: none;
+}
+
+/* settings hints: the options are spaced by their padding; the active one is a small inverted rectangle (js/settings.js, hintHtml) */
+#hint span {
+    padding: .05rem .3rem;
+}
+
+#hint .on {
+    background: var(--front-body);
+    color: var(--title-col);
+}
+
+#hint u {
+    text-underline-offset: .15em;
+}

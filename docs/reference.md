@@ -14,8 +14,8 @@ For AI agents and new contributors: `CLAUDE.md` has the file map, the rules and 
 | File | Purpose |
 |---|---|
 | `index.html` | Skeleton: bar (home link, nav chips or the section strip, gear, sections dropdown), content, overlays. The `<head>` holds the scripts that must run before the first paint: zoom, color scheme, the iOS home screen icon and the `?app` switch |
-| `js/*.js` | Rendering, navigation, the section strip, settings, edit mode, split by area (16 files, loaded in order from `index.html`); file map in `CLAUDE.md` |
-| `styles.css` → `tokens.css`, `base.css`, `strip.css`, `edit.css`, `grid.css`, `settings.css`, `ghost-header.css`, `cursor.css` | All looks. `index.html` links only `styles.css`, which `@import`s the others in cascade order (with the `?v=` value). `tokens.css` holds the `@font-face` rules (Ubuntu, the Apple logo, the small Font Awesome font), the tuning values and the color schemes; `base.css` is the base with the device media blocks; the other files hold one area each |
+| `js/*.js` | Rendering, navigation, the section strip, settings, edit mode, split by area (17 files, loaded in order from `index.html`); file map in `CLAUDE.md` |
+| `styles.css` → `tokens.css`, `base.css`, `strip.css`, `edit.css`, `grid.css`, `settings.css`, `hint.css`, `ghost-header.css`, `cursor.css` | All looks. `index.html` links only `styles.css`, which `@import`s the others in cascade order (with the `?v=` value). `tokens.css` holds the `@font-face` rules (Ubuntu, the Apple logo, the small Font Awesome font), the tuning values and the color schemes; `base.css` is the base with the device media blocks; the other files hold one area each |
 | `fonts/`, `vendor/fontawesome-6.7.2/` | Self-hosted fonts: Ubuntu Regular, a tiny Apple-logo font, Font Awesome Free (details and update steps in `fonts/README.md`) |
 | `.htaccess` | Cache headers and 404 for files that are not part of the site (see Performance) |
 | `links.php` | Serves `edit/links.json` (public) |
@@ -111,11 +111,15 @@ The browser checks need Chrome (`CHROME_PATH` names it) and start the dev router
   is ignored for the highlight.
 - `+` / `-` change the zoom, `0` sets it to S. Ctrl/Cmd stay with the browser zoom.
 
+### Hints (tooltips)
+
+There are no native `title` tooltips. `setHint(el, text)` (`js/hint.js`) sets `data-hint` (and the `aria-label`); with a mouse the shared `#hint` element shows the text below the element (above it when there is no room): section chips, gear, dropdown, strip items, the edit-mode buttons. The settings buttons show their own hint beside them (next section).
+
 ### Settings (gear in the bar)
 
 The gear is a nav button (`.nav-btn`) next to the sections dropdown. A click opens a
 narrow vertical stack with one button per setting. A click cycles to the next value. The button shows the **state**. In text mode that is
-a short English word, in icon mode an icon. The hover hint is one element (`#set-hint`, a manual popover outside the overlay, which clips; mouse only): it lists all values in their original order (default first), without separators with the active one as a small inverted rectangle (`.on`: `--front-body` fill, `--title-col` text; no bold, the site ships Ubuntu Regular only and not every browser fakes a bold) It sits right of the button when it fits in the window, otherwise left of it (`hintLeft`). The buttons have no native `title`; their `aria-label` says now/next (`bottom/top (b / p)` for the Bar, all values with the current one in brackets for the theme). On touch devices the words are as large as the word `set` on the gear (only on very narrow phones, 320 px, they shrink to fit).
+a short English word, in icon mode an icon. The hover hint is one element (`#hint` (`js/hint.js`, `hint.css`), a manual popover outside the overlay, which clips; mouse only): it lists all values in their original order (default first), without separators with the active one as a small inverted rectangle (`.on`: `--front-body` fill, `--title-col` text; no bold, the site ships Ubuntu Regular only and not every browser fakes a bold) It sits right of the button when it fits in the window, otherwise left of it (`hintPos`). The buttons have no native `title`; their `aria-label` says now/next (`bottom/top (b / p)` for the Bar, all values with the current one in brackets for the theme). On touch devices the words are as large as the word `set` on the gear (only on very narrow phones, 320 px, they shrink to fit).
 
 | Setting | Values | Text mode | Icon mode |
 |---|---|---|---|

@@ -334,9 +334,46 @@ test('hintHtml: all values in their original order, the active one marked, the k
     assert.equal(w.hintHtml(bar, 'top'), '<span class="on">to<u>p</u></span><span><u>b</u>ottom</span>');
 });
 
-test('hintLeft: right of the button when it fits, otherwise left of it', () => {
-    assert.equal(w.hintLeft({ left: 100, right: 200 }, 80, 1000), 206);
-    assert.equal(w.hintLeft({ left: 900, right: 1000 }, 80, 1000), 814);
+const rect = (left, top, width, height) => ({ left, top, right: left + width, bottom: top + height });
+
+test('hintPos beside: right of the element when it fits in the window, otherwise left of it; centered vertically', () => {
+    const size = { w: 80, h: 20 }, view = { w: 1000, h: 800 };
+    assert.deepEqual(plain(w.hintPos(rect(100, 100, 100, 40), size, view, true)), { left: 206, top: 110 });
+    assert.deepEqual(plain(w.hintPos(rect(900, 100, 100, 40), size, view, true)), { left: 814, top: 110 });
+});
+
+test('hintPos below: under the element at its left edge, above it when there is no room, kept inside the window', () => {
+    const size = { w: 80, h: 20 }, view = { w: 1000, h: 800 };
+    assert.deepEqual(plain(w.hintPos(rect(100, 100, 50, 40), size, view, false)), { left: 100, top: 146 });
+    assert.deepEqual(plain(w.hintPos(rect(100, 760, 50, 40), size, view, false)), { left: 100, top: 734 });
+    assert.deepEqual(plain(w.hintPos(rect(960, 100, 40, 40), size, view, false)), { left: 916, top: 146 });
+});
+
+test('setHint: data-hint and aria-label, never a native title', () => {
+    const el = w.document.createElement('span');
+    el.title = 'old';
+    w.setHint(el, 'Delete');
+    assert.equal(el.dataset.hint, 'Delete');
+    assert.equal(el.getAttribute('aria-label'), 'Delete');
+    assert.equal(el.hasAttribute('title'), false);
+});
+
+test('hover on an element with data-hint shows its text (escaped) in the hint element; leaving hides it', () => {
+    const el = w.document.createElement('span');
+    el.innerHTML = '<i>x</i>';
+    w.document.body.appendChild(el);
+    w.setHint(el, 'a <b> & c');
+    el.firstChild.dispatchEvent(new w.MouseEvent('mouseover', { bubbles: true }));
+    assert.equal(w.document.getElementById('hint').innerHTML, 'a &lt;b&gt; &amp; c');
+    el.firstChild.dispatchEvent(new w.MouseEvent('mouseout', { bubbles: true, relatedTarget: w.document.body }));
+    assert.equal(w.document.getElementById('hint').innerHTML, '');
+    el.remove();
+});
+
+test('no element of the page has a native title attribute; the gear and the dropdown have a hint', () => {
+    assert.equal(w.document.querySelectorAll('[title]').length, 0);
+    assert.equal(w.document.getElementById('settings-btn').dataset.hint, 'Settings');
+    assert.equal(w.document.getElementById('section-jumper').dataset.hint, 'Sections');
 });
 
 test('no settings button has a native title; the hint element replaces them', () => {
@@ -345,7 +382,7 @@ test('no settings button has a native title; the hint element replaces them', ()
 
 test('hover on the Zoom button shows S/M with the active one marked, in that order whichever is active', () => {
     w.msmrZoom.set('s');
-    const hint = w.document.getElementById('set-hint');
+    const hint = w.document.getElementById('hint');
     w.document.querySelectorAll('#settings-pop .set-btn')[0].dispatchEvent(new w.MouseEvent('mouseenter'));
     assert.equal(hint.innerHTML, '<span class="on">S</span><span>M</span>');
     w.document.querySelectorAll('#settings-pop .set-btn')[0].dispatchEvent(new w.MouseEvent('mouseleave'));
@@ -371,8 +408,7 @@ test('Bar button: no native title (the hint element replaces it); the aria-label
 test('hover on the Bar button fills the hint element; leaving or clicking empties it', () => {
     w.localStorage.clear();
     w.setPref('navPos', 'bottom');
-    const hint = w.document.getElementById('set-hint');
-    assert.ok(hint, 'the hint element exists');
+    const hint = w.document.getElementById('hint');
     barButton().dispatchEvent(new w.MouseEvent('mouseenter'));
     assert.equal(hint.innerHTML, '<span>to<u>p</u></span><span class="on"><u>b</u>ottom</span>');
     barButton().dispatchEvent(new w.MouseEvent('mouseleave'));

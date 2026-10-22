@@ -10,11 +10,11 @@ function makeDelButton(li) {
     var del = document.createElement('span');
     del.className = 'btn-del';
     del.textContent = '×';
-    del.title = 'Delete';
+    setHint(del, 'Delete');
     del.addEventListener('click', function () {
         var removed = li.classList.toggle('removed');
         del.textContent = removed ? '↺' : '×';
-        del.title = removed ? 'Restore' : 'Delete';
+        setHint(del, removed ? 'Restore' : 'Delete');
     });
     return del;
 }
@@ -49,7 +49,7 @@ function releaseLinks() {
         var add = document.createElement('li');
         add.className = 'btn-add';
         add.textContent = '+';
-        add.title = 'Add link';
+        setHint(add, 'Add link');
         add.addEventListener('click', function () { addLink(ul, add); });
         ul.appendChild(add);
     });
@@ -113,7 +113,7 @@ function makeMoveHandle(li) {
     var handle = document.createElement('span');
     handle.className = 'btn-move';
     handle.textContent = '⠿';
-    handle.title = 'Move';
+    setHint(handle, 'Move');
     handle.addEventListener('mousedown', function () {
         li.draggable = true;
         // now, because the drag image is a snapshot of the tile
@@ -189,7 +189,7 @@ function sectionsSortable() {
         var handle = document.createElement('span');
         handle.className = 'sec-handle';
         handle.textContent = '⠿';
-        handle.title = 'Move section';
+        setHint(handle, 'Move section');
         h3.insertBefore(handle, h3.firstChild);
         // only with the handle the section becomes draggable, otherwise every click in the content would drag it along
         handle.addEventListener('mousedown', function () { sec.draggable = true; });
