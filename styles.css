@@ -1,10 +1,10 @@
 /* The stylesheet of the page: the only one index.html links. It lists the files in cascade order; the version after the file names is the cache version (npm run bump) */
-@import url("tokens.css?v=2026-10-22e");
-@import url("base.css?v=2026-10-22e");
-@import url("strip.css?v=2026-10-22e");
-@import url("edit.css?v=2026-10-22e");
-@import url("grid.css?v=2026-10-22e");
-@import url("settings.css?v=2026-10-22e");
-@import url("hint.css?v=2026-10-22e");
-@import url("ghost-header.css?v=2026-10-22e");
-@import url("cursor.css?v=2026-10-22e");
+@import url("tokens.css?v=2026-10-22f");
+@import url("base.css?v=2026-10-22f");
+@import url("strip.css?v=2026-10-22f");
+@import url("edit.css?v=2026-10-22f");
+@import url("grid.css?v=2026-10-22f");
+@import url("settings.css?v=2026-10-22f");
+@import url("hint.css?v=2026-10-22f");
+@import url("ghost-header.css?v=2026-10-22f");
+@import url("cursor.css?v=2026-10-22f");
