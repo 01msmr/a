@@ -5,6 +5,7 @@
     position: fixed;
     inset: auto;
     margin: 0;
+    box-sizing: border-box;   /* the minimum width (the element's) includes the padding */
     border: 0;
     padding: .35rem .6rem;
     border-radius: .35rem;
@@ -15,6 +16,20 @@
     white-space: nowrap;
     box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .35);
     pointer-events: none;
+}
+
+/* below or above an element (as wide as it): flush with it, so the corners at that edge are square */
+#hint[data-edge="below"],
+#hint[data-edge="above"] {
+    text-align: center;
+}
+
+#hint[data-edge="below"] {
+    border-radius: 0 0 .35rem .35rem;
+}
+
+#hint[data-edge="above"] {
+    border-radius: .35rem .35rem 0 0;
 }
 
 /* settings hints: the options are spaced by their padding; the active one is a small inverted rectangle (js/settings.js, hintHtml) */

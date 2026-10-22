@@ -224,11 +224,11 @@ function settingsPlace() {
         b.addEventListener('mouseenter', function () { hintShow(b, hintHtml(e, e.get()), true); });
         b.addEventListener('mouseleave', hintHide);
         b.addEventListener('click', function () {
-            hintHide();
             e.set(valueTo(e, e.get()));
             settingsDisplay();
             if (e.closes) { pop.hidePopover(); return; }
             settingsPlace();   // zoom moves the gear
+            hintShow(b, hintHtml(e, e.get()), true);   // the hint shows the new value
         });
         pop.appendChild(b);
     });

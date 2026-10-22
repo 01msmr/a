@@ -338,15 +338,15 @@ const rect = (left, top, width, height) => ({ left, top, right: left + width, bo
 
 test('hintPos beside: right of the element when it fits in the window, otherwise left of it; centered vertically', () => {
     const size = { w: 80, h: 20 }, view = { w: 1000, h: 800 };
-    assert.deepEqual(plain(w.hintPos(rect(100, 100, 100, 40), size, view, true)), { left: 206, top: 110 });
-    assert.deepEqual(plain(w.hintPos(rect(900, 100, 100, 40), size, view, true)), { left: 814, top: 110 });
+    assert.deepEqual(plain(w.hintPos(rect(100, 100, 100, 40), size, view, true)), { left: 206, top: 110, edge: 'side' });
+    assert.deepEqual(plain(w.hintPos(rect(900, 100, 100, 40), size, view, true)), { left: 814, top: 110, edge: 'side' });
 });
 
-test('hintPos below: under the element at its left edge, above it when there is no room, kept inside the window', () => {
+test('hintPos below: flush under the element at its left edge, above it when there is no room, kept inside the window', () => {
     const size = { w: 80, h: 20 }, view = { w: 1000, h: 800 };
-    assert.deepEqual(plain(w.hintPos(rect(100, 100, 50, 40), size, view, false)), { left: 100, top: 146 });
-    assert.deepEqual(plain(w.hintPos(rect(100, 760, 50, 40), size, view, false)), { left: 100, top: 734 });
-    assert.deepEqual(plain(w.hintPos(rect(960, 100, 40, 40), size, view, false)), { left: 916, top: 146 });
+    assert.deepEqual(plain(w.hintPos(rect(100, 100, 50, 40), size, view, false)), { left: 100, top: 140, edge: 'below' });
+    assert.deepEqual(plain(w.hintPos(rect(100, 760, 50, 40), size, view, false)), { left: 100, top: 740, edge: 'above' });
+    assert.deepEqual(plain(w.hintPos(rect(960, 100, 40, 40), size, view, false)), { left: 916, top: 140, edge: 'below' });
 });
 
 test('setHint: data-hint and aria-label, never a native title', () => {
@@ -368,6 +368,30 @@ test('hover on an element with data-hint shows its text (escaped) in the hint el
     el.firstChild.dispatchEvent(new w.MouseEvent('mouseout', { bubbles: true, relatedTarget: w.document.body }));
     assert.equal(w.document.getElementById('hint').innerHTML, '');
     el.remove();
+});
+
+test('a hint below an element is at least as wide as the element; beside it has no minimum; entries of the sections list get it beside', () => {
+    const hint = w.document.getElementById('hint');
+    Object.defineProperty(w.document.documentElement, 'clientHeight', { value: 800, configurable: true });   // jsdom has no layout
+    const chip = w.document.createElement('span');
+    w.document.body.appendChild(chip);
+    w.setHint(chip, 'srv');
+    chip.getBoundingClientRect = () => ({ ...rect(10, 10, 80, 30), width: 80 });
+    chip.dispatchEvent(new w.MouseEvent('mouseover', { bubbles: true }));
+    assert.equal(hint.style.minWidth, '80px');
+    assert.equal(hint.dataset.edge, 'below');
+    chip.dispatchEvent(new w.MouseEvent('mouseout', { bubbles: true, relatedTarget: w.document.body }));
+    chip.remove();
+    const entry = w.document.createElement('a');
+    w.document.getElementById('jumper-pop').appendChild(entry);
+    w.setHint(entry, 'srv.li');
+    entry.getBoundingClientRect = () => ({ ...rect(10, 10, 80, 30), width: 80 });
+    entry.dispatchEvent(new w.MouseEvent('mouseover', { bubbles: true }));
+    assert.equal(hint.style.minWidth, '');
+    assert.equal(hint.dataset.edge, 'side');
+    entry.dispatchEvent(new w.MouseEvent('mouseout', { bubbles: true, relatedTarget: w.document.body }));
+    entry.remove();
+    delete w.document.documentElement.clientHeight;
 });
 
 test('no element of the page has a native title attribute; the gear and the dropdown have a hint', () => {
@@ -405,7 +429,7 @@ test('Bar button: no native title (the hint element replaces it); the aria-label
     w.applyPrefs();
 });
 
-test('hover on the Bar button fills the hint element; leaving or clicking empties it', () => {
+test('hover on the Bar button fills the hint element; leaving empties it; a click shows the new value', () => {
     w.localStorage.clear();
     w.setPref('navPos', 'bottom');
     const hint = w.document.getElementById('hint');
@@ -415,7 +439,7 @@ test('hover on the Bar button fills the hint element; leaving or clicking emptie
     assert.equal(hint.innerHTML, '');
     barButton().dispatchEvent(new w.MouseEvent('mouseenter'));
     barButton().dispatchEvent(new w.MouseEvent('click'));
-    assert.equal(hint.innerHTML, '');
+    assert.equal(hint.innerHTML, '<span class="on">to<u>p</u></span><span><u>b</u>ottom</span>');   // after a click it shows the new value
     w.localStorage.clear();
     w.applyPrefs();
 });

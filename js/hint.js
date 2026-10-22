@@ -1,18 +1,22 @@
 // Owns: the hint element (a tooltip with the colors of the page inverted), placing it, setHint for elements with a hint
 // Defines globals: hintPos, hintEl, hintOn, hintFor, hintHide, hintShow, setHint
 // Uses: (nothing)
-// With a mouse only. Elements with data-hint show it on hover (below the element); the settings buttons call hintShow themselves (beside the button)
-// Left edge and top of the hint: beside the element (right of it when it fits in the window, otherwise left of it, centered vertically) or below it (above when there is no room)
+// With a mouse only. Elements with data-hint show it on hover (below the element, beside it in the sections list); the settings buttons call hintShow themselves (beside the button)
+// Left edge and top of the hint, and the edge it touches (for the corners): beside the element (right of it when it fits in the window, otherwise left of it, centered vertically),
+// or flush below it at its left edge (above it when there is no room)
 function hintPos(r, size, view, beside) {
     if (beside) {
         return {
             left: r.right + 6 + size.w <= view.w ? r.right + 6 : r.left - 6 - size.w,
-            top: r.top + (r.bottom - r.top) / 2 - size.h / 2
+            top: r.top + (r.bottom - r.top) / 2 - size.h / 2,
+            edge: 'side'
         };
     }
+    var below = r.bottom + size.h <= view.h;
     return {
         left: Math.min(Math.max(r.left, 4), view.w - size.w - 4),
-        top: r.bottom + 6 + size.h <= view.h ? r.bottom + 6 : r.top - 6 - size.h
+        top: below ? r.bottom : r.top - size.h,
+        edge: below ? 'below' : 'above'
     };
 }
 
@@ -33,12 +37,14 @@ function hintHide() {
 function hintShow(el, html, beside) {
     if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
     hintEl.innerHTML = html;
+    hintEl.style.minWidth = beside ? '' : el.getBoundingClientRect().width + 'px';   // below an element: as wide as the element
     if (!hintOn) hintEl.showPopover();
     hintOn = true;
     var p = hintPos(el.getBoundingClientRect(), { w: hintEl.offsetWidth, h: hintEl.offsetHeight },
         { w: document.documentElement.clientWidth, h: document.documentElement.clientHeight }, beside);
     hintEl.style.left = p.left + 'px';
     hintEl.style.top = p.top + 'px';
+    hintEl.dataset.edge = p.edge;
 }
 
 // The hint instead of the native title; the aria-label keeps the name for screen readers
@@ -51,7 +57,7 @@ function setHint(el, text) {
 document.addEventListener('mouseover', function (e) {
     var el = e.target.closest && e.target.closest('[data-hint]');
     if (!el || el === hintFor) return;
-    hintShow(el, el.dataset.hint.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'), false);
+    hintShow(el, el.dataset.hint.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'), !!el.closest('#jumper-pop'));
     hintFor = el;
 });
 document.addEventListener('mouseout', function (e) {
