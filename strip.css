@@ -46,7 +46,7 @@
         text-decoration: none;
     }
 
-    /* no fades: at rest the numbers are cut off three items beyond the window's edge (--reach, js/strip.js); the clip closes with the glide after a release.
+    /* no fades: at rest the numbers are cut off three items beyond the window's edge, or at the strip's edge where that is farther (--reach, js/strip.js); the clip closes with the glide after a release.
        The clip is on an inner layer, so a press anywhere on the strip still aims */
     .strip-clip {
         position: absolute;
