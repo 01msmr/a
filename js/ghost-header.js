@@ -1,5 +1,5 @@
 // Owns: copies of the section heading at the edges (ghost headers)
-// Defines globals: ghostHeader, ghostHeaderOffscreen, ghostHeaderDuration, GHOST_HEADER_EASE, ghostHeaderCurve, ghostHeaderLayer, ghostHeaderJump, ghostHeaderSection, ghostHeaderRemove, ghostHeaderRender, ghostHeaderEdge, ghostHeaderRank, ghostHeaderMake, ghostHeaderIndex, ghostHeaderReset
+// Defines globals: ghostHeader, ghostHeaderOffscreen, ghostHeaderDuration, GHOST_HEADER_EASE, ghostHeaderCurve, ghostHeaderFade, ghostHeaderLayer, ghostHeaderJump, ghostHeaderSection, ghostHeaderRemove, ghostHeaderRender, ghostHeaderEdge, ghostHeaderRank, ghostHeaderMake, ghostHeaderIndex, ghostHeaderReset
 // Uses: state, touch (and the edit-mode class on body)
 // ── Ghost headers ─────────────────────────────────────────────────
 // If the heading of the target section (nav chip under the mouse or jump after a click) lies outside the view,
@@ -26,6 +26,12 @@ function ghostHeaderCurve(ms, out) {
     var e = GHOST_HEADER_EASE;
     var p = out ? [1 - e[2], 1 - e[3], 1 - e[0], 1 - e[1]] : e;
     return 'transform ' + ms + 'ms cubic-bezier(' + p.map(function (v) { return String(+v.toFixed(3)).replace(/^0\./, '.'); }).join(', ') + ')';
+}
+
+// The fade of the shadow and line: out from half the glide on for a quarter of it, in the mirrored window (the same one seen backwards), so the shadows do not pile up at the end of a glide
+function ghostHeaderFade(ms) {
+    var outDelay = Math.round(ms * 0.5), outDuration = Math.round(ms * 0.25);
+    return { outDelay: outDelay, outDuration: outDuration, inDelay: ms - (outDelay + outDuration), inDuration: outDuration };
 }
 
 function ghostHeaderLayer() {
@@ -111,8 +117,9 @@ function ghostHeaderRender() {
         g.el.style.transition = curveOut;
         g.el.style.transform = ghostHeaderOffscreen(g.edge);
         g.el.classList.add('out');   // shadow and line fade out quickly at the end of gliding out (styles.css)
-        g.el.style.setProperty('--fade-delay', Math.round(ghostHeaderDuration() * 0.75) + 'ms');
-        g.el.style.setProperty('--fade-duration', Math.round(ghostHeaderDuration() * 0.25) + 'ms');
+        var fade = ghostHeaderFade(ghostHeaderDuration());
+        g.el.style.setProperty('--fade-delay', fade.outDelay + 'ms');
+        g.el.style.setProperty('--fade-duration', fade.outDuration + 'ms');
         ghostHeader.leaving.push(g);
     }
     function scheduleRemoval() {
@@ -210,12 +217,17 @@ function ghostHeaderRender() {
     ghostHeader.stack.push(fresh);
     fresh.el.style.setProperty('--strength', strength);
     fresh.el.classList.toggle('hot', !!sec.querySelector('.name.with-hover'));
-    // the target glides in, including shadow and line
+    // the target glides in, including shadow and line (the shadow fades in mirrored to the fade-out, CSS: .arriving)
+    var fade = ghostHeaderFade(ghostHeaderDuration());
+    fresh.el.style.setProperty('--in-delay', fade.inDelay + 'ms');
+    fresh.el.style.setProperty('--in-duration', fade.inDuration + 'ms');
+    fresh.el.classList.add('arriving');
     fresh.el.style.transform = ghostHeaderOffscreen(edge);
     fresh.el.getBoundingClientRect();   // commit the starting position
     // accelerates and ends hard, like the window
     fresh.el.style.transition = curve;
     fresh.el.style.transform = 'none';
+    fresh.el.classList.remove('arriving');
     ghostHeader.cur = fresh;
     scheduleRemoval();
 }

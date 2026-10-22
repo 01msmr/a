@@ -484,3 +484,11 @@ test('ghostHeaderCurve: gliding in is the ease-out curve, gliding out is exactly
     assert.equal(w.ghostHeaderCurve(400, true), 'transform 400ms cubic-bezier(.645, 0, .785, .39)');
     assert.equal(w.ghostHeaderCurve(60, true), 'transform 60ms cubic-bezier(.645, 0, .785, .39)');
 });
+
+test('ghostHeaderFade: the shadow of a copy gliding out fades from half the glide on; the shadow of a copy gliding in fades in mirrored (the same window, seen backwards)', () => {
+    const f = w.ghostHeaderFade(400);
+    assert.deepEqual(plain(f), { outDelay: 200, outDuration: 100, inDelay: 100, inDuration: 100 });
+    assert.equal(f.inDelay + f.inDuration, 400 - f.outDelay);   // the mirror of the fade-out window: [200, 300] backwards is [100, 200]
+    assert.equal(f.inDelay, 400 - (f.outDelay + f.outDuration));
+    assert.deepEqual(plain(w.ghostHeaderFade(60)), { outDelay: 30, outDuration: 15, inDelay: 15, inDuration: 15 });
+});

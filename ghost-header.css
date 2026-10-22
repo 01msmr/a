@@ -39,6 +39,13 @@ body.view-grid .ghost-header .name {
     initial-value: 1;
 }
 
+/* the same for a copy gliding in: 0 at the start, the shadow fades in later in the glide (--in-delay, --in-duration, set by js/ghost-header.js) */
+@property --arrive-vis {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 1;
+}
+
 /* soft shadow onto the content, 66 % of a tile height (--shadow, set by js/ghost-header.js); it starts with a thin dark line (1 px) */
 .ghost-header::after {
     content: "";
@@ -46,8 +53,8 @@ body.view-grid .ghost-header .name {
     left: 0;
     right: 0;
     height: var(--shadow, 1.5rem);
-    opacity: calc(var(--strength, 1) * var(--under-vis));
-    transition: --under-vis 50ms linear;   /* reappearing when the copy is free again */
+    opacity: calc(var(--strength, 1) * var(--under-vis) * var(--arrive-vis));
+    transition: --under-vis 50ms linear, --arrive-vis var(--in-duration, 0ms) linear var(--in-delay, 0ms);   /* under: reappearing when the copy is free again; arriving: fades in late in the glide */
     pointer-events: none;
     background: linear-gradient(var(--direction, to bottom),
         rgba(0, 0, 0, .55), rgba(0, 0, 0, .55) 1px, rgba(0, 0, 0, .3) 1px, rgba(0, 0, 0, .22) 20%, rgba(0, 0, 0, .12) 45%, rgba(0, 0, 0, .04) 75%, rgba(0, 0, 0, 0));
@@ -67,7 +74,12 @@ body.view-grid .ghost-header .name {
     filter: none;
 }
 
-/* copy gliding out: shadow and line fade quickly to 0 during the last quarter of the movement */
+/* a copy gliding in: no shadow at the start (the class is removed when the glide starts, the shadow then fades in, see above) */
+.ghost-header.arriving::after {
+    --arrive-vis: 0;
+}
+
+/* copy gliding out: shadow and line fade quickly to 0 from half of the movement on, for a quarter of it (js/ghost-header.js, ghostHeaderFade) */
 .ghost-header.out::after {
     opacity: 0;
     transition: opacity var(--fade-duration, 100ms) linear var(--fade-delay, 300ms);
