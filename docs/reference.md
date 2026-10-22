@@ -123,7 +123,7 @@ a short English word, in icon mode an icon. The hover hint (`title`) names
 | Theme | auto, light, dark | `aut`, `light`, `dark` | circle (auto), sun, moon; in auto the icon of the system value small at the bottom right |
 | Color | vivid, pale | `col`, `pale` | circle in a section color |
 | Navigation | text, icons | `text` | square (`fa-square`) |
-| Bar | bottom, top | `bot`, `top` | `fa-arrow-down` over `fa-minus`, `fa-minus` over `fa-arrow-up` |
+| Bar | bottom, top | `bot` underlined, `top` overlined | `fa-arrow-up` with a line above (bottom), `fa-arrow-down` with a line below (top); the line is outside the icon box. The button is first in the overlay while the bar is at the bottom, last while it is at the top (CSS `order`) |
 | View | chips, grid | `chip`, `grid` | four round tiles or square outlines |
 | Align | left, center | `left`, `cen` (in the grid `full`) | `fa-align-left`, `fa-align-center` |
 | Edit | off, on | `edit`, `save` | two chevrons; floppy disk while editing |

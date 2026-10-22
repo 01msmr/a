@@ -41,8 +41,9 @@ var SETTINGS = [
         label: 'Bar',
         values: [['bottom', 'bottom'], ['top', 'top']],
         text: { bottom: 'bot', top: 'top' },
-        // an arrow against a horizontal line
-        icons: { bottom: ['fa-arrow-down', 'fa-minus'], top: ['fa-minus', 'fa-arrow-up'] },
+        line: { bottom: 'under', top: 'over' },   // text mode: the word is underlined or overlined
+        lined: { bottom: ['fa-arrow-up', 'over'], top: ['fa-arrow-down', 'under'] },   // icon mode: an arrow with a line beside it that does not count into its size
+        order: function (w) { return w === 'bottom' ? -1 : 1; },   // first in the overlay while the bar is at the bottom, last while it is at the top
         get: function () { return effectiveNavPos(); },
         set: function (w) { setPref('navPos', w); gridInit(); }   // the grid reserves room beside the bar
     },
@@ -123,7 +124,7 @@ function drawIcon(ic, e, w) {
     } else if (e.schema) {
         drawScheme(ic, w);
     } else if (!document.body.classList.contains('nav-icons')) {
-        ic.className = 'set-icon set-letter set-text';
+        ic.className = 'set-icon set-letter set-text' + (e.line ? ' set-' + e.line[w] : '');
         ic.textContent = (e.descr && e.descr(w)) || (e.text && e.text[w]) || valueName(e, w);
     } else if (e.circle) {
         ic.className = 'set-icon set-circle';
@@ -133,6 +134,9 @@ function drawIcon(ic, e, w) {
         ic.className = 'set-icon set-tiles' + (e.tiles[w] ? ' square' : '');
         ic.textContent = '';
         for (var k = 0; k < 4; k++) ic.appendChild(document.createElement('i'));
+    } else if (e.lined) {
+        ic.className = 'set-icon fa-solid ' + e.lined[w][0] + ' set-lined set-' + e.lined[w][1];
+        ic.textContent = '';
     } else if (Array.isArray(e.icons[w])) {
         // several symbols as one icon, stacked vertically
         ic.className = 'set-icon set-stack';
@@ -152,6 +156,7 @@ function settingsDisplay() {
     document.querySelectorAll('#settings-pop .set-btn').forEach(function (b, i) {
         var e = SETTINGS[i], w = e.get();
         drawIcon(b.querySelector('.set-icon'), e, w);
+        if (e.order) b.style.order = e.order(w);
         b.title = e.all
             ? e.values.map(function (p) { return p[0] === w ? '[' + p[1] + ']' : p[1]; }).join(' / ')
             : valueName(e, w) + '/' + valueName(e, valueTo(e, w));   // now/next value

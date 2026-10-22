@@ -130,6 +130,43 @@ body:not(.keyboard) .nav-btn.open {
     font-size: clamp(1rem, 30cqw, 1.7rem);   /* uses the width of the button */
 }
 
+/* Bar: the word is underlined (bottom) or overlined (top), the text keeps its place */
+.set-under {
+    text-decoration: underline;
+}
+
+.set-over {
+    text-decoration: overline;
+}
+
+.set-under,
+.set-over {
+    text-decoration-thickness: .08em;
+    text-underline-offset: .12em;
+}
+
+/* Bar, icon mode: the arrow is as large as the other icons; the line is drawn outside its box and does not count */
+.set-lined {
+    position: relative;
+}
+
+.set-lined::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: .1em;
+    background: currentColor;
+}
+
+.set-lined.set-over::after {
+    bottom: calc(100% + .15em);
+}
+
+.set-lined.set-under::after {
+    top: calc(100% + .15em);
+}
+
 /* View: four tiles. Chips = filled, rounded, with gap; grid = outline, square, joined */
 .set-tiles {
     display: grid;
