@@ -160,11 +160,11 @@ body:not(.keyboard) .nav-btn.open {
 }
 
 .set-lined.set-over::after {
-    bottom: calc(100% + .15em);
+    bottom: calc(100% - .08em);
 }
 
 .set-lined.set-under::after {
-    top: calc(100% + .15em);
+    top: calc(100% - .08em);
 }
 
 /* View: four tiles. Chips = filled, rounded, with gap; grid = outline, square, joined */
