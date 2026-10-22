@@ -42,7 +42,7 @@ var SETTINGS = [
     },
     {
         label: 'Bar',
-        values: [['bottom', 'bottom'], ['top', 'top']],
+        values: [['top', 'top'], ['bottom', 'bottom']],
         text: { bottom: 'bot', top: 'top' },
         key: { bottom: 'b', top: 'p' },   // the keys (see the keydown handler below), named in the hint
         hint: { bottom: '<u>b</u>ottom', top: 'to<u>p</u>' },   // the hint element underlines the key letter

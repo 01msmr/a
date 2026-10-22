@@ -330,8 +330,8 @@ const barButton = () => w.document.querySelectorAll('#settings-pop .set-btn')[ba
 
 test('hintHtml: all values in their original order, the active one marked, the key letters underlined', () => {
     const bar = w.SETTINGS[barIndex()];
-    assert.equal(w.hintHtml(bar, 'bottom'), '<span class="on"><u>b</u>ottom</span><span>to<u>p</u></span>');
-    assert.equal(w.hintHtml(bar, 'top'), '<span><u>b</u>ottom</span><span class="on">to<u>p</u></span>');
+    assert.equal(w.hintHtml(bar, 'bottom'), '<span>to<u>p</u></span><span class="on"><u>b</u>ottom</span>');
+    assert.equal(w.hintHtml(bar, 'top'), '<span class="on">to<u>p</u></span><span><u>b</u>ottom</span>');
 });
 
 test('hintLeft: right of the button when it fits, otherwise left of it', () => {
@@ -374,7 +374,7 @@ test('hover on the Bar button fills the hint element; leaving or clicking emptie
     const hint = w.document.getElementById('set-hint');
     assert.ok(hint, 'the hint element exists');
     barButton().dispatchEvent(new w.MouseEvent('mouseenter'));
-    assert.equal(hint.innerHTML, '<span class="on"><u>b</u>ottom</span><span>to<u>p</u></span>');
+    assert.equal(hint.innerHTML, '<span>to<u>p</u></span><span class="on"><u>b</u>ottom</span>');
     barButton().dispatchEvent(new w.MouseEvent('mouseleave'));
     assert.equal(hint.innerHTML, '');
     barButton().dispatchEvent(new w.MouseEvent('mouseenter'));
