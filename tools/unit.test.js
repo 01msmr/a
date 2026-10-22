@@ -86,10 +86,12 @@ test('stripSlots: the item nearest to f stands in the window, the others sit bes
     assert.deepEqual([r.x[3], r.x[1], r.x[4], r.x[0]].map(Math.round), [80, -80, 120, -120]);   // hold 50 + 20 - 10, then one item pitch (40) apart, half a pitch before the step
 });
 
-test('stripReach: at rest three items and a quarter beyond the window edge, however wide the strip is (aiming shows all)', () => {
-    assert.equal(w.stripReach(70, 38), 35 + 3.25 * 38);
-    assert.equal(w.stripReach(0, 40), 3.25 * 40);
-    assert.equal(w.stripReach(70, 38, 454), 35 + 3.25 * 38);
+test('stripReach: at rest up to three whole items beyond the window edge, fewer where the strip is narrow, always leaving half an item of whitespace at the strip edge', () => {
+    assert.equal(w.stripReach(85, 38, 139), 42.5 + 2.25 * 38);   // phone: 2 items
+    assert.equal(w.stripReach(70, 38, 454), 35 + 3.25 * 38);     // wide: 3 items, however wide
+    assert.equal(w.stripReach(70, 38, 168), 35 + 3.25 * 38);     // 3 items just fit with the whitespace (35 + 3 * 38 + 19)
+    assert.equal(w.stripReach(70, 38, 167), 35 + 2.25 * 38);     // one pixel less: 2
+    assert.equal(w.stripReach(85, 38, 50), 42.5 + 0.25 * 38);    // no room: none
 });
 
 test('stripSlots: f is clamped to the items; no items gives an empty list', () => {

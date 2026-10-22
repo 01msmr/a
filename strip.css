@@ -46,7 +46,7 @@
         text-decoration: none;
     }
 
-    /* no fades: at rest the numbers are cut off three items beyond the window's edge, while aiming all show (--reach, js/strip.js); the clip widens (0.9 s) when the interaction begins and closes with the glide (0.45 s) after a release.
+    /* no fades: at rest the numbers are cut off up to three whole items beyond the window's edge, leaving whitespace at the strip's edge, while aiming all show (--reach, js/strip.js); the clip widens (0.9 s) when the interaction begins and closes with the glide (0.45 s) after a release.
        The clip is on an inner layer, so a press anywhere on the strip still aims */
     .strip-clip {
         position: absolute;

@@ -11,8 +11,9 @@ var stripVis = [];      // visible width per item (its number or icon, without t
 var stripUnders = [];   // per item: how far its number may be under the window's edge before it steps in: half the width of a "0" in the strip's font (text) or a quarter of the icon's width (icons)
 var stripWinW = 0;      // width of the window now
 var stripMode = null;   // watches the Navigation setting (class nav-icons on the body)
-// At rest the numbers show three items beyond the window's edge (cut off there, they glide in and out through that edge while the strip moves); while aiming all show (CSS: .is-aiming)
-var STRIP_REACH = 3.25;   // items beyond the window's edge, with a quarter more so that the cut falls in the gap
+// At rest the numbers show up to three whole items beyond the window's edge, fewer where the strip is narrow (half an item of whitespace stays at its edge); they are cut off there,
+// glide in and out through that edge while the strip moves, and all show while aiming (CSS: .is-aiming)
+var STRIP_REACH = 3;   // most items beyond the window's edge at rest
 var STRIP_MS = 450, STRIP_EASE = 'cubic-bezier(.33,1,.68,1)';   // the pace of msmr.dev's narrow nav (--nav-t, --nav-ease)
 var STRIP_UNDER_ICON = 0.25;   // icon mode: the depth under the window's edge is this fraction of the icon's width
 var STRIP_SUCK_MS = 150, STRIP_SUCK_EASE = 'cubic-bezier(.5,0,1,1)';   // a number stepping into the window is sucked in: ease-in, short enough to keep up with a finger
@@ -29,8 +30,11 @@ function stripSlots(f, count, winW, gap, vis, under) {
     return { k: k, x: x };
 }
 
-// How far from the strip centre the numbers show at rest: three items beyond the window
-function stripReach(winW, gap) { return winW / 2 + STRIP_REACH * gap; }
+// How far from the strip centre the numbers show at rest: the whole items (up to STRIP_REACH) that fit beyond the window with half an item of whitespace left at the strip's edge (half: its half width), and a quarter more so that the cut falls in the gap
+function stripReach(winW, gap, half) {
+    var n = Math.max(0, Math.min(STRIP_REACH, Math.floor((half - winW / 2 - gap / 2) / gap)));
+    return winW / 2 + (n + 0.25) * gap;
+}
 
 // Where the incoming title starts, relative to the window centre: fully outside the edge its number was at (dir 1: from the right, -1: from the left)
 function stripSuckFrom(dir, winW, titleW) { return dir * (winW / 2 + titleW / 2); }
@@ -145,7 +149,7 @@ function stripPlace(f, aim) {
     document.getElementById('strip-window').style.width = stripWinW + 'px';
     stripItems().forEach(function (a, j) { a.style.left = (c + s.x[j] - gap / 2).toFixed(1) + 'px'; });
     stripSuck();
-    strip.style.setProperty('--reach', stripReach(stripWinW, gap).toFixed(1) + 'px');   // the numbers are cut off beyond it (CSS: .strip-clip)
+    strip.style.setProperty('--reach', stripReach(stripWinW, gap, c).toFixed(1) + 'px');   // the numbers are cut off beyond it (CSS: .strip-clip)
     strip.classList.add('ready');   // visible from the first placement on: before, the items sit at left 0 and would count as a layout shift
 }
 
