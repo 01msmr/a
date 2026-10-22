@@ -40,9 +40,11 @@ function hintShow(el, html, beside) {
     var w = el.getBoundingClientRect().width;
     hintEl.style.minWidth = beside ? '' : w + 'px';   // below an element: as wide as the element
     hintEl.style.paddingInline = '';
+    hintEl.style.fontSize = '';
     if (!hintOn) hintEl.showPopover();
     hintOn = true;
-    if (!beside && hintEl.offsetWidth > w) hintEl.style.paddingInline = '0';   // a little too wide: drop the side padding, the font size stays
+    if (!beside && hintEl.offsetWidth > w) hintEl.style.paddingInline = '0';   // a little too wide: drop the side padding first
+    if (!beside && hintEl.offsetWidth > w) hintEl.style.fontSize = parseFloat(getComputedStyle(hintEl).fontSize) * w / hintEl.offsetWidth + 'px';   // still too wide: shrink the font to fit
     var p = hintPos(el.getBoundingClientRect(), { w: hintEl.offsetWidth, h: hintEl.offsetHeight },
         { w: document.documentElement.clientWidth, h: document.documentElement.clientHeight }, beside);
     hintEl.style.left = p.left + 'px';
