@@ -37,9 +37,12 @@ function hintHide() {
 function hintShow(el, html, beside) {
     if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
     hintEl.innerHTML = html;
-    hintEl.style.minWidth = beside ? '' : el.getBoundingClientRect().width + 'px';   // below an element: as wide as the element
+    var w = el.getBoundingClientRect().width;
+    hintEl.style.minWidth = beside ? '' : w + 'px';   // below an element: as wide as the element
+    hintEl.style.paddingInline = '';
     if (!hintOn) hintEl.showPopover();
     hintOn = true;
+    if (!beside && hintEl.offsetWidth > w) hintEl.style.paddingInline = '0';   // a little too wide: drop the side padding, the font size stays
     var p = hintPos(el.getBoundingClientRect(), { w: hintEl.offsetWidth, h: hintEl.offsetHeight },
         { w: document.documentElement.clientWidth, h: document.documentElement.clientHeight }, beside);
     hintEl.style.left = p.left + 'px';
