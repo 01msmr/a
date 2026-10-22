@@ -44,6 +44,7 @@ var SETTINGS = [
         label: 'Bar',
         values: [['bottom', 'bottom'], ['top', 'top']],
         text: { bottom: 'bot', top: 'top' },
+        key: { bottom: 'b', top: 'p' },   // the hint names the keys (js/settings.js, keydown)
         line: { bottom: 'under', top: 'over' },   // text mode: the word is underlined or overlined
         lined: { bottom: ['fa-arrow-up', 'over'], top: ['fa-arrow-down', 'under'] },   // icon mode: an arrow with a line beside it that does not count into its size
         order: function (w) { return w === 'bottom' ? -1 : 1; },   // first in the overlay while the bar is at the bottom, last while it is at the top
@@ -162,7 +163,8 @@ function settingsDisplay() {
         if (e.order) b.style.order = e.order(w);
         b.title = e.all
             ? e.values.map(function (p) { return p[0] === w ? '[' + p[1] + ']' : p[1]; }).join(' / ')
-            : valueName(e, w) + '/' + valueName(e, valueTo(e, w));   // now/next value
+            : valueName(e, w) + '/' + valueName(e, valueTo(e, w)) +   // now/next value
+              (e.key ? ' (' + e.key[w] + ' / ' + e.key[valueTo(e, w)] + ')' : '');
         b.setAttribute('aria-label', e.label + ': ' + b.title);
     });
 }

@@ -324,3 +324,16 @@ test('keys p and b put the bar at the top and the bottom; not with a modifier an
     w.localStorage.clear();
     w.applyPrefs();
 });
+
+test('Bar hint: now/next value with the keys in the same order', () => {
+    const bar = w.SETTINGS.findIndex(e => e.label === 'Bar');
+    const btn = () => w.document.querySelectorAll('#settings-pop .set-btn')[bar];
+    w.localStorage.clear();
+    w.setPref('navPos', 'bottom');
+    assert.equal(btn().title, 'bottom/top (b / p)');
+    w.setPref('navPos', 'top');
+    assert.equal(btn().title, 'top/bottom (p / b)');
+    assert.equal(btn().getAttribute('aria-label'), 'Bar: top/bottom (p / b)');
+    w.localStorage.clear();
+    w.applyPrefs();
+});
