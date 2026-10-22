@@ -1,5 +1,5 @@
 // Owns: the section strip in the bottom bar of narrow touch devices (aiming like msmr.dev: numbers beside a window that shows the title)
-// Defines globals: stripDrag, stripSections, stripWidths, stripVis, stripUnders, stripWinW, stripMode, STRIP_MS, STRIP_EASE, STRIP_UNDER_ICON, STRIP_SUCK_MS, STRIP_SUCK_EASE, stripSlots, stripSuckFrom, stripPushTo, stripAimF, stripWinAt, stripItems, stripItemW, stripOn, stripShow, stripMeasure, stripSuck, stripPlace, stripLefts, stripFollow, stripSync, stripChoose, buildStrip
+// Defines globals: stripDrag, stripSections, stripWidths, stripVis, stripUnders, stripWinW, stripMode, STRIP_MS, STRIP_EASE, STRIP_REACH, STRIP_UNDER_ICON, STRIP_SUCK_MS, STRIP_SUCK_EASE, stripSlots, stripReach, stripSuckFrom, stripPushTo, stripAimF, stripWinAt, stripItems, stripItemW, stripOn, stripShow, stripMeasure, stripSuck, stripPlace, stripLefts, stripFollow, stripSync, stripChoose, buildStrip
 // Uses: state, render
 // Pressing the strip aims from the active item; the finger moves f (a fraction of the item index) one to one. The numbers follow the finger and hold at the window's edge;
 // when the number is a fixed depth under the edge (half the width of a "0"; in icon mode a quarter of the icon), it steps into the window as its title and the outgoing title steps out as a number at the same depth, at that very moment.
@@ -11,7 +11,8 @@ var stripVis = [];      // visible width per item (its number or icon, without t
 var stripUnders = [];   // per item: how far its number may be under the window's edge before it steps in: half the width of a "0" in the strip's font (text) or a quarter of the icon's width (icons)
 var stripWinW = 0;      // width of the window now
 var stripMode = null;   // watches the Navigation setting (class nav-icons on the body)
-// At rest the numbers show two items beyond the window's edge (cut off there, they glide in and out through that edge while the strip moves)
+// At rest the numbers show up to three items beyond the window's edge (cut off there, they glide in and out through that edge while the strip moves; a narrower view shows fewer)
+var STRIP_REACH = 3.25;   // items beyond the window's edge, with a quarter more so that the cut falls in the gap
 var STRIP_MS = 450, STRIP_EASE = 'cubic-bezier(.33,1,.68,1)';   // the pace of msmr.dev's narrow nav (--nav-t, --nav-ease)
 var STRIP_UNDER_ICON = 0.25;   // icon mode: the depth under the window's edge is this fraction of the icon's width
 var STRIP_SUCK_MS = 150, STRIP_SUCK_EASE = 'cubic-bezier(.5,0,1,1)';   // a number stepping into the window is sucked in: ease-in, short enough to keep up with a finger
@@ -27,6 +28,9 @@ function stripSlots(f, count, winW, gap, vis, under) {
     }
     return { k: k, x: x };
 }
+
+// How far from the strip centre the numbers show at rest
+function stripReach(winW, gap) { return winW / 2 + STRIP_REACH * gap; }
 
 // Where the incoming title starts, relative to the window centre: fully outside the edge its number was at (dir 1: from the right, -1: from the left)
 function stripSuckFrom(dir, winW, titleW) { return dir * (winW / 2 + titleW / 2); }
@@ -141,7 +145,7 @@ function stripPlace(f, aim) {
     document.getElementById('strip-window').style.width = stripWinW + 'px';
     stripItems().forEach(function (a, j) { a.style.left = (c + s.x[j] - gap / 2).toFixed(1) + 'px'; });
     stripSuck();
-    strip.style.setProperty('--reach', (stripWinW / 2 + 2.25 * gap).toFixed(1) + 'px');   // the numbers are cut off two items beyond the window's edge (CSS: .strip-clip)
+    strip.style.setProperty('--reach', stripReach(stripWinW, gap).toFixed(1) + 'px');   // the numbers are cut off beyond it (CSS: .strip-clip)
     strip.classList.add('ready');   // visible from the first placement on: before, the items sit at left 0 and would count as a layout shift
 }
 
