@@ -138,14 +138,18 @@ body:not(.keyboard) .nav-btn.open {
     border: 0;
     padding: .35rem .6rem;
     border-radius: .35rem;
-    background: var(--front-body);
-    color: var(--title-col);
+    background: var(--title-col);
+    color: var(--front-body);
     font: inherit;
     font-size: .85rem;
     white-space: nowrap;
     transform: translateY(-50%);
     box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .35);
     pointer-events: none;
+}
+
+#set-hint b {
+    font-weight: bold;
 }
 
 #set-hint u {

@@ -328,10 +328,10 @@ test('keys p and b put the bar at the top and the bottom; not with a modifier an
 const barIndex = () => w.SETTINGS.findIndex(e => e.label === 'Bar');
 const barButton = () => w.document.querySelectorAll('#settings-pop .set-btn')[barIndex()];
 
-test('hintHtml: now/next value with the key letter underlined', () => {
+test('hintHtml: all values in their original order, the active one bold, the key letters underlined', () => {
     const bar = w.SETTINGS[barIndex()];
-    assert.equal(w.hintHtml(bar, 'bottom'), '<u>b</u>ottom/to<u>p</u>');
-    assert.equal(w.hintHtml(bar, 'top'), 'to<u>p</u>/<u>b</u>ottom');
+    assert.equal(w.hintHtml(bar, 'bottom'), '<b><u>b</u>ottom</b>/to<u>p</u>');
+    assert.equal(w.hintHtml(bar, 'top'), '<u>b</u>ottom/<b>to<u>p</u></b>');
 });
 
 test('hintLeft: right of the button when it fits, otherwise left of it', () => {
@@ -343,11 +343,16 @@ test('no settings button has a native title; the hint element replaces them', ()
     w.document.querySelectorAll('#settings-pop .set-btn').forEach(b => assert.equal(b.hasAttribute('title'), false));
 });
 
-test('hover on the Zoom button shows now/next as plain text', () => {
+test('hover on the Zoom button shows S/M with the active one bold, in that order whichever is active', () => {
     w.msmrZoom.set('s');
     const hint = w.document.getElementById('set-hint');
     w.document.querySelectorAll('#settings-pop .set-btn')[0].dispatchEvent(new w.MouseEvent('mouseenter'));
-    assert.equal(hint.innerHTML, 'S/M');
+    assert.equal(hint.innerHTML, '<b>S</b>/M');
+    w.document.querySelectorAll('#settings-pop .set-btn')[0].dispatchEvent(new w.MouseEvent('mouseleave'));
+    w.msmrZoom.set('m');
+    w.document.querySelectorAll('#settings-pop .set-btn')[0].dispatchEvent(new w.MouseEvent('mouseenter'));
+    assert.equal(hint.innerHTML, 'S/<b>M</b>');
+    w.msmrZoom.set('s');
     w.document.querySelectorAll('#settings-pop .set-btn')[0].dispatchEvent(new w.MouseEvent('mouseleave'));
     assert.equal(hint.innerHTML, '');
 });
@@ -369,7 +374,7 @@ test('hover on the Bar button fills the hint element; leaving or clicking emptie
     const hint = w.document.getElementById('set-hint');
     assert.ok(hint, 'the hint element exists');
     barButton().dispatchEvent(new w.MouseEvent('mouseenter'));
-    assert.equal(hint.innerHTML, '<u>b</u>ottom/to<u>p</u>');
+    assert.equal(hint.innerHTML, '<b><u>b</u>ottom</b>/to<u>p</u>');
     barButton().dispatchEvent(new w.MouseEvent('mouseleave'));
     assert.equal(hint.innerHTML, '');
     barButton().dispatchEvent(new w.MouseEvent('mouseenter'));
