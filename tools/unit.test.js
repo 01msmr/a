@@ -394,7 +394,7 @@ test('a hint below an element is at least as wide as the element; beside it has 
     delete w.document.documentElement.clientHeight;
 });
 
-test('items of the bar show no hint in text mode (it would repeat their label), but in icon mode', () => {
+test('chips of the bar show no hint in text mode (it would repeat their label), but in icon mode; the gear and the dropdown always do', () => {
     const hint = w.document.getElementById('hint');
     const chip = w.document.createElement('span');
     w.document.querySelector('.title').appendChild(chip);
@@ -411,6 +411,12 @@ test('items of the bar show no hint in text mode (it would repeat their label), 
     out();
     w.document.body.classList.remove('nav-icons');
     chip.remove();
+    for (const [id, text] of [['settings-btn', 'Settings'], ['section-jumper', 'Sections']]) {   // "set" and "sec" are abbreviations: they keep the hint
+        const el = w.document.getElementById(id);
+        el.dispatchEvent(new w.MouseEvent('mouseover', { bubbles: true }));
+        assert.equal(hint.innerHTML, text);
+        el.dispatchEvent(new w.MouseEvent('mouseout', { bubbles: true, relatedTarget: w.document.body }));
+    }
 });
 
 test('no element of the page has a native title attribute; the gear and the dropdown have a hint', () => {
