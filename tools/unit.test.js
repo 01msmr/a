@@ -386,11 +386,13 @@ test('a hint below an element is at least as wide as the element; beside it has 
     w.document.getElementById('jumper-pop').appendChild(entry);
     w.setHint(entry, 'srv.li');
     entry.getBoundingClientRect = () => ({ ...rect(10, 10, 80, 30), width: 80 });
+    w.document.body.classList.add('nav-icons');   // in text mode the entries show no hint (next test)
     entry.dispatchEvent(new w.MouseEvent('mouseover', { bubbles: true }));
     assert.equal(hint.style.minWidth, '');
     assert.equal(hint.dataset.edge, 'side');
     entry.dispatchEvent(new w.MouseEvent('mouseout', { bubbles: true, relatedTarget: w.document.body }));
     entry.remove();
+    w.document.body.classList.remove('nav-icons');
     delete w.document.documentElement.clientHeight;
 });
 
@@ -417,6 +419,24 @@ test('chips of the bar show no hint in text mode (it would repeat their label), 
         assert.equal(hint.innerHTML, text);
         el.dispatchEvent(new w.MouseEvent('mouseout', { bubbles: true, relatedTarget: w.document.body }));
     }
+});
+
+test('entries of the sections list show no hint in text mode, but in icon mode', () => {
+    const hint = w.document.getElementById('hint');
+    const entry = w.document.createElement('a');
+    w.document.getElementById('jumper-pop').appendChild(entry);
+    w.setHint(entry, 'srv.li');
+    const over = () => entry.dispatchEvent(new w.MouseEvent('mouseover', { bubbles: true }));
+    const out = () => entry.dispatchEvent(new w.MouseEvent('mouseout', { bubbles: true, relatedTarget: w.document.body }));
+    over();
+    assert.equal(hint.innerHTML, '');
+    out();
+    w.document.body.classList.add('nav-icons');
+    over();
+    assert.equal(hint.innerHTML, 'srv.li');
+    out();
+    w.document.body.classList.remove('nav-icons');
+    entry.remove();
 });
 
 test('no element of the page has a native title attribute; the gear and the dropdown have a hint', () => {

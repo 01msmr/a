@@ -113,7 +113,7 @@ The browser checks need Chrome (`CHROME_PATH` names it) and start the dev router
 
 ### Hints (tooltips)
 
-There are no native `title` tooltips. `setHint(el, text)` (`js/hint.js`) sets `data-hint` (and the `aria-label`); with a mouse the shared `#hint` element shows the text flush below the element (above it when there is no room), at least as wide as the element, centered, the corners at the touching edge square: section chips, gear, dropdown, strip items, the edit-mode buttons; the chips show none in text mode (it would repeat the label), only in icon mode; the gear (`set`) and the dropdown (`sec`) always show theirs. The entries of the sections list and the settings buttons get it beside them: right when it fits in the window, otherwise left (`hintPos`). The settings buttons show their own hint beside them (next section).
+There are no native `title` tooltips. `setHint(el, text)` (`js/hint.js`) sets `data-hint` (and the `aria-label`); with a mouse the shared `#hint` element shows the text flush below the element (above it when there is no room), at least as wide as the element, centered, the corners at the touching edge square: section chips, gear, dropdown, strip items, the edit-mode buttons; the chips and the entries of the sections list show none in text mode (it would repeat the label), only in icon mode; the gear (`set`) and the dropdown (`sec`) always show theirs. The entries of the sections list and the settings buttons get it beside them: right when it fits in the window, otherwise left (`hintPos`). The settings buttons show their own hint beside them (next section).
 
 ### Settings (gear in the bar)
 
