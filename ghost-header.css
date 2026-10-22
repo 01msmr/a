@@ -65,7 +65,8 @@ body.view-grid .ghost-header .name {
     transition: opacity var(--fade-duration, 100ms) linear var(--fade-delay, 300ms);
 }
 
-/* copy underneath: neither shadow nor line, so it does not get darker and darker with several */
+/* copy underneath: neither shadow nor line, so it does not get darker and darker with several; they fade out quickly instead of vanishing */
 .ghost-header.under::after {
-    display: none;
+    opacity: 0;
+    transition: opacity var(--fade-duration, 100ms) linear;
 }

@@ -1,6 +1,6 @@
 # Plan: bar position setting and compact bar on narrow tablets
 
-Status: implemented, merged into `main` and pushed (2026-10-22); the bar hint, the `p`/`b` keys and `js/hint.js` were added on top (see `CHANGELOG.md`); device checks and the ghost header/strip shadow check (Part 1, item 7) are open. Rulings: the class sits on `<html>` (the head script runs before `<body>` exists); `COMPACT_QUERY` is the old device-width phone query OR the new branch, so large phones in landscape keep the strip; the strip re-measures through its existing `ResizeObserver`, no extra listener; bounds decided: 350 px, every touch tablet in portrait.
+Status: implemented, merged into `main` and pushed (2026-10-22); the bar hint, the `p`/`b` keys and `js/hint.js` were added on top (see `CHANGELOG.md`); the ghost header and strip shadow check (Part 1, item 7) was done by hand (fine at all positions); the iPad device checks are open. Rulings: the class sits on `<html>` (the head script runs before `<body>` exists); `COMPACT_QUERY` is the old device-width phone query OR the new branch, so large phones in landscape keep the strip; the strip re-measures through its existing `ResizeObserver`, no extra listener; bounds decided: 350 px, every touch tablet in portrait.
 
 ## Goal
 
