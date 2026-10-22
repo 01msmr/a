@@ -148,8 +148,10 @@ body:not(.keyboard) .nav-btn.open {
     pointer-events: none;
 }
 
+/* the site has Ubuntu Regular only and not every browser fakes a bold: the stroke draws it (an outline in the text color) */
 #set-hint b {
-    font-weight: bold;
+    font-weight: normal;
+    -webkit-text-stroke: .05em currentColor;
 }
 
 #set-hint u {
