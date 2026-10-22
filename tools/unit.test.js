@@ -394,6 +394,25 @@ test('a hint below an element is at least as wide as the element; beside it has 
     delete w.document.documentElement.clientHeight;
 });
 
+test('items of the bar show no hint in text mode (it would repeat their label), but in icon mode', () => {
+    const hint = w.document.getElementById('hint');
+    const chip = w.document.createElement('span');
+    w.document.querySelector('.title').appendChild(chip);
+    w.setHint(chip, 'srv');
+    const over = () => chip.dispatchEvent(new w.MouseEvent('mouseover', { bubbles: true }));
+    const out = () => chip.dispatchEvent(new w.MouseEvent('mouseout', { bubbles: true, relatedTarget: w.document.body }));
+    w.document.body.classList.remove('nav-icons');
+    over();
+    assert.equal(hint.innerHTML, '');
+    out();
+    w.document.body.classList.add('nav-icons');
+    over();
+    assert.equal(hint.innerHTML, 'srv');
+    out();
+    w.document.body.classList.remove('nav-icons');
+    chip.remove();
+});
+
 test('no element of the page has a native title attribute; the gear and the dropdown have a hint', () => {
     assert.equal(w.document.querySelectorAll('[title]').length, 0);
     assert.equal(w.document.getElementById('settings-btn').dataset.hint, 'Settings');

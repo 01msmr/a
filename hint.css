@@ -12,7 +12,7 @@
     background: var(--title-col);
     color: var(--front-body);
     font: inherit;
-    font-size: .85rem;
+    font-size: 1.05rem;
     white-space: nowrap;
     box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .35);
     pointer-events: none;
@@ -22,6 +22,8 @@
 #hint[data-edge="below"],
 #hint[data-edge="above"] {
     text-align: center;
+    padding-left: .2rem;   /* little side padding, so the text fits the width of the element */
+    padding-right: .2rem;
 }
 
 #hint[data-edge="below"] {

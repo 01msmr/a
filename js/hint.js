@@ -1,7 +1,7 @@
 // Owns: the hint element (a tooltip with the colors of the page inverted), placing it, setHint for elements with a hint
 // Defines globals: hintPos, hintEl, hintOn, hintFor, hintHide, hintShow, setHint
 // Uses: (nothing)
-// With a mouse only. Elements with data-hint show it on hover (below the element, beside it in the sections list); the settings buttons call hintShow themselves (beside the button)
+// With a mouse only. Elements with data-hint show it on hover (below the element, beside it in the sections list; not on the texts of the bar); the settings buttons call hintShow themselves (beside the button)
 // Left edge and top of the hint, and the edge it touches (for the corners): beside the element (right of it when it fits in the window, otherwise left of it, centered vertically),
 // or flush below it at its left edge (above it when there is no room)
 function hintPos(r, size, view, beside) {
@@ -57,6 +57,7 @@ function setHint(el, text) {
 document.addEventListener('mouseover', function (e) {
     var el = e.target.closest && e.target.closest('[data-hint]');
     if (!el || el === hintFor) return;
+    if (el.closest('.title') && !document.body.classList.contains('nav-icons')) return;   // the bar's texts need no hint, only its icons
     hintShow(el, el.dataset.hint.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'), !!el.closest('#jumper-pop'));
     hintFor = el;
 });
