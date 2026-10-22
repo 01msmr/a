@@ -116,7 +116,7 @@ The browser checks need Chrome (`CHROME_PATH` names it) and start the dev router
 The gear is a nav button (`.nav-btn`) next to the sections dropdown. A click opens a
 narrow vertical stack with one button per setting. A click cycles to the next value. The button shows the **state**. In text mode that is
 a short English word, in icon mode an icon. The hover hint (`title`) names
-"now/next value" (the Bar hint adds its keys: `bottom/top (b / p)`), for the theme all values with the current one in brackets. On touch devices the words are as large as the word `set` on the gear (only on very narrow phones, 320 px, they shrink to fit).
+"now/next value" (the Bar button has its own hint element `#set-hint` instead, with a mouse only: `<u>b</u>ottom/to<u>p</u>`, the key letters underlined; its `aria-label` reads `bottom/top (b / p)`), for the theme all values with the current one in brackets. On touch devices the words are as large as the word `set` on the gear (only on very narrow phones, 320 px, they shrink to fit).
 
 | Setting | Values | Text mode | Icon mode |
 |---|---|---|---|

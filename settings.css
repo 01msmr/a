@@ -130,6 +130,28 @@ body:not(.keyboard) .nav-btn.open {
     font-size: clamp(1rem, 30cqw, 1.7rem);   /* uses the width of the button */
 }
 
+/* Hint of the Bar button (js/settings.js): outside the overlay, which clips; the key letter is underlined */
+#set-hint {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    border: 0;
+    padding: .35rem .6rem;
+    border-radius: .35rem;
+    background: var(--front-body);
+    color: var(--title-col);
+    font: inherit;
+    font-size: .85rem;
+    white-space: nowrap;
+    transform: translateY(-50%);
+    box-shadow: 0 .25rem 1rem rgba(0, 0, 0, .35);
+    pointer-events: none;
+}
+
+#set-hint u {
+    text-underline-offset: .15em;
+}
+
 /* Bar: the word is underlined (bottom) or overlined (top), the text keeps its place */
 .set-under {
     text-decoration: underline;

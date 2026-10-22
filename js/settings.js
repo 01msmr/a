@@ -1,5 +1,5 @@
 // Owns: settings overlay and its icons
-// Defines globals: setNavPos, SETTINGS, valueName, valueTo, drawScheme, drawIcon, settingsDisplay, navButtonHeight, settingsPlace
+// Defines globals: setNavPos, hintHtml, SETTINGS, valueName, valueTo, drawScheme, drawIcon, settingsDisplay, navButtonHeight, settingsPlace
 // Uses: state, prefs, render, touch, cursor, edit, grid
 // ── Settings: gear in the bar, overlay with one button per setting ──
 // One icon per setting shows the current value; each click switches to the other of two values. The API for zoom/color scheme is in the <head>.
@@ -44,7 +44,8 @@ var SETTINGS = [
         label: 'Bar',
         values: [['bottom', 'bottom'], ['top', 'top']],
         text: { bottom: 'bot', top: 'top' },
-        key: { bottom: 'b', top: 'p' },   // the hint names the keys (js/settings.js, keydown)
+        key: { bottom: 'b', top: 'p' },   // the keys (see the keydown handler below), named in the hint
+        hint: { bottom: '<u>b</u>ottom', top: 'to<u>p</u>' },   // the hint element underlines the key letter
         line: { bottom: 'under', top: 'over' },   // text mode: the word is underlined or overlined
         lined: { bottom: ['fa-arrow-up', 'over'], top: ['fa-arrow-down', 'under'] },   // icon mode: an arrow with a line beside it that does not count into its size
         order: function (w) { return w === 'bottom' ? -1 : 1; },   // first in the overlay while the bar is at the bottom, last while it is at the top
@@ -86,6 +87,9 @@ function valueName(e, w) {
     return (e.descr && e.descr(w)) ||
         e.values.filter(function (p) { return p[0] === w; })[0][1];
 }
+
+// Hint with the key letter underlined: now/next value
+function hintHtml(e, w) { return e.hint[w] + '/' + e.hint[valueTo(e, w)]; }
 
 function valueTo(e, w) {
     var i = 0;
@@ -161,11 +165,13 @@ function settingsDisplay() {
         var e = SETTINGS[i], w = e.get();
         drawIcon(b.querySelector('.set-icon'), e, w);
         if (e.order) b.style.order = e.order(w);
-        b.title = e.all
+        var tip = e.all
             ? e.values.map(function (p) { return p[0] === w ? '[' + p[1] + ']' : p[1]; }).join(' / ')
             : valueName(e, w) + '/' + valueName(e, valueTo(e, w)) +   // now/next value
               (e.key ? ' (' + e.key[w] + ' / ' + e.key[valueTo(e, w)] + ')' : '');
-        b.setAttribute('aria-label', e.label + ': ' + b.title);
+        if (e.hint) b.removeAttribute('title');   // the hint element (below) shows it
+        else b.title = tip;
+        b.setAttribute('aria-label', e.label + ': ' + tip);
     });
 }
 
@@ -203,12 +209,37 @@ function settingsPlace() {
 
 (function () {
     var pop = document.getElementById('settings-pop');
+    // One hint element outside the overlay (which clips); with a mouse only, to the left of the button
+    var hint = document.createElement('div');
+    hint.id = 'set-hint';
+    hint.popover = 'manual';
+    document.body.appendChild(hint);
+    var hintOn = false;
+    function hintHide() {
+        hint.innerHTML = '';
+        if (hintOn) hint.hidePopover();
+        hintOn = false;
+    }
+    function hintShow(b, e) {
+        if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+        var r = b.getBoundingClientRect();
+        hint.innerHTML = hintHtml(e, e.get());
+        hint.style.top = (r.top + r.height / 2) + 'px';
+        hint.style.right = (window.innerWidth - r.left + 6) + 'px';
+        if (!hintOn) hint.showPopover();
+        hintOn = true;
+    }
     SETTINGS.forEach(function (e) {
         var b = document.createElement('button');
         b.type = 'button';
         b.className = 'set-btn';
         b.innerHTML = '<span class="set-icon" aria-hidden="true"></span>';
+        if (e.hint) {
+            b.addEventListener('mouseenter', function () { hintShow(b, e); });
+            b.addEventListener('mouseleave', hintHide);
+        }
         b.addEventListener('click', function () {
+            hintHide();
             e.set(valueTo(e, e.get()));
             settingsDisplay();
             if (e.closes) { pop.hidePopover(); return; }
@@ -254,6 +285,7 @@ function settingsPlace() {
     });
 
     pop.addEventListener('beforetoggle', function (ev) {
+        if (ev.newState === 'closed') hintHide();
         if (ev.newState === 'open') settingsPlace();
     });
     window.addEventListener('resize', function () { if (pop.matches(':popover-open')) settingsPlace(); });

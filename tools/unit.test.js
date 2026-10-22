@@ -325,15 +325,38 @@ test('keys p and b put the bar at the top and the bottom; not with a modifier an
     w.applyPrefs();
 });
 
-test('Bar hint: now/next value with the keys in the same order', () => {
-    const bar = w.SETTINGS.findIndex(e => e.label === 'Bar');
-    const btn = () => w.document.querySelectorAll('#settings-pop .set-btn')[bar];
+const barIndex = () => w.SETTINGS.findIndex(e => e.label === 'Bar');
+const barButton = () => w.document.querySelectorAll('#settings-pop .set-btn')[barIndex()];
+
+test('hintHtml: now/next value with the key letter underlined', () => {
+    const bar = w.SETTINGS[barIndex()];
+    assert.equal(w.hintHtml(bar, 'bottom'), '<u>b</u>ottom/to<u>p</u>');
+    assert.equal(w.hintHtml(bar, 'top'), 'to<u>p</u>/<u>b</u>ottom');
+});
+
+test('Bar button: no native title (the hint element replaces it); the aria-label names the keys in the order now/next', () => {
     w.localStorage.clear();
     w.setPref('navPos', 'bottom');
-    assert.equal(btn().title, 'bottom/top (b / p)');
+    assert.equal(barButton().hasAttribute('title'), false);
+    assert.equal(barButton().getAttribute('aria-label'), 'Bar: bottom/top (b / p)');
     w.setPref('navPos', 'top');
-    assert.equal(btn().title, 'top/bottom (p / b)');
-    assert.equal(btn().getAttribute('aria-label'), 'Bar: top/bottom (p / b)');
+    assert.equal(barButton().getAttribute('aria-label'), 'Bar: top/bottom (p / b)');
+    w.localStorage.clear();
+    w.applyPrefs();
+});
+
+test('hover on the Bar button fills the hint element; leaving or clicking empties it', () => {
+    w.localStorage.clear();
+    w.setPref('navPos', 'bottom');
+    const hint = w.document.getElementById('set-hint');
+    assert.ok(hint, 'the hint element exists');
+    barButton().dispatchEvent(new w.MouseEvent('mouseenter'));
+    assert.equal(hint.innerHTML, '<u>b</u>ottom/to<u>p</u>');
+    barButton().dispatchEvent(new w.MouseEvent('mouseleave'));
+    assert.equal(hint.innerHTML, '');
+    barButton().dispatchEvent(new w.MouseEvent('mouseenter'));
+    barButton().dispatchEvent(new w.MouseEvent('click'));
+    assert.equal(hint.innerHTML, '');
     w.localStorage.clear();
     w.applyPrefs();
 });
