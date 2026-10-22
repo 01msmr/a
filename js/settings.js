@@ -95,12 +95,12 @@ function tipText(e, w) {
         (e.key ? ' (' + e.key[w] + ' / ' + e.key[valueTo(e, w)] + ')' : '');
 }
 
-// The hint as HTML: all values in their original order (default first), the active one inverted, the key letters underlined where the setting has them
+// The hint as HTML: all values in their original order (default first), the active one inverted, no separators, the key letters underlined where the setting has them
 function hintHtml(e, w) {
     return e.values.map(function (p) {
         var t = e.hint ? e.hint[p[0]] : valueName(e, p[0]).replace(/&/g, '&amp;').replace(/</g, '&lt;');
-        return p[0] === w ? '<span class="on">' + t + '</span>' : t;
-    }).join('/');
+        return '<span' + (p[0] === w ? ' class="on"' : '') + '>' + t + '</span>';
+    }).join('');
 }
 
 // Left edge of the hint beside a button: right of it when it fits in the window, otherwise left of it

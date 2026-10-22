@@ -148,13 +148,14 @@ body:not(.keyboard) .nav-btn.open {
     pointer-events: none;
 }
 
-/* the active value: a small inverted area inside the hint */
+/* the options are spaced by their padding; the active one is a small inverted rectangle inside the hint */
+#set-hint span {
+    padding: .05rem .3rem;
+}
+
 #set-hint .on {
     background: var(--front-body);
     color: var(--title-col);
-    border-radius: .25rem;
-    padding: .05rem .3rem;
-    margin: 0 .05rem;
 }
 
 #set-hint u {

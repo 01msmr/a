@@ -330,8 +330,8 @@ const barButton = () => w.document.querySelectorAll('#settings-pop .set-btn')[ba
 
 test('hintHtml: all values in their original order, the active one marked, the key letters underlined', () => {
     const bar = w.SETTINGS[barIndex()];
-    assert.equal(w.hintHtml(bar, 'bottom'), '<span class="on"><u>b</u>ottom</span>/to<u>p</u>');
-    assert.equal(w.hintHtml(bar, 'top'), '<u>b</u>ottom/<span class="on">to<u>p</u></span>');
+    assert.equal(w.hintHtml(bar, 'bottom'), '<span class="on"><u>b</u>ottom</span><span>to<u>p</u></span>');
+    assert.equal(w.hintHtml(bar, 'top'), '<span><u>b</u>ottom</span><span class="on">to<u>p</u></span>');
 });
 
 test('hintLeft: right of the button when it fits, otherwise left of it', () => {
@@ -347,11 +347,11 @@ test('hover on the Zoom button shows S/M with the active one marked, in that ord
     w.msmrZoom.set('s');
     const hint = w.document.getElementById('set-hint');
     w.document.querySelectorAll('#settings-pop .set-btn')[0].dispatchEvent(new w.MouseEvent('mouseenter'));
-    assert.equal(hint.innerHTML, '<span class="on">S</span>/M');
+    assert.equal(hint.innerHTML, '<span class="on">S</span><span>M</span>');
     w.document.querySelectorAll('#settings-pop .set-btn')[0].dispatchEvent(new w.MouseEvent('mouseleave'));
     w.msmrZoom.set('m');
     w.document.querySelectorAll('#settings-pop .set-btn')[0].dispatchEvent(new w.MouseEvent('mouseenter'));
-    assert.equal(hint.innerHTML, 'S/<span class="on">M</span>');
+    assert.equal(hint.innerHTML, '<span>S</span><span class="on">M</span>');
     w.msmrZoom.set('s');
     w.document.querySelectorAll('#settings-pop .set-btn')[0].dispatchEvent(new w.MouseEvent('mouseleave'));
     assert.equal(hint.innerHTML, '');
@@ -374,7 +374,7 @@ test('hover on the Bar button fills the hint element; leaving or clicking emptie
     const hint = w.document.getElementById('set-hint');
     assert.ok(hint, 'the hint element exists');
     barButton().dispatchEvent(new w.MouseEvent('mouseenter'));
-    assert.equal(hint.innerHTML, '<span class="on"><u>b</u>ottom</span>/to<u>p</u>');
+    assert.equal(hint.innerHTML, '<span class="on"><u>b</u>ottom</span><span>to<u>p</u></span>');
     barButton().dispatchEvent(new w.MouseEvent('mouseleave'));
     assert.equal(hint.innerHTML, '');
     barButton().dispatchEvent(new w.MouseEvent('mouseenter'));
