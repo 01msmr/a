@@ -32,6 +32,13 @@ body.view-grid .ghost-header .name {
     border-bottom-width: 0;
 }
 
+/* 1 = the shadow shows, 0 = a copy underneath; animated on its own, so the --strength set by js/ghost-header.js is not smoothed */
+@property --under-vis {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 1;
+}
+
 /* soft shadow onto the content, 66 % of a tile height (--shadow, set by js/ghost-header.js); it starts with a thin dark line (1 px) */
 .ghost-header::after {
     content: "";
@@ -39,7 +46,8 @@ body.view-grid .ghost-header .name {
     left: 0;
     right: 0;
     height: var(--shadow, 1.5rem);
-    opacity: var(--strength, 1);
+    opacity: calc(var(--strength, 1) * var(--under-vis));
+    transition: --under-vis 50ms linear;   /* reappearing when the copy is free again */
     pointer-events: none;
     background: linear-gradient(var(--direction, to bottom),
         rgba(0, 0, 0, .55), rgba(0, 0, 0, .55) 1px, rgba(0, 0, 0, .3) 1px, rgba(0, 0, 0, .22) 20%, rgba(0, 0, 0, .12) 45%, rgba(0, 0, 0, .04) 75%, rgba(0, 0, 0, 0));
@@ -67,6 +75,6 @@ body.view-grid .ghost-header .name {
 
 /* copy underneath: neither shadow nor line, so it does not get darker and darker with several; they fade out quickly instead of vanishing */
 .ghost-header.under::after {
-    opacity: 0;
-    transition: opacity var(--fade-duration, 100ms) linear;
+    --under-vis: 0;
+    transition: --under-vis var(--fade-duration, 100ms) linear;
 }
