@@ -1,5 +1,5 @@
 // Owns: settings overlay and its icons
-// Defines globals: setNavPos, hintHtml, SETTINGS, valueName, valueTo, drawScheme, drawIcon, settingsDisplay, navButtonHeight, settingsPlace
+// Defines globals: setNavPos, tipText, hintHtml, hintLeft, SETTINGS, valueName, valueTo, drawScheme, drawIcon, settingsDisplay, navButtonHeight, settingsPlace
 // Uses: state, prefs, render, touch, cursor, edit, grid
 // ── Settings: gear in the bar, overlay with one button per setting ──
 // One icon per setting shows the current value; each click switches to the other of two values. The API for zoom/color scheme is in the <head>.
@@ -88,8 +88,23 @@ function valueName(e, w) {
         e.values.filter(function (p) { return p[0] === w; })[0][1];
 }
 
-// Hint with the key letter underlined: now/next value
-function hintHtml(e, w) { return e.hint[w] + '/' + e.hint[valueTo(e, w)]; }
+// Hint text: now/next value (the theme: all values, the current one in brackets), with the keys if the setting has any
+function tipText(e, w) {
+    if (e.all) return e.values.map(function (p) { return p[0] === w ? '[' + p[1] + ']' : p[1]; }).join(' / ');
+    return valueName(e, w) + '/' + valueName(e, valueTo(e, w)) +
+        (e.key ? ' (' + e.key[w] + ' / ' + e.key[valueTo(e, w)] + ')' : '');
+}
+
+// The hint as HTML: with the key letters underlined where the setting has them, otherwise the plain text
+function hintHtml(e, w) {
+    if (e.hint) return e.hint[w] + '/' + e.hint[valueTo(e, w)];
+    return tipText(e, w).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+}
+
+// Left edge of the hint beside a button: right of it when it fits in the window, otherwise left of it
+function hintLeft(r, width, windowWidth) {
+    return r.right + 6 + width <= windowWidth ? r.right + 6 : r.left - 6 - width;
+}
 
 function valueTo(e, w) {
     var i = 0;
@@ -165,13 +180,8 @@ function settingsDisplay() {
         var e = SETTINGS[i], w = e.get();
         drawIcon(b.querySelector('.set-icon'), e, w);
         if (e.order) b.style.order = e.order(w);
-        var tip = e.all
-            ? e.values.map(function (p) { return p[0] === w ? '[' + p[1] + ']' : p[1]; }).join(' / ')
-            : valueName(e, w) + '/' + valueName(e, valueTo(e, w)) +   // now/next value
-              (e.key ? ' (' + e.key[w] + ' / ' + e.key[valueTo(e, w)] + ')' : '');
-        if (e.hint) b.removeAttribute('title');   // the hint element (below) shows it
-        else b.title = tip;
-        b.setAttribute('aria-label', e.label + ': ' + tip);
+        b.removeAttribute('title');   // the hint element (below) shows it
+        b.setAttribute('aria-label', e.label + ': ' + tipText(e, w));
     });
 }
 
@@ -209,7 +219,7 @@ function settingsPlace() {
 
 (function () {
     var pop = document.getElementById('settings-pop');
-    // One hint element outside the overlay (which clips); with a mouse only, to the left of the button
+    // One hint element outside the overlay (which clips); with a mouse only, beside the button
     var hint = document.createElement('div');
     hint.id = 'set-hint';
     hint.popover = 'manual';
@@ -224,20 +234,18 @@ function settingsPlace() {
         if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
         var r = b.getBoundingClientRect();
         hint.innerHTML = hintHtml(e, e.get());
-        hint.style.top = (r.top + r.height / 2) + 'px';
-        hint.style.right = (window.innerWidth - r.left + 6) + 'px';
         if (!hintOn) hint.showPopover();
         hintOn = true;
+        hint.style.top = (r.top + r.height / 2) + 'px';
+        hint.style.left = hintLeft(r, hint.offsetWidth, document.documentElement.clientWidth) + 'px';
     }
     SETTINGS.forEach(function (e) {
         var b = document.createElement('button');
         b.type = 'button';
         b.className = 'set-btn';
         b.innerHTML = '<span class="set-icon" aria-hidden="true"></span>';
-        if (e.hint) {
-            b.addEventListener('mouseenter', function () { hintShow(b, e); });
-            b.addEventListener('mouseleave', hintHide);
-        }
+        b.addEventListener('mouseenter', function () { hintShow(b, e); });
+        b.addEventListener('mouseleave', hintHide);
         b.addEventListener('click', function () {
             hintHide();
             e.set(valueTo(e, e.get()));

@@ -334,6 +334,24 @@ test('hintHtml: now/next value with the key letter underlined', () => {
     assert.equal(w.hintHtml(bar, 'top'), 'to<u>p</u>/<u>b</u>ottom');
 });
 
+test('hintLeft: right of the button when it fits, otherwise left of it', () => {
+    assert.equal(w.hintLeft({ left: 100, right: 200 }, 80, 1000), 206);
+    assert.equal(w.hintLeft({ left: 900, right: 1000 }, 80, 1000), 814);
+});
+
+test('no settings button has a native title; the hint element replaces them', () => {
+    w.document.querySelectorAll('#settings-pop .set-btn').forEach(b => assert.equal(b.hasAttribute('title'), false));
+});
+
+test('hover on the Zoom button shows now/next as plain text', () => {
+    w.msmrZoom.set('s');
+    const hint = w.document.getElementById('set-hint');
+    w.document.querySelectorAll('#settings-pop .set-btn')[0].dispatchEvent(new w.MouseEvent('mouseenter'));
+    assert.equal(hint.innerHTML, 'S/M');
+    w.document.querySelectorAll('#settings-pop .set-btn')[0].dispatchEvent(new w.MouseEvent('mouseleave'));
+    assert.equal(hint.innerHTML, '');
+});
+
 test('Bar button: no native title (the hint element replaces it); the aria-label names the keys in the order now/next', () => {
     w.localStorage.clear();
     w.setPref('navPos', 'bottom');
