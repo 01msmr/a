@@ -1,5 +1,5 @@
 // Owns: the hint element (a tooltip with the colors of the page inverted), placing it, setHint for elements with a hint
-// Defines globals: hintPos, hintEl, hintOn, hintFor, hintHide, hintShow, setHint
+// Defines globals: hintPos, hintEl, hintOn, hintFor, hintHide, hintShow, setHint, hintOver, hintPoint
 // Uses: (nothing)
 // With a mouse only. Elements with data-hint show it on hover (below the element, beside it in the sections list; not on the texts of chips and list entries); the settings buttons call hintShow themselves (beside the button)
 // Left edge and top of the hint, and the edge it touches (for the corners): beside the element (right of it when it fits in the window, otherwise left of it, centered vertically),
@@ -54,13 +54,21 @@ function setHint(el, text) {
     el.setAttribute('aria-label', text);
 }
 
-document.addEventListener('mouseover', function (e) {
-    var el = e.target.closest && e.target.closest('[data-hint]');
+function hintOver(target) {
+    var el = target && target.closest && target.closest('[data-hint]');
     if (!el || el === hintFor) return;
     if (el.closest('.title, #jumper-pop') && !el.matches('#settings-btn, #section-jumper') && !document.body.classList.contains('nav-icons')) return;   // the texts of chips and list entries need no hint, only their icons; "set" and "sec" keep theirs
     hintShow(el, el.dataset.hint.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'), !!el.closest('#jumper-pop'));
     hintFor = el;
-});
+}
+document.addEventListener('mouseover', function (e) { hintOver(e.target); });
+// A closed dropdown leaves the pointer on its button without a new mouseover: show the hint again
+var hintPoint = null;
+document.addEventListener('mousemove', function (e) { hintPoint = { x: e.clientX, y: e.clientY }; }, true);
+document.addEventListener('toggle', function (e) {
+    if (e.newState !== 'closed' || !e.target.matches('#settings-pop, #jumper-pop') || !hintPoint) return;
+    hintOver(document.elementFromPoint(hintPoint.x, hintPoint.y));
+}, true);
 document.addEventListener('mouseout', function (e) {
     if (hintFor && !(e.relatedTarget && hintFor.contains(e.relatedTarget))) hintHide();
 });
