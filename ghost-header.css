@@ -73,8 +73,8 @@ body.view-grid .ghost-header .name {
     transition: opacity var(--fade-duration, 100ms) linear var(--fade-delay, 300ms);
 }
 
-/* copy underneath: neither shadow nor line, so it does not get darker and darker with several; they fade out quickly instead of vanishing */
+/* copy underneath: neither shadow nor line, so it does not get darker and darker with several; they fade out in 100 ms instead of vanishing */
 .ghost-header.under::after {
     --under-vis: 0;
-    transition: --under-vis var(--fade-duration, 100ms) linear;
+    transition: --under-vis 100ms linear;   /* fixed: not tied to the glide time like --fade-duration */
 }
