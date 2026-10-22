@@ -328,10 +328,10 @@ test('keys p and b put the bar at the top and the bottom; not with a modifier an
 const barIndex = () => w.SETTINGS.findIndex(e => e.label === 'Bar');
 const barButton = () => w.document.querySelectorAll('#settings-pop .set-btn')[barIndex()];
 
-test('hintHtml: all values in their original order, the active one bold, the key letters underlined', () => {
+test('hintHtml: all values in their original order, the active one marked, the key letters underlined', () => {
     const bar = w.SETTINGS[barIndex()];
-    assert.equal(w.hintHtml(bar, 'bottom'), '<b><u>b</u>ottom</b>/to<u>p</u>');
-    assert.equal(w.hintHtml(bar, 'top'), '<u>b</u>ottom/<b>to<u>p</u></b>');
+    assert.equal(w.hintHtml(bar, 'bottom'), '<span class="on"><u>b</u>ottom</span>/to<u>p</u>');
+    assert.equal(w.hintHtml(bar, 'top'), '<u>b</u>ottom/<span class="on">to<u>p</u></span>');
 });
 
 test('hintLeft: right of the button when it fits, otherwise left of it', () => {
@@ -343,15 +343,15 @@ test('no settings button has a native title; the hint element replaces them', ()
     w.document.querySelectorAll('#settings-pop .set-btn').forEach(b => assert.equal(b.hasAttribute('title'), false));
 });
 
-test('hover on the Zoom button shows S/M with the active one bold, in that order whichever is active', () => {
+test('hover on the Zoom button shows S/M with the active one marked, in that order whichever is active', () => {
     w.msmrZoom.set('s');
     const hint = w.document.getElementById('set-hint');
     w.document.querySelectorAll('#settings-pop .set-btn')[0].dispatchEvent(new w.MouseEvent('mouseenter'));
-    assert.equal(hint.innerHTML, '<b>S</b>/M');
+    assert.equal(hint.innerHTML, '<span class="on">S</span>/M');
     w.document.querySelectorAll('#settings-pop .set-btn')[0].dispatchEvent(new w.MouseEvent('mouseleave'));
     w.msmrZoom.set('m');
     w.document.querySelectorAll('#settings-pop .set-btn')[0].dispatchEvent(new w.MouseEvent('mouseenter'));
-    assert.equal(hint.innerHTML, 'S/<b>M</b>');
+    assert.equal(hint.innerHTML, 'S/<span class="on">M</span>');
     w.msmrZoom.set('s');
     w.document.querySelectorAll('#settings-pop .set-btn')[0].dispatchEvent(new w.MouseEvent('mouseleave'));
     assert.equal(hint.innerHTML, '');
@@ -374,7 +374,7 @@ test('hover on the Bar button fills the hint element; leaving or clicking emptie
     const hint = w.document.getElementById('set-hint');
     assert.ok(hint, 'the hint element exists');
     barButton().dispatchEvent(new w.MouseEvent('mouseenter'));
-    assert.equal(hint.innerHTML, '<b><u>b</u>ottom</b>/to<u>p</u>');
+    assert.equal(hint.innerHTML, '<span class="on"><u>b</u>ottom</span>/to<u>p</u>');
     barButton().dispatchEvent(new w.MouseEvent('mouseleave'));
     assert.equal(hint.innerHTML, '');
     barButton().dispatchEvent(new w.MouseEvent('mouseenter'));

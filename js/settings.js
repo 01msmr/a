@@ -95,11 +95,11 @@ function tipText(e, w) {
         (e.key ? ' (' + e.key[w] + ' / ' + e.key[valueTo(e, w)] + ')' : '');
 }
 
-// The hint as HTML: all values in their original order (default first), the active one bold, the key letters underlined where the setting has them
+// The hint as HTML: all values in their original order (default first), the active one inverted, the key letters underlined where the setting has them
 function hintHtml(e, w) {
     return e.values.map(function (p) {
         var t = e.hint ? e.hint[p[0]] : valueName(e, p[0]).replace(/&/g, '&amp;').replace(/</g, '&lt;');
-        return p[0] === w ? '<b>' + t + '</b>' : t;
+        return p[0] === w ? '<span class="on">' + t + '</span>' : t;
     }).join('/');
 }
 
