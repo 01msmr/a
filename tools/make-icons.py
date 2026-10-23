@@ -1,7 +1,9 @@
-# Makes the light home screen icons favicon/ico-light-{180,192,512}.png: black "a." on the grey tile with a white outline of exact width.
+# Makes the light icons favicon/ico-light-{180,192,512}.png (black "a." on the grey tile with a white outline of exact width)
+# and the experiment icons favicon/touch-cutout-{0..7}.png (project-colored tile, "a." cut out as transparent).
 #   python3 tools/make-icons.py      (needs Pillow, numpy, fontTools, brotli); then: node tools/touch-icon.js inline
 # Recipe: docs/reference.md, "Home screen icon (iOS)". The dark icon is not made here.
 import io
+import math
 import os
 import numpy as np
 from fontTools.ttLib import TTFont
@@ -14,6 +16,8 @@ TILE = '#e6e6e9'
 INK = '#000000'
 WHITE = (255, 255, 255)
 TEXT = 'a.'
+# project colors of msmr.dev (projects.json): oklch (chroma, hue, lightness)
+CUTOUT_COLORS = [(0.16, 256, 0.69), (0.14, 115, 0.63), (0.22, 5, 0.7), (0.17, 210, 0.76), (0.19, 155, 0.7), (0.2, 305, 0.7), (0.2, 44, 0.7), (0.16, 95, 0.82)]
 # ink box of the letters in a 180 px icon: left edge, right edge (exclusive), bottom (exclusive)
 LEFT, RIGHT, BOTTOM = 30, 147, 139
 
@@ -88,6 +92,27 @@ def icon(size, draw_letter):
     return Image.fromarray(np.rint(mixed).astype(np.uint8), 'RGB')
 
 
+def oklch_rgb(chroma, hue, light):
+    a, b = chroma * math.cos(math.radians(hue)), chroma * math.sin(math.radians(hue))
+    l, m, s = (light + .3963377774 * a + .2158037573 * b) ** 3, (light - .1055613458 * a - .0638541728 * b) ** 3, (light - .0894841775 * a - 1.2914855480 * b) ** 3
+    lin = (4.0767416621 * l - 3.3077115913 * m + .2309699292 * s, -1.2684380046 * l + 2.6097574011 * m - .3413193965 * s, -.0041960863 * l - .7034186147 * m + 1.7076147010 * s)
+    enc = lambda v: 12.92 * v if v <= .0031308 else 1.055 * v ** (1 / 2.4) - .055
+    return tuple(round(min(1, max(0, enc(max(0, v)))) * 255) for v in lin)
+
+
+def cutout_icon(size, color):
+    """Opaque tile of `color`, the letter cut out as transparent (alpha = 1 - letter coverage)."""
+    big = size * SUPER
+    mask = Image.new('L', (big, big), 0)
+    letter_painter(size)(ImageDraw.Draw(mask), big, 255)
+    alpha = 255 - np.asarray(mask.resize((size, size), Image.BOX), dtype=np.uint8)
+    out = Image.new('RGBA', (size, size), color + (255,))
+    out.putalpha(Image.fromarray(alpha, 'L'))
+    return out
+
+
 if __name__ == '__main__':
+    for n, hue in enumerate(CUTOUT_COLORS):
+        cutout_icon(180, oklch_rgb(*hue)).save(os.path.join(ROOT, 'favicon/touch-cutout-%d.png' % n))
     for size in (180, 192, 512):
         icon(size, letter_painter(size)).save(os.path.join(ROOT, 'favicon/ico-light-%d.png' % size))

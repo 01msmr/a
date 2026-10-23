@@ -10,6 +10,7 @@ const path = require('path');
 
 const root = path.join(__dirname, '..');
 const ICON = 'favicon/ico-light-180.png';
+const CUTOUTS = [0, 1, 2, 3, 4, 5, 6, 7].map(n => 'favicon/touch-cutout-' + n + '.png');   // experiment: random project-colored icons, the letter cut out
 const mode = process.argv[2];
 if (mode !== 'inline' && mode !== 'url') {
     console.error('usage: node tools/touch-icon.js inline|url');
@@ -19,7 +20,7 @@ if (mode !== 'inline' && mode !== 'url') {
 const file = path.join(root, 'index.html');
 const html = fs.readFileSync(file, 'utf8');
 const LINK = /<link rel="apple-touch-icon" href="[^"]*">/;
-const ICON_LINE = /const ICON = '[^']*';/;
+const ICON_LINE = /const ICONS = \[[^\]]*\];/;
 if (!LINK.test(html)) {
     console.error('index.html: no <link rel="apple-touch-icon" href="…"> found');
     process.exit(1);
@@ -35,7 +36,7 @@ if (!ICON_LINE.test(script)) {
     console.error('favicon/touch-icon-inline.js: no ICON line found');
     process.exit(1);
 }
-fs.writeFileSync(scriptFile, script.replace(ICON_LINE, "const ICON = '" + href(ICON) + "';"));
+fs.writeFileSync(scriptFile, script.replace(ICON_LINE, 'const ICONS = [' + CUTOUTS.map(href).map(h => "'" + h + "'").join(', ') + '];'));
 const png = fs.readFileSync(path.join(root, ICON));
 
 for (const name of ['apple-touch-icon.png', 'apple-touch-icon-precomposed.png']) {

@@ -6,6 +6,7 @@ Names in this log are the current English ones (the code was translated to Engli
 
 ## 2026-10-23 — Home screen icon outline made exactly
 
+- Branch `icon-color-cutout` (experiment, not on `main`): the iOS home screen icon is a random one of eight tiles in the msmr.dev project colors with "a." cut out as transparent (`favicon/touch-cutout-{0..7}.png`, made by `tools/make-icons.py`, picked in `favicon/touch-icon-inline.js`). To check on an iPhone: what iOS puts into the cutout in light and dark appearance (msmr.dev found transparent paper always black). Fallback if it is black in both: solid black letter.
 - Light icons (`favicon/ico-light-{180,192,512}.png`) are made by the new `tools/make-icons.py`: outline 1.25 % of the width grown with an exact circle at 8x (before: a square growth at 4x, then a threshold, so the white line varied between 1 and 3 px at 180), averaged down to coverage without threshold, letter drawn pure black on white, tile opaque `#e6e6e9`. The ink box of the 180 px icon is the same as before (30–146, 44–138). The iOS home screen icon is one icon for both appearances (the color-scheme switch in `favicon/touch-icon-inline.js` is removed); the tab favicon keeps the light/dark pair (`ico-dark-180.png` unchanged). Not yet looked at on an iPhone: delete the shortcut, clear the website data for a.msmr.co in Safari, add it again. Fallback if iOS drops the smooth edge: threshold the coverage at 0.5.
 
 ## 2026-10-22 — Bar position setting, compact bar on portrait and narrow tablets
