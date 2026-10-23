@@ -3,14 +3,13 @@
 //                                     Add to Home Screen sheet fails to load the icon from a network URL)
 //   node tools/touch-icon.js url      the default: link the file by URL
 // Run "inline" again after changing the icon file, so the embedded copy stays the same as the file.
-// The ICONS line in favicon/touch-icon-inline.js (the script that swaps the icon by color scheme) carries the variant; the link in index.html always stays a URL.
+// The ICON line in favicon/touch-icon-inline.js carries the variant; the link in index.html always stays a URL.
 // It also copies the icon to /apple-touch-icon.png and /apple-touch-icon-precomposed.png (asked for by other iOS versions and browsers).
 const fs = require('fs');
 const path = require('path');
 
 const root = path.join(__dirname, '..');
 const ICON = 'favicon/ico-light-180.png';
-const DARK_ICON = 'favicon/ico-dark-180.png';   // for <link rel="apple-touch-icon" media="(prefers-color-scheme: dark)">
 const mode = process.argv[2];
 if (mode !== 'inline' && mode !== 'url') {
     console.error('usage: node tools/touch-icon.js inline|url');
@@ -20,7 +19,7 @@ if (mode !== 'inline' && mode !== 'url') {
 const file = path.join(root, 'index.html');
 const html = fs.readFileSync(file, 'utf8');
 const LINK = /<link rel="apple-touch-icon" href="[^"]*">/;
-const ICONS_LINE = /const ICONS = \{ light: '[^']*', dark: '[^']*' \};/;
+const ICON_LINE = /const ICON = '[^']*';/;
 if (!LINK.test(html)) {
     console.error('index.html: no <link rel="apple-touch-icon" href="…"> found');
     process.exit(1);
@@ -29,14 +28,14 @@ const href = function (icon) {
     return mode === 'inline' ? 'data:image/png;base64,' + fs.readFileSync(path.join(root, icon)).toString('base64') : './' + icon;
 };
 fs.writeFileSync(file, html.replace(LINK, '<link rel="apple-touch-icon" href="./' + ICON + '">'));
-// the script that sets the icon by color scheme carries both icons (light and dark)
+// the script that sets the icon carries the embedded copy
 const scriptFile = path.join(root, 'favicon/touch-icon-inline.js');
 const script = fs.readFileSync(scriptFile, 'utf8');
-if (!ICONS_LINE.test(script)) {
-    console.error('favicon/touch-icon-inline.js: no ICONS line found');
+if (!ICON_LINE.test(script)) {
+    console.error('favicon/touch-icon-inline.js: no ICON line found');
     process.exit(1);
 }
-fs.writeFileSync(scriptFile, script.replace(ICONS_LINE, "const ICONS = { light: '" + href(ICON) + "', dark: '" + href(DARK_ICON) + "' };"));
+fs.writeFileSync(scriptFile, script.replace(ICON_LINE, "const ICON = '" + href(ICON) + "';"));
 const png = fs.readFileSync(path.join(root, ICON));
 
 for (const name of ['apple-touch-icon.png', 'apple-touch-icon-precomposed.png']) {

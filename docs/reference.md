@@ -300,14 +300,14 @@ What changes in the web app: its own storage (the settings start with their defa
 
 ## Home screen icon (iOS)
 
-`favicon/ico-light-*`: a black "a." (Ubuntu Regular 400) on light grey #e6e6e9 with a thin crisp white outline (1.25 % of the width). `favicon/ico-dark-*`: the same letter in white on dark grey #2a2a2e. The outline is there because iOS darkens the tile of a home screen icon in dark mode but leaves the black letter alone (found on the phone: white outlines survive from 1.25 %, lighter-grey ones from 2 %, thinner ones vanish). The tab favicon links use `media`; iOS ignores `media` on `apple-touch-icon`, so `favicon/touch-icon-inline.js` sets it from script by color scheme when the page loads (iOS takes the icon at the moment of "Add to Home Screen"). The Add to Home Screen sheet of iOS 27.2 fails to load an icon from a network URL and shows a letter tile, so `index.html` embeds both icons as `data:` URIs. The switch is reversible:
+`favicon/ico-light-*`: a pure black "a." (Ubuntu Regular 400) on light grey #e6e6e9 with a thin white outline (1.25 % of the width, even all around). There is one icon for both appearances. The outline is there because iOS darkens the tile of a home screen icon in dark mode but leaves the black letter alone (found on the phone: white outlines survive from 1.25 %, lighter-grey ones from 2 %, thinner ones vanish). `favicon/touch-icon-inline.js` sets the `apple-touch-icon` link from script when the page loads (iOS takes the icon at the moment of "Add to Home Screen"). The Add to Home Screen sheet of iOS 27.2 fails to load an icon from a network URL and shows a letter tile, so `index.html` embeds the icon as a `data:` URI. The switch is reversible:
 
 ```
-node tools/touch-icon.js inline   # embed both icons as data: URIs in favicon/touch-icon-inline.js (current; run again after changing an icon file)
+node tools/touch-icon.js inline   # embed the icon as a data: URI in favicon/touch-icon-inline.js (current; run again after changing an icon file)
 node tools/touch-icon.js url      # link ./favicon/ico-light-180.png instead
 ```
 
-Both variants also copy the light icon to `/apple-touch-icon.png` and `/apple-touch-icon-precomposed.png`; `manifest.json` carries it too. iOS keeps the icon from the moment a shortcut is added: to see a change, delete the shortcut, clear the website data for a.msmr.co in Safari and add it again. To make the icons again: render "a." in Ubuntu Regular 400 into the ink box of the old icon (left edge, bottom, width), grow its alpha mask by 1.25 % at 4x, average down and threshold for the crisp outline, then run the `inline` command.
+Both variants also copy the light icon to `/apple-touch-icon.png` and `/apple-touch-icon-precomposed.png`; `manifest.json` carries it too. iOS keeps the icon from the moment a shortcut is added: to see a change, delete the shortcut, clear the website data for a.msmr.co in Safari and add it again. To make the light icons again: `python3 tools/make-icons.py` (Pillow, numpy, fontTools, brotli), then the `inline` command. The script renders "a." into the ink box of the old icon at 8x, grows the letter mask by an exact circle (not a square filter, no corners), averages it down to a coverage without threshold and mixes the letter (drawn on white) with the tile by that coverage. If iOS does not keep the smooth edge, threshold the coverage at 0.5 (the width then varies by up to a pixel).
 
 ## Editing
 

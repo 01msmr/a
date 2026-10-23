@@ -4,6 +4,10 @@ Newest first. One heading per working session. Older states are in
 `git log`; the record starts here with the session of 25/26 July 2026.
 Names in this log are the current English ones (the code was translated to English on 2026-10-17).
 
+## 2026-10-23 — Home screen icon outline made exactly
+
+- Light icons (`favicon/ico-light-{180,192,512}.png`) are made by the new `tools/make-icons.py`: outline 1.25 % of the width grown with an exact circle at 8x (before: a square growth at 4x, then a threshold, so the white line varied between 1 and 3 px at 180), averaged down to coverage without threshold, letter drawn pure black on white, tile opaque `#e6e6e9`. The ink box of the 180 px icon is the same as before (30–146, 44–138). The dark icon is dropped: one icon for both appearances (`favicon/ico-dark-180.png`, the `media` favicon link and the color-scheme switch in `favicon/touch-icon-inline.js` are removed). Not yet looked at on an iPhone: delete the shortcut, clear the website data for a.msmr.co in Safari, add it again. Fallback if iOS drops the smooth edge: threshold the coverage at 0.5.
+
 ## 2026-10-22 — Bar position setting, compact bar on portrait and narrow tablets
 
 - Ghost headers: the shadow and line no longer pile up at the end of a glide. Out: they fade from half the glide on for a quarter of it (200–300 ms of 400, before: 300–400); in: they fade in over the mirrored window (100–200 ms; before: full strength from the start), via the registered property `--arrive-vis` and the class `.arriving` (`ghostHeaderFade`). Test first: `unit.test.js`. Measured in the real page (desktop screen size in headless Chrome): in 0 → 1 between 100 and 200 ms, out 1 → 0 between 200 and 300 ms.

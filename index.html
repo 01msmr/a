@@ -67,11 +67,9 @@
     <link rel="preload" href="vendor/fontawesome-6.7.2/webfonts/fa-solid-900-subset.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="vendor/fontawesome-6.7.2/css/all.min.css?v=2026-10-22g">
 
-    <!-- Icons (README "Home screen icon"): a light and a dark file. The tab favicon follows the color scheme through media; iOS ignores media on
-         apple-touch-icon, so favicon/touch-icon-inline.js sets it from script, as a data: URI (the Add to Home Screen sheet of iOS 27.2 fails to load a
+    <!-- Icons (README "Home screen icon"): one file. favicon/touch-icon-inline.js sets the apple-touch-icon from script, as a data: URI (the Add to Home Screen sheet of iOS 27.2 fails to load a
          network URL). The apple-touch-icon link below is the fallback without JavaScript; switch with "node tools/touch-icon.js inline|url" -->
-    <link rel="icon" href="./favicon/ico-light-180.png?v=2026-10-22g" sizes="180x180" type="image/png" media="(prefers-color-scheme: light)">
-    <link rel="icon" href="./favicon/ico-dark-180.png?v=2026-10-22g" sizes="180x180" type="image/png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="./favicon/ico-light-180.png?v=2026-10-22g" sizes="180x180" type="image/png">
     <link rel="apple-touch-icon" href="./favicon/ico-light-180.png">
     <script src="favicon/touch-icon-inline.js?v=2026-10-22g"></script>
     <link rel="manifest" href="./favicon/manifest.json">
