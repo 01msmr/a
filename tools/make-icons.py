@@ -12,7 +12,7 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 SUPER = 8
 TEXT = 'a.'
-LETTER = (230, 230, 233)   # #e6e6e9, the light page grey
+LETTER = (255, 255, 255)
 # project colors of msmr.dev (projects.json): oklch (chroma, hue, lightness)
 TILE_COLORS = [(0.16, 256, 0.69), (0.14, 115, 0.63), (0.22, 5, 0.7), (0.17, 210, 0.76), (0.19, 155, 0.7), (0.2, 305, 0.7), (0.2, 44, 0.7), (0.16, 95, 0.82)]
 # ink box of the letters in a 180 px icon: left edge, right edge (exclusive), bottom (exclusive)
