@@ -1,4 +1,5 @@
 # a.msmr.co
+> Governed by **CLAUDE MASTER** (`../CLAUDE.md`). Rules here extend it; they do not override it.
 
 Personal start page: links in sections, shown as tiles. Static HTML, CSS and vanilla JS, two small PHP scripts for the data. No framework, no build step. Overview: `README.md`; details: `docs/reference.md`; server and write protection: `docs/htaccess-setup.md`.
 
