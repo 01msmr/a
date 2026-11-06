@@ -137,6 +137,15 @@ test('stripAimF: dragging left moves f forward by the drag in item pitches, clam
     assert.equal(w.stripAimF(5, -400, 40, 6), 5);
 });
 
+test('stripAimF: a gain moves f further than the finger, so one drag reaches more of the strip', () => {
+    assert.equal(w.STRIP_AIM_GAIN, 1.3);
+    assert.ok(Math.abs(w.stripAimF(2, -40, 40, 6, 1.5) - 3.5) < 1e-9);
+    assert.ok(Math.abs(w.stripAimF(2, 20, 40, 6, 2) - 1) < 1e-9);
+    assert.equal(w.stripAimF(0, 400, 40, 6, 1.5), 0);
+    assert.equal(w.stripAimF(5, -400, 40, 6, 1.5), 5);
+    assert.equal(w.stripAimF(2, -40, 40, 6), 3);   // no gain given: one to one
+});
+
 test('stripWinAt: the window follows f between the widths of two items and is never narrower than the title it shows', () => {
     const widths = [40, 100, 60];
     assert.equal(w.stripWinAt(0, widths), 40);

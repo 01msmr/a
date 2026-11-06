@@ -4,6 +4,10 @@ Newest first. One heading per working session. Older states are in
 `git log`; the record starts here with the session of 25/26 July 2026.
 Names in this log are the current English ones (the code was translated to English on 2026-10-17).
 
+## 2026-11-06 — Strip drag gain
+
+- Aiming on the strip runs 1.3 times as far as the finger (`STRIP_AIM_GAIN`, passed to `stripAimF`; before: one to one), so one drag reaches further along the strip and fewer re-drags are needed. The numbers therefore move a little ahead of the finger. Test first: `unit.test.js`. Not tested (needs an iPhone): the feel; the value is meant to be tuned between 1.2 and 1.4.
+
 ## 2026-10-23 — Home screen icon outline made exactly
 
 - All icons are now opaque tiles in the msmr.dev project colors with a solid light "a." (`#ffffff`; `favicon/icon-{0..7}.png`, 180 px, made by `tools/make-icons.py`); `favicon/touch-icon-inline.js` picks one at random per page load for the tab icon and the home screen icon, `icon-192/512.png` (color 0) are for the manifests. No light/dark pair, no transparency: a cutout letter came out black in light mode on the iPhone, iOS fills transparent pixels with black. The grey tile, the white outline and the favicon pair are gone (see `79cc11a`).

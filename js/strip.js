@@ -1,7 +1,7 @@
 // Owns: the section strip in the bottom bar of narrow touch devices (aiming like msmr.dev: numbers beside a window that shows the title)
-// Defines globals: stripDrag, stripSections, stripWidths, stripVis, stripUnders, stripWinW, stripMode, STRIP_MS, STRIP_EASE, STRIP_REACH, STRIP_UNDER_ICON, STRIP_SUCK_MS, STRIP_SUCK_EASE, stripSlots, stripReach, stripSuckFrom, stripPushTo, stripAimF, stripWinAt, stripItems, stripItemW, stripOn, stripShow, stripMeasure, stripSuck, stripPlace, stripLefts, stripFollow, stripSync, stripChoose, buildStrip
+// Defines globals: stripDrag, stripSections, stripWidths, stripVis, stripUnders, stripWinW, stripMode, STRIP_MS, STRIP_EASE, STRIP_REACH, STRIP_UNDER_ICON, STRIP_SUCK_MS, STRIP_SUCK_EASE, STRIP_AIM_GAIN, stripSlots, stripReach, stripSuckFrom, stripPushTo, stripAimF, stripWinAt, stripItems, stripItemW, stripOn, stripShow, stripMeasure, stripSuck, stripPlace, stripLefts, stripFollow, stripSync, stripChoose, buildStrip
 // Uses: state, render
-// Pressing the strip aims from the active item; the finger moves f (a fraction of the item index) one to one. The numbers follow the finger and hold at the window's edge;
+// Pressing the strip aims from the active item; the finger moves f (a fraction of the item index) STRIP_AIM_GAIN times its own distance. The numbers follow the finger and hold at the window's edge;
 // when the number is a fixed depth under the edge (half the width of a "0"; in icon mode a quarter of the icon), it steps into the window as its title and the outgoing title steps out as a number at the same depth, at that very moment.
 // on: the strip is pressed (aiming); idx: item in the window; f0/f: aim at the start / now; x0: finger start; touched: item under the finger; end: time of the last release
 var stripDrag = { on: false, idx: -1, suck: null, f: 0, f0: 0, x0: 0, pid: null, dragged: false, touched: null, end: -1e9 };
@@ -15,6 +15,7 @@ var stripMode = null;   // watches the Navigation setting (class nav-icons on th
 // glide in and out through that edge while the strip moves, and all show while aiming (CSS: .is-aiming)
 var STRIP_REACH = 3;   // most items beyond the window's edge at rest
 var STRIP_MS = 450, STRIP_EASE = 'cubic-bezier(.33,1,.68,1)';   // the pace of msmr.dev's narrow nav (--nav-t, --nav-ease)
+var STRIP_AIM_GAIN = 1.3;   // the aim runs this much further than the finger, so one drag reaches more of the strip (1.2 to 1.4; 1 = one to one)
 var STRIP_UNDER_ICON = 0.25;   // icon mode: the depth under the window's edge is this fraction of the icon's width
 var STRIP_SUCK_MS = 150, STRIP_SUCK_EASE = 'cubic-bezier(.5,0,1,1)';   // a number stepping into the window is sucked in: ease-in, short enough to keep up with a finger
 
@@ -42,8 +43,8 @@ function stripSuckFrom(dir, winW, titleW) { return dir * (winW / 2 + titleW / 2)
 // Where the outgoing title ends, relative to the window centre: fully outside the edge opposite to the one the incoming title comes from
 function stripPushTo(dir, winW, titleW) { return -stripSuckFrom(dir, winW, titleW); }
 
-// The aim for a finger that moved dx (px) since it was pressed on item f0
-function stripAimF(f0, dx, gap, count) { return Math.max(0, Math.min(count - 1, f0 - dx / gap)); }
+// The aim for a finger that moved dx (px) since it was pressed on item f0; the gain (default 1) lets the strip run a little ahead of the finger
+function stripAimF(f0, dx, gap, count, gain) { return Math.max(0, Math.min(count - 1, f0 - (gain || 1) * dx / gap)); }
 
 // The window follows its content: from the width of its title, growing to the wider of the two titles at the step between two items, then on to the other title,
 // so it is never narrower than the title it shows (nothing is cut off) and never jumps
@@ -235,7 +236,7 @@ function buildStrip(data) {
     strip.addEventListener('pointermove', function (ev) {
         if (!stripDrag.on || ev.pointerId !== stripDrag.pid) return;
         if (Math.abs(ev.clientX - stripDrag.x0) > 8) stripDrag.dragged = true;
-        stripDrag.f = stripAimF(stripDrag.f0, ev.clientX - stripDrag.x0, stripItemW(), stripSections.length);
+        stripDrag.f = stripAimF(stripDrag.f0, ev.clientX - stripDrag.x0, stripItemW(), stripSections.length, STRIP_AIM_GAIN);
         stripPlace(stripDrag.f, true);
     });
     function release(cancel, x, y) {
